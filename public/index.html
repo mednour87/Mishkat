@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مشكاة — دليل مجرّة القرآن الذكي · Mishkat</title>
+<meta name="description" content="Mishkat — ask the Quran galaxy: every answer quoted from vetted tafsir, every verse from the Tanzil text, synchronised recitation, abstains when unsure. Arabic · English · Français.">
+<meta name="theme-color" content="#05070d">
+<link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
+</head>
+<body>
+<canvas id="galaxy" aria-label="Quran galaxy"></canvas>
+<div id="tooltip" role="tooltip"></div>
+
+<header id="top">
+  <a class="brand" href="./" aria-label="Mishkat">
+    <img src="img/logo.svg" alt="" width="46" height="46">
+    <span class="bt"><span class="name" data-i18n="brand">مِشكاة</span><span class="tag" data-i18n="tagline">دليل مجرّة القرآن الذكي</span></span>
+  </a>
+  <form id="searchForm" role="search" autocomplete="off">
+    <input id="q" type="search" enterkeyhint="search" data-i18n-ph="placeholder" aria-label="Search">
+    <button type="submit" id="go" data-i18n-aria="search">
+      <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M20 20l-4.2-4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </button>
+  </form>
+  <div class="langs" role="group" aria-label="Language">
+    <button data-lang="ar">ع</button><button data-lang="en">EN</button><button data-lang="fr">FR</button>
+  </div>
+</header>
+
+<section id="hero">
+  <div id="heroVerse" class="ayah"></div>
+  <div id="heroRef"></div>
+  <p id="heroLead" data-i18n="lead"></p>
+  <div id="chips"></div>
+</section>
+<div id="status" aria-live="polite"></div>
+
+<aside id="panel" hidden>
+  <div class="tabs" role="tablist">
+    <button role="tab" id="tabRes" data-i18n="tabResults">النتائج</button>
+    <button role="tab" id="tabRead" data-i18n="tabReader">القارئ</button>
+    <button id="closePanel" class="icon" aria-label="close">✕</button>
+  </div>
+  <div id="viewRes" class="view"></div>
+  <div id="viewRead" class="view" hidden></div>
+</aside>
+
+<nav id="dock">
+  <button id="btnHome" data-i18n-title="home" aria-label="home">⌂</button>
+  <button id="btnLayout" data-i18n="layoutMushaf">ترتيب المصحف</button>
+  <button id="btnLegend" data-i18n="legend">المفتاح</button>
+  <button id="btnAbout" data-i18n="about">عن مشكاة</button>
+  <span id="aiBadge"></span>
+</nav>
+<div id="legendBox" hidden></div>
+
+<dialog id="about">
+  <div id="aboutBody"></div>
+  <form method="dialog"><button data-i18n="close">إغلاق</button></form>
+</dialog>
+
+<div id="loader"><img src="img/logo.svg" alt="" width="84" height="84"><div class="spin"></div><div id="loadMsg">…</div></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

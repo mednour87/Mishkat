@@ -1,0 +1,97 @@
+{
+ "files": {
+  "core.json": [
+   "4de8b86c65997541103ca4693043d0ad6bc01459c76af27a03e1fe051ae855fd",
+   1361623
+  ],
+  "search_ar.json": [
+   "667b744cfde9395c08979808ccbc99439bba6c2d58559a0005633721e5aa5f00",
+   1318106
+  ],
+  "tafsir_mukhtasar_ar.json": [
+   "5271c233ff8664f6b83547697c793e9e00824c92603144538bebcc59c0fc1460",
+   1923246
+  ],
+  "tafsir_mukhtasar_en.json": [
+   "837c42ef788733b6bf2fa3d05b4bf799b5c377555a20f4307416961be3608250",
+   1782041
+  ],
+  "tafsir_mukhtasar_fr.json": [
+   "d6d1a0328fbc399c4b1ac436c463f9810370ad423ba7e695da1c84b61e1351bd",
+   1911749
+  ],
+  "tafsir_muyassar_ar.json": [
+   "0d053a08d8f30f0128787e0fb786a912122b61aedaea68b1e8e7ee10c8750ba4",
+   2520160
+  ],
+  "tafsir_saheeh_en.json": [
+   "53366a1e34847e680344ca51f4392d8fad70efbbcc40ec59a9ab51b0df8e6c45",
+   1073719
+  ],
+  "tafsir_rashid_fr.json": [
+   "49d21261e52dfef976691ecdee0e047035846538e6a4775d0c09a38fb5c863f4",
+   1218213
+  ],
+  "galaxy.bin": [
+   "bef498e119939c06818990528fcb787bca28ee173acbb4c5a1f9efaeb2fa002d",
+   1161507
+  ],
+  "words.json": [
+   "ef3686cce81be452f4fbda075e603b82d6aaf0dbc9fba2a3739c7fb032def2bc",
+   1478976
+  ]
+ },
+ "tanzil_sha256": "bf4f57b968d03f4131c070b1e285da9be0e0a108a21c910e872801ca273312c8",
+ "sources": {
+  "mukhtasar_ar": {
+   "key": "arabic_mokhtasar",
+   "title": "المختصر في تفسير القرآن الكريم — مركز تفسير للدراسات القرآنية",
+   "version": "api-v1@2026-09-28",
+   "empty_verses": 0
+  },
+  "mukhtasar_en": {
+   "key": "english_mokhtasar",
+   "title": "Al-Mukhtasar in Interpreting the Noble Quran — Tafsir Center for Quranic Studies",
+   "version": "api-v1@2026-09-28",
+   "empty_verses": 0
+  },
+  "mukhtasar_fr": {
+   "key": "french_mokhtasar",
+   "title": "Al-Mukhtasar dans l’exégèse du Noble Coran — Centre Tafsir des études coraniques",
+   "version": "api-v1@2026-09-28",
+   "empty_verses": 0
+  },
+  "muyassar_ar": {
+   "key": "arabic_moyassar",
+   "title": "التفسير الميسر — مجمع الملك فهد لطباعة المصحف الشريف",
+   "version": "api-v1@2026-09-28",
+   "empty_verses": 0
+  },
+  "saheeh_en": {
+   "key": "english_saheeh",
+   "title": "English Translation - Noor International Center",
+   "version": "1.1.2",
+   "empty_verses": 0
+  },
+  "rashid_fr": {
+   "key": "french_rashid",
+   "title": "French Translation - Rachid Maach",
+   "version": "1.0.3",
+   "empty_verses": 0
+  }
+ },
+ "saadi_verses": 6177,
+ "synced_verses": 6230,
+ "counts": {
+  "verses": 6236,
+  "words": 77433,
+  "suras": 114,
+  "class_counts": {
+   "0": 73136,
+   "1": 3634,
+   "2": 485,
+   "3": 79,
+   "4": 99
+  }
+ }
+}

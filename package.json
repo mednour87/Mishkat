@@ -1,0 +1,15 @@
+{
+  "name": "mishkat",
+  "version": "1.0.0",
+  "description": "Mishkat — the Quran Galaxy Guide: grounded, abstaining Quran search over a 3D galaxy of 77,433 words (ar/en/fr).",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.mjs 8787",
+    "test": "node --test tests/*.test.mjs",
+    "eval": "node eval/run_eval.mjs",
+    "bench": "node eval/bench_llm.mjs",
+    "build:data": "python data_build/build_data.py"
+  },
+  "engines": { "node": ">=18" }
+}

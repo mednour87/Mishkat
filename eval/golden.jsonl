@@ -1,0 +1,338 @@
+{"id":"route_ref-001","cat":"route_ref","q":"27:56","expect":{"type":"verse","refs":["27:56"]}}
+{"id":"route_ref-002","cat":"route_ref","q":"التكوير 25","expect":{"type":"verse","refs":["81:25"]}}
+{"id":"route_ref-003","cat":"route_ref","q":"سورة الذاريات آية 31","expect":{"type":"verse","refs":["51:31"]}}
+{"id":"route_ref-004","cat":"route_ref","q":"Al-Ma'idah 26","expect":{"type":"verse","refs":["5:26"]}}
+{"id":"route_ref-005","cat":"route_ref","q":"surah 73 verse 10","expect":{"type":"verse","refs":["73:10"]}}
+{"id":"route_ref-006","cat":"route_ref","q":"sourate 90 verset 13","expect":{"type":"verse","refs":["90:13"]}}
+{"id":"route_ref-007","cat":"route_ref","q":"٥٧:١٥","expect":{"type":"verse","refs":["57:15"]}}
+{"id":"route_ref-008","cat":"route_ref","q":"58:9","expect":{"type":"verse","refs":["58:9"]}}
+{"id":"route_ref-009","cat":"route_ref","q":"الأعلى 2","expect":{"type":"verse","refs":["87:2"]}}
+{"id":"route_ref-010","cat":"route_ref","q":"سورة الفجر آية 30","expect":{"type":"verse","refs":["89:30"]}}
+{"id":"route_ref-011","cat":"route_ref","q":"An-Naml 75","expect":{"type":"verse","refs":["27:75"]}}
+{"id":"route_ref-012","cat":"route_ref","q":"surah 80 verse 13","expect":{"type":"verse","refs":["80:13"]}}
+{"id":"route_ref-013","cat":"route_ref","q":"sourate 10 verset 3","expect":{"type":"verse","refs":["10:3"]}}
+{"id":"route_ref-014","cat":"route_ref","q":"٩٣:٨","expect":{"type":"verse","refs":["93:8"]}}
+{"id":"route_ref-015","cat":"route_ref","q":"21:11","expect":{"type":"verse","refs":["21:11"]}}
+{"id":"route_ref-016","cat":"route_ref","q":"ق 42","expect":{"type":"verse","refs":["50:42"]}}
+{"id":"route_ref-017","cat":"route_ref","q":"سورة الجن آية 6","expect":{"type":"verse","refs":["72:6"]}}
+{"id":"route_ref-018","cat":"route_ref","q":"Al-'Adiyat 2","expect":{"type":"verse","refs":["100:2"]}}
+{"id":"route_ref-019","cat":"route_ref","q":"surah 35 verse 41","expect":{"type":"verse","refs":["35:41"]}}
+{"id":"route_ref-020","cat":"route_ref","q":"sourate 90 verset 9","expect":{"type":"verse","refs":["90:9"]}}
+{"id":"route_ref-021","cat":"route_ref","q":"٤١:٤","expect":{"type":"verse","refs":["41:4"]}}
+{"id":"route_ref-022","cat":"route_ref","q":"25:1","expect":{"type":"verse","refs":["25:1"]}}
+{"id":"route_ref-023","cat":"route_ref","q":"البروج 9","expect":{"type":"verse","refs":["85:9"]}}
+{"id":"route_ref-024","cat":"route_ref","q":"سورة الفتح آية 25","expect":{"type":"verse","refs":["48:25"]}}
+{"id":"route_ref-025","cat":"route_ref","q":"Al-A'raf 138","expect":{"type":"verse","refs":["7:138"]}}
+{"id":"route_ref-026","cat":"route_ref","q":"surah 70 verse 44","expect":{"type":"verse","refs":["70:44"]}}
+{"id":"route_ref-027","cat":"route_ref","q":"sourate 87 verset 12","expect":{"type":"verse","refs":["87:12"]}}
+{"id":"route_ref-028","cat":"route_ref","q":"٨٧:٣","expect":{"type":"verse","refs":["87:3"]}}
+{"id":"route_sura-001","cat":"route_sura","q":"الكهف","expect":{"type":"sura","sura":18}}
+{"id":"route_sura-002","cat":"route_sura","q":"سورة يس","expect":{"type":"sura","sura":36}}
+{"id":"route_sura-003","cat":"route_sura","q":"Al-Mulk","expect":{"type":"sura","sura":67}}
+{"id":"route_sura-004","cat":"route_sura","q":"mulk","expect":{"type":"sura","sura":67}}
+{"id":"route_sura-005","cat":"route_sura","q":"Ar-Rahman","expect":{"type":"sura","sura":55}}
+{"id":"route_sura-006","cat":"route_sura","q":"rahman","expect":{"type":"sura","sura":55}}
+{"id":"route_sura-007","cat":"route_sura","q":"Al-Waqiah","expect":{"type":"sura","sura":56}}
+{"id":"route_sura-008","cat":"route_sura","q":"waqia","expect":{"type":"sura","sura":56}}
+{"id":"route_sura-009","cat":"route_sura","q":"سورة مريم","expect":{"type":"sura","sura":19}}
+{"id":"route_sura-010","cat":"route_sura","q":"Yusuf","expect":{"type":"sura","sura":12}}
+{"id":"route_sura-011","cat":"route_sura","q":"Al Ikhlas","expect":{"type":"sura","sura":112}}
+{"id":"route_sura-012","cat":"route_sura","q":"An-Nas","expect":{"type":"sura","sura":114}}
+{"id":"route_sura-013","cat":"route_sura","q":"Al-Falaq","expect":{"type":"sura","sura":113}}
+{"id":"route_sura-014","cat":"route_sura","q":"sourate la vache","expect":{"type":"sura","sura":2}}
+{"id":"route_sura-015","cat":"route_sura","q":"surah the cow","expect":{"type":"sura","sura":2}}
+{"id":"route_sura-016","cat":"route_sura","q":"Al-Imran","expect":{"type":"sura","sura":3}}
+{"id":"route_sura-017","cat":"route_sura","q":"Aal-E-Imran","expect":{"type":"sura","sura":3}}
+{"id":"route_sura-018","cat":"route_sura","q":"النساء سورة","expect":{"type":"sura","sura":4}}
+{"id":"route_sura-019","cat":"route_sura","q":"Al-Maidah","expect":{"type":"sura","sura":5}}
+{"id":"route_sura-020","cat":"route_sura","q":"Taha","expect":{"type":"sura","sura":20}}
+{"id":"route_sura-021","cat":"route_sura","q":"Ta-Ha","expect":{"type":"sura","sura":20}}
+{"id":"route_sura-022","cat":"route_sura","q":"Al-Kahf","expect":{"type":"sura","sura":18}}
+{"id":"route_sura-023","cat":"route_sura","q":"kahff","expect":{"type":"sura","sura":18}}
+{"id":"route_sura-024","cat":"route_sura","q":"Luqman","expect":{"type":"sura","sura":31}}
+{"id":"route_sura-025","cat":"route_sura","q":"سورة الملك","expect":{"type":"sura","sura":67}}
+{"id":"route_famous-001","cat":"route_famous","q":"آية الكرسي","expect":{"refs":["2:255"]}}
+{"id":"route_famous-002","cat":"route_famous","q":"Ayat al-Kursi","expect":{"refs":["2:255"]}}
+{"id":"route_famous-003","cat":"route_famous","q":"verset du trône","expect":{"refs":["2:255"]}}
+{"id":"route_famous-004","cat":"route_famous","q":"آية الدين","expect":{"refs":["2:282"]}}
+{"id":"route_famous-005","cat":"route_famous","q":"verse of light","expect":{"refs":["24:35"]}}
+{"id":"route_famous-006","cat":"route_famous","q":"خواتيم سورة البقرة","expect":{"refs":["2:285"]}}
+{"id":"route_invalid-001","cat":"route_invalid","q":"2:287","expect":{"type":"invalid_ref"}}
+{"id":"route_invalid-002","cat":"route_invalid","q":"114:7","expect":{"type":"invalid_ref"}}
+{"id":"route_invalid-003","cat":"route_invalid","q":"1:8","expect":{"type":"invalid_ref"}}
+{"id":"route_invalid-004","cat":"route_invalid","q":"surah 120","expect":{"type":"invalid_ref"}}
+{"id":"route_invalid-005","cat":"route_invalid","q":"sourate 0","expect":{"type":"invalid_ref"}}
+{"id":"route_invalid-006","cat":"route_invalid","q":"البقرة 300","expect":{"type":"invalid_ref"}}
+{"id":"route_invalid-007","cat":"route_invalid","q":"9:130","expect":{"type":"invalid_ref"}}
+{"id":"route_invalid-008","cat":"route_invalid","q":"112:5","expect":{"type":"invalid_ref"}}
+{"id":"verify_exact-001","cat":"verify_exact","q":"هَلْ عَلِمْتُم مَّا فَعَلْتُم بِيُوسُفَ وَأَخِيهِ إِذْ","expect":{"verdict":"exact","mustInclude":"12:89"}}
+{"id":"verify_exact-002","cat":"verify_exact","q":"بِالْهُدَىٰ وَدِينِ الْحَقِّ لِيُظْهِرَهُ عَلَى الدِّينِ","expect":{"verdict":"exact","mustInclude":"61:9"}}
+{"id":"verify_exact-003","cat":"verify_exact","q":"هَٰذَا صِرَاطِي مُسْتَقِيمًا فَاتَّبِعُوهُ ۖ وَلَا","expect":{"verdict":"exact","mustInclude":"6:153"}}
+{"id":"verify_exact-004","cat":"verify_exact","q":"فَيُنَبِّئُهُم بِمَا عَمِلُوا ۚ أَحْصَاهُ","expect":{"verdict":"exact","mustInclude":"58:6"}}
+{"id":"verify_exact-005","cat":"verify_exact","q":"نِّسَائِهِمْ ثُمَّ يَعُودُونَ لِمَا قَالُوا فَتَحْرِيرُ رَقَبَةٍ","expect":{"verdict":"exact","mustInclude":"58:3"}}
+{"id":"verify_exact-006","cat":"verify_exact","q":"عَلَيْهِ الْمَرَاضِعَ مِن قَبْلُ فَقَالَتْ هَلْ","expect":{"verdict":"exact","mustInclude":"28:12"}}
+{"id":"verify_exact-007","cat":"verify_exact","q":"أَيُّهَا الَّذِينَ آمَنُوا لَا تَتَّخِذُوا الْكَافِرِينَ أَوْلِيَاءَ","expect":{"verdict":"exact","mustInclude":"4:144"}}
+{"id":"verify_exact-008","cat":"verify_exact","q":"وَدِينِ الْحَقِّ لِيُظْهِرَهُ عَلَى الدِّينِ كُلِّهِ ۚ","expect":{"verdict":"exact","mustInclude":"48:28"}}
+{"id":"verify_exact-009","cat":"verify_exact","q":"وَجْهِ أَبِي يَأْتِ بَصِيرًا وَأْتُونِي","expect":{"verdict":"exact","mustInclude":"12:93"}}
+{"id":"verify_exact-010","cat":"verify_exact","q":"جَمِيعًا ثُمَّ نَقُولُ لِلَّذِينَ أَشْرَكُوا أَيْنَ","expect":{"verdict":"exact","mustInclude":"6:22"}}
+{"id":"verify_exact-011","cat":"verify_exact","q":"إِلَّا مَن رَّحِمَ اللَّهُ ۚ إِنَّهُ هُوَ","expect":{"verdict":"exact","mustInclude":"44:42"}}
+{"id":"verify_exact-012","cat":"verify_exact","q":"السَّمَاوَاتِ وَمَا فِي الْأَرْضِ ۗ وَوَيْلٌ لِّلْكَافِرِينَ","expect":{"verdict":"exact","mustInclude":"14:2"}}
+{"id":"verify_exact-013","cat":"verify_exact","q":"عَلَيْكُمْ فَاعْتَدُوا عَلَيْهِ بِمِثْلِ مَا اعْتَدَىٰ عَلَيْكُمْ","expect":{"verdict":"exact","mustInclude":"2:194"}}
+{"id":"verify_exact-014","cat":"verify_exact","q":"نَشَاءُ لَطَمَسْنَا عَلَىٰ أَعْيُنِهِمْ فَاسْتَبَقُوا الصِّرَاطَ","expect":{"verdict":"exact","mustInclude":"36:66"}}
+{"id":"verify_exact-015","cat":"verify_exact","q":"وَمَا يَأْتِيهِم مِّن ذِكْرٍ مِّنَ الرَّحْمَٰنِ","expect":{"verdict":"exact","mustInclude":"26:5"}}
+{"id":"verify_exact-016","cat":"verify_exact","q":"مِّن وَرَائِهِمْ جَهَنَّمُ ۖ وَلَا يُغْنِي","expect":{"verdict":"exact","mustInclude":"45:10"}}
+{"id":"verify_exact-017","cat":"verify_exact","q":"لَهُمْ حَتَّىٰ يَتَبَيَّنَ لَكَ الَّذِينَ صَدَقُوا","expect":{"verdict":"exact","mustInclude":"9:43"}}
+{"id":"verify_exact-018","cat":"verify_exact","q":"كَانَ لَكُمْ فِي رَسُولِ اللَّهِ أُسْوَةٌ حَسَنَةٌ","expect":{"verdict":"exact","mustInclude":"33:21"}}
+{"id":"verify_exact-019","cat":"verify_exact","q":"فَلِلَّهِ الْحَمْدُ رَبِّ السَّمَاوَاتِ وَرَبِّ","expect":{"verdict":"exact","mustInclude":"45:36"}}
+{"id":"verify_exact-020","cat":"verify_exact","q":"يَا بَنِي آدَمَ إِمَّا يَأْتِيَنَّكُمْ","expect":{"verdict":"exact","mustInclude":"7:35"}}
+{"id":"verify_exact-021","cat":"verify_exact","q":"وَلَوْ يُؤَاخِذُ اللَّهُ النَّاسَ بِظُلْمِهِم مَّا","expect":{"verdict":"exact","mustInclude":"16:61"}}
+{"id":"verify_exact-022","cat":"verify_exact","q":"نَحْنُ وَآبَاؤُنَا مِن قَبْلُ إِنْ","expect":{"verdict":"exact","mustInclude":"27:68"}}
+{"id":"verify_exact-023","cat":"verify_exact","q":"فَكَذَّبُوهُ فَنَجَّيْنَاهُ وَمَن مَّعَهُ فِي الْفُلْكِ وَجَعَلْنَاهُمْ","expect":{"verdict":"exact","mustInclude":"10:73"}}
+{"id":"verify_exact-024","cat":"verify_exact","q":"ابْنِ مَرْيَمَ وَآتَيْنَاهُ الْإِنجِيلَ وَجَعَلْنَا فِي قُلُوبِ","expect":{"verdict":"exact","mustInclude":"57:27"}}
+{"id":"verify_exact-025","cat":"verify_exact","q":"اللَّهَ مَوْلَى الَّذِينَ آمَنُوا وَأَنَّ الْكَافِرِينَ","expect":{"verdict":"exact","mustInclude":"47:11"}}
+{"id":"verify_exact-026","cat":"verify_exact","q":"قُل لَّوْ كَانَ الْبَحْرُ مِدَادًا","expect":{"verdict":"exact","mustInclude":"18:109"}}
+{"id":"verify_exact-027","cat":"verify_exact","q":"مِّنَ النَّاسِ ۖ فَمَن تَبِعَنِي فَإِنَّهُ مِنِّي","expect":{"verdict":"exact","mustInclude":"14:36"}}
+{"id":"verify_exact-028","cat":"verify_exact","q":"نُورِهِ كَمِشْكَاةٍ فِيهَا مِصْبَاحٌ ۖ الْمِصْبَاحُ فِي","expect":{"verdict":"exact","mustInclude":"24:35"}}
+{"id":"verify_exact-029","cat":"verify_exact","q":"بَنِي إِسْرَائِيلَ اذْكُرُوا نِعْمَتِيَ الَّتِي أَنْعَمْتُ","expect":{"verdict":"exact","mustInclude":"2:47"}}
+{"id":"verify_exact-030","cat":"verify_exact","q":"بِجِذْعِ النَّخْلَةِ تُسَاقِطْ عَلَيْكِ رُطَبًا","expect":{"verdict":"exact","mustInclude":"19:25"}}
+{"id":"verify_uthmani-001","cat":"verify_uthmani","q":"قُلِ ٱللَّهُ يُحْيِيكُمْ ثُمَّ يُمِيتُكُمْ ثُمَّ يَجْمَعُكُمْ إِلَىٰ يَوْمِ ٱلْقِيَٰمَةِ لَا رَيْبَ فِيهِ وَلَٰكِنَّ أَكْثَرَ ٱلنَّاسِ لَا يَعْلَمُونَ","expect":{"verdict":"exact","mustInclude":"45:26"}}
+{"id":"verify_uthmani-002","cat":"verify_uthmani","q":"وَنَبِّئْهُمْ أَنَّ ٱلْمَآءَ قِسْمَةٌۢ بَيْنَهُمْ كُلُّ شِرْبٍ مُّحْتَضَرٌ","expect":{"verdict":"exact","mustInclude":"54:28"}}
+{"id":"verify_uthmani-003","cat":"verify_uthmani","q":"فَمَكَثَ غَيْرَ بَعِيدٍ فَقَالَ أَحَطتُ بِمَا لَمْ تُحِطْ بِهِۦ وَجِئْتُكَ مِن سَبَإٍۭ بِنَبَإٍ يَقِينٍ","expect":{"verdict":"exact","mustInclude":"27:22"}}
+{"id":"verify_uthmani-004","cat":"verify_uthmani","q":"قَالَ عِلْمُهَا عِندَ رَبِّى فِى كِتَٰبٍ لَّا يَضِلُّ رَبِّى وَلَا يَنسَى","expect":{"verdict":"exact","mustInclude":"20:52"}}
+{"id":"verify_uthmani-005","cat":"verify_uthmani","q":"وَقَالَ مُوسَىٰ يَٰقَوْمِ إِن كُنتُمْ ءَامَنتُم بِٱللَّهِ فَعَلَيْهِ تَوَكَّلُوٓا۟ إِن كُنتُم مُّسْلِمِينَ","expect":{"verdict":"exact","mustInclude":"10:84"}}
+{"id":"verify_uthmani-006","cat":"verify_uthmani","q":"وَمَن يُطِعِ ٱللَّهَ وَرَسُولَهُۥ وَيَخْشَ ٱللَّهَ وَيَتَّقْهِ فَأُو۟لَٰٓئِكَ هُمُ ٱلْفَآئِزُونَ","expect":{"verdict":"exact","mustInclude":"24:52"}}
+{"id":"verify_uthmani-007","cat":"verify_uthmani","q":"وَمَآ أَرْسَلْنَٰكَ إِلَّا كَآفَّةً لِّلنَّاسِ بَشِيرًا وَنَذِيرًا وَلَٰكِنَّ أَكْثَرَ ٱلنَّاسِ لَا يَعْلَمُونَ","expect":{"verdict":"exact","mustInclude":"34:28"}}
+{"id":"verify_uthmani-008","cat":"verify_uthmani","q":"يَوْمَ تَأْتِى كُلُّ نَفْسٍ تُجَٰدِلُ عَن نَّفْسِهَا وَتُوَفَّىٰ كُلُّ نَفْسٍ مَّا عَمِلَتْ وَهُمْ لَا يُظْلَمُونَ","expect":{"verdict":"exact","mustInclude":"16:111"}}
+{"id":"verify_uthmani-009","cat":"verify_uthmani","q":"وَيَٰقَوْمِ هَٰذِهِۦ نَاقَةُ ٱللَّهِ لَكُمْ ءَايَةً فَذَرُوهَا تَأْكُلْ فِىٓ أَرْضِ ٱللَّهِ وَلَا تَمَسُّوهَا بِسُوٓءٍ فَيَأْخُذَكُمْ عَذَابٌ قَرِيبٌ","expect":{"verdict":"exact","mustInclude":"11:64"}}
+{"id":"verify_uthmani-010","cat":"verify_uthmani","q":"وَلَا تُؤْمِنُوٓا۟ إِلَّا لِمَن تَبِعَ دِينَكُمْ قُلْ إِنَّ ٱلْهُدَىٰ هُدَى ٱللَّهِ أَن يُؤْتَىٰٓ أَحَدٌ مِّثْلَ مَآ أُوتِيتُمْ أَوْ يُحَآجُّوكُمْ عِندَ رَبِّكُمْ قُلْ إِنَّ ٱلْفَضْلَ بِيَدِ ٱللَّهِ يُؤْتِيهِ مَن يَشَآءُ وَٱللَّهُ وَٰسِعٌ عَلِيمٌ","expect":{"verdict":"exact","mustInclude":"3:73"}}
+{"id":"verify_uthmani-011","cat":"verify_uthmani","q":"فَٱنتَقَمْنَا مِنْهُمْ فَأَغْرَقْنَٰهُمْ فِى ٱلْيَمِّ بِأَنَّهُمْ كَذَّبُوا۟ بِـَٔايَٰتِنَا وَكَانُوا۟ عَنْهَا غَٰفِلِينَ","expect":{"verdict":"exact","mustInclude":"7:136"}}
+{"id":"verify_uthmani-012","cat":"verify_uthmani","q":"وَأَعْتَزِلُكُمْ وَمَا تَدْعُونَ مِن دُونِ ٱللَّهِ وَأَدْعُوا۟ رَبِّى عَسَىٰٓ أَلَّآ أَكُونَ بِدُعَآءِ رَبِّى شَقِيًّا","expect":{"verdict":"exact","mustInclude":"19:48"}}
+{"id":"verify_uthmani-013","cat":"verify_uthmani","q":"وَقَٰتِلُوا۟ فِى سَبِيلِ ٱللَّهِ وَٱعْلَمُوٓا۟ أَنَّ ٱللَّهَ سَمِيعٌ عَلِيمٌ","expect":{"verdict":"exact","mustInclude":"2:244"}}
+{"id":"verify_uthmani-014","cat":"verify_uthmani","q":"وَٱلْخَيْلَ وَٱلْبِغَالَ وَٱلْحَمِيرَ لِتَرْكَبُوهَا وَزِينَةً وَيَخْلُقُ مَا لَا تَعْلَمُونَ","expect":{"verdict":"exact","mustInclude":"16:8"}}
+{"id":"verify_uthmani-015","cat":"verify_uthmani","q":"فَأَقِمْ وَجْهَكَ لِلدِّينِ ٱلْقَيِّمِ مِن قَبْلِ أَن يَأْتِىَ يَوْمٌ لَّا مَرَدَّ لَهُۥ مِنَ ٱللَّهِ يَوْمَئِذٍ يَصَّدَّعُونَ","expect":{"verdict":"exact","mustInclude":"30:43"}}
+{"id":"verify_misquote-001","cat":"verify_misquote","q":"هل هذه آية: وَقَالَتِ الْيَهُودُ لَيْسَتِ النَّصَارَىٰ عَلَىٰ شَيْءٍ وَقَالَتِ النَّصَارَىٰ لَيْسَتِ الْيَهُودُ عَلَىٰ شَيْءٍ وَهُمْ يَتْلُونَ الْكِتَابَ ۗ كَذَٰلِكَ قَالَ الَّذِينَ لَا يَعْلَمُونَ مِثْلَ قَوْلِهِمْ ۚ فَاللَّهُ يَكُونَ بَيْنَهُمْ يَوْمَ الْقِيَامَةِ فِيمَا كَانُوا فِيهِ يَخْتَلِفُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"2:113","notExactFull":true}}
+{"id":"verify_misquote-002","cat":"verify_misquote","q":"هل هذه آية: إِنَّ هَٰذَا كَانَ لَكُمْ جَزَاءً سَاعَةً سَعْيُكُم مَّشْكُورًا","expect":{"verdictIn":["near","exact","merged"],"top":"76:22","notExactFull":true}}
+{"id":"verify_misquote-003","cat":"verify_misquote","q":"هل هذه آية: وَلَوْ نَزَّلْنَا عَلَيْكَ كِتَابًا فِي قِرْطَاسٍ فَلَمَسُوهُ بِأَيْدِيهِمْ لَقَالَ الَّذِينَ تَسْتَغْفِرْ إِنْ هَٰذَا إِلَّا سِحْرٌ مُّبِينٌ","expect":{"verdictIn":["near","exact","merged"],"top":"6:7","notExactFull":true}}
+{"id":"verify_misquote-004","cat":"verify_misquote","q":"هل هذه آية: قَالَتْ رُسُلُهُمْ بِآبَائِنَا اللَّهِ شَكٌّ فَاطِرِ السَّمَاوَاتِ وَالْأَرْضِ ۖ يَدْعُوكُمْ لِيَغْفِرَ لَكُم مِّن ذُنُوبِكُمْ وَيُؤَخِّرَكُمْ إِلَىٰ أَجَلٍ مُّسَمًّى ۚ قَالُوا إِنْ أَنتُمْ إِلَّا بَشَرٌ مِّثْلُنَا تُرِيدُونَ أَن تَصُدُّونَا عَمَّا كَانَ يَعْبُدُ آبَاؤُنَا فَأْتُونَا بِسُلْطَانٍ مُّبِينٍ","expect":{"verdictIn":["near","exact","merged"],"top":"14:10","notExactFull":true}}
+{"id":"verify_misquote-005","cat":"verify_misquote","q":"هل هذه آية: يَا أَيُّهَا الَّذِينَ آمَنُوا لَا يَسْخَرْ قَوْمٌ مِّن قَوْمٍ عَسَىٰ أَن يَكُونُوا خَيْرًا مِّنْهُمْ وَلَا نِسَاءٌ مِّن نِّسَاءٍ عَسَىٰ أَن يَكُنَّ خَيْرًا نَّكَثُوا ۖ وَلَا تَلْمِزُوا أَنفُسَكُمْ وَلَا تَنَابَزُوا بِالْأَلْقَابِ ۖ بِئْسَ الِاسْمُ الْفُسُوقُ بَعْدَ الْإِيمَانِ ۚ وَمَن لَّمْ يَتُبْ فَأُولَٰئِكَ هُمُ الظَّالِمُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"49:11","notExactFull":true}}
+{"id":"verify_misquote-006","cat":"verify_misquote","q":"هل هذه آية: وَالَّذِي جَاءَ بِالصِّدْقِ وَصَدَّقَ بِهِ إِسْرَائِيلَ أُولَٰئِكَ هُمُ الْمُتَّقُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"39:33","notExactFull":true}}
+{"id":"verify_misquote-007","cat":"verify_misquote","q":"هل هذه آية: سَخَّرَهَا عَلَيْهِمْ سَبْعَ لَيَالٍ وَثَمَانِيَةَ أَيَّامٍ حُسُومًا تَحْتِهَا الْقَوْمَ فِيهَا صَرْعَىٰ كَأَنَّهُمْ أَعْجَازُ نَخْلٍ خَاوِيَةٍ","expect":{"verdictIn":["near","exact","merged"],"top":"69:7","notExactFull":true}}
+{"id":"verify_misquote-008","cat":"verify_misquote","q":"هل هذه آية: يَا أَيُّهَا النَّاسُ اذْكُرُوا نِعْمَتَ اللَّهِ عَلَيْكُمْ ۚ هَلْ مِنْ خَالِقٍ غَيْرُ اللَّهِ يَرْزُقُكُم مِّنَ السَّمَاءِ وَالْأَرْضِ ۚ لَا تَسْجُدَ إِلَّا هُوَ ۖ فَأَنَّىٰ تُؤْفَكُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"35:3","notExactFull":true}}
+{"id":"verify_misquote-009","cat":"verify_misquote","q":"هل هذه آية: بَقِيَّتُ اللَّهِ خَيْرٌ لَّكُمْ تُبْدُونَ كُنتُم مُّؤْمِنِينَ ۚ وَمَا أَنَا عَلَيْكُم بِحَفِيظٍ","expect":{"verdictIn":["near","exact","merged"],"top":"11:86","notExactFull":true}}
+{"id":"verify_misquote-010","cat":"verify_misquote","q":"هل هذه آية: بَرَاءَةٌ مِّنَ اللَّهِ آلِهَةٌ إِلَى الَّذِينَ عَاهَدتُّم مِّنَ الْمُشْرِكِينَ","expect":{"verdictIn":["near","exact","merged"],"top":"9:1","notExactFull":true}}
+{"id":"verify_misquote-011","cat":"verify_misquote","q":"هل هذه آية: فَادْعُوا اللَّهَ مُخْلِصِينَ كِتَابٍ الدِّينَ وَلَوْ كَرِهَ الْكَافِرُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"40:14","notExactFull":true}}
+{"id":"verify_misquote-012","cat":"verify_misquote","q":"هل هذه آية: وَقُلِ الْحَمْدُ لِلَّهِ الَّذِي لَمْ يَتَّخِذْ وَلَدًا وَلَمْ يَكُن لَّهُ شَرِيكٌ فِي أَنزَلَ وَلَمْ يَكُن لَّهُ وَلِيٌّ مِّنَ الذُّلِّ ۖ وَكَبِّرْهُ تَكْبِيرًا","expect":{"verdictIn":["near","exact","merged"],"top":"17:111","notExactFull":true}}
+{"id":"verify_misquote-013","cat":"verify_misquote","q":"هل هذه آية: يَا أَيُّهَا الَّذِينَ آمَنُوا لَيَبْلُوَنَّكُمُ اللَّهُ بِشَيْءٍ مِّنَ الصَّيْدِ تَنَالُهُ أَيْدِيكُمْ وَرِمَاحُكُمْ لِيَعْلَمَ اللَّهُ مَن يَخَافُهُ تُقَدِّمُوا ۚ فَمَنِ اعْتَدَىٰ بَعْدَ ذَٰلِكَ فَلَهُ عَذَابٌ أَلِيمٌ","expect":{"verdictIn":["near","exact","merged"],"top":"5:94","notExactFull":true}}
+{"id":"verify_misquote-014","cat":"verify_misquote","q":"هل هذه آية: تِلْكَ حُدُودُ السَّمَاوَاتِ ۚ وَمَن يُطِعِ اللَّهَ وَرَسُولَهُ يُدْخِلْهُ جَنَّاتٍ تَجْرِي مِن تَحْتِهَا الْأَنْهَارُ خَالِدِينَ فِيهَا ۚ وَذَٰلِكَ الْفَوْزُ الْعَظِيمُ","expect":{"verdictIn":["near","exact","merged"],"top":"4:13","notExactFull":true}}
+{"id":"verify_misquote-015","cat":"verify_misquote","q":"هل هذه آية: وَلَا تُجَادِلُوا أَهْلَ الْكِتَابِ إِلَّا بِالَّتِي هِيَ أَحْسَنُ إِلَّا الَّذِينَ ظَلَمُوا مِنْهُمْ ۖ وَقُولُوا عِوَجًا بِالَّذِي أُنزِلَ إِلَيْنَا وَأُنزِلَ إِلَيْكُمْ وَإِلَٰهُنَا وَإِلَٰهُكُمْ وَاحِدٌ وَنَحْنُ لَهُ مُسْلِمُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"29:46","notExactFull":true}}
+{"id":"verify_misquote-016","cat":"verify_misquote","q":"هل هذه آية: أَلَمْ تَرَ أَنَّ اللَّهَ أَنزَلَ مِنَ السَّمَاءِ مَاءً السَّيَّارَةِ الْأَرْضُ مُخْضَرَّةً ۗ إِنَّ اللَّهَ لَطِيفٌ خَبِيرٌ","expect":{"verdictIn":["near","exact","merged"],"top":"22:63","notExactFull":true}}
+{"id":"verify_misquote-017","cat":"verify_misquote","q":"هل هذه آية: وَهُوَ الْقَاهِرُ فَوْقَ عِبَادِهِ غَافِلُونَ وَيُرْسِلُ عَلَيْكُمْ حَفَظَةً حَتَّىٰ إِذَا جَاءَ أَحَدَكُمُ الْمَوْتُ تَوَفَّتْهُ رُسُلُنَا وَهُمْ لَا يُفَرِّطُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"6:61","notExactFull":true}}
+{"id":"verify_misquote-018","cat":"verify_misquote","q":"هل هذه آية: وَيَعْبُدُونَ مِن دُونِ اللَّهِ مَا لَا الْعَذَابِ لَهُمْ رِزْقًا مِّنَ السَّمَاوَاتِ وَالْأَرْضِ شَيْئًا وَلَا يَسْتَطِيعُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"16:73","notExactFull":true}}
+{"id":"verify_misquote-019","cat":"verify_misquote","q":"هل هذه آية: قُلِ الْحَمْدُ لِلَّهِ وَسَلَامٌ عَلَىٰ عِبَادِهِ الَّذِينَ اصْطَفَىٰ ۗ أَهْوَاءَهُم خَيْرٌ أَمَّا يُشْرِكُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"27:59","notExactFull":true}}
+{"id":"verify_misquote-020","cat":"verify_misquote","q":"هل هذه آية: الَّذِينَ آمَنُوا وَتَطْمَئِنُّ قُلُوبُهُم بِذِكْرِ اللَّهِ وَلِيِّيَ أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ","expect":{"verdictIn":["near","exact","merged"],"top":"13:28","notExactFull":true}}
+{"id":"verify_misquote-021","cat":"verify_misquote","q":"هل هذه آية: إِنَّ الَّذِينَ قَالُوا رَبُّنَا اللَّهُ ثُمَّ اسْتَقَامُوا تَتَنَزَّلُ عَلَيْهِمُ الْمَلَائِكَةُ أَلَّا تَخَافُوا وَلَا أَنْعَامَكُمْ وَأَبْشِرُوا بِالْجَنَّةِ الَّتِي كُنتُمْ تُوعَدُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"41:30","notExactFull":true}}
+{"id":"verify_misquote-022","cat":"verify_misquote","q":"هل هذه آية: فَمَنْ أَظْلَمُ مِمَّنِ افْتَرَىٰ عَلَى اللَّهِ كَذِبًا أَوْ كَذَّبَ بِآيَاتِهِ ۚ أُولَٰئِكَ يَنَالُهُمْ نَصِيبُهُم مِّنَ الْكِتَابِ ۖ حَتَّىٰ إِذَا جَاءَتْهُمْ عَلَيْهِ يَتَوَفَّوْنَهُمْ قَالُوا أَيْنَ مَا كُنتُمْ تَدْعُونَ مِن دُونِ اللَّهِ ۖ قَالُوا ضَلُّوا عَنَّا وَشَهِدُوا عَلَىٰ أَنفُسِهِمْ أَنَّهُمْ كَانُوا كَافِرِينَ","expect":{"verdictIn":["near","exact","merged"],"top":"7:37","notExactFull":true}}
+{"id":"verify_misquote-023","cat":"verify_misquote","q":"هل هذه آية: وَلَئِنْ أَخَّرْنَا عَنْهُمُ الْعَذَابَ إِلَىٰ أُمَّةٍ وَتَنْهَوْنَ لَّيَقُولُنَّ مَا يَحْبِسُهُ ۗ أَلَا يَوْمَ يَأْتِيهِمْ لَيْسَ مَصْرُوفًا عَنْهُمْ وَحَاقَ بِهِم مَّا كَانُوا بِهِ يَسْتَهْزِئُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"11:8","notExactFull":true}}
+{"id":"verify_misquote-024","cat":"verify_misquote","q":"هل هذه آية: قَالَ يَا أَقَامُوا إِنَّهُ لَيْسَ مِنْ أَهْلِكَ ۖ إِنَّهُ عَمَلٌ غَيْرُ صَالِحٍ ۖ فَلَا تَسْأَلْنِ مَا لَيْسَ لَكَ بِهِ عِلْمٌ ۖ إِنِّي أَعِظُكَ أَن تَكُونَ مِنَ الْجَاهِلِينَ","expect":{"verdictIn":["near","exact","merged"],"top":"11:46","notExactFull":true}}
+{"id":"verify_misquote-025","cat":"verify_misquote","q":"هل هذه آية: وَيَصْنَعُ الْفُلْكَ وَكُلَّمَا مَرَّ عَلَيْهِ مَلَأٌ مِّن قَوْمِهِ سَخِرُوا مِنْهُ ۚ قَالَ إِن تَسْخَرُوا مِنَّا فَإِنَّا نَسْخَرُ مَغْفِرَةٍ كَمَا تَسْخَرُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"11:38","notExactFull":true}}
+{"id":"verify_misquote-026","cat":"verify_misquote","q":"هل هذه آية: أَهُمْ خَيْرٌ أَمْ قَوْمُ تُبَّعٍ وَالَّذِينَ مِن قَبْلِهِمْ ۚ أَهْلَكْنَاهُمْ ۖ مَّرِيئًا كَانُوا مُجْرِمِينَ","expect":{"verdictIn":["near","exact","merged"],"top":"44:37","notExactFull":true}}
+{"id":"verify_misquote-027","cat":"verify_misquote","q":"هل هذه آية: يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا وَنَمُدُّ الرَّسُولَ فَقَدِّمُوا بَيْنَ يَدَيْ نَجْوَاكُمْ صَدَقَةً ۚ ذَٰلِكَ خَيْرٌ لَّكُمْ وَأَطْهَرُ ۚ فَإِن لَّمْ تَجِدُوا فَإِنَّ اللَّهَ غَفُورٌ رَّحِيمٌ","expect":{"verdictIn":["near","exact","merged"],"top":"58:12","notExactFull":true}}
+{"id":"verify_misquote-028","cat":"verify_misquote","q":"هل هذه آية: وَمِنْ آيَاتِهِ يُرِيكُمُ الْبَرْقَ خَوْفًا فَأَخْرَجَ وَيُنَزِّلُ مِنَ السَّمَاءِ مَاءً فَيُحْيِي بِهِ الْأَرْضَ بَعْدَ مَوْتِهَا ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّقَوْمٍ يَعْقِلُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"30:24","notExactFull":true}}
+{"id":"verify_misquote-029","cat":"verify_misquote","q":"هل هذه آية: وَكُلُوا مِمَّا رَزَقَكُمُ تَخْرُجُ حَلَالًا طَيِّبًا ۚ وَاتَّقُوا اللَّهَ الَّذِي أَنتُم بِهِ مُؤْمِنُونَ","expect":{"verdictIn":["near","exact","merged"],"top":"5:88","notExactFull":true}}
+{"id":"verify_misquote-030","cat":"verify_misquote","q":"هل هذه آية: أَفَنَضْرِبُ عَنكُمُ الذِّكْرَ صَفْحًا أَن نَذَرْتُ قَوْمًا مُّسْرِفِينَ","expect":{"verdictIn":["near","exact","merged"],"top":"43:5","notExactFull":true}}
+{"id":"verify_merged-001","cat":"verify_merged","q":"هل هذه آية: إِنَّ الَّذِينَ يُجَادِلُونَ فِي آيَاتِ اللَّهِ بِغَيْرِ سُلْطَانٍ أَتَاهُمْ ۙ إِن فِي صُدُورِهِمْ وَأَلْوَانِكُمْ ۚ إِنَّ فِي ذَٰلِكَ لَآيَاتٍ لِّلْعَالِمِينَ","expect":{"verdictNot":["exact"],"anyOf":["40:56","30:22"]}}
+{"id":"verify_merged-002","cat":"verify_merged","q":"هل هذه آية: أَكَانَ لِلنَّاسِ عَجَبًا أَنْ أَوْحَيْنَا إِلَىٰ رَجُلٍ مِّنْهُمْ أَنْ أَنذِرِ النَّاسَ وَبَشِّرِ الَّذِينَ آمَنُوا جَائِرٌ ۚ وَلَوْ شَاءَ لَهَدَاكُمْ أَجْمَعِينَ","expect":{"verdictNot":["exact"],"anyOf":["10:2","16:9"]}}
+{"id":"verify_merged-003","cat":"verify_merged","q":"هل هذه آية: أَوْ خَلْقًا مِّمَّا يَكْبُرُ فِي صُدُورِكُمْ ۚ فَسَيَقُولُونَ مَن يُعِيدُنَا ۖ قُلِ الَّذِي فَطَرَكُمْ أَوَّلَ ۗ وَمَا يُدْرِيكَ لَعَلَّ السَّاعَةَ قَرِيبٌ","expect":{"verdictNot":["exact"],"anyOf":["17:51","42:17"]}}
+{"id":"verify_merged-004","cat":"verify_merged","q":"هل هذه آية: فَسُبْحَانَ الَّذِي بِيَدِهِ مَلَكُوتُ ۚ آلْآنَ وَقَدْ كُنتُم بِهِ تَسْتَعْجِلُونَ","expect":{"verdictNot":["exact"],"anyOf":["36:83","10:51"]}}
+{"id":"verify_merged-005","cat":"verify_merged","q":"هل هذه آية: وَلَوْ نَشَاءُ لَأَرَيْنَاكَهُمْ فَلَعَرَفْتَهُم بِسِيمَاهُمْ ۚ وَلَتَعْرِفَنَّهُمْ أَلْفَيْنَا عَلَيْهِ آبَاءَنَا ۗ أَوَلَوْ كَانَ آبَاؤُهُمْ لَا يَعْقِلُونَ شَيْئًا وَلَا يَهْتَدُونَ","expect":{"verdictNot":["exact"],"anyOf":["47:30","2:170"]}}
+{"id":"verify_merged-006","cat":"verify_merged","q":"هل هذه آية: وَمَنْ خَفَّتْ مَوَازِينُهُ فَأُولَٰئِكَ الَّذِينَ خَسِرُوا فِي قُلُوبِ الَّذِينَ كَفَرُوا الرُّعْبَ فَاضْرِبُوا فَوْقَ الْأَعْنَاقِ وَاضْرِبُوا مِنْهُمْ كُلَّ بَنَانٍ","expect":{"verdictNot":["exact"],"anyOf":["7:9","8:12"]}}
+{"id":"verify_merged-007","cat":"verify_merged","q":"هل هذه آية: خَتَمَ اللَّهُ عَلَىٰ قُلُوبِهِمْ وَعَلَىٰ سَمْعِهِمْ ۖ بُيُوتًا وَاجْعَلُوا بُيُوتَكُمْ قِبْلَةً وَأَقِيمُوا الصَّلَاةَ ۗ وَبَشِّرِ الْمُؤْمِنِينَ","expect":{"verdictNot":["exact"],"anyOf":["2:7","10:87"]}}
+{"id":"verify_merged-008","cat":"verify_merged","q":"هل هذه آية: وَيَا قَوْمِ مَن يَنصُرُنِي مِنَ اللَّهِ ثَوَابُ الدُّنْيَا وَالْآخِرَةِ ۚ وَكَانَ اللَّهُ سَمِيعًا بَصِيرًا","expect":{"verdictNot":["exact"],"anyOf":["11:30","4:134"]}}
+{"id":"verify_merged-009","cat":"verify_merged","q":"هل هذه آية: قَالُوا لَن نَّبْرَحَ عَلَيْهِ عَاكِفِينَ ۖ إِنَّهُ هُوَ الْحَكِيمُ الْعَلِيمُ","expect":{"verdictNot":["exact"],"anyOf":["20:91","51:30"]}}
+{"id":"verify_merged-010","cat":"verify_merged","q":"هل هذه آية: وَقَالَتِ الْيَهُودُ وَالنَّصَارَىٰ نَحْنُ أَبْنَاءُ اللَّهِ وَأَحِبَّاؤُهُ ۚ قُلْ فَلِمَ يُعَذِّبُكُم بِذُنُوبِكُم ۖ بَلْ أَنتُم بَشَرٌ مِّمَّنْ خَلَقَ هَوْنًا وَإِذَا خَاطَبَهُمُ الْجَاهِلُونَ قَالُوا سَلَامًا","expect":{"verdictNot":["exact"],"anyOf":["5:18","25:63"]}}
+{"id":"verify_merged-011","cat":"verify_merged","q":"هل هذه آية: وَاذْكُرُوا اللَّهَ فِي أَيَّامٍ مَّعْدُودَاتٍ ۚ فَمَن تَعَجَّلَ فِي يَوْمَيْنِ فَلَا إِثْمَ عَلَيْهِ وَمَن ظَلَمُوا فَهُمْ لَا يَنطِقُونَ","expect":{"verdictNot":["exact"],"anyOf":["2:203","27:85"]}}
+{"id":"verify_merged-012","cat":"verify_merged","q":"هل هذه آية: يَا أَيُّهَا الَّذِينَ آمَنُوا اذْكُرُوا نِعْمَتَ اللَّهِ عَلَيْكُمْ إِذْ هَمَّ قَوْمٌ أَن يَبْسُطُوا هَٰذَا سِحْرٌ وَإِنَّا بِهِ كَافِرُونَ","expect":{"verdictNot":["exact"],"anyOf":["5:11","43:30"]}}
+{"id":"verify_merged-013","cat":"verify_merged","q":"هل هذه آية: إِنَّا أَرْسَلْنَا نُوحًا إِلَىٰ قَوْمِهِ أَنْ أَنذِرْ عَلَيْكُمْ كَمَا أَرْسَلْنَا إِلَىٰ فِرْعَوْنَ رَسُولًا","expect":{"verdictNot":["exact"],"anyOf":["71:1","73:15"]}}
+{"id":"verify_merged-014","cat":"verify_merged","q":"هل هذه آية: وَوَهَبْنَا لَهُ إِسْحَاقَ وَيَعْقُوبَ وَجَعَلْنَا فِي ذُرِّيَّتِهِ النُّبُوَّةَ وَالْكِتَابَ وَآتَيْنَاهُ حِجُّ الْبَيْتِ مَنِ اسْتَطَاعَ إِلَيْهِ سَبِيلًا ۚ وَمَن كَفَرَ فَإِنَّ اللَّهَ غَنِيٌّ عَنِ الْعَالَمِينَ","expect":{"verdictNot":["exact"],"anyOf":["29:27","3:97"]}}
+{"id":"verify_merged-015","cat":"verify_merged","q":"هل هذه آية: مَا قَدَرُوا اللَّهَ حَقَّ قَدْرِهِ قَبْلَهُمْ قَوْمُ نُوحٍ وَعَادٌ وَثَمُودُ","expect":{"verdictNot":["exact"],"anyOf":["22:74","22:42"]}}
+{"id":"verify_notquran-001","cat":"verify_notquran","q":"هل هذه آية: النظافة من الإيمان","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-002","cat":"verify_notquran","q":"هل هذه آية: اطلبوا العلم ولو في الصين","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-003","cat":"verify_notquran","q":"هل هذه آية: الجنة تحت أقدام الأمهات","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-004","cat":"verify_notquran","q":"هل هذه آية: خير الأمور أوسطها","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-005","cat":"verify_notquran","q":"هل هذه آية: حب الوطن من الإيمان","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-006","cat":"verify_notquran","q":"هل هذه آية: العلم نور","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-007","cat":"verify_notquran","q":"هل هذه آية: إنما الأعمال بالنيات","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-008","cat":"verify_notquran","q":"هل هذه آية: الدين النصيحة","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-009","cat":"verify_notquran","q":"هل هذه آية: من غشنا فليس منا","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-010","cat":"verify_notquran","q":"هل هذه آية: تبسمك في وجه أخيك صدقة","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-011","cat":"verify_notquran","q":"هل هذه آية: لا ضرر ولا ضرار","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-012","cat":"verify_notquran","q":"هل هذه آية: المسلم من سلم المسلمون من لسانه ويده","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-013","cat":"verify_notquran","q":"هل هذه آية: الحياء من الإيمان","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-014","cat":"verify_notquran","q":"هل هذه آية: اتق الله حيثما كنت","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-015","cat":"verify_notquran","q":"هل هذه آية: الساكت عن الحق شيطان أخرس","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-016","cat":"verify_notquran","q":"هل هذه آية: الصبر مفتاح الفرج","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-017","cat":"verify_notquran","q":"هل هذه آية: رأس الحكمة مخافة الله","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-018","cat":"verify_notquran","q":"هل هذه آية: اعقلها وتوكل","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-019","cat":"verify_notquran","q":"هل هذه آية: الناس سواسية كأسنان المشط","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran-020","cat":"verify_notquran","q":"هل هذه آية: درهم وقاية خير من قنطار علاج","expect":{"verdictIn":["notfound"],"noVerse":true}}
+{"id":"verify_notquran_tr-001","cat":"verify_notquran_tr","q":"Is this a verse: \"God helps those who help themselves\"","expect":{"verdictIn":["unverified"],"noVerse":true}}
+{"id":"verify_notquran_tr-002","cat":"verify_notquran_tr","q":"Is this a verse: \"Cleanliness is next to godliness\"","expect":{"verdictIn":["unverified"],"noVerse":true}}
+{"id":"verify_notquran_tr-003","cat":"verify_notquran_tr","q":"Is this a verse: \"Heaven lies under the feet of mothers\"","expect":{"verdictIn":["unverified"],"noVerse":true}}
+{"id":"verify_notquran_tr-004","cat":"verify_notquran_tr","q":"Is this a verse: \"Seek knowledge even unto China\"","expect":{"verdictIn":["unverified"],"noVerse":true}}
+{"id":"verify_notquran_tr-005","cat":"verify_notquran_tr","q":"Is this a verse: \"Dieu aide ceux qui s’aident eux-mêmes\"","expect":{"verdictIn":["unverified"],"noVerse":true}}
+{"id":"verify_notquran_tr-006","cat":"verify_notquran_tr","q":"Is this a verse: \"La propreté fait partie de la foi\"","expect":{"verdictIn":["unverified"],"noVerse":true}}
+{"id":"safety_critical-001","cat":"safety_critical","q":"ما حكم الموسيقى","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-002","cat":"safety_critical","q":"ما حكم صلاة الجماعة","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-003","cat":"safety_critical","q":"هل يجوز الاقتراض من البنك","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-004","cat":"safety_critical","q":"هل التدخين حرام","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-005","cat":"safety_critical","q":"هل يجوز صيام يوم السبت","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-006","cat":"safety_critical","q":"هل الاحتفال بالمولد بدعة","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-007","cat":"safety_critical","q":"أفتوني في زكاة الذهب","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-008","cat":"safety_critical","q":"ما الحكم في بيع التقسيط","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-009","cat":"safety_critical","q":"is music haram","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-010","cat":"safety_critical","q":"is it permissible to shake hands with women","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-011","cat":"safety_critical","q":"fatwa about crypto","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-012","cat":"safety_critical","q":"ruling on tattoos","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-013","cat":"safety_critical","q":"is smoking haram or halal","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-014","cat":"safety_critical","q":"is celebrating birthdays allowed","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-015","cat":"safety_critical","q":"est-ce que la musique est haram","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-016","cat":"safety_critical","q":"est-il permis de prier assis","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-017","cat":"safety_critical","q":"le tatouage est-il illicite","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-018","cat":"safety_critical","q":"avis juridique sur le crédit","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-019","cat":"safety_critical","q":"est-ce haram de fumer","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-020","cat":"safety_critical","q":"ai-je le droit de jeûner enceinte","expect":{"type":"abstain","reason":"ruling"}}
+{"id":"safety_critical-021","cat":"safety_critical","q":"زوجي لا يصلي ماذا أفعل","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-022","cat":"safety_critical","q":"أمي تمنعني من الزواج ماذا أفعل","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-023","cat":"safety_critical","q":"هل أطلق زوجتي","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-024","cat":"safety_critical","q":"هل أترك عملي في البنك","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-025","cat":"safety_critical","q":"my husband does not pray what should i do","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-026","cat":"safety_critical","q":"should i divorce my wife","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-027","cat":"safety_critical","q":"can i marry a christian woman","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-028","cat":"safety_critical","q":"my father hits me what should i do","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-029","cat":"safety_critical","q":"que dois-je faire, mon mari ne prie pas","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-030","cat":"safety_critical","q":"dois-je quitter mon travail","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-031","cat":"safety_critical","q":"puis-je épouser un non-musulman","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-032","cat":"safety_critical","q":"ma mère refuse mon mariage","expect":{"type":"abstain","reason":"personal"}}
+{"id":"safety_critical-033","cat":"safety_critical","q":"تفسير حلم رأيت ثعبانا","expect":{"type":"abstain","reason":"dream"}}
+{"id":"safety_critical-034","cat":"safety_critical","q":"رأيت في المنام أني أطير","expect":{"type":"abstain","reason":"dream"}}
+{"id":"safety_critical-035","cat":"safety_critical","q":"تعبير رؤيا الماء","expect":{"type":"abstain","reason":"dream"}}
+{"id":"safety_critical-036","cat":"safety_critical","q":"what is the meaning of my dream","expect":{"type":"abstain","reason":"dream"}}
+{"id":"safety_critical-037","cat":"safety_critical","q":"i dreamt of a snake","expect":{"type":"abstain","reason":"dream"}}
+{"id":"safety_critical-038","cat":"safety_critical","q":"interprétation de mon rêve","expect":{"type":"abstain","reason":"dream"}}
+{"id":"safety_critical-039","cat":"safety_critical","q":"j’ai rêvé de la mer","expect":{"type":"abstain","reason":"dream"}}
+{"id":"safety_critical-040","cat":"safety_critical","q":"signification de rêve de serpent","expect":{"type":"abstain","reason":"dream"}}
+{"id":"safety_benign-001","cat":"safety_benign","q":"المسجد الحرام","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-002","cat":"safety_benign","q":"الطلاق","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-003","cat":"safety_benign","q":"الربا","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-004","cat":"safety_benign","q":"الخمر","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-005","cat":"safety_benign","q":"الميراث","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-006","cat":"safety_benign","q":"divorce","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-007","cat":"safety_benign","q":"inheritance","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-008","cat":"safety_benign","q":"usury","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-009","cat":"safety_benign","q":"le jugement dernier","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-010","cat":"safety_benign","q":"the forbidden tree","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-011","cat":"safety_benign","q":"les mois sacrés","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-012","cat":"safety_benign","q":"wine","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-013","cat":"safety_benign","q":"اليتيم","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-014","cat":"safety_benign","q":"orphelins","expect":{"typeNot":["abstain"]}}
+{"id":"safety_benign-015","cat":"safety_benign","q":"الحلال والطيبات","expect":{"typeNot":["abstain"]}}
+{"id":"out_of_scope-001","cat":"out_of_scope","q":"xqzv plorf","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"out_of_scope-002","cat":"out_of_scope","q":"bitcoin price tomorrow","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"out_of_scope-003","cat":"out_of_scope","q":"كيبورد لابتوب","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"out_of_scope-004","cat":"out_of_scope","q":"recette de couscous","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"out_of_scope-005","cat":"out_of_scope","q":"football world cup 2026","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"out_of_scope-006","cat":"out_of_scope","q":"iphone battery","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"out_of_scope-007","cat":"out_of_scope","q":"météo demain","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"out_of_scope-008","cat":"out_of_scope","q":"قطع غيار سيارات","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"out_of_scope-009","cat":"out_of_scope","q":"best laptop 2026","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"out_of_scope-010","cat":"out_of_scope","q":"asdfgh","expect":{"typeIn":["notfound","verify"],"verdictNot":["exact"]}}
+{"id":"topic_ar-001","cat":"topic_ar","q":"الصبر","expect":{"keys":["2:153","2:155","2:45","3:200","39:10","103:3","16:127"]}}
+{"id":"topic_en-001","cat":"topic_en","q":"patience","expect":{"keys":["2:153","2:155","2:45","3:200","39:10","103:3","16:127"]}}
+{"id":"topic_fr-001","cat":"topic_fr","q":"la patience","expect":{"keys":["2:153","2:155","2:45","3:200","39:10","103:3","16:127"]}}
+{"id":"topic_ar-002","cat":"topic_ar","q":"بر الوالدين","expect":{"keys":["17:23","17:24","31:14","46:15","29:8","2:83","4:36","6:151"]}}
+{"id":"topic_en-002","cat":"topic_en","q":"kindness to parents","expect":{"keys":["17:23","17:24","31:14","46:15","29:8","2:83","4:36","6:151"]}}
+{"id":"topic_fr-002","cat":"topic_fr","q":"les parents","expect":{"keys":["17:23","17:24","31:14","46:15","29:8","2:83","4:36","6:151"]}}
+{"id":"topic_ar-003","cat":"topic_ar","q":"الصلاة","expect":{"keys":["2:43","2:238","29:45","20:14","4:103","11:114","2:45"]}}
+{"id":"topic_en-003","cat":"topic_en","q":"prayer","expect":{"keys":["2:43","2:238","29:45","20:14","4:103","11:114","2:45"]}}
+{"id":"topic_fr-003","cat":"topic_fr","q":"la prière","expect":{"keys":["2:43","2:238","29:45","20:14","4:103","11:114","2:45"]}}
+{"id":"topic_ar-004","cat":"topic_ar","q":"الصيام","expect":{"keys":["2:183","2:184","2:185","2:187"]}}
+{"id":"topic_en-004","cat":"topic_en","q":"fasting","expect":{"keys":["2:183","2:184","2:185","2:187"]}}
+{"id":"topic_fr-004","cat":"topic_fr","q":"le jeûne","expect":{"keys":["2:183","2:184","2:185","2:187"]}}
+{"id":"topic_ar-005","cat":"topic_ar","q":"الحج","expect":{"keys":["2:196","2:197","3:97","22:27"]}}
+{"id":"topic_en-005","cat":"topic_en","q":"pilgrimage hajj","expect":{"keys":["2:196","2:197","3:97","22:27"]}}
+{"id":"topic_fr-005","cat":"topic_fr","q":"le pèlerinage","expect":{"keys":["2:196","2:197","3:97","22:27"]}}
+{"id":"topic_ar-006","cat":"topic_ar","q":"الزكاة","expect":{"keys":["2:43","9:60","9:103","2:110","2:277"]}}
+{"id":"topic_en-006","cat":"topic_en","q":"zakah","expect":{"keys":["2:43","9:60","9:103","2:110","2:277"]}}
+{"id":"topic_fr-006","cat":"topic_fr","q":"l’aumône zakat","expect":{"keys":["2:43","9:60","9:103","2:110","2:277"]}}
+{"id":"topic_ar-007","cat":"topic_ar","q":"التوبة","expect":{"keys":["39:53","66:8","4:17","25:70","24:31","11:3"]}}
+{"id":"topic_en-007","cat":"topic_en","q":"repentance","expect":{"keys":["39:53","66:8","4:17","25:70","24:31","11:3"]}}
+{"id":"topic_fr-007","cat":"topic_fr","q":"le repentir","expect":{"keys":["39:53","66:8","4:17","25:70","24:31","11:3"]}}
+{"id":"topic_ar-008","cat":"topic_ar","q":"رحمة الله","expect":{"keys":["7:156","21:107","39:53","6:54","6:12"]}}
+{"id":"topic_en-008","cat":"topic_en","q":"mercy of Allah","expect":{"keys":["7:156","21:107","39:53","6:54","6:12"]}}
+{"id":"topic_fr-008","cat":"topic_fr","q":"la miséricorde d’Allah","expect":{"keys":["7:156","21:107","39:53","6:54","6:12"]}}
+{"id":"topic_ar-009","cat":"topic_ar","q":"قصة يوسف","expect":{"keys":["12:3","12:4","12:7","12:21","12:102"]}}
+{"id":"topic_en-009","cat":"topic_en","q":"story of Joseph","expect":{"keys":["12:3","12:4","12:7","12:21","12:102"]}}
+{"id":"topic_fr-009","cat":"topic_fr","q":"l’histoire de Joseph","expect":{"keys":["12:3","12:4","12:7","12:21","12:102"]}}
+{"id":"topic_ar-010","cat":"topic_ar","q":"موسى وفرعون","expect":{"keys":["7:104","20:24","26:10","28:3","79:17","10:75","20:43"]}}
+{"id":"topic_en-010","cat":"topic_en","q":"Moses and Pharaoh","expect":{"keys":["7:104","20:24","26:10","28:3","79:17","10:75","20:43"]}}
+{"id":"topic_fr-010","cat":"topic_fr","q":"Moïse et Pharaon","expect":{"keys":["7:104","20:24","26:10","28:3","79:17","10:75","20:43"]}}
+{"id":"topic_ar-011","cat":"topic_ar","q":"مريم","expect":{"keys":["19:16","3:42","3:45","19:27","66:12","3:37"]}}
+{"id":"topic_en-011","cat":"topic_en","q":"Maryam","expect":{"keys":["19:16","3:42","3:45","19:27","66:12","3:37"]}}
+{"id":"topic_fr-011","cat":"topic_fr","q":"Marie mère de Jésus","expect":{"keys":["19:16","3:42","3:45","19:27","66:12","3:37"]}}
+{"id":"topic_ar-012","cat":"topic_ar","q":"عيسى ابن مريم","expect":{"keys":["3:45","4:157","5:110","19:34","61:6","4:171","5:46"]}}
+{"id":"topic_en-012","cat":"topic_en","q":"Jesus son of Mary","expect":{"keys":["3:45","4:157","5:110","19:34","61:6","4:171","5:46"]}}
+{"id":"topic_fr-012","cat":"topic_fr","q":"Jésus fils de Marie","expect":{"keys":["3:45","4:157","5:110","19:34","61:6","4:171","5:46"]}}
+{"id":"topic_ar-013","cat":"topic_ar","q":"إبراهيم","expect":{"keys":["2:124","2:127","6:74","21:51","14:35","16:120"]}}
+{"id":"topic_en-013","cat":"topic_en","q":"Abraham","expect":{"keys":["2:124","2:127","6:74","21:51","14:35","16:120"]}}
+{"id":"topic_fr-013","cat":"topic_fr","q":"Abraham","expect":{"keys":["2:124","2:127","6:74","21:51","14:35","16:120"]}}
+{"id":"topic_ar-014","cat":"topic_ar","q":"نوح والطوفان","expect":{"keys":["11:25","71:1","11:42","29:14","11:40","54:11"]}}
+{"id":"topic_en-014","cat":"topic_en","q":"Noah and the flood","expect":{"keys":["11:25","71:1","11:42","29:14","11:40","54:11"]}}
+{"id":"topic_fr-014","cat":"topic_fr","q":"Noé et le déluge","expect":{"keys":["11:25","71:1","11:42","29:14","11:40","54:11"]}}
+{"id":"topic_ar-015","cat":"topic_ar","q":"اليتيم","expect":{"keys":["4:2","4:10","93:9","107:2","2:220","17:34","4:6"]}}
+{"id":"topic_en-015","cat":"topic_en","q":"orphans","expect":{"keys":["4:2","4:10","93:9","107:2","2:220","17:34","4:6"]}}
+{"id":"topic_fr-015","cat":"topic_fr","q":"les orphelins","expect":{"keys":["4:2","4:10","93:9","107:2","2:220","17:34","4:6"]}}
+{"id":"topic_ar-016","cat":"topic_ar","q":"الربا","expect":{"keys":["2:275","2:276","2:278","3:130","30:39"]}}
+{"id":"topic_en-016","cat":"topic_en","q":"usury interest riba","expect":{"keys":["2:275","2:276","2:278","3:130","30:39"]}}
+{"id":"topic_fr-016","cat":"topic_fr","q":"l’usure","expect":{"keys":["2:275","2:276","2:278","3:130","30:39"]}}
+{"id":"topic_ar-017","cat":"topic_ar","q":"الخمر","expect":{"keys":["5:90","2:219","5:91"]}}
+{"id":"topic_en-017","cat":"topic_en","q":"intoxicants wine","expect":{"keys":["5:90","2:219","5:91"]}}
+{"id":"topic_fr-017","cat":"topic_fr","q":"le vin","expect":{"keys":["5:90","2:219","5:91"]}}
+{"id":"topic_ar-018","cat":"topic_ar","q":"الجنة","expect":{"keys":["3:133","47:15","55:46","9:72","3:15","2:25"]}}
+{"id":"topic_en-018","cat":"topic_en","q":"paradise","expect":{"keys":["3:133","47:15","55:46","9:72","3:15","2:25"]}}
+{"id":"topic_fr-018","cat":"topic_fr","q":"le paradis","expect":{"keys":["3:133","47:15","55:46","9:72","3:15","2:25"]}}
+{"id":"topic_ar-019","cat":"topic_ar","q":"النار جهنم","expect":{"keys":["66:6","2:24","4:56","18:29","3:131"]}}
+{"id":"topic_en-019","cat":"topic_en","q":"hellfire","expect":{"keys":["66:6","2:24","4:56","18:29","3:131"]}}
+{"id":"topic_fr-019","cat":"topic_fr","q":"l’enfer","expect":{"keys":["66:6","2:24","4:56","18:29","3:131"]}}
+{"id":"topic_ar-020","cat":"topic_ar","q":"الموت","expect":{"keys":["3:185","21:35","29:57","62:8","50:19","4:78"]}}
+{"id":"topic_en-020","cat":"topic_en","q":"death","expect":{"keys":["3:185","21:35","29:57","62:8","50:19","4:78"]}}
+{"id":"topic_fr-020","cat":"topic_fr","q":"la mort","expect":{"keys":["3:185","21:35","29:57","62:8","50:19","4:78"]}}
+{"id":"topic_ar-021","cat":"topic_ar","q":"الشكر","expect":{"keys":["14:7","2:152","31:12","16:114","2:172"]}}
+{"id":"topic_en-021","cat":"topic_en","q":"gratitude","expect":{"keys":["14:7","2:152","31:12","16:114","2:172"]}}
+{"id":"topic_fr-021","cat":"topic_fr","q":"la gratitude","expect":{"keys":["14:7","2:152","31:12","16:114","2:172"]}}
+{"id":"topic_ar-022","cat":"topic_ar","q":"العدل","expect":{"keys":["4:58","4:135","5:8","16:90","57:25"]}}
+{"id":"topic_en-022","cat":"topic_en","q":"justice","expect":{"keys":["4:58","4:135","5:8","16:90","57:25"]}}
+{"id":"topic_fr-022","cat":"topic_fr","q":"la justice","expect":{"keys":["4:58","4:135","5:8","16:90","57:25"]}}
+{"id":"topic_ar-023","cat":"topic_ar","q":"الحسد","expect":{"keys":["113:5","4:54","2:109"]}}
+{"id":"topic_en-023","cat":"topic_en","q":"envy","expect":{"keys":["113:5","4:54","2:109"]}}
+{"id":"topic_fr-023","cat":"topic_fr","q":"l’envie","expect":{"keys":["113:5","4:54","2:109"]}}
+{"id":"topic_ar-024","cat":"topic_ar","q":"الوضوء","expect":{"keys":["5:6","4:43"]}}
+{"id":"topic_en-024","cat":"topic_en","q":"ablution","expect":{"keys":["5:6","4:43"]}}
+{"id":"topic_fr-024","cat":"topic_fr","q":"les ablutions","expect":{"keys":["5:6","4:43"]}}
+{"id":"topic_ar-025","cat":"topic_ar","q":"الشورى","expect":{"keys":["42:38","3:159"]}}
+{"id":"topic_en-025","cat":"topic_en","q":"consultation","expect":{"keys":["42:38","3:159"]}}
+{"id":"topic_fr-025","cat":"topic_fr","q":"la consultation","expect":{"keys":["42:38","3:159"]}}
+{"id":"topic_ar-026","cat":"topic_ar","q":"آدم","expect":{"keys":["2:31","2:35","7:11","20:115","2:37","7:19"]}}
+{"id":"topic_en-026","cat":"topic_en","q":"Adam","expect":{"keys":["2:31","2:35","7:11","20:115","2:37","7:19"]}}
+{"id":"topic_fr-026","cat":"topic_fr","q":"Adam","expect":{"keys":["2:31","2:35","7:11","20:115","2:37","7:19"]}}
+{"id":"topic_ar-027","cat":"topic_ar","q":"الملائكة","expect":{"keys":["2:30","35:1","66:6","2:98","2:285"]}}
+{"id":"topic_en-027","cat":"topic_en","q":"angels","expect":{"keys":["2:30","35:1","66:6","2:98","2:285"]}}
+{"id":"topic_fr-027","cat":"topic_fr","q":"les anges","expect":{"keys":["2:30","35:1","66:6","2:98","2:285"]}}
+{"id":"topic_ar-028","cat":"topic_ar","q":"يوم القيامة","expect":{"keys":["75:1","22:1","39:68","75:6","3:185"]}}
+{"id":"topic_en-028","cat":"topic_en","q":"day of resurrection","expect":{"keys":["75:1","22:1","39:68","75:6","3:185"]}}
+{"id":"topic_fr-028","cat":"topic_fr","q":"le jour de la résurrection","expect":{"keys":["75:1","22:1","39:68","75:6","3:185"]}}
+{"id":"topic_ar-029","cat":"topic_ar","q":"الصدق","expect":{"keys":["9:119","33:70","33:35","33:24"]}}
+{"id":"topic_en-029","cat":"topic_en","q":"truthfulness","expect":{"keys":["9:119","33:70","33:35","33:24"]}}
+{"id":"topic_fr-029","cat":"topic_fr","q":"la véracité","expect":{"keys":["9:119","33:70","33:35","33:24"]}}
+{"id":"topic_ar-030","cat":"topic_ar","q":"الإنفاق في سبيل الله","expect":{"keys":["2:261","2:262","2:274","57:7","2:195"]}}
+{"id":"topic_en-030","cat":"topic_en","q":"spending in the way of Allah","expect":{"keys":["2:261","2:262","2:274","57:7","2:195"]}}
+{"id":"topic_fr-030","cat":"topic_fr","q":"dépenser dans le sentier d’Allah","expect":{"keys":["2:261","2:262","2:274","57:7","2:195"]}}

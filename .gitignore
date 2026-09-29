@@ -1,0 +1,8 @@
+.dev.vars
+node_modules/
+.wrangler/
+*.log
+data_build/cache/*.json
+!data_build/cache/manifest.json
+docs/logo.png
+eval/results/run.log

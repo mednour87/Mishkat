@@ -1,0 +1,45 @@
+{
+ "date": "2026-09-29T06:36:12.624Z",
+ "results": {
+  "openai/gpt-oss-120b": {
+   "items": 23,
+   "validJson": "18/36",
+   "rejectedByVerifier": 0,
+   "providerErrors": 18,
+   "topicHit10": "14/18",
+   "paragraphChosenByLLM": "1/18",
+   "criticalAbstain": "5/5",
+   "avgLatencyMs": 574
+  },
+  "qwen/qwen3.8-27b": {
+   "items": 23,
+   "validJson": "21/36",
+   "rejectedByVerifier": 0,
+   "providerErrors": 15,
+   "topicHit10": "15/18",
+   "paragraphChosenByLLM": "3/18",
+   "criticalAbstain": "5/5",
+   "avgLatencyMs": 347
+  },
+  "openai/gpt-oss-20b": {
+   "items": 23,
+   "validJson": "20/36",
+   "rejectedByVerifier": 0,
+   "providerErrors": 16,
+   "topicHit10": "14/18",
+   "paragraphChosenByLLM": "2/18",
+   "criticalAbstain": "5/5",
+   "avgLatencyMs": 473
+  },
+  "allam-2-7b": {
+   "items": 23,
+   "validJson": "18/36",
+   "rejectedByVerifier": 0,
+   "providerErrors": 18,
+   "topicHit10": "15/18",
+   "paragraphChosenByLLM": "0/18",
+   "criticalAbstain": "5/5",
+   "avgLatencyMs": 250
+  }
+ }
+}

@@ -1,0 +1,80 @@
+{
+ "quranenc_meta.json": {
+  "url": "https://quranenc.com/api/v1/translations/list",
+  "sha256": "fe39eba0d862f77d198c720e43fba0a24a9a7481604a855eb29fedd63e495cf2",
+  "bytes": 1665,
+  "fetched": "2026-09-28T22:19:40.561950Z"
+ },
+ "quranenc_arabic_mokhtasar.json": {
+  "url": "https://quranenc.com/api/v1/translation/sura/arabic_mokhtasar/<1..114>",
+  "sha256": "b3604aabc1e9e0a20933354b0d434b9044b53ec4812ba9668756d5cbc185fdab",
+  "bytes": 2090041,
+  "fetched": "2026-09-28T22:20:18.967006Z"
+ },
+ "quranenc_arabic_moyassar.json": {
+  "url": "https://quranenc.com/api/v1/translation/sura/arabic_moyassar/<1..114>",
+  "sha256": "263252f2054fd35986b44d1b447fddd67c3afb51f9e8e031552b729c8cff2db9",
+  "bytes": 2686975,
+  "fetched": "2026-09-28T22:20:57.337420Z"
+ },
+ "quranenc_english_mokhtasar.json": {
+  "url": "https://quranenc.com/api/v1/translation/sura/english_mokhtasar/<1..114>",
+  "sha256": "608a18b7a3536cd4fdf905c30dae8cbe4980e65276f875193e20a24e71101635",
+  "bytes": 1948866,
+  "fetched": "2026-09-28T22:21:37.230757Z"
+ },
+ "quranenc_french_mokhtasar.json": {
+  "url": "https://quranenc.com/api/v1/translation/sura/french_mokhtasar/<1..114>",
+  "sha256": "391c6ba82d5f7832bc3bf6419f50c56d1d938bfce45cbd08a1acc48a52fa8fa8",
+  "bytes": 2078571,
+  "fetched": "2026-09-28T22:22:16.429419Z"
+ },
+ "quranenc_english_saheeh.json": {
+  "url": "https://quranenc.com/api/v1/translation/sura/english_saheeh/<1..114>",
+  "sha256": "dae882842cb3eed2620c7f018102e15aedf6fa90273e5ceb6551fa3ee7384119",
+  "bytes": 1221895,
+  "fetched": "2026-09-28T22:22:54.846880Z"
+ },
+ "quranenc_french_rashid.json": {
+  "url": "https://quranenc.com/api/v1/translation/sura/french_rashid/<1..114>",
+  "sha256": "ac8a9655ebf94e7bbc408df31f6035ff455ac51eab4808a45b13a255877aee6f",
+  "bytes": 1366405,
+  "fetched": "2026-09-28T22:23:33.022883Z"
+ },
+ "qurancom_chapters_en.json": {
+  "url": "https://api.quran.com/api/v4/chapters?language=en",
+  "sha256": "17ee86c8cf7ef5e8d2dac97ad171f8746e80a10e10cbd6f0ac47021532023e99",
+  "bytes": 30450,
+  "fetched": "2026-09-28T22:23:33.625743Z"
+ },
+ "qurancom_chapters_fr.json": {
+  "url": "https://api.quran.com/api/v4/chapters?language=fr",
+  "sha256": "184a6e0714bde026da8a62f27844ba808ac8af4ebce050625e28eb9c6767de65",
+  "bytes": 30225,
+  "fetched": "2026-09-28T22:23:33.661356Z"
+ },
+ "qurancom_chapters_ar.json": {
+  "url": "https://api.quran.com/api/v4/chapters?language=ar",
+  "sha256": "0c1da2cbe4a3c73e2e1c78ec00eac9cd7164fb0800d50143522cf1e6d36059a1",
+  "bytes": 30475,
+  "fetched": "2026-09-28T22:23:35.341615Z"
+ },
+ "qurancom_imlaei.json": {
+  "url": "https://api.quran.com/api/v4/quran/verses/imlaei?chapter_number=<1..114>",
+  "sha256": "ff29576f50bb6f6f68370fbf2fdc429bc76074330c87cb878ead42dd7ae51cc6",
+  "bytes": 1441551,
+  "fetched": "2026-09-28T22:23:52.796822Z"
+ },
+ "qurancom_tafsir_saadi.json": {
+  "url": "https://api.quran.com/api/v4/tafsirs/91/by_chapter/<1..114>",
+  "sha256": "fc338754349fcde692a9d42c84411dd0e9a66ec900c1a88f11284ca087d578cf",
+  "bytes": 7044738,
+  "fetched": "2026-09-29T06:25:02.845975+00:00"
+ },
+ "qurancom_segments_alafasy.json": {
+  "url": "https://api.quran.com/api/v4/verses/by_chapter/<1..114>?audio=7",
+  "sha256": "d736500e85e23a9d26a2002f43f77e755c74830d8c31d60cfc35a96dcb48a33d",
+  "bytes": 1506611,
+  "fetched": "2026-09-29T06:25:30.673092+00:00"
+ }
+}
