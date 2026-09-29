@@ -36,6 +36,7 @@ md += `| Latency p50 / p95 (ms, in-process; AI mode includes network) | ${names.
 md += `**Stability:** ${stability.identical}/${R.n} items return identical verse lists over ${stability.runs} repeated runs of the deterministic engine.\n\n`;
 if (llmInfo) md += `**AI-augmented mode** (chain ${llmInfo.models.join(' → ')}; ${llmInfo.n} topic & safety items): LLM used on ${llmInfo.used} items (${Object.entries(llmInfo.modelUse).map(([k, v]) => `${k}: ${v}`).join(', ')}), paragraph chosen by the LLM on ${llmInfo.paragraphByLLM}, ${llmInfo.rejected} out-of-list ids rejected by the verifier, ${llmInfo.errors} provider errors (each fell back to the deterministic path). Pass on these items: deterministic ${llmInfo.detPassSameItems}/${llmInfo.n} → AI-augmented ${llmInfo.llmPass}/${llmInfo.n}.\n\n`;
 else md += `**AI-augmented mode:** not run (no GROQ_API_KEY).\n\n`;
+if (llmInfo && llmInfo.note) md += `> ${llmInfo.note}\n\n`;
 for (const m of names.filter(x => x !== 'baseline_keyword')) {
   const fails = rows[m].filter(r => !r.pass);
   md += `### Remaining failures — ${LABEL[m] || m} (${fails.length})\n\n`;

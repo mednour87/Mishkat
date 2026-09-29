@@ -16,7 +16,8 @@ intent: "ruling" if the user asks whether something is halal/haram/permissible/o
 
 const SYS_EXPAND = `${RULES}
 Task: understand the query and propose search keywords that would appear in the Quran text or in classical tafsir (Al-Muyassar, Al-Mukhtasar) for this topic.
-Return {"intent":"...","keywords":{"ar":[up to 6 Arabic words or short phrases, classical vocabulary, without diacritics],"en":[up to 5],"fr":[up to 5]}}.
+Also list up to 8 verse references "sura:aya" that you believe are central to this topic (they will be checked against the real text; wrong ones are discarded).
+Return {"intent":"...","keywords":{"ar":[up to 6 Arabic words or short phrases, classical vocabulary, without diacritics],"en":[up to 5],"fr":[up to 5]},"refs":["17:23",...]}.
 Keywords must be single words or 2-word phrases, no sentences.`;
 
 const SYS_SELECT = `${RULES}
@@ -85,20 +86,27 @@ export function validateExpansion(raw) {
   const obj = parseJson(raw);
   const kw = obj.keywords && typeof obj.keywords === 'object' ? obj.keywords : {};
   const clean = (a) => (Array.isArray(a) ? a : []).map(x => String(x).trim().slice(0, 30)).filter(x => x && x.split(/\s+/).length <= 3).slice(0, 6);
-  return { intent: INTENTS.includes(obj.intent) ? obj.intent : 'topic', keywords: { ar: clean(kw.ar), en: clean(kw.en), fr: clean(kw.fr) } };
+  const refs = (Array.isArray(obj.refs) ? obj.refs : []).map(x => String(x).trim()).filter(x => ID_RE.test(x)).slice(0, 8);
+  return { intent: INTENTS.includes(obj.intent) ? obj.intent : 'topic', keywords: { ar: clean(kw.ar), en: clean(kw.en), fr: clean(kw.fr) }, refs };
 }
 
-async function callOpenAICompat({ url, key, model, messages, timeoutMs = 12000, fetchImpl = fetch }) {
+async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, fetchImpl = fetch }) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const body = { model, messages, temperature: 0, max_tokens: 900, response_format: { type: 'json_object' } };
     if (/gpt-oss/.test(model)) body.reasoning_effort = 'low';
-    const r = await fetchImpl(url, {
+    const send = () => fetchImpl(url, {
       method: 'POST', signal: ctrl.signal,
       headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` },
       body: JSON.stringify(body),
     });
+    let r = await send();
+    if (r.status === 429) { // free-tier rate limit: retry once only if the wait is short
+      const ra = parseFloat(r.headers && r.headers.get ? r.headers.get('retry-after') : '');
+      if (!(ra > 2)) { await new Promise(res => setTimeout(res, (ra || 1) * 1000)); r = await send(); }
+    }
+    if (r.status === 429) { const e = new Error(`${model} HTTP 429`); e.quota = true; throw e; }
     if (!r.ok) throw new Error(`${model} HTTP ${r.status}`);
     const j = await r.json();
     return j.choices[0].message.content;
@@ -116,16 +124,24 @@ export function providers(env) {
   return out;
 }
 
+// per-model circuit breaker: a model that returned 429 is skipped for 2 minutes
+const coolDown = new Map();
+export function resetCoolDown() { coolDown.clear(); }
+
 async function run(kind, body, env, fetchImpl) {
   const p = sanitizePayload(body, kind);
   const messages = buildMessages(p, kind);
   const errors = [];
   for (const pr of providers(env)) {
+    if ((coolDown.get(pr.model) || 0) > Date.now()) { errors.push(`${pr.model} cooling down`); continue; }
     try {
       const raw = await callOpenAICompat({ ...pr, messages, fetchImpl });
       const v = kind === 'expand' ? validateExpansion(raw) : validateOutput(raw, p.candidates, p.sentences);
       return { ok: true, model: pr.model, ...v };
-    } catch (e) { errors.push(String(e.message || e)); }
+    } catch (e) {
+      errors.push(String(e.message || e));
+      if (e.quota) coolDown.set(pr.model, Date.now() + 120000);
+    }
   }
   return kind === 'expand'
     ? { ok: false, errors, intent: 'topic', keywords: { ar: [], en: [], fr: [] } }

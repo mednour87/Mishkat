@@ -1,0 +1,116 @@
+
+=== بر الوالدين  [topic] llm={"used":true,"model":"openai/gpt-oss-120b"} n=5
+  ¶ 17:23: وأَمَر ربك -أيها الإنسان- وألزم وأوجب أن يفرد سبحانه وتعالى وحده بالعبادة، وأمر بالإحسان إلى الأب والأم، وبخاصة حالةُ الشيخوخة، فلا تضجر ولا تستثقل شيئًا تراه م
+  ¶ 31:14: وأَمَرْنا الإنسان ببرِّ والديه والإحسان إليهما، حَمَلَتْه أمه ضعفًا على ضعف، وحمله وفِطامه عن الرضاعة في مدة عامين، وقلنا له: اشكر لله، ثم اشكر لوالديك، إليَّ ا
+  ¶ 2:83: واذكروا يا بني إسرائيل حين أخَذْنا عليكم عهدًا مؤكدًا: بأن تعبدوا الله وحده لا شريك له، وأن تحسنوا للوالدين، وللأقربين، وللأولاد الذين مات آباؤهم وهم دون بلوغ ا
+  ¶ 6:151: قل -أيها الرسول- لهم: تعالوا أتل ما حرم ربكم عليكم: أن لا تشركوا معه شيئًا من مخلوقاته في عبادته، بل اصرفوا جميع أنواع العبادة له وحده، كالخوف والرجاء والدعاء، 
+  - 17:23   وأَمَر ربك -أيها الإنسان- وألزم وأوجب أن يفرد سبحانه وتعالى وحده بالعبادة، وأمر بالإحسان إلى الأب والأم، وبخاص
+  - 31:14   وأَمَرْنا الإنسان ببرِّ والديه والإحسان إليهما، حَمَلَتْه أمه ضعفًا على ضعف، وحمله وفِطامه عن الرضاعة في مدة ع
+  - 2:83    واذكروا يا بني إسرائيل حين أخَذْنا عليكم عهدًا مؤكدًا: بأن تعبدوا الله وحده لا شريك له، وأن تحسنوا للوالدين، و
+  - 6:151   قل -أيها الرسول- لهم: تعالوا أتل ما حرم ربكم عليكم: أن لا تشركوا معه شيئًا من مخلوقاته في عبادته، بل اصرفوا جم
+  - 31:15   وإن جاهدك -أيها الولد المؤمن- والداك على أن تشرك بي غيري في عبادتك إياي مما ليس لك به عِلم، أو أمراك بمعصية مِ
+
+=== mercy of Allah  [topic] llm={"used":true,"model":"openai/gpt-oss-120b"} n=10
+  ¶ 1:1: These last two names of Allah are derived from the Arabic word raḥmah, which means mercy: proving the greatness and vastness of His Mercy and that His Mercy sur
+  ¶ 55:1: The Merciful one, possessor of vast mercy.
+  ¶ 39:53: Say - O Messenger, to My servants who have gone beyond the limit against themselves by ascribing partners to Allah and committing sins: Do not lose hope of Alla
+  ¶ 27:46: Salih (peace be upon him) said: “why do you seek to hasten the punishment instead of seeking Allah's mercy?
+  - 1:1     I begin by calling on Allah, Who is Ar-Raḥmān, the Merciful, and Ar-Raḥīm, the Compassionate. These last two n
+  - 55:1    The Merciful one, possessor of vast mercy.
+  - 39:53   Say - O Messenger, to My servants who have gone beyond the limit against themselves by ascribing partners to A
+  - 27:46   Salih (peace be upon him) said: “why do you seek to hasten the punishment instead of seeking Allah's mercy? Wh
+  - 29:21   He punishes whom He wishes from His creation through His justice, and He has mercy on whom He wishes amongst H
+  - 10:58   Say, O Messenger, to the people: The Qur’ān that Muhammad (peace be upon him) brought to you is Allah’s grace 
+  - 24:20   Had it not been for Allah’s grace upon you, O you who fell into the slander, and His mercy on You, and had it 
+  - 23:118  Say - O Messenger: “O Lord, forgive my sins, grant me Your mercy, and You are the best of those who show mercy
+  - 4:96    This reward will be ranks of loftiness and positions in the Paradise, one above the other, together with forgi
+  - 6:54    When those who accept My signs that indicate the truth of what you have brought come to you, O Messenger, then
+
+=== la mort  [topic] llm={"used":true,"model":"openai/gpt-oss-120b"} n=10
+  ¶ 3:185: Toute âme, quelle qu’elle soit, doit nécessairement goûter à la mort.
+  ¶ 39:30: Ô Messager, tu mourras certainement un jour et eux aussi mourront.
+  ¶ 6:60: Allah est Celui qui saisit temporairement vos âmes lorsque vous dormez et Il est Celui qui sait ce que vous accomplissez durant la journée lorsque vous êtes act
+  ¶ 67:2: Celui qui créa la mort et la vie afin de vous éprouver, ô gens, et savoir qui de vous accomplit les meilleures œuvres.
+  - 3:185   Toute âme, quelle qu’elle soit, doit nécessairement goûter à la mort. Qu’aucune créature ne soit donc trompée 
+  - 39:30   Ô Messager, tu mourras certainement un jour et eux aussi mourront.
+  - 67:2    Celui qui créa la mort et la vie afin de vous éprouver, ô gens, et savoir qui de vous accomplit les meilleures
+  - 6:60    Allah est Celui qui saisit temporairement vos âmes lorsque vous dormez et Il est Celui qui sait ce que vous ac
+  - 75:3    L’être humain croit-il que nous ne rassemblerons pas ses os après sa mort en vue de le ressusciter?
+  - 2:156   Ceux qui, lorsqu’ils sont atteints par un des malheurs précédemment énumérés, disent tout en étant satisfaits 
+  - 23:115  Ô gens, croyez-vous que Nous vous avons créés vainement sans raison et que, comme les animaux, vous n’aurez dr
+  - 44:56   Ils y demeureront éternellement et ne goûterons plus à la mort, exception faite de la première mort dans le ba
+  - 50:43   C’est Nous qui faisons revivre les morts, c’est Nous qui faisons mourir les vivants et personne d’autre que No
+  - 79:14   C’est alors que tous les morts qui étaient inhumés redeviendront vivants.
+
+=== gratitude  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=6
+  ¶ 14:7: Moses said to them: Remember when your Lord clearly announced to you: If you are grateful to Allah for the above-mentioned favours that He has blessed you with,
+  ¶ 14:7: But, if you deny His favours to you and do not show gratitude for them, His punishment is severe for those who deny His favours and are not grateful for them.
+  ¶ 31:12: Be grateful to your Lord for the blessing of being able to obey Him He has bestowed upon you.
+  ¶ 16:114: So eat - O people - of the lawful and wholesome things that Allah, may He be glorified, has provided for you, and be thankful for the blessings Allah has given 
+  - 14:7    Moses said to them: Remember when your Lord clearly announced to you: If you are grateful to Allah for the abo
+  - 31:12   Verily, I granted Luqman the understanding of religion and correctness in matters, and I told him, “O Luqman! 
+  - 16:114  So eat - O people - of the lawful and wholesome things that Allah, may He be glorified, has provided for you, 
+  - 2:152   So, remember Allah with your hearts and your whole beings, and He will remember you with approval and protecti
+  - 25:62   It is Allah who made the night and day follow and replace each other, for anyone who wishes to take a lesson f
+  - 56:82   And do you show your gratitude to Allah for the blessings He has provided you with, by rejecting Him and attri
+
+=== رحمة الله  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=12
+  ¶ 55:1: الرحمن علَّم الإنسان القرآن؛
+  ¶ 39:53: قل -أيها الرسول- لعبادي الذين تمادَوا في المعاصي، وأسرفوا على أنفسهم بإتيان ما تدعوهم إليه نفوسهم من الذنوب: لا تَيْئسوا من رحمة الله؛
+  ¶ 21:107: وما أرسلناك - أيها الرسول - إلا رحمة لجميع الناس، فمن آمن بك سَعِد ونجا، ومن لم يؤمن خاب وخسر.
+  ¶ 6:54: وإذا جاءك -أيها النبي- الذين صَدَّقوا بآيات الله الشاهدة على صدقك من القرآن وغيره مستفتين عن التوبة من ذنوبهم السابقة، فأكرِمْهم بردِّ السلام عليهم، وبَشِّرهم ب
+  - 55:1    الرحمن علَّم الإنسان القرآن؛ بتيسير تلاوته وحفظه وفهم معانيه.
+  - 39:53   قل -أيها الرسول- لعبادي الذين تمادَوا في المعاصي، وأسرفوا على أنفسهم بإتيان ما تدعوهم إليه نفوسهم من الذنوب: ل
+  - 21:107  وما أرسلناك - أيها الرسول - إلا رحمة لجميع الناس، فمن آمن بك سَعِد ونجا، ومن لم يؤمن خاب وخسر.
+  - 6:54    وإذا جاءك -أيها النبي- الذين صَدَّقوا بآيات الله الشاهدة على صدقك من القرآن وغيره مستفتين عن التوبة من ذنوبهم 
+  - 57:9    هو الذي ينزل على عبده محمد صلى الله عليه وسلم آيات مفصلات واضحات من القرآن؛ ليخرجكم بذلك من ظلمة الكفر إلى نور
+  - 27:77   وإن هذا القرآن لهداية من الضلال ورحمة من العذاب، لمن صدَّق به واهتدى بهداه.
+  - 31:3    هذه الآيات هدى ورحمة للذين أحسنوا العمل بما أنزل الله في القرآن، وما أمرهم به رسوله محمد صلى الله عليه وسلم.
+  - 15:56   قال: لا ييئس من رحمة ربه إلا الخاطئون المنصرفون عن طريق الحق. قال: فما الأمر الخطير الذي جئتم من أجله -أيها ال
+  - 11:9    ولئن أعطينا الإنسان مِنَّا نعمة من صحة وأمن وغيرهما، ثم سلبناها منه، إنه لَشديد اليأس من رحمة الله، جَحود بالن
+  - 17:100  قل -أيها الرسول- لهؤلاء المشركين: لو كنتم تملكون خزائن رحمة ربي التي لا تنفد ولا تبيد إذًا لبخلتم بها، فلم تعط
+
+=== honesty  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=7
+  ¶ 33:70: Be mindful of Allah by fulfilling His commands and refrain from that which He has prohibited, and speak correctly and truthfully.
+  ¶ 4:58: Allah instructs you, O believers, to return things in your care to the people who own them.
+  ¶ 44:13: How can they take heed and repent to their Lord now, when a clear Messenger came to them before, and they knew of his truthfulness and honesty?
+  ¶ 5:119: Allah will say to Jesus (peace be with him) that the Day of Rising is a day on which the truthfulness of those who were true in their intentions, statements and
+  - 33:70   O those who have faith in Allah and do whatever Allah has legislated for them! Be mindful of Allah by fulfilli
+  - 4:58    Allah instructs you, O believers, to return things in your care to the people who own them. He instructs you, 
+  - 6:152   He has prohibited you from becoming involved with the wealth of orphans – those who lose their father before m
+  - 44:13   How can they take heed and repent to their Lord now, when a clear Messenger came to them before, and they knew
+  - 23:69   Or is it that they do not recognise Muhammad peace be upon him whom Allah has sent to them, and so they reject
+  - 5:119   Allah will say to Jesus (peace be with him) that the Day of Rising is a day on which the truthfulness of those
+  - 6:115   The word of your Lord – namely the Qur’ān – is complete in the truthfulness of its statements and the justice 
+
+=== الصبر  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=12
+  ¶ 2:153: يا أيها المؤمنون اطلبوا العون من الله في كل أموركم: بالصبر على النوائب والمصائب، وبالصبر على ترك المعاصي والذنوب، والصبر على الطاعات والقربات، وبالصلاة التي تطم
+  ¶ 2:153: إن الله مع الصابرين بعونه وتوفيقه وتسديده.
+  ¶ 42:43: ولمن صبر على الأذى، وقابل الإساءة بالعفو والصفح والسَّتر، إن ذلك من عزائم الأمور المشكورة والأفعال الحميدة التي أمر الله بها، ورتَّب لها ثوابًا جريلا وثناءً حمي
+  ¶ 94:5: فإن مع الضيق فرجًا، إن مع الضيق فرجًا.
+  - 2:153   يا أيها المؤمنون اطلبوا العون من الله في كل أموركم: بالصبر على النوائب والمصائب، وبالصبر على ترك المعاصي والذن
+  - 2:45    واستعينوا في كل أموركم بالصبر بجميع أنواعه، وكذلك الصلاة. وإنها لشاقة إلا على الخاشعين.
+  - 3:200   يا أيها الذين صدَّقوا الله ورسوله وعملوا بشرعه اصبروا على طاعة ربكم، وعلى ما ينزل بكم من ضر وبلاء، وصابروا أعد
+  - 16:126  وإن أردتم -أيها المؤمنون- القصاص ممن اعتدوا عليكم، فلا تزيدوا عما فعلوه بكم، ولئن صبرتم لهو خير لكم في الدنيا 
+  - 42:43   ولمن صبر على الأذى، وقابل الإساءة بالعفو والصفح والسَّتر، إن ذلك من عزائم الأمور المشكورة والأفعال الحميدة الت
+  - 94:5    فلا يَثْنِكَ أذى أعدائك عن نشر الرسالة؛ فإن مع الضيق فرجًا، إن مع الضيق فرجًا.
+  - 103:3   إلا الذين آمنوا بالله وعملوا عملا صالحًا، وأوصى بعضهم بعضًا بالاستمساك بالحق، والعمل بطاعة الله، والصبر على ذل
+  - 16:42   هؤلاء المهاجرون في سبيل الله هم الذين صبروا على أوامر الله وعن نواهيه وعلى أقداره المؤلمة، وعلى ربهم وحده يعتم
+  - 31:17   يا بنيَّ أقم الصلاة تامة بأركانها وشروطها وواجباتها، وأْمر بالمعروف، وانْه عن المنكر بلطفٍ ولينٍ وحكمة بحسب جه
+  - 13:22   وهم الذين صبروا على الأذى وعلى الطاعة، وعن المعصية طلبًا لرضا ربهم، وأدَّوا الصلاة على أتمِّ وجوهها، وأدَّوا م
+
+=== قصة يوسف  [topic] llm={"used":true,"model":"openai/gpt-oss-20b"} n=12
+  ¶ 12:4: اذكر -أيها الرسول- لقومك قول يوسف لأبيه: إني رأيت في المنام أحد عشر كوكبًا، والشمس والقمر رأيتهم لي ساجدين.
+  ¶ 12:7: لقد كان في قصة يوسف وإخوته عبر وأدلة تدل على قدرة الله وحكمته لمن يسأل عن أخبارهم، ويرغب في معرفتها.
+  ¶ 12:21: ولما ذهب المسافرون بيوسف إلى «مصر» اشتراه منهم عزيزها، وهو الوزير، وقال لامرأته: أحسني معاملته، واجعلي مقامه عندنا كريمًا، لعلنا نستفيد من خدمته، أو نقيمه عندنا
+  ¶ 12:42: وقال يوسف للذي علم أنه ناجٍ من صاحبيه: اذكرني عند سيِّدك الملك وأخبره بأني مظلوم محبوس بلا ذنب، فأنسى الشيطان ذلك الرجل أن يذكر للملك حال يوسف، فمكث يوسف بعد ذل
+  - 12:4    اذكر -أيها الرسول- لقومك قول يوسف لأبيه: إني رأيت في المنام أحد عشر كوكبًا، والشمس والقمر رأيتهم لي ساجدين. فك
+  - 12:7    لقد كان في قصة يوسف وإخوته عبر وأدلة تدل على قدرة الله وحكمته لمن يسأل عن أخبارهم، ويرغب في معرفتها.
+  - 12:19   وجاءت جماعة من المسافرين، فأرسلوا مَن يطلب لهم الماء، فلما أرسل دلوه في البئر تعلَّق بها يوسف، ففرح وارد الماء
+  - 12:21   ولما ذهب المسافرون بيوسف إلى «مصر» اشتراه منهم عزيزها، وهو الوزير، وقال لامرأته: أحسني معاملته، واجعلي مقامه ع
+  - 12:36   ودخل السجن مع يوسف فَتَيان، قال أحدهما: إني رأيت في المنام أني أعصر عنبًا ليصير خمرًا، وقال الآخر: إني رأيت أن
+  - 12:43   وقال الملك: إني رأيت في منامي سبع بقرات سمان، يأكلهن سبع بقرات نحيلات من الهُزال، ورأيت سبع سنبلات خضر، وسبع س
+  - 12:58   وقدِمَ إخوة يوسف إلى «مصر» -بعد أن حلَّ بهم الجدب في أرضهم-; ليجلبوا منها الطعام، فدخلوا عليه فعرفهم، ولم يعرف
+  - 12:42   وقال يوسف للذي علم أنه ناجٍ من صاحبيه: اذكرني عند سيِّدك الملك وأخبره بأني مظلوم محبوس بلا ذنب، فأنسى الشيطان 
+  - 12:69   ولما دخل إخوة يوسف عليه في منزل ضيافته ومعهم شقيقه، ضم يوسف إليه شقيقه، وقال له سرًا: إني أنا أخوك فلا تحزن، و
+  - 12:33   قال يوسف مستعيذًا مِن شرهن ومكرهن: يا ربِّ السجنُ أحب إليَّ مما يدعونني إليه من عمل الفاحشة، وإن لم تدفع عني م

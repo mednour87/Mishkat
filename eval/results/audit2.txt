@@ -1,0 +1,206 @@
+
+=== بر الوالدين  [topic] llm={"used":true,"model":"openai/gpt-oss-120b"} n=3
+  ¶ 6:151: قل -أيها الرسول- لهم: تعالوا أتل ما حرم ربكم عليكم: أن لا تشركوا معه شيئًا من مخلوقاته في عبادته، بل اصرفوا جميع أنواع العبادة له وحده، كالخوف والرجاء والدعاء، 
+  ¶ 17:25: ربكم -أيها الناس- أعلم بما في ضمائركم من خير وشر.
+  - 6:151   قل -أيها الرسول- لهم: تعالوا أتل ما حرم ربكم عليكم: أن لا تشركوا معه شيئًا من مخلوقاته في عبادته، بل اصرفوا جم
+  - 17:25   ربكم -أيها الناس- أعلم بما في ضمائركم من خير وشر. إن تكن إرادتكم ومقاصدكم مرضاة الله وما يقربكم إليه، فإنه كان
+  - 31:15   وإن جاهدك -أيها الولد المؤمن- والداك على أن تشرك بي غيري في عبادتك إياي مما ليس لك به عِلم، أو أمراك بمعصية مِ
+
+=== رحمة الله  [topic] llm={"used":true,"model":"openai/gpt-oss-120b"} n=12
+  ¶ 1:1: (الرَّحْمَنِ) ذي الرحمة العامة الذي وسعت رحمته جميع الخلق، (الرَّحِيمِ) بالمؤمنين، وهما اسمان من أسمائه تعالى، يتضمنان إثبات صفة الرحمة لله تعالى كما يليق بجلال
+  ¶ 2:163: وإلهكم -أيها الناس- إله واحد متفرد في ذاته وأسمائه وصفاته وأفعاله وعبودية خلقه له، لا معبود بحق إلا هو، الرحمن المتصف بالرحمة في ذاته وأفعاله لجميع الخلق، الرحي
+  ¶ 21:107: وما أرسلناك - أيها الرسول - إلا رحمة لجميع الناس، فمن آمن بك سَعِد ونجا، ومن لم يؤمن خاب وخسر.
+  ¶ 39:53: قل -أيها الرسول- لعبادي الذين تمادَوا في المعاصي، وأسرفوا على أنفسهم بإتيان ما تدعوهم إليه نفوسهم من الذنوب: لا تَيْئسوا من رحمة الله؛
+  - 2:163   وإلهكم -أيها الناس- إله واحد متفرد في ذاته وأسمائه وصفاته وأفعاله وعبودية خلقه له، لا معبود بحق إلا هو، الرحمن
+  - 41:2    هذا القرآن الكريم تنزيل من الرحمن الرحيم، نزَّله على نبيه محمد صلى الله عليه وسلم.
+  - 21:107  وما أرسلناك - أيها الرسول - إلا رحمة لجميع الناس، فمن آمن بك سَعِد ونجا، ومن لم يؤمن خاب وخسر.
+  - 55:1    الرحمن علَّم الإنسان القرآن؛ بتيسير تلاوته وحفظه وفهم معانيه.
+  - 39:53   قل -أيها الرسول- لعبادي الذين تمادَوا في المعاصي، وأسرفوا على أنفسهم بإتيان ما تدعوهم إليه نفوسهم من الذنوب: ل
+  - 2:157   أولئك الصابرون لهم ثناء من ربهم ورحمة عظيمة منه سبحانه، وأولئك هم المهتدون إلى الرشاد.
+  - 59:22   هو الله سبحانه وتعالى المعبود بحق الذي لا إله سواه، عالم السر والعلن، يعلم ما غاب وما حضر، هو الرحمن الذي وسعت
+  - 15:56   قال: لا ييئس من رحمة ربه إلا الخاطئون المنصرفون عن طريق الحق. قال: فما الأمر الخطير الذي جئتم من أجله -أيها ال
+  - 1:1     أبتدئ قراءة القرآن باسم الله مستعينا به، (اللهِ) علم على الرب -تبارك وتعالى- المعبود بحق دون سواه، وهو أخص أسم
+  - 27:77   وإن هذا القرآن لهداية من الضلال ورحمة من العذاب، لمن صدَّق به واهتدى بهداه.
+
+=== الظلم  [topic] llm={"used":true,"model":"openai/gpt-oss-120b"} n=12
+  ¶ 43:76: إن الذين اكتسبوا الذنوب بكفرهم، في عذاب جهنم ماكثون، لا يخفف عنهم، وهم فيه آيسون من رحمة الله، وما ظلمْنا هؤلاء المجرمين بالعذاب، ولكن كانوا هم الظالمين أنفسهم 
+  ¶ 27:52: بسبب ظلمهم لأنفسهم بالشرك، وتكذيب نبيهم.
+  ¶ 3:117: وهؤلاء الكافرون لا يجدون في الآخرة ثوابًا، وما ظلمهم الله بذلك، ولكنهم ظلموا أنفسهم بكفرهم وعصيانهم.
+  - 43:76   إن الذين اكتسبوا الذنوب بكفرهم، في عذاب جهنم ماكثون، لا يخفف عنهم، وهم فيه آيسون من رحمة الله، وما ظلمْنا هؤلا
+  - 27:52   فتلك مساكنهم خالية ليس فيها منهم أحد، أهلكهم الله; بسبب ظلمهم لأنفسهم بالشرك، وتكذيب نبيهم. إن في ذلك التدمير 
+  - 4:168   إن الذين كفروا بالله وبرسوله، وظلموا باستمرارهم على الكفر، لم يكن الله ليغفر ذنوبهم، ولا ليدلهم على طريق ينجيه
+  - 3:117   مَثَلُ ما ينفق الكافرون في وجوه الخير في هذه الحياة الدنيا وما يؤملونه من ثواب، كمثل ريح فيها برد شديد هَبَّتْ
+  - 11:101  وما كان إهلاكهم بغير سبب وذنب يستحقونه، ولكن ظلموا أنفسهم بشركهم وإفسادهم في الأرض، فما نفعتهم آلهتهم التي كان
+  - 18:59   وتلك القرى القريبة منكم -كقرى قوم هود وصالح ولوط وشعيب- أهلكناها حين ظلم أهلها بالكفر، وجعلنا لهلاكهم ميقاتًا 
+  - 7:23    قال آدم وحواء: ربنا ظلمنا أنفسنا بالأكل من الشجرة، وإن لم تغفر لنا وترحمنا لنكونن ممن أضاعوا حظَّهم في دنياهم 
+  - 40:17   اليوم تثاب كل نفس بما كسبت في الدنيا من خير وشر، لا ظلم لأحد اليوم بزيادة في سيئاته أو نقص من حسناته. إن الله 
+  - 7:162   فغيَّر الذين كفروا بالله منهم ما أمرهم الله به من القول، ودخلوا الباب يزحفون على أستاههم، وقالوا: حبة في شعرة،
+  - 8:25    واحذروا -أيها المؤمنون- اختبارًا ومحنة يُعَمُّ بها المسيء وغيره لا يُخَص بها أهل المعاصي ولا مَن باشر الذنب، ب
+
+=== الأمانة  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=8
+  ¶ 33:72: إنا عرضنا الأمانة -التي ائتمن الله عليها المكلَّفين من امتثال الأوامر واجتناب النواهي- على السموات والأرض والجبال، فأبين أن يحملنها، وخفن أن لا يقمن بأدائها، وح
+  ¶ 8:27: يا أيها الذين صدَّقوا الله ورسوله وعملوا بشرعه لا تخونوا الله ورسوله بترك ما أوجبه الله عليكم وفِعْل ما نهاكم عنه، ولا تفرطوا فيما ائتمنكم الله عليه، وأنتم تعلم
+  ¶ 3:76: ليس الأمر كما زعم هؤلاء الكاذبون، فإن المتقي حقاً هو من أوفى بما عاهد الله عليه من أداء الأمانة والإيمان به وبرسله والتزم هديه وشرعه، وخاف الله عز وجل فامتثل أم
+  ¶ 28:26: إنَّ خير من تستأجره للرعي القوي على حفظ ماشيتك، الأمين الذي لا تخاف خيانته فيما تأمنه عليه.
+  - 33:72   إنا عرضنا الأمانة -التي ائتمن الله عليها المكلَّفين من امتثال الأوامر واجتناب النواهي- على السموات والأرض والج
+  - 8:27    يا أيها الذين صدَّقوا الله ورسوله وعملوا بشرعه لا تخونوا الله ورسوله بترك ما أوجبه الله عليكم وفِعْل ما نهاكم 
+  - 3:76    ليس الأمر كما زعم هؤلاء الكاذبون، فإن المتقي حقاً هو من أوفى بما عاهد الله عليه من أداء الأمانة والإيمان به وب
+  - 28:26   قالت إحدى المرأتين لأبيها: يا أبت استأجره ليرعى لك ماشيتك; إنَّ خير من تستأجره للرعي القوي على حفظ ماشيتك، الأ
+  - 16:113  ولقد أرسل الله إلى أهل «مكة» رسولا منهم، هو النبي محمد صلى الله عليه وسلم، يعرفون نسبه وصدقه وأمانته، فلم يقبل
+  - 33:73   لتكون عاقبة حمل الإنسان الأمانة أن يعذب الله المنافقين الذين يُظهرون الإسلام ويُخفون الكفر، والمنافقات، والمشر
+  - 7:102   وما وَجَدْنا لأكثر الأمم الماضية من أمانة ولا وفاء بالعهد، وما وجدنا أكثرهم إلا فسقة عن طاعة الله وامتثال أمره
+  - 2:283   وإن كنتم مسافرين ولم تجدوا مَن يكتب لكم فادفعوا إلى صاحب الحق شيئًا يكون عنده ضمانًا لحقِّه إلى أن يردَّ المدي
+
+=== الصيام  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=5
+  ¶ 2:183: يا أيها الذين صدَّقوا الله ورسوله وعملوا بشرعه، فرض الله عليكم الصيام كما فرضه على الأمم قبلكم;
+  ¶ 2:184: فرض الله عليكم صيام أيام معلومة العدد وهي أيام شهر رمضان.
+  ¶ 2:185: شهر رمضان الذي ابتدأ الله فيه إنزال القرآن في ليلة القدر;
+  ¶ 2:187: أباح الله لكم في ليالي شهر رمضان جماعَ نسائكم، هنَّ ستر وحفظ لكم، وأنتم ستر وحفظ لهن.
+  - 2:183   يا أيها الذين صدَّقوا الله ورسوله وعملوا بشرعه، فرض الله عليكم الصيام كما فرضه على الأمم قبلكم; لعلكم تتقون رب
+  - 2:184   فرض الله عليكم صيام أيام معلومة العدد وهي أيام شهر رمضان. فمن كان منكم مريضًا يشق عليه الصوم، أو مسافرًا فله أ
+  - 2:185   شهر رمضان الذي ابتدأ الله فيه إنزال القرآن في ليلة القدر; هداية للناس إلى الحق، فيه أوضح الدلائل على هدى الله،
+  - 2:187   أباح الله لكم في ليالي شهر رمضان جماعَ نسائكم، هنَّ ستر وحفظ لكم، وأنتم ستر وحفظ لهن. علم الله أنكم كنتم تخونو
+  - 58:4    فمن لم يجد رقبة يُعتقها، فالواجب عليه صيام شهرين متواليين من قبل أن يطأ زوجه، فمن لم يستطع صيام الشهرين لعذر ش
+
+=== الشكر  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=8
+  ¶ 31:12: ولقد أعطينا عبدًا صالحًا من عبادنا (وهو لقمان) الحكمة، وهي الفقه في الدين وسلامة العقل والإصابة في القول، وقلنا له: اشكر لله نِعَمَه عليك، ومَن يشكر لربه فإنما 
+  ¶ 16:18: وإن تحاولوا حَصْرَ نِعَم الله عليكم لا تَفُوا بحَصْرها;
+  ¶ 34:17: ذلك التبديل من خير إلى شر بسبب كفرهم، وعدم شكرهم نِعَمَ الله، وما نعاقب بهذا العقاب الشديد إلا الجَحود المبالغ في الكفر، يجازى بفعله مثلا بمثل.
+  - 31:12   ولقد أعطينا عبدًا صالحًا من عبادنا (وهو لقمان) الحكمة، وهي الفقه في الدين وسلامة العقل والإصابة في القول، وقلن
+  - 16:18   وإن تحاولوا حَصْرَ نِعَم الله عليكم لا تَفُوا بحَصْرها; لكثرتها وتنوعها. إن الله لَغفور لكم رحيم بكم؛ إذ يتجاو
+  - 7:10    ولقد مكَّنَّا لكم -أيها الناس- في الأرض، وجعلناها قرارًا لكم، وجعلنا لكم فيها ما تعيشون به من مطاعم ومشارب، وم
+  - 34:17   فأعرضوا عن أمر الله وشكره وكذبوا الرسل، فأرسلنا عليهم السيل الجارف الشديد الذي خرَّب السد وأغرق البساتين، وبدّ
+  - 56:82   وتجعلون شكركم لنعم الله عليكم أنكم تكذِّبون بها وتكفرون؟ وفي هذا إنكار على من يتهاون بأمر القرآن ولا يبالي بدع
+  - 54:35   إنا أرسلنا عليهم حجارةً إلا آل لوط، نجَّيناهم من العذاب في آخر الليل، نعمة من عندنا عليهم، كما أثبنا لوطًا وآل
+  - 34:16   فأعرضوا عن أمر الله وشكره وكذبوا الرسل، فأرسلنا عليهم السيل الجارف الشديد الذي خرَّب السد وأغرق البساتين، وبدّ
+  - 8:53    ذلك الجزاء السيِّئ بأن الله إذا أنعم على قوم نعمة لم يسلبها منهم حتى يغيِّروا حالهم الطيبة إلى حال سيئة، وأن ا
+
+=== mercy of Allah  [topic] llm={"used":true,"model":"openai/gpt-oss-120b"} n=10
+  ¶ 4:96: Allah is always Forgiving and Merciful towards His servants.
+  ¶ 27:46: Salih (peace be upon him) said: “why do you seek to hasten the punishment instead of seeking Allah's mercy?
+  ¶ 15:56: Abraham said: Does anyone despair from the mercy of his Lord but those who have deviated from Allah’s straight path?!
+  ¶ 23:118: Say - O Messenger: “O Lord, forgive my sins, grant me Your mercy, and You are the best of those who show mercy”.
+  - 4:96    This reward will be ranks of loftiness and positions in the Paradise, one above the other, together with forgi
+  - 27:46   Salih (peace be upon him) said: “why do you seek to hasten the punishment instead of seeking Allah's mercy? Wh
+  - 15:56   Abraham said: Does anyone despair from the mercy of his Lord but those who have deviated from Allah’s straight
+  - 23:118  Say - O Messenger: “O Lord, forgive my sins, grant me Your mercy, and You are the best of those who show mercy
+  - 27:77   And it is a guidance and mercy for the believers who practice what it has brought.
+  - 31:3    It is guidance and mercy for those who do good, by fulfilling the rights of their Lord and His servants.
+  - 19:2    This is mention of your Lord’s mercy on His servant (peace be upon him), which I relate to you to take lessons
+  - 10:86   Rescue us through Your mercy, O our Lord, from the hands of the people of Pharaoh who are disbelievers, becaus
+  - 1:3     Two names of Allah, Ar-Raḥmān and Ar-Raḥīm, derived from the word raḥmah, or mercy: indicating His mercy for c
+  - 15:17   We protected the heavens from every satan that is rejected from Allah’s mercy.
+
+=== death  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=10
+  ¶ 21:35: Every believing and disbelieving soul will taste death in the world.
+  ¶ 39:42: Allah is the one who takes away the souls when their term ends.
+  ¶ 80:21: Then, after spending the amount of life decreed for him, Allah caused death upon him and made a grave for him wherein he remains until he is resurrected.
+  ¶ 29:57: Every soul shall taste death, and then to Me alone you shall return on the Day of Judgment to give account and be requited.
+  - 3:185   Every soul, no matter its state, must taste death. No created being should be dazzled by this world. On the Da
+  - 21:35   Every believing and disbelieving soul will taste death in the world. And I test you, O mankind, in the worldly
+  - 29:57   “Let not the fear of death prevent you from emigrating. Every soul shall taste death, and then to Me alone you
+  - 39:42   Allah is the one who takes away the souls when their term ends. He also takes the souls whose term has not end
+  - 80:21   Then, after spending the amount of life decreed for him, Allah caused death upon him and made a grave for him 
+  - 32:11   O Messenger! Say to these idolaters who reject the resurrection: “The angel of death who Allah has appointed t
+  - 50:43   It is I who gives life and death. There is nobody to give life and death besides Me. And to Me alone is the re
+  - 50:19   And the intoxication of death will bring the truth; that is what you were trying to avoid. The pangs of death 
+  - 15:99   Go on worshipping your Lord and continue doing so as long as you live until death comes to you in that state.
+  - 74:47   We persisted in this denial until death came to us and prevented us from repenting.
+
+=== la mort  [topic] llm={"used":true,"model":"openai/gpt-oss-20b"} n=4
+  ¶ 22:7: Il vise aussi à vous donner la conviction que l’Heure surviendra irrémédiablement et qu’Allah ressuscitera les morts de leurs tombes afin de les rétribuer pour 
+  ¶ 53:44: Il est Celui qui fait mourir les vivants dans le bas monde et fait revivre les morts dans l’au-delà en les ressuscitant.
+  ¶ 79:14: C’est alors que tous les morts qui étaient inhumés redeviendront vivants.
+  - 22:7    Il vise aussi à vous donner la conviction que l’Heure surviendra irrémédiablement et qu’Allah ressuscitera les
+  - 53:44   Il est Celui qui fait mourir les vivants dans le bas monde et fait revivre les morts dans l’au-delà en les res
+  - 79:14   C’est alors que tous les morts qui étaient inhumés redeviendront vivants.
+  - 23:16   Puis après votre mort, vous serez ressuscités de vos tombes le Jour de la Résurrection afin de rendre des comp
+
+=== les anges  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=12
+  ¶ 21:19: Les anges qui sont auprès de Lui ne dédaignent pas L’adorer et ne s’en lassent pas.
+  ¶ 16:49: C’est à Lui aussi que se prosternent les anges qui ne dédaignent jamais L’adorer et Lui obéir.
+  ¶ 22:75: Allah choisit des messagers parmi les anges et parmi les gens.
+  ¶ 97:4: Les anges et Gabriel descendent durant cette nuit avec la permission de leur Seigneur et transmetttent tout décret qu’Allah émet pour l’année: subsistance, décè
+  - 21:19   C’est Allah Seul qui possède les Cieux et la Terre. Les anges qui sont auprès de Lui ne dédaignent pas L’adore
+  - 16:49   C’est à Allah Seul que se prosternent tout ce qui se trouve dans les Cieux et tous les êtres vivants sur Terre
+  - 22:75   Allah choisit des messagers parmi les anges et parmi les gens. Il envoie ainsi certains anges, comme Gabriel, 
+  - 97:4    Les anges et Gabriel descendent durant cette nuit avec la permission de leur Seigneur et transmetttent tout dé
+  - 77:5    Par les anges qui descendent avec la Révélation.
+  - 37:3    Je prête serment par les anges qui récitent les paroles d’Allah.
+  - 51:4    Par les anges qui distribuent aux serviteurs ce qu’Allah leur ordonne de distribuer.
+  - 37:1    Je prête serment par les anges qui se mettent en rangs serrés durant leur adoration.
+  - 37:2    Je prête serment par les anges qui poussent les nuages vers le lieu où Allah veut qu’il pleuve.
+  - 35:1    Louange à Allah, le Créateur des Cieux et de la Terre sans modèle préalable, Celui qui a fait des anges des me
+
+=== la prière  [topic] llm={"used":true,"model":"openai/gpt-oss-120b"} n=12
+  ¶ 2:238: Soyez assidus dans vos prières en les accomplissant de manière complète conformément à ce qu’ordonne Allah.
+  ¶ 17:78: Accomplis la prière de manière complète au horaires suivants: Du moment où le soleil s’incline de son zénith, ce qui englobe les prières de midi et de l’après-m
+  ¶ 23:9: Ils sont assidus dans leurs prières qu’ils accomplissent dans les intervalles de temps qui leur sont imparties et en en respectant strictement les piliers, les 
+  ¶ 70:34: Ils sont réguliers dans leurs prières et assidus, les accomplissant à l’heure, dans un état de pureté et de sérénité sans que rien ne les en distraie.
+  - 2:238   Soyez assidus dans vos prières en les accomplissant de manière complète conformément à ce qu’ordonne Allah. So
+  - 17:78   Accomplis la prière de manière complète au horaires suivants: Du moment où le soleil s’incline de son zénith, 
+  - 23:9    Ils sont assidus dans leurs prières qu’ils accomplissent dans les intervalles de temps qui leur sont imparties
+  - 70:34   Ils sont réguliers dans leurs prières et assidus, les accomplissant à l’heure, dans un état de pureté et de sé
+  - 74:43   Les mécréants répondront: Nous n’étions pas du nombre de ceux qui accomplissaient les prières obligatoires dan
+  - 87:15   et évoque son Seigneur en prononçant les différentes formules d’évocation prescrites, puis accomplit la prière
+  - 26:219  Il te voit aussi accomplir les rites de la prière parmi les fidèles. Rien de ce que tu fais et de ce que font 
+  - 4:103   Ô croyants, lorsque vous terminez la prière, évoquez Allah par le tasbîħ (en disant subħâna Llâhi, c’est-à-dir
+  - 5:58    Ils se moquent également et jouent lorsque vous appelez à la prière, qui représente le principal moyen de se r
+  - 8:3     Ils sont assidus dans leurs prières, qu’ils accomplissent de manière complète et à l’heure, et prélèvent de ce
+
+=== le pardon  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=12
+  ¶ 4:106: Implore d’Allah le pardon et l’effacement de tes péchés car Allah pardonne à ceux de Ses serviteurs qui se repentent à Lui et se montre miséricordieux avec eux.
+  ¶ 71:10: En effet, Il pardonne à Ses serviteurs qui se repentent à Lui.
+  - 27:11   Celui qui se montre injuste envers lui-même en commettant un péché puis se repent, Je lui pardonne et lui fais
+  - 4:106   Implore d’Allah le pardon et l’effacement de tes péchés car Allah pardonne à ceux de Ses serviteurs qui se rep
+  - 71:10   Je leur ai ainsi dit: Ô mon peuple, demandez le pardon de votre Seigneur en vous repentant à Lui. En effet, Il
+  - 57:21   Ô gens, concourrez en bonnes œuvres, repentir et autres bonnes oeuvres, par lesquelles vous obtenez le pardon 
+  - 4:110   Si quelqu’un accomplit une mauvaise action ou commet une injustice envers lui-même en désobéissant à Allah, pu
+  - 2:37    Allah inspira à Adam les paroles qui sont à prononcer lorsqu’on désire L’invoquer. Ces paroles sont celles qui
+  - 22:50   Ceux qui croient en Allah et accomplissent de bonnes œuvres obtiendront le pardon de leur Seigneur pour leurs 
+  - 3:133   Empressez-vous de rivaliser dans l’accomplissement d’œuvres pieuses et de vous rapprocher ainsi d’Allah, afin 
+  - 5:39    Quiconque se repent à Allah du vol et adopte un meilleur comportement verra son repentir accepté par Allah dan
+  - 5:34    Sauf ceux qui se repentent avant que vous, les détenteurs de l’autorité, ne les capturiez. Sachez qu’Allah leu
+
+=== l'enfer  [topic] llm={"used":true,"model":"openai/gpt-oss-20b"} n=12
+  ¶ 54:48: Le Jour où ils seront trainés dans le Feu sur leurs visages et qu’on leur dira en guise de réprimande: Goûtez donc au châtiment de l’Enfer.
+  ¶ 3:10: Quant à ceux qui mécroient en Allah et en Ses messagers, ni leurs richesses ni leurs enfants ne les préserveront du châtiment d’Allah, ni dans ce monde ni dans 
+  ¶ 3:10: Ils seront le combustible du feu de l’Enfer le Jour de la Résurrection.
+  ¶ 58:17: Ce sont les gens de l’Enfer, ils y entreront pour y demeurer éternellement sans que leur châtiment ne s’interrompe.
+  - 54:48   Le Jour où ils seront trainés dans le Feu sur leurs visages et qu’on leur dira en guise de réprimande: Goûtez 
+  - 3:10    Quant à ceux qui mécroient en Allah et en Ses messagers, ni leurs richesses ni leurs enfants ne les préservero
+  - 9:68    Allah a promis aux hypocrites et aux mécréants qui ne se sont pas repentis de les faire entrer dans le Feu de 
+  - 74:35   Le Feu de l’Enfer est un des plus grands malheurs
+  - 58:17   Ni leurs richesses ni leur progéniture ne leur seront d’aucune utilité contre la punition d’Allah. Ce sont les
+  - 85:10   Ceux qui tourmentent les croyants et les croyantes par le feu afin de les détourner de la croyance en Allah Se
+  - 84:12   et il entrera dans le Feu de l’Enfer dont il endurera la chaleur.
+  - 8:14    Ô opposants à Allah et à Son Messager, goûtez au châtiment qui vous a d’ores et déjà été annoncé dans ce bas m
+  - 3:88    Ils resteront éternellement en Enfer sans en sortir. Leur châtiment ne sera pas allégé et on ne leur accordera
+  - 5:37    Ils voudront sortir du Feu lorsqu’ils y entreront mais comment le pourraient-ils ? Ils n’en sortiront jamais e
+
+=== honesty  [topic] llm={"used":true,"model":"qwen/qwen3.8-27b"} n=9
+  ¶ 16:113: And a Messenger from among them, whose honesty and truthfulness they knew - who was Muhammad (peace be upon him) - had come to the people of Makka, but they den
+  ¶ 50:2: The cause of their rejection was not that they expected you to lie, because they know your honesty.
+  ¶ 6:33: Know that inside they do not deny you, because they know your truthfulness and honesty.
+  ¶ 23:69: Verily, they recognise him, his truthfulness and his honesty.
+  - 16:113  And a Messenger from among them, whose honesty and truthfulness they knew - who was Muhammad (peace be upon hi
+  - 50:2    The cause of their rejection was not that they expected you to lie, because they know your honesty. Rather, th
+  - 6:33    I know that their outer denial of you, O Messenger, upsets you. Know that inside they do not deny you, because
+  - 23:69   Or is it that they do not recognise Muhammad peace be upon him whom Allah has sent to them, and so they reject
+  - 44:13   How can they take heed and repent to their Lord now, when a clear Messenger came to them before, and they knew
+  - 81:22   Muhammad (peace be upon him), who is in your company and whose intellect, trustworthiness and truthfulness you
+  - 5:107   If, after the oath is taken, it is established that the witnesses lied in their testimony or in the oath, then
+  - 12:62   Joseph told his servants to return the merchandise of these people to them, so that they would realize on thei
+  - 28:26   One of his two daughters said, “O my father! Hire him to shepherd our livestock for us, because he is worthy o
+
+=== gratitude  [topic] llm={"used":true,"model":"openai/gpt-oss-120b"} n=6
+  ¶ 56:82: And do you show your gratitude to Allah for the blessings He has provided you with, by rejecting Him and attributing the rain to the setting of stars, by saying
+  ¶ 25:62: It is Allah who made the night and day follow and replace each other, for anyone who wishes to take a lesson from Allah’s signs and come onto the right path, or
+  ¶ 27:15: David and Solomon said, in gratitude to Allah: “All praise is for Allah who has given us virtue over many of his believing servants, through prophethood and sub
+  ¶ 110:3: So glorify your Lord together with praising Him, to show gratitude to Him for the favours of help and victory, and seek His forgiveness, because indeed, He is t
+  - 56:82   And do you show your gratitude to Allah for the blessings He has provided you with, by rejecting Him and attri
+  - 25:62   It is Allah who made the night and day follow and replace each other, for anyone who wishes to take a lesson f
+  - 14:39   Thanks and praise are due to Allah, may He be glorified, Who answered my supplication to grant me someone righ
+  - 110:3   Then know that is a sign of the nearing of the end of your duty you were sent to fulfil. So glorify your Lord 
+  - 27:15   I granted David and his son Solomon knowledge, part of which was the language of birds. David and Solomon said
+  - 27:40   A pious knowledgeable man in the presence of Solomon who had knowledge of the scripture, part of which was the

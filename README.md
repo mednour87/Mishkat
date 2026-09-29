@@ -33,6 +33,10 @@ The LLM (open models on Groq’s free tier) has three narrow jobs, all returning
 2. `select` — pick **verse ids** from a closed candidate list and **sentence ids** from a closed numbered list of tafsir sentences;
 3. nothing else. Out-of-list ids are dropped; a failure, timeout or quota error falls back to the deterministic engine, which always works.
 
+**Verified AI recall.** `expand` may also propose verse references it considers central (e.g. 17:23 for *kindness to parents*). A proposed verse enters the candidate list only if it exists **and** its real text (verse, tafsir or translation) contains a word of the query; hallucinated or off-topic references are silently discarded (tested). When the LLM selects ≥ 3 verses, only its selection is shown (precision first).
+
+**Pre-computed answers.** `eval/precompute_cache.mjs` stores the LLM outputs for ~140 frequent questions (all interface examples, 3 languages) in `public/data/llm_cache.json`. The browser uses them first — they are re-verified by the engine exactly like live outputs — so the demo stays fully AI-augmented even when the free API quota is exhausted.
+
 ```
 query ─► famous names / references / surah names (deterministic)
       ─► guard: fatwa · personal case · dream  → abstain + referral

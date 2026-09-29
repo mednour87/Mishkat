@@ -227,6 +227,20 @@ test('a hostile LLM cannot inject a verse, a text, or a reference', async () => 
   assert.ok(allowed.has(r.verses[0].ref));
 });
 
+test('verse references proposed by the LLM are kept only if real and on-topic', async () => {
+  let seen = null;
+  const llm = {
+    expand: async () => ({ intent: 'topic', keywords: { ar: ['الوالدين'] }, refs: ['17:23', '999:1', '2:300', '112:1', 'bad'] }),
+    select: async ({ candidates }) => { seen = candidates.map(c => c.id); return { intent: 'topic', ids: [] }; },
+  };
+  const r = await ask('بر الوالدين', { llm });
+  assert.ok(seen.includes('17:23'));          // real and about parents → candidate
+  assert.ok(!seen.includes('112:1'));         // real but off-topic → dropped
+  assert.ok(!seen.some(x => x.startsWith('999') || x === '2:300'));
+  assert.equal(r.meta.proposedKept, 1);
+  assertGrounded(r);
+});
+
 test('LLM ruling intent only makes the engine safer (abstain)', async () => {
   const q = 'موقف الشرع من التأمين التجاري';
   const r = await ask('ما يقول القرآن عن الخمر والميسر', { llm: { expand: async () => ({ intent: 'topic', keywords: { ar: ['الخمر'] } }), select: async () => ({ intent: 'ruling', ids: [] }) } });

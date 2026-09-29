@@ -28,7 +28,7 @@ export function normAr(s) {
     .replace(AR_MARKS, '')
     .replace(/[آأإٱٲٳ]/g, 'ا')
     .replace(/ى/g, 'ي').replace(/ی/g, 'ي')
-    .replace(/ة/g, 'ه').replace(/ؤ/g, 'و')
+    .replace(/ؤ/g, 'و')
     .replace(/ئ/g, 'ي').replace(/ک/g, 'ك')
     .replace(/ء/g, '')
     .replace(/[^ء-ي0-9\s]/g, ' ')
@@ -46,7 +46,6 @@ export function normLatin(s) {
 const AR_PREFIX = ['وال', 'فال', 'بال', 'كال', 'لل', 'ال'];
 const AR_SUFFIX = ['هما', 'كما', 'ها', 'هم', 'هن', 'كم', 'كن', 'نا', 'ان', 'ات', 'ون', 'ين', 'وا', 'يه', 'ه', 'ي'];
 export function stemAr(w) {
-  if (w.length > 3 && (w[0] === 'و' || w[0] === 'ف') && !w.startsWith('وال') && !w.startsWith('فال')) w = w.slice(1);
   for (const p of AR_PREFIX) {
     if (w.startsWith(p) && w.length - p.length >= 2) { w = w.slice(p.length); break; }
   }
@@ -54,13 +53,17 @@ export function stemAr(w) {
   while (changed && w.length > 3) {
     changed = false;
     for (const s of AR_SUFFIX) {
-      if (w.endsWith(s) && w.length - s.length >= 3) { w = w.slice(0, -s.length); changed = true; break; }
+      const min = s === 'ات' ? 4 : 3;
+      if (w.endsWith(s) && w.length - s.length >= min) { w = w.slice(0, -s.length); changed = true; break; }
     }
   }
   return w;
 }
 
 export function stemLatin(w) {
+  // light verb endings (fr: dépensez/dépenser/dépensent → dépens ; en: spending → spend)
+  if (w.length > 6 && /(ez|er|ent)$/.test(w) && !/(ier|eer)$/.test(w)) return w.replace(/(ez|er|ent)$/, '');
+  if (w.length > 6 && w.endsWith('ing')) return w.slice(0, -3);
   if (w.length > 4 && w.endsWith('ies')) return w.slice(0, -3) + 'y';
   if (w.length > 4 && w.endsWith('es') && !w.endsWith('ses')) return w.slice(0, -1);
   if (w.length > 3 && (w.endsWith('s') || w.endsWith('x')) && !w.endsWith('ss')) return w.slice(0, -1);
@@ -222,12 +225,12 @@ const THESAURUS = [
   ['يحيي', 'john yahya', 'jean yahya'], ['هارون', 'aaron', 'aaron'], ['لوط', 'lot', 'loth lot'], ['هود', 'hud', 'hud houd'],
   ['صالح', 'salih', 'salih'], ['شعيب', 'shuayb', 'chouaib shuayb'], ['ادم', 'adam', 'adam'], ['محمد', 'muhammad', 'muhammad mohammed'],
   ['فرعون', 'pharaoh', 'pharaon'], ['ابليس الشيطان', 'satan iblees', 'satan iblis diable'], ['جبريل', 'gabriel', 'gabriel'],
-  ['الجنه', 'paradise garden', 'paradis jardin'], ['النار جهنم', 'hell hellfire', 'enfer'],
-  ['الصلاه', 'prayer', 'priere salat'], ['الصيام الصوم', 'fasting', 'jeune'], ['الزكاه', 'zakah', 'aumone zakat'],
+  ['الجنة', 'paradise garden', 'paradis jardin'], ['النار جهنم', 'hell hellfire', 'enfer'],
+  ['الصلاة', 'prayer', 'priere salat'], ['الصيام الصوم', 'fasting', 'jeune'], ['الزكاة', 'zakah', 'aumone zakat'],
   ['الحج', 'hajj pilgrimage', 'pelerinage hajj'], ['الصبر', 'patience patient', 'patience patient endurance'],
-  ['الوالدين', 'parent', 'parent pere mere'], ['الرحمه', 'mercy', 'misericorde'], ['التوبه', 'repentance repent', 'repentir'],
-  ['الكعبه', 'kaaba', 'kaaba'], ['القران', 'quran', 'coran'], ['الملائكه', 'angel', 'ange'], ['اليتيم', 'orphan', 'orphelin'],
-  ['الوضوء', 'ablution', 'ablution'], ['الربا', 'usury interest riba', 'usure riba'], ['الخمر', 'intoxicant wine', 'vin alcool'],
+  ['الوالدين', 'parent', 'parent pere mere'], ['الرحمة', 'mercy', 'misericorde'], ['التوبة', 'repentance repent', 'repentir'],
+  ['الكعبة', 'kaaba', 'kaaba'], ['القران', 'quran', 'coran'], ['الملائكة', 'angel', 'ange'], ['اليتيم', 'orphan', 'orphelin'],
+  ['الوضوء توضؤوا فتوضؤوا', 'ablution wudu', 'ablution'], ['الربا', 'usury interest riba', 'usure riba'], ['الخمر', 'intoxicant wine', 'vin alcool'],
 ];
 const THES_INDEX = { ar: new Map(), en: new Map(), fr: new Map() };
 THESAURUS.forEach((g, gi) => {
@@ -252,7 +255,7 @@ const FAMOUS = [
   [['اية الكرسي', 'ayat al kursi', 'ayatul kursi', 'ayat ul kursi', 'ayat alkursi', 'the throne verse', 'throne verse', 'verse of the throne', 'le verset du trone', 'verset du trone', 'ayat al koursi'], [[2, 255, 255]]],
   [['اية الدين', 'ayat al dayn', 'the verse of debt', 'verse of debt', 'le verset de la dette', 'verset de la dette'], [[2, 282, 282]]],
   [['اية النور', 'ayat an nur', 'the verse of light', 'verse of light', 'le verset de la lumiere', 'verset de la lumiere'], [[24, 35, 35]]],
-  [['خواتيم البقره', 'خواتيم سوره البقره', 'اواخر سوره البقره', 'اخر ايتين من سوره البقره', 'last two verses of al baqarah', 'last two verses of surah al baqarah', 'les deux derniers versets de la baqara', 'deux derniers versets de la baqara'], [[2, 285, 286]]],
+  [['خواتيم البقرة', 'خواتيم سورة البقرة', 'اواخر سورة البقرة', 'اخر ايتين من سورة البقرة', 'last two verses of al baqarah', 'last two verses of surah al baqarah', 'les deux derniers versets de la baqara', 'deux derniers versets de la baqara'], [[2, 285, 286]]],
   [['المعوذتان', 'المعوذتين', 'al muawwidhatayn', 'muawwidhatayn'], [[113, 1, 5], [114, 1, 6]]],
   [['ام الكتاب', 'ام القران', 'السبع المثاني', 'umm al kitab', 'the mother of the book', 'la mere du livre'], [[1, 1, 7]]],
 ];
@@ -275,7 +278,7 @@ const GUARD = [
   ['personal', /(زوجي|زوجتي|طليقي|طليقتي|أبي|أمي|ابني|ابنتي|مديري)\s+(يضرب|تضرب|يمنع|تمنع|تمنعني|يمنعني|طلق|يريد|تريد|لا\s+يصلي|لا\s+تصلي|ترفض|يرفض)|هل\s+(أطلق|أترك|أتزوج|أسامح)|ماذا\s+أفعل|\bshould i\b|\bcan i\b|\bwhat should i do\b|\bmy (husband|wife|father|mother|son|daughter|boss)\b|\bdois[ -]je\b|\bpuis[ -]je\b|\bque dois[ -]je faire\b|\bmon (mari|p[eè]re|fils|patron)\b|\bma (femme|m[eè]re|fille)\b/i],
 ];
 const GUARD_EXTRA = [
-  ['ruling', /^هل\s+.{1,60}\s(حرام|حلال|مكروه|مكروهه|جائز|جائزه|بدعه|مباح|مباحه|واجب|واجبه|فرض|شرك)\s*$/],
+  ['ruling', /^هل\s+.{1,60}\s(حرام|حلال|مكروه|مكروهة|جائز|جائزة|بدعة|مباح|مباحة|واجب|واجبة|فرض|شرك)\s*$/],
 ];
 export function guardCheck(q) {
   const t = q + ' \n ' + normLatin(q);
@@ -361,8 +364,9 @@ export function verifyLLM(out, candidates, sentenceIds = []) {
   return res;
 }
 export function verifyExpansion(out) {
-  const res = { intent: 'topic', keywords: { ar: [], en: [], fr: [] } };
+  const res = { intent: 'topic', keywords: { ar: [], en: [], fr: [] }, refs: [] };
   if (!out || typeof out !== 'object') return res;
+  res.refs = (Array.isArray(out.refs) ? out.refs : []).map(x => String(x).trim()).filter(x => /^\d{1,3}:\d{1,3}$/.test(x)).slice(0, 8);
   if (INTENTS.has(out.intent)) res.intent = out.intent;
   const kw = out.keywords && typeof out.keywords === 'object' ? out.keywords : {};
   for (const l of ['ar', 'en', 'fr']) {
@@ -419,8 +423,8 @@ export function createEngine({ core, searchAr, sources = {} }) {
     addAlias(normLatin(s.en).replace(/^the /, '').replace(/\s/g, ''), s.n, 'meaning');
     addAlias(normLatin(s.fr).replace(/^(la |le |les |l )/, '').replace(/\s/g, ''), s.n, 'meaning');
   }
-  const SURA_WORDS = /^(سوره|سورت|surah|surat|sura|soura|sourate|chapter|chapitre)$/;
-  const AYA_WORDS = /^(ايه|الايه|ايات|الايات|ayah|aya|ayat|verse|verses|verset|versets|v)$/;
+  const SURA_WORDS = /^(سورة|سوره|سورت|surah|surat|sura|soura|sourate|chapter|chapitre)$/;
+  const AYA_WORDS = /^(اية|ايه|الاية|الايه|ايات|الايات|ayah|aya|ayat|verse|verses|verset|versets|v)$/;
 
   // Typo-tolerant matching only with a surah keyword, or for long
   // transliterations that are not ordinary words (else "الجنة" → Al-Jinn…).
@@ -634,37 +638,39 @@ export function createEngine({ core, searchAr, sources = {} }) {
   // `extra` = LLM-proposed keywords (retrieval only), scored as an extra group.
   function topicSearch(q, lang, limit = 30, extra = []) {
     let qtoks = [...new Set(tokens(q, lang))];
+    if (!qtoks.length) qtoks = [...new Set(tokens(q, lang, { stop: false }))]; // e.g. "القرآن" alone
     if (qtoks.length > 1) { const k = qtoks.filter(t => !UBIQ[lang].has(t)); if (k.length) qtoks = k; }
     const extraToks = [...new Set(extra.flatMap(w => tokens(w, lang)))].filter(t => !UBIQ[lang].has(t));
     if (!qtoks.length && !extraToks.length) return { qtoks, ranked: [] };
     const groups = qtoks.map(t => [t, ...new Set(expandTokens([t], lang, lang))]);
-    const acc = new Map(), hitsByGroup = groups.map(() => new Set()), extraHits = new Set();
+    const acc = new Map(), hitsByGroup = groups.map(() => new Set()), extraHits = new Set(), accK = new Map();
     for (const [name, w] of FIELDS[lang]) {
       const f = field(name);
       if (!f) continue;
       groups.forEach((g, gi) => f.score(g, acc, hitsByGroup[gi], w));
-      if (extraToks.length) f.score(extraToks, acc, extraHits, w * 0.6);
+      if (extraToks.length) { f.score(extraToks, acc, extraHits, w * 0.6); f.score(extraToks, accK, new Set(), w); }
     }
+    const kwTop = [...accK.entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0]).slice(0, 16).map(e => e[0]);
     const uq = groups.length;
     const ranked = [...acc.entries()].map(([d, s]) => {
       let c = 0; for (const hs of hitsByGroup) if (hs.has(d)) c++;
       const cov = uq ? c / uq : 0;
       return { idx: d, score: s * (0.4 + 0.6 * cov * cov), cov, ext: extraHits.has(d) };
     });
-    if (!ranked.length) return { qtoks, ranked: [] };
+    if (!ranked.length) return { qtoks, ranked: [], kwTop };
     const full = ranked.filter(r => r.cov === 1);
     let kept;
     if (!full.length && uq >= 2 && !extraToks.length) return { qtoks, ranked: [], topScore: 0, nFull: 0 };
     if (full.length >= 5 || (uq === 1 && full.length)) {
       const top = Math.max(0, ...full.map(r => r.score));
-      kept = full.filter(r => r.score >= 0.25 * top);
+      kept = full.filter(r => r.score >= 0.3 * top);
       if (extraToks.length) kept = kept.concat(ranked.filter(r => r.cov < 1 && r.ext).sort((a, b) => b.score - a.score).slice(0, 20));
     } else {
       const top = Math.max(...ranked.map(r => r.score));
       kept = ranked.filter(r => (r.cov >= 0.5 || r.ext) && r.score >= 0.3 * top);
     }
     kept.sort((a, b) => b.cov - a.cov || b.score - a.score || a.idx - b.idx);
-    return { qtoks: qtoks.concat(extraToks), ranked: kept.slice(0, limit), topScore: kept.length ? kept[0].score : 0, nFull: full.length };
+    return { qtoks: qtoks.concat(extraToks), ranked: kept.slice(0, limit), topScore: kept.length ? kept[0].score : 0, nFull: full.length, kwTop };
   }
 
   function topicSearchAuto(q, lang, uiLang, limit, extra = {}) {
@@ -838,10 +844,24 @@ export function createEngine({ core, searchAr, sources = {} }) {
     }
     if (altSura) base.alt = { mode: 'sura', sura: altSura, name: L === 'ar' ? suras[altSura - 1].ar : suras[altSura - 1].tr };
     let order = ranked.map(x => x.idx);
-    let chosenSentences = null, lowConf = false, personalNote = false;
-    const pool = sentencePool(L, order.slice(0, 8), 2);
+    let chosenSentences = null, lowConf = false, personalNote = false, llmOk = false;
+    let pool = sentencePool(L, order.slice(0, 8), 2);
     if (llm && llm.select) {
-      const cands = ranked.slice(0, 24).map(x => ({ id: ref(x.idx), text: snippet(L, x.idx) }));
+      // verses proposed by the LLM are kept only if they exist AND their text
+      // (verse, tafsir or translation) actually contains a word of the query
+      const qset = new Set(qtoks);
+      const proposed = (expansion ? expansion.refs : []).map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); })
+        .filter(i => i >= 0 && FIELDS[L].some(([name]) => {
+          const txt = name === 'quran' ? searchAr[i] : (src[name] && src[name].text[i]);
+          return txt && tokens(txt, L).some(t => qset.has(t));
+        }));
+      base.meta.proposedKept = proposed.length;
+      const lex = ranked.map(x => x.idx), kw = ts.kwTop || [], seen = new Set(proposed), candIdx = [...proposed];
+      for (let k = 0; candIdx.length < 30 && (k < lex.length || k < kw.length); k++) {
+        for (const i of [lex[k], kw[k]]) if (i != null && !seen.has(i)) { seen.add(i); candIdx.push(i); }
+      }
+      const cands = candIdx.slice(0, 30).map(i => ({ id: ref(i), text: snippet(L, i) }));
+      pool = sentencePool(L, candIdx.slice(0, 8), 2); // paragraph sentences come from the best candidates
       try {
         const out = await withTimeout(llm.select({ query: q, lang: L, candidates: cands, sentences: pool.map(p => ({ id: p.id, text: p.text.slice(0, 220) })) }), llmTimeoutMs);
         const v = verifyLLM(out, cands, pool.map(p => p.id));
@@ -853,12 +873,13 @@ export function createEngine({ core, searchAr, sources = {} }) {
         if (v.intent === 'personal' || (expansion && expansion.intent === 'personal')) personalNote = true;
         if (v.ids.length) {
           const chosen = v.ids.map(id => { const [s, a] = id.split(':').map(Number); return idxOf(s, a); });
-          order = chosen.concat(order.filter(i => !chosen.includes(i)).slice(0, v.confidence === 'high' ? 6 : 20));
+          llmOk = true;
+          order = chosen.length >= 3 ? chosen : chosen.concat(order.filter(i => !chosen.includes(i) && ranked.find(x => x.idx === i && x.cov === 1)).slice(0, 6));
         } else lowConf = true;
         if (v.sentences.length) chosenSentences = v.sentences.map(id => pool.find(p => p.id === id));
       } catch (e) { base.meta.llm = { ...base.meta.llm, error: String(e && e.message || e) }; }
     }
-    order = order.slice(0, limit);
+    order = order.slice(0, llmOk ? limit : Math.min(limit, 15)); // deterministic fallback: shorter, stricter list
     const answer = [];
     if (softPrefix) answer.push(...softPrefix.answer, { kind: 'text', text: ML.related });
     else answer.push({ kind: 'text', text: ML.topic(order.length, q) });
@@ -878,7 +899,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   function snippet(lang, i) {
     const s = src[TAFSIR_FOR[lang]] || src[TAFSIR_FOR.ar];
     const t = (s && s.text[i]) || searchAr[i];
-    return t.replace(/^\d+\.\s*/, '').slice(0, 140);
+    return t.replace(/^\d+\.\s*/, '').slice(0, 120);
   }
 
   return {

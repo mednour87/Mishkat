@@ -94,18 +94,33 @@ async function boot() {
   setLoad(3);
   $('#loader').classList.add('done');
   (window.requestIdleCallback || setTimeout)(() => ['ar', 'en', 'fr'].forEach(l => ensureSources(l)));
-  fetch('api/health').then(r => r.ok ? r.json() : null).then(h => {
-    if (h && h.llm) {
-      state.llmModel = h.model;
-      const post = (path) => async (payload) => {
-        const r = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
-        if (!r.ok) throw new Error(path + ' ' + r.status);
-        return r.json();
-      };
-      state.llm = { expand: post('api/expand'), select: post('api/select') };
-    }
-    $('#aiBadge').textContent = T().ai(state.llmModel);
-  }).catch(() => { /* static hosting: deterministic mode */ });
+  // AI layer: 1) pre-computed answers for frequent questions (verified again by
+  // the engine like any live answer), 2) live API, 3) deterministic fallback.
+  const [cache, health] = await Promise.all([
+    getJSON('data/llm_cache.json').catch(() => ({ expand: {}, select: {} })),
+    fetch('api/health').then(r => r.ok ? r.json() : null).catch(() => null),
+  ]);
+  const live = health && health.llm;
+  state.llmModel = live ? health.model : (Object.keys(cache.select).length ? 'cache' : null);
+  const key = (p) => `${p.lang}|${String(p.query).trim().toLowerCase()}`;
+  // circuit breaker: after a failure (quota…), skip the live API for 5 minutes
+  let aiDownUntil = 0;
+  const call = (kind, path) => async (payload) => {
+    const hit = cache[kind][key(payload)];
+    if (hit) return hit;
+    if (!live || Date.now() < aiDownUntil) throw new Error('live AI unavailable');
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 7000);
+    let j = null;
+    try {
+      const r = await fetch(path, { method: 'POST', signal: ctrl.signal, headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+      j = r.ok ? await r.json() : null;
+    } catch (e) { j = null; } finally { clearTimeout(timer); }
+    if (!j || j.ok === false) { aiDownUntil = Date.now() + 5 * 60 * 1000; throw new Error(path + ' unavailable'); }
+    return j;
+  };
+  if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select') };
+  $('#aiBadge').textContent = T().ai(state.llmModel);
   const sp = new URL(location.href).searchParams;
   if (sp.get('q')) { $('#q').value = sp.get('q'); run(sp.get('q')); }
   else if (sp.get('s')) openReader(+sp.get('s'), null);
