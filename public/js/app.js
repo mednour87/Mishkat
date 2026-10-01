@@ -3,7 +3,7 @@ import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
 import { quranWordLayout } from './letters3d.js';
 import { isBasmala } from './basmala.js';
 import { lampSVG, setLampWord } from './lamp.js';
-import { listen, stopListening, voiceSupported } from './voice.js';
+import { listen, stopListening, cancelListening, voiceSupported } from './voice.js';
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -174,33 +174,76 @@ function gate() {
     };
     $('#gateMic').onclick = async () => {
       try {
-        const txt = await listen({ lang: 'ar', serverStt: state.stt, onState: (st) => { $('#gateMsg').textContent = st === 'listening' ? t().listening : st === 'processing' ? t().processing : ''; $('#gateMsg').className = 'gmsg'; $('#gateMic').classList.toggle('rec', st === 'listening'); } });
+        if ($('#gateMic').classList.contains('rec')) { stopListening(); return; }
+        const txt = await listen({ lang: 'ar', serverStt: state.stt, maxMs: 9000,
+          onState: (st) => { $('#gateMsg').textContent = st === 'listening' ? t().listening : st === 'processing' ? t().processing : ''; $('#gateMsg').className = 'gmsg'; $('#gateMic').classList.toggle('rec', st === 'listening'); },
+          onPartial: (p) => { $('#gateInput').value = p; } });
         $('#gateInput').value = txt;
         check(txt);
-      } catch (e) { $('#gateMsg').textContent = t().voiceError; $('#gateMsg').className = 'gmsg bad'; }
+      } catch (e) { $('#gateMsg').textContent = e.code === 'denied' ? t().vDenied : e.code === 'nospeech' ? t().vNoSpeech : t().voiceError; $('#gateMsg').className = 'gmsg bad'; }
     };
   });
 }
 
 // ------------------------------------------------------------ voice search
+// A small dialog: speak (level meter, stops by itself at the pause) → the text heard
+// is shown and can be corrected → search. The spoken language is chosen explicitly.
+function voiceLang() {
+  let l = null; try { l = localStorage.getItem('mishkat.voiceLang'); } catch (e) { /* ignore */ }
+  return ['ar', 'en', 'fr'].includes(l) ? l : state.lang;
+}
 function setupMic() {
   const b = $('#mic');
   if (!voiceSupported(state.stt)) { b.hidden = true; return; }
   b.hidden = false;
-  let busy = false;
-  b.onclick = async () => {
-    if (busy) { stopListening(); return; }
-    busy = true;
-    try {
-      const txt = await listen({ lang: state.stt ? '' : state.lang, serverStt: state.stt, onState: (st) => {
-        b.classList.toggle('rec', st === 'listening');
-        $('#status').textContent = st === 'listening' ? T().listening : st === 'processing' ? T().processing : '';
-        $('#status').classList.toggle('on', st !== 'idle');
-      } });
-      if (txt) { $('#q').value = txt; run(txt); }
-    } catch (e) { $('#status').textContent = T().voiceError; $('#status').classList.add('on'); setTimeout(() => $('#status').classList.remove('on'), 2500); }
-    finally { busy = false; }
+  b.onclick = () => openVoice();
+}
+function openVoice() {
+  const box = $('#voice'), t = T();
+  let lang = voiceLang();
+  const markLang = () => box.querySelectorAll('[data-vl]').forEach(x => x.setAttribute('aria-pressed', x.dataset.vl === lang));
+  box.querySelectorAll('[data-vl]').forEach(x => x.onclick = () => {
+    lang = x.dataset.vl; markLang();
+    try { localStorage.setItem('mishkat.voiceLang', lang); } catch (e) { /* ignore */ }
+  });
+  markLang();
+  const ui = (st, msg) => {
+    box.dataset.st = st;
+    $('#vTitle').textContent = st === 'rec' ? t.vTitle : st === 'proc' ? t.vProc : st === 'done' ? t.vHeard : st === 'err' ? msg : t.vTitle;
+    $('#vHint').textContent = st === 'rec' ? t.vHint : '';
+    $('#vText').hidden = st !== 'done';
+    $('#vMain').textContent = st === 'rec' ? t.vStop : st === 'done' ? t.vSearch : t.vRetry;
+    $('#vAlt').textContent = st === 'done' ? t.vRetry : t.vCancel;
+    $('#vMain').disabled = st === 'proc';
   };
+  const close = () => { cancelListening(); box.hidden = true; $('#mic').classList.remove('rec'); $('#q').focus(); };
+  const start = async () => {
+    ui('rec');
+    $('#mic').classList.add('rec');
+    try {
+      const txt = await listen({
+        lang: () => lang, serverStt: state.stt,
+        onState: (st) => { if (st === 'processing') ui('proc'); },
+        onLevel: (v) => box.style.setProperty('--lvl', v.toFixed(3)),
+        onPartial: (p) => { $('#vHint').textContent = p; },
+      });
+      if (box.hidden) return;
+      if (!txt) return ui('err', t.vNoSpeech);
+      $('#vText').value = txt; ui('done');
+      $('#vText').dir = /[؀-ۿ]/.test(txt) ? 'rtl' : 'ltr';
+      $('#vMain').focus();
+    } catch (e) {
+      if (!box.hidden) ui('err', e.code === 'denied' ? t.vDenied : e.code === 'nospeech' ? t.vNoSpeech : t.vFail);
+    } finally { $('#mic').classList.remove('rec'); }
+  };
+  const search = () => { const q = $('#vText').value.trim(); if (!q) return; box.hidden = true; $('#q').value = q; run(q); };
+  $('#vMain').onclick = () => { const st = box.dataset.st; if (st === 'rec') stopListening(); else if (st === 'done') search(); else start(); };
+  $('#vAlt').onclick = () => { if (box.dataset.st === 'done') start(); else close(); };
+  $('#vText').onkeydown = (ev) => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); search(); } };
+  box.onkeydown = (ev) => { if (ev.key === 'Escape') close(); };
+  box.onclick = (ev) => { if (ev.target === box) close(); };
+  box.hidden = false;
+  start();
 }
 
 // ------------------------------------------------------------ search

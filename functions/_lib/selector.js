@@ -133,20 +133,55 @@ export function providers(env) {
 }
 
 // Speech-to-text (Whisper on Groq). Returns the transcription text only.
+// The language is given (short Arabic questions are often mis-detected), a short
+// vocabulary prompt biases the spelling, and text invented on silence is dropped.
+const STT_PROMPT = {
+  ar: 'سؤال عن القرآن الكريم: آية، سورة، تفسير، الصبر، بر الوالدين، قصة يوسف، موسى، الصلاة، الزكاة، الصيام.',
+  en: 'A question about the Quran: verse, surah, tafsir, patience, parents, Joseph, Moses, prayer, fasting.',
+  fr: 'Une question sur le Coran : verset, sourate, tafsir, patience, parents, Joseph, Moïse, prière, jeûne.',
+};
+// phrases Whisper is known to produce on silence or noise (subtitle credits, outros)
+const P = String.raw`[\s\p{P}\p{S}]*`;   // spaces / punctuation only (Unicode-aware: Arabic letters are NOT matched)
+const STT_GHOSTS = [/ترجمة\s*نانسي/u, /اشتركوا?\s*في\s*القناة/u, /شكرا\s*(لكم\s*)?على\s*المشاهدة/u, /شكرا\s*للمشاهدة/u,
+  /sous-?titr/iu, /merci d.avoir regard/iu, /thanks? (you )?for watching/iu, /please subscribe|subscribe to (my|the|our) channel/iu, /amara\.org/iu,
+  new RegExp(`^${P}(you|thank you|thanks|bye|merci|au revoir|شكرا|شكرًا|موسيقى)${P}$`, 'iu'), new RegExp(`^${P}$`, 'u')];
+const AUDIO_EXT = { 'audio/webm': 'webm', 'video/webm': 'webm', 'audio/ogg': 'ogg', 'audio/mp4': 'm4a', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/x-wav': 'wav' };
+export function cleanTranscript(j, lang) {
+  let text;
+  if (Array.isArray(j.segments) && j.segments.length) {
+    text = j.segments.filter(sg => !(sg.no_speech_prob > 0.6 && sg.avg_logprob < -0.7) && !(sg.avg_logprob < -1.2))
+      .map(sg => String(sg.text || '')).join(' ');
+  } else text = String(j.text || '');
+  text = text.replace(/\s+/g, ' ').trim();
+  const prompt = STT_PROMPT[lang] || '';
+  // the vocabulary prompt echoed back on silence (a one-word question such as «الصبر» is kept)
+  const echo = prompt && text.split(/\s+/).length >= 4 && prompt.includes(text.replace(/[.،,:;!?؟]+$/u, ''));
+  if (!text || echo || STT_GHOSTS.some(re => re.test(text))) return '';
+  return text.slice(0, 500);
+}
 export async function transcribe(audioBlob, lang, env, fetchImpl = fetch) {
   const key = env.STT_KEY || env.GROQ_API_KEY;
   if (!key) return { ok: false, error: 'no stt key' };
-  const fd = new FormData();
-  fd.append('file', audioBlob, 'speech.webm');
-  fd.append('model', env.STT_MODEL || 'whisper-large-v3');
-  if (['ar', 'en', 'fr'].includes(lang)) fd.append('language', lang);
-  fd.append('response_format', 'json');
-  fd.append('temperature', '0');
-  const r = await fetchImpl(env.STT_URL || 'https://api.groq.com/openai/v1/audio/transcriptions', {
-    method: 'POST', headers: { authorization: `Bearer ${key}` }, body: fd });
-  if (!r.ok) return { ok: false, error: `stt HTTP ${r.status}` };
-  const j = await r.json();
-  return { ok: true, text: String(j.text || '').trim().slice(0, 500) };
+  if (!audioBlob || typeof audioBlob === 'string') return { ok: false, error: 'bad audio' };
+  const type = String(audioBlob.type || 'audio/webm').split(';')[0];
+  const once = async (l) => {
+    const fd = new FormData();
+    fd.append('file', audioBlob, `speech.${AUDIO_EXT[type] || 'webm'}`);
+    fd.append('model', env.STT_MODEL || 'whisper-large-v3');
+    if (l) { fd.append('language', l); fd.append('prompt', STT_PROMPT[l]); }
+    fd.append('response_format', 'verbose_json');
+    fd.append('temperature', '0');
+    const r = await fetchImpl(env.STT_URL || 'https://api.groq.com/openai/v1/audio/transcriptions', {
+      method: 'POST', headers: { authorization: `Bearer ${key}` }, body: fd });
+    if (!r.ok) return { ok: false, error: `stt HTTP ${r.status}` };
+    const j = await r.json();
+    return { ok: true, text: cleanTranscript(j, l), raw: String(j.text || '').trim() };
+  };
+  const l = ['ar', 'en', 'fr'].includes(lang) ? lang : '';
+  let out = await once(l);
+  // speech was heard but did not fit the chosen language (e.g. French spoken, Arabic selected): auto-detect once
+  if (out.ok && !out.text && out.raw && l) out = await once('');
+  return out.ok ? { ok: true, text: out.text } : out;
 }
 
 // per-model circuit breaker: a model that returned 429 is skipped for 2 minutes
