@@ -7,9 +7,7 @@
 <meta name="description" content="Mishkat — ask the Quran galaxy: every answer quoted from vetted tafsir, every verse from the Tanzil text, synchronised recitation, abstains when unsure. Arabic · English · Français.">
 <meta name="theme-color" content="#05070d">
 <link rel="icon" href="img/logo.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="css/app.css">
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 </head>
@@ -31,9 +29,10 @@
       <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M20 20l-4.2-4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
     </button>
   </form>
+  <div class="hright"><button id="themeBtn" class="icon" data-i18n-aria="themeLabel">☾</button>
   <div class="langs" role="group" aria-label="Language">
     <button data-lang="ar">ع</button><button data-lang="en">EN</button><button data-lang="fr">FR</button>
-  </div>
+  </div></div>
 </header>
 
 <section id="hero">
@@ -56,12 +55,33 @@
 
 <nav id="dock">
   <button id="btnHome" data-i18n-title="home" aria-label="home">⌂</button>
-  <button id="btnLayout" data-i18n="layoutMushaf">ترتيب المصحف</button>
+  <button id="btnMenu" data-i18n="menu">القائمة</button>
+  <label class="viewpick"><span data-i18n="viewLabel">العرض</span>
+    <select id="viewSel">
+      <option value="g0" data-i18n="vG0">مجرّة · ترتيب المصحف</option>
+      <option value="g1" data-i18n="vG1">مجرّة · ترتيب النزول</option>
+      <option value="q-mushaf" data-i18n="vQm">«قرآن» · ترتيب المصحف</option>
+      <option value="q-nuzul" data-i18n="vQn">«قرآن» · ترتيب النزول</option>
+      <option value="q-length" data-i18n="vQl">«قرآن» · حسب طول السورة</option>
+      <option value="q-place" data-i18n="vQp">«قرآن» · مكي ثم مدني</option>
+    </select></label>
   <button id="btnLegend" data-i18n="legend">المفتاح</button>
   <button id="btnAbout" data-i18n="about">عن مشكاة</button>
   <span id="aiBadge"></span>
 </nav>
 <div id="legendBox" hidden></div>
+<div id="viewNote" hidden></div>
+<div class="lamp-host" id="bigLamp" aria-hidden="true"></div>
+
+<div id="welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle" hidden>
+  <div class="wbox">
+    <div id="wBasmala" class="ayah"></div>
+    <h2 id="wTitle" data-i18n="wTitle">أهلًا بك في مِشكاة</h2>
+    <p data-i18n="wLead">دليلك إلى القرآن الكريم: تفسيرٌ موثَّق، وتلاوةٌ متزامنة، وبحثٌ يجيبك من القرآن نفسه. اختر ما تريد — يمكنك اختيار أكثر من أمر:</p>
+    <div id="wOptions" class="wopts"></div>
+    <div class="wfoot"><button id="wClose" class="btn" data-i18n="wSkip">استكشف المجرّة</button></div>
+  </div>
+</div>
 
 <dialog id="about">
   <div id="aboutBody"></div>

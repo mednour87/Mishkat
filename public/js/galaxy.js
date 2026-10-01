@@ -229,8 +229,15 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
     scene.add(pathLine);
   }
 
+  // extra layouts computed in the browser (e.g. the word "قرآن" in 3D); each may carry its own home view
+  const homes = [];
+  function addLayout(arr, view) { layouts.push(arr); homes[layouts.length - 1] = view || null; return layouts.length - 1; }
   function setLayout(L) {
-    if (L === layout) return;
+    if (L === layout || !layouts[L]) return;
+    const v = homes[L];
+    if (v) animateTo(new THREE.Vector3(...v.pos), new THREE.Vector3(...v.target), 2200);
+    else animateTo(HOME.pos.clone(), HOME.target.clone(), 2200);
+    controls.autoRotate = false;
     const posAttr = geo.getAttribute('position'), pos2 = geo.getAttribute('position2');
     posAttr.array.set(layouts[layout]); pos2.array.set(layouts[L]);
     posAttr.needsUpdate = pos2.needsUpdate = true;
@@ -241,6 +248,9 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
 
   function home() {
     ring.visible = false; showLabels(null);
+    const target = (morph ? morph.to : layout);
+    const v = homes[target];
+    if (v) { animateTo(new THREE.Vector3(...v.pos), new THREE.Vector3(...v.target), 1500); return; }
     animateTo(HOME.pos.clone(), HOME.target.clone(), 1500);
     setTimeout(() => { controls.autoRotate = true; }, 1600);
   }
@@ -305,7 +315,8 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
   loop();
 
   return {
-    flyToVerse, highlightVerses, setLayout, home, showLabels,
+    flyToVerse, highlightVerses, setLayout, addLayout, home, showLabels,
+    get count() { return N; },
     setCardVisible(v) { cardOn = v; if (!v) labelBox.style.opacity = 0; },
     setActiveWord(i) {
       if (i == null || i < 0 || i >= N) { active.visible = false; return; }

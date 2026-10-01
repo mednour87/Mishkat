@@ -1,6 +1,6 @@
 // Local server (no dependencies): serves public/ and the same /api routes as
-// the Cloudflare Pages Functions.  Usage:  node server.mjs [port]
-// Reads GROQ_API_KEY etc. from the environment or from a local .dev.vars file.
+// the Cloudflare Pages Functions, with the same security headers and limits.
+//   node server.mjs [port]      (reads GROQ_API_KEY etc. from env or .dev.vars)
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
@@ -8,6 +8,8 @@ import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { select, expand, health, transcribe } from './functions/_lib/selector.js';
+import { rateLimited, foreignOrigin, LIMITS } from './functions/_lib/guard.js';
+import { SECURITY_HEADERS } from './functions/_lib/csp.js';
 
 const ROOT = fileURLToPath(new URL('./public/', import.meta.url));
 const PORT = +(process.argv[2] || process.env.PORT || 8787);
@@ -17,46 +19,52 @@ if (existsSync(dv)) for (const line of readFileSync(dv, 'utf8').split(/\r?\n/)) 
   const m = line.match(/^\s*([A-Z_]+)\s*=\s*"?(.*?)"?\s*$/); if (m) env[m[1]] = m[2];
 }
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-  '.json': 'application/json; charset=utf-8', '.bin': 'application/octet-stream', '.svg': 'image/svg+xml', '.png': 'image/png' };
+  '.json': 'application/json; charset=utf-8', '.bin': 'application/octet-stream', '.svg': 'image/svg+xml', '.png': 'image/png',
+  '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8' };
 const cache = new Map();
 
 createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://x');
-    if (url.pathname === '/api/health') return send(res, 200, JSON.stringify(health(env)), '.json');
-    if (url.pathname === '/api/transcribe' && req.method === 'POST') {
-      const chunks = []; for await (const c of req) chunks.push(c);
+    const ip = req.socket.remoteAddress;
+    if (url.pathname.startsWith('/api/')) {
+      if (foreignOrigin(req.headers.origin, req.headers.host)) return send(res, 403, '{"ok":false,"error":"forbidden origin"}', '.json');
+      if (url.pathname === '/api/health') return send(res, 200, JSON.stringify(health(env)), '.json');
+      const name = url.pathname.slice(5);
+      if (req.method !== 'POST' || !['select', 'expand', 'transcribe'].includes(name)) return send(res, 404, '{"ok":false}', '.json');
+      if (rateLimited(ip, name, LIMITS[name])) return send(res, 429, '{"ok":false,"error":"too many requests"}', '.json');
+      const chunks = []; let size = 0;
+      const max = name === 'transcribe' ? LIMITS.maxAudioBytes : LIMITS.maxJsonBytes;
+      for await (const c of req) { size += c.length; if (size > max) return send(res, 413, '{"ok":false,"error":"too large"}', '.json'); chunks.push(c); }
       const body = Buffer.concat(chunks);
-      if (body.length > 4 * 1024 * 1024) return send(res, 400, '{"ok":false,"error":"too large"}', '.json');
-      const form = await new Request('http://x/', { method: 'POST', headers: { 'content-type': req.headers['content-type'] }, body }).formData();
-      const out = await transcribe(form.get('audio'), String(form.get('lang') || ''), env);
-      return send(res, 200, JSON.stringify(out), '.json');
-    }
-    const apiFn = { '/api/select': select, '/api/expand': expand }[url.pathname];
-    if (apiFn && req.method === 'POST') {
-      let body = ''; for await (const c of req) body += c;
-      const key = url.pathname + body;
+      if (name === 'transcribe') {
+        const form = await new Request('http://x/', { method: 'POST', headers: { 'content-type': req.headers['content-type'] || '' }, body }).formData();
+        const out = await transcribe(form.get('audio'), String(form.get('lang') || '').slice(0, 2), env);
+        return send(res, 200, JSON.stringify(out), '.json');
+      }
+      const key = name + body.toString('utf8');
       if (cache.has(key)) return send(res, 200, cache.get(key), '.json');
       try {
-        const out = JSON.stringify(await apiFn(JSON.parse(body), env));
+        const fn = name === 'select' ? select : expand;
+        const out = JSON.stringify(await fn(JSON.parse(body.toString('utf8')), env));
         if (JSON.parse(out).ok) cache.set(key, out);
         return send(res, 200, out, '.json');
-      } catch (e) { return send(res, 400, JSON.stringify({ ok: false, error: e.message }), '.json'); }
+      } catch (e) { return send(res, 400, JSON.stringify({ ok: false, error: 'bad request' }), '.json'); }
     }
     let p = decodeURIComponent(url.pathname);
     if (p.endsWith('/')) p += 'index.html';
     const file = normalize(join(ROOT, p));
-    if (!file.startsWith(normalize(ROOT))) return send(res, 403, 'forbidden', '.txt');
+    if (!file.startsWith(normalize(ROOT)) || /[\\/]\./.test(p) || p.includes('_headers')) return send(res, 403, 'forbidden', '.txt');
     const st = await stat(file).catch(() => null);
     if (!st || !st.isFile()) return send(res, 404, 'not found', '.txt');
     const data = await readFile(file);
-    const gz = /gzip/.test(req.headers['accept-encoding'] || '') && data.length > 1024 && extname(file) !== '.png';
-    res.writeHead(200, { 'content-type': TYPES[extname(file)] || 'application/octet-stream', ...(gz ? { 'content-encoding': 'gzip' } : {}) });
+    const gz = /gzip/.test(req.headers['accept-encoding'] || '') && data.length > 1024 && !['.png', '.woff2'].includes(extname(file));
+    res.writeHead(200, { ...SECURITY_HEADERS, 'content-type': TYPES[extname(file)] || 'application/octet-stream', ...(gz ? { 'content-encoding': 'gzip' } : {}) });
     res.end(gz ? gzipSync(data) : data);
-  } catch (e) { send(res, 500, String(e), '.txt'); }
+  } catch (e) { send(res, 500, 'error', '.txt'); }
 }).listen(PORT, '127.0.0.1', () => console.log(`Mishkat on http://127.0.0.1:${PORT}  (LLM: ${health(env).llm ? health(env).model : 'off'})`));
 
 function send(res, code, body, ext) {
-  res.writeHead(code, { 'content-type': TYPES[ext] || 'text/plain; charset=utf-8' });
+  res.writeHead(code, { ...SECURITY_HEADERS, 'content-type': TYPES[ext] || 'text/plain; charset=utf-8', 'cache-control': 'no-store' });
   res.end(body);
 }

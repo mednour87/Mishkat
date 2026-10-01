@@ -46,6 +46,16 @@ query ─► famous names / references / surah names (deterministic)
       ─► paragraph (verbatim sentences) + surahs ranked by relevance + galaxy flight
 ```
 
+
+## New in v3 (declared baseline, 1 Oct 2026)
+- **Entry gate «سَمِّ الله»**: type, copy-paste or *say* the basmala (all spellings, with/without diacritics, transliterations; speech via Whisper or the browser) — then a welcome screen (basmala first) with multi-choice features: tafsir of a verse, go to a surah/verse, listen, learn (short-surah path), ask, check a quote.
+- **Logo & recitation lamp** — niche ▸ planet-like glass sphere ▸ bottle ▸ flame, lighting up in turn (*nūrun ʿalā nūr*, 24:35); during recitation the word being recited shines **inside the bottle**, auto-fitted so even the longest words stay readable.
+- **New 3D view «قرآن»** — the word «قرآن» built from all 77,433 words: each surah fills a share of the letters proportional to its length, words coiling like a snail inside the letter, a gap between surahs; order switchable (Mushaf · revelation · length · Meccan→Medinan; key **V**).
+- **Answers**: one card per verse with its *complete* tafsir (no fragments), explanation only when the AI confirmed relevance, verified context packs for trap/sensitive questions, «السياق» (verses before/after), fatwa questions → official sources (binbaz.org.sa, alifta.gov.sa) + related verses labelled *not a fatwa*; takfir/violence requests refused.
+- **Reader**: ▶ before every verse, restart-verse, previous/next, continuous recitation; reader tab always available.
+- **Light / dark mode**, voice search (3 languages), mobile-first layout.
+- **Security**: strict CSP (one hashed inline script, no remote scripts, no eval), `frame-ancestors 'none'`, Permissions-Policy (microphone=self only), same-origin API with per-IP rate limits and size limits, self-hosted fonts (OFL), secrets server-side only — covered by `tests/security.test.mjs`.
+
 ## Results (synthetic benchmark, `eval/`)
 See [`eval/results/REPORT.md`](eval/results/REPORT.md) — 338 seeded synthetic questions across 16 categories (references, surah names, exact/misquoted/merged verses, sayings wrongly attributed to the Quran, fatwa/personal/dream questions, 30 topics × 3 languages), compared with a “Ctrl+F” baseline, plus the AI-augmented mode and a model comparison (`eval/results/bench_llm.json`).
 

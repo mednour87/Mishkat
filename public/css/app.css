@@ -246,3 +246,88 @@ html[lang=ar] .vcardx .tafsir, .vcardx .tafsir[dir=rtl] { font-size: 17.5px; }
   .mic { width: 36px; height: 36px; }
   .vcardx .ayah { font-size: 19px; }
 }
+
+/* ------------------------------------------------------------ header right */
+.hright { display: flex; gap: 8px; align-items: center; }
+#themeBtn { width: 36px; height: 36px; font-size: 16px; color: var(--gold); }
+
+/* ------------------------------------------------------------ view selector */
+.viewpick { display: flex; align-items: center; gap: 6px; background: rgba(14, 19, 32, .82); border: 1px solid var(--line); border-radius: 10px; padding: 4px 8px; font-size: 12.5px; color: var(--mut); }
+.viewpick select { background: transparent; color: var(--txt); border: 0; font: inherit; font-size: 13px; max-width: 210px; }
+.viewpick select option { background: #0d1220; color: #eceff5; }
+#viewNote { position: fixed; top: calc(var(--head) + 12px); inset-inline-start: 16px; max-width: min(420px, calc(100vw - var(--pw) - 60px)); z-index: 6;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-size: 13px; line-height: 1.6; color: var(--txt); }
+#viewNote[hidden] { display: none; }
+body.has-panel #viewNote { max-width: calc(100vw - var(--pw) - 60px); }
+
+/* ------------------------------------------------------------ lamps */
+.lamp-host { position: fixed; bottom: 70px; inset-inline-start: 22px; z-index: 5; pointer-events: none; opacity: 0; transform: scale(.9);
+  transition: opacity .5s, transform .5s; filter: drop-shadow(0 0 30px rgba(255, 200, 90, .45)); }
+body.reciting .lamp-host { opacity: 1; transform: none; }
+.lamp .lamp-word { filter: drop-shadow(0 0 1.5px #fff) drop-shadow(0 0 4px rgba(255, 220, 140, .9)); font-weight: 700; }
+.rd-top { display: flex; align-items: center; gap: 10px; }
+.rd-lamp { flex: none; line-height: 0; }
+.rd-top .rd-title { flex: 1; }
+.vplay { background: none; border: 0; color: var(--gold2); font-size: 13px; padding: 0 4px; vertical-align: middle; opacity: .55; cursor: pointer; font-family: var(--ui); }
+.vplay:hover, .v.cur .vplay { opacity: 1; }
+
+/* ------------------------------------------------------------ welcome */
+#welcome { position: fixed; inset: 0; z-index: 25; display: grid; place-items: center; padding: 16px; background: rgba(3, 5, 10, .72); backdrop-filter: blur(6px); }
+#welcome[hidden] { display: none; }
+.wbox { width: min(760px, 100%); max-height: calc(100vh - 32px); overflow-y: auto; background: var(--panel); border: 1px solid rgba(255, 214, 107, .3);
+  border-radius: 20px; padding: 20px 22px; box-shadow: 0 30px 80px rgba(0, 0, 0, .55); }
+#wBasmala { text-align: center; font-size: 28px; color: var(--gold); }
+.wbox h2 { text-align: center; margin: 4px 0; color: var(--txt); font-size: 24px; }
+.wbox > p { text-align: center; color: var(--mut); margin: 0 0 14px; line-height: 1.7; }
+.wopts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.wopt { border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; background: var(--panel2); transition: border-color .2s, background .2s; }
+.wopt.on { border-color: rgba(255, 214, 107, .55); background: rgba(255, 214, 107, .06); }
+.wopt label { display: grid; grid-template-columns: auto 1fr; gap: 2px 8px; cursor: pointer; align-items: start; }
+.wopt input[type=checkbox] { grid-row: span 2; width: 18px; height: 18px; accent-color: var(--gold2); margin-top: 3px; }
+.wopt b { color: var(--txt); font-size: 15px; }
+.wopt small { color: var(--mut); font-size: 12.5px; line-height: 1.5; }
+.wctl { display: none; flex-wrap: wrap; gap: 6px; margin-top: 8px; align-items: center; }
+.wopt.on .wctl { display: flex; }
+.wctl select, .wctl input { background: #0f1422; color: var(--txt); border: 1px solid var(--line); border-radius: 9px; padding: 6px 8px; font: inherit; font-size: 13.5px; min-width: 0; }
+.wctl select { flex: 1 1 140px; } .wctl input[type=number] { width: 70px; } .wctl input[type=text] { flex: 1 1 180px; }
+.wfoot { display: flex; justify-content: center; margin-top: 14px; }
+
+@media (max-width: 820px) {
+  .wopts { grid-template-columns: 1fr; }
+  .lamp-host { display: none; }
+  .viewpick select { max-width: 140px; }
+  #viewNote { top: calc(var(--head) + 8px); bottom: auto; inset-inline: 12px; max-width: none; font-size: 12px; }
+  body.qview #hero { display: none; }
+  body.has-panel #viewNote { display: none; }
+  .rd-lamp svg { width: 96px; height: 96px; }
+}
+
+/* ------------------------------------------------------------ light theme
+   panels and text become light; the galaxy stays a night sky behind them */
+html[data-theme=light] {
+  --panel: rgba(251, 248, 241, .95); --panel2: rgba(0, 0, 0, .025); --line: rgba(40, 30, 10, .12);
+  --txt: #1d2433; --mut: #5b6476; --gold: #a86f0c; --gold2: #b8790f; --blue: #1f6fb2; --ok: #1d8a57; --warn: #b5650d; --stop: #c03535;
+}
+html[data-theme=light] #top { background: linear-gradient(rgba(251, 248, 241, .96), rgba(251, 248, 241, .85)); border-bottom-color: rgba(168, 111, 12, .2); }
+html[data-theme=light] #searchForm, html[data-theme=light] #dock button, html[data-theme=light] .viewpick, html[data-theme=light] #chips button { background: rgba(255, 255, 255, .92); color: var(--txt); }
+html[data-theme=light] #q { color: var(--txt); }
+html[data-theme=light] .ayah, html[data-theme=light] .mushaf, html[data-theme=light] .sc-name b, html[data-theme=light] .rd-title b { color: #2a1f08; }
+html[data-theme=light] .tr, html[data-theme=light] .tafsir, html[data-theme=light] .vcardx .tafsir, html[data-theme=light] .ctx-v .tafsir { color: #2d3546; }
+html[data-theme=light] .mushaf .v.cur { background: rgba(168, 111, 12, .12); color: #1a1205; }
+html[data-theme=light] .mushaf .w.now { color: #fff; background: #b8790f; }
+html[data-theme=light] .wctl select, html[data-theme=light] .wctl input, html[data-theme=light] #gateInput, html[data-theme=light] .rd-ctrl select { background: #fff; color: var(--txt); }
+html[data-theme=light] .gbox, html[data-theme=light] .wbox { background: rgba(251, 248, 241, .97); }
+html[data-theme=light] #gate { background: radial-gradient(ellipse at 50% 40%, #f7f1e3, #e9e1cd); }
+html[data-theme=light] .gverse .ayah, html[data-theme=light] #heroVerse { color: #3a2a06; text-shadow: none; }
+html[data-theme=light] #heroLead { background: rgba(251, 248, 241, .9); color: var(--txt); }
+html[data-theme=light] .ghint, html[data-theme=light] .wbox > p { color: var(--mut); }
+html[data-theme=light] .rd-detail { background: rgba(0, 0, 0, .03); }
+html[data-theme=light] .badge.ok { background: rgba(29, 138, 87, .08); }
+html[data-theme=light] .vcardx { background: linear-gradient(180deg, rgba(168, 111, 12, .07), rgba(168, 111, 12, .02)); }
+html[data-theme=light] .vcardx.ctx { background: linear-gradient(180deg, rgba(31, 111, 178, .07), rgba(31, 111, 178, .02)); }
+html[data-theme=light] .viewpick select option { background: #fff; color: #1d2433; }
+html[data-theme=light] .vcard { background: rgba(251, 248, 241, .92); }
+html[data-theme=light] .vcard .a { color: #2a1f08; }
+
+body.qview #heroLead, body.qview #chips { display: none; }
+body.qview #hero { top: calc(var(--head) + 6px); }

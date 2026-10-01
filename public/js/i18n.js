@@ -32,6 +32,12 @@ export const UI = {
     contextTitle: 'سياق ضروري لفهم السؤال (آيات وتفسيرها كاملًا)', ctxBtn: 'السياق', ctxTitle: 'ما قبل الآية وما بعدها مع تفسيرها:', readHere: 'اقرأ في السورة',
     relatedNotFatwa: 'آيات ذات صلة بالموضوع — للاطلاع، وليست فتوى',
     links: { binbaz: 'ابحث في فتاوى الشيخ ابن باز (binbaz.org.sa)', alifta: 'الرئاسة العامة للبحوث العلمية والإفتاء (alifta.gov.sa)' },
+    menu: 'القائمة', viewLabel: 'العرض', themeLabel: 'الوضع الفاتح/الداكن',
+    vG0: 'مجرّة · ترتيب المصحف', vG1: 'مجرّة · ترتيب النزول', vQm: '«قرآن» · ترتيب المصحف', vQn: '«قرآن» · ترتيب النزول', vQl: '«قرآن» · حسب طول السورة', vQp: '«قرآن» · مكي ثم مدني',
+    ord_mushaf: 'ترتيب المصحف', ord_nuzul: 'ترتيب النزول', ord_length: 'من أطول سورة إلى أقصرها', ord_place: 'السور المكية ثم المدنية',
+    viewNote: (o) => `كلمة «قرآن» مكوَّنة من كلمات القرآن كلها: لكل سورة جزءٌ من الحروف بقدر عدد كلماتها، تلتفّ كلماتها حلزونيًّا داخل الحرف، وبين كل سورتين فاصل صغير. يسير الترتيب من اليمين إلى اليسار: ${o}. (اضغط V للتبديل)`,
+    restartA: 'من بداية الآية', playAya: (a) => `استمع إلى الآية ${a}`,
+    wTitle: 'أهلًا بك في مِشكاة', wLead: 'دليلك إلى القرآن الكريم: تفسيرٌ موثَّق، وتلاوةٌ متزامنة، وبحثٌ يجيبك من القرآن نفسه. اختر ما تريد — يمكنك اختيار أكثر من أمر:', wSkip: 'استكشف المجرّة',
     hoverAya: (s, a) => `سورة ${s} · الآية ${a}`,
   },
   en: {
@@ -66,6 +72,12 @@ export const UI = {
     contextTitle: 'Essential context (verses with their full tafsir)', ctxBtn: 'Context', ctxTitle: 'Verses before and after, with tafsir:', readHere: 'Read in surah',
     relatedNotFatwa: 'Related verses — for reading, not a fatwa',
     links: { binbaz: 'Search Sheikh Ibn Baz’s fatwas (binbaz.org.sa)', alifta: 'General Presidency of Scholarly Research and Ifta (alifta.gov.sa)' },
+    menu: 'Menu', viewLabel: 'View', themeLabel: 'Light/dark mode',
+    vG0: 'Galaxy · Mushaf order', vG1: 'Galaxy · revelation order', vQm: '“Qur’an” · Mushaf order', vQn: '“Qur’an” · revelation order', vQl: '“Qur’an” · by surah length', vQp: '“Qur’an” · Meccan then Medinan',
+    ord_mushaf: 'Mushaf order', ord_nuzul: 'revelation order', ord_length: 'longest to shortest surah', ord_place: 'Meccan surahs, then Medinan',
+    viewNote: (o) => `The word “قرآن” is built from all the words of the Quran: each surah fills a part of the letters proportional to its number of words, its words coiling like a snail inside the letter, with a small gap between surahs. Order, right to left: ${o}. (Press V to switch)`,
+    restartA: 'From the start of the verse', playAya: (a) => `Listen to verse ${a}`,
+    wTitle: 'Welcome to Mishkat', wLead: 'Your guide to the Quran: vetted tafsir, synchronised recitation, and answers drawn from the Quran itself. Choose what you want — you can pick several:', wSkip: 'Explore the galaxy',
     hoverAya: (s, a) => `Surah ${s} · verse ${a}`,
   },
   fr: {
@@ -100,6 +112,12 @@ export const UI = {
     contextTitle: 'Contexte essentiel (versets avec leur tafsir complet)', ctxBtn: 'Contexte', ctxTitle: 'Versets avant et après, avec leur tafsir :', readHere: 'Lire dans la sourate',
     relatedNotFatwa: 'Versets liés au sujet — à lire, ce n’est pas une fatwa',
     links: { binbaz: 'Chercher dans les fatwas du cheikh Ibn Baz (binbaz.org.sa)', alifta: 'Présidence générale de la recherche et de l’ifta (alifta.gov.sa)' },
+    menu: 'Menu', viewLabel: 'Vue', themeLabel: 'Mode clair/sombre',
+    vG0: 'Galaxie · ordre du Mushaf', vG1: 'Galaxie · ordre de révélation', vQm: '« Qur’ân » · ordre du Mushaf', vQn: '« Qur’ân » · ordre de révélation', vQl: '« Qur’ân » · par longueur', vQp: '« Qur’ân » · mecquoises puis médinoises',
+    ord_mushaf: 'ordre du Mushaf', ord_nuzul: 'ordre de révélation', ord_length: 'de la plus longue à la plus courte sourate', ord_place: 'sourates mecquoises, puis médinoises',
+    viewNote: (o) => `Le mot « قرآن » est formé de tous les mots du Coran : chaque sourate remplit une partie des lettres proportionnelle à son nombre de mots, ses mots s’enroulant en spirale dans la lettre, avec un petit vide entre les sourates. Ordre, de droite à gauche : ${o}. (Touche V pour changer)`,
+    restartA: 'Depuis le début du verset', playAya: (a) => `Écouter le verset ${a}`,
+    wTitle: 'Bienvenue dans Mishkat', wLead: 'Votre guide du Coran : tafsir vérifié, récitation synchronisée, et des réponses tirées du Coran lui-même. Choisissez ce que vous voulez — plusieurs choix possibles :', wSkip: 'Explorer la galaxie',
     hoverAya: (s, a) => `Sourate ${s} · verset ${a}`,
   },
 };
@@ -159,4 +177,35 @@ export const ABOUT = {
 <ul><li>La recherche thématique peut manquer un passage formulé autrement : on parle d’« emplacements liés », pas de « tous les emplacements ».</li>
 <li>L’ordre de révélation est un ordre savant répandu, montré pour l’exploration visuelle seulement.</li>
 <li>Vos questions ne sont pas conservées ; seul le texte de la requête est envoyé au modèle de classement, sans donnée personnelle.</li></ul>`,
+};
+
+// Welcome screen: the features a visitor can tick (several at once).
+export const WELCOME = {
+  ar: {
+    sura: 'السورة', aya: 'الآية', verifyPrefix: 'هل هذه آية:',
+    tafsir: { title: 'تفسير آية', desc: 'اختر سورة وآية لتقرأ تفسيرها (الميسر، المختصر، السعدي).', go: 'اعرض التفسير' },
+    goto: { title: 'الذهاب إلى سورة أو آية', desc: 'افتح المصحف عند الموضع الذي تريد، وتنقّل آيةً آية.', go: 'اذهب' },
+    listen: { title: 'الاستماع إلى التلاوة', desc: 'تلاوة الشيخ العفاسي مع إبراز كل كلمة عند قراءتها.', go: 'استمع' },
+    learn: { title: 'تعلّم: مسار قصار السور', desc: 'ابدأ بسورة قصيرة: تلاوة متتابعة مع التفسير آيةً آية.' },
+    ask: { title: 'اسأل وشاهد مراجعك من القرآن', desc: 'سؤال أو فكرة → الآيات وتفسيرها، والسور مرتبة حسب الصلة.', go: 'ابحث', ph: 'مثال: الصبر، بر الوالدين، قصة يوسف…' },
+    verify: { title: 'تحقّق: هل هذا النص آية؟', desc: 'الصق نصًّا منسوبًا إلى القرآن لتعرف هل هو آية، وأين هي.', go: 'تحقّق', ph: 'الصق النص هنا…' },
+  },
+  en: {
+    sura: 'Surah', aya: 'Verse', verifyPrefix: 'Is this a verse:',
+    tafsir: { title: 'Tafsir of a verse', desc: 'Pick a surah and a verse to read its explanation (Al-Mukhtasar, Al-Muyassar, As-Sa‘di).', go: 'Show tafsir' },
+    goto: { title: 'Go to a surah or verse', desc: 'Open the Mushaf where you want and move verse by verse.', go: 'Go' },
+    listen: { title: 'Listen to the recitation', desc: 'Sheikh Alafasy’s recitation, each word lighting up as it is recited.', go: 'Listen' },
+    learn: { title: 'Learn: the short-surah path', desc: 'Start with a short surah: continuous recitation with tafsir verse by verse.' },
+    ask: { title: 'Ask and see your references in the Quran', desc: 'A question or idea → the verses and their tafsir, with surahs ranked by relevance.', go: 'Search', ph: 'e.g. patience, parents, story of Joseph…' },
+    verify: { title: 'Check: is this text a verse?', desc: 'Paste a text attributed to the Quran to know whether it is a verse, and where.', go: 'Check', ph: 'Paste the text here…' },
+  },
+  fr: {
+    sura: 'Sourate', aya: 'Verset', verifyPrefix: 'Est-ce un verset :',
+    tafsir: { title: 'Tafsir d’un verset', desc: 'Choisissez une sourate et un verset pour lire son explication (Al-Mukhtasar, Al-Muyassar, As-Sa‘di).', go: 'Afficher le tafsir' },
+    goto: { title: 'Aller à une sourate ou un verset', desc: 'Ouvrez le Mushaf où vous voulez et avancez verset par verset.', go: 'Aller' },
+    listen: { title: 'Écouter la récitation', desc: 'Récitation du cheikh Alafasy, chaque mot s’allumant quand il est récité.', go: 'Écouter' },
+    learn: { title: 'Apprendre : parcours des courtes sourates', desc: 'Commencez par une courte sourate : récitation continue avec le tafsir verset par verset.' },
+    ask: { title: 'Poser une question et voir ses références dans le Coran', desc: 'Une question ou une idée → les versets et leur tafsir, avec les sourates classées par pertinence.', go: 'Rechercher', ph: 'ex. patience, parents, histoire de Joseph…' },
+    verify: { title: 'Vérifier : ce texte est-il un verset ?', desc: 'Collez un texte attribué au Coran pour savoir si c’est un verset, et où.', go: 'Vérifier', ph: 'Collez le texte ici…' },
+  },
 };
