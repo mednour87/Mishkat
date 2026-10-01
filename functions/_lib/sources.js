@@ -8,13 +8,24 @@
 
 const UA = 'Mishkat/1.0 (Islamic AI Challenge - Quran search; contact: mohamednourbouali87@gmail.com)';
 
-// Tafsir books offered in the reader. The reference pack asks for sources of the
-// first three centuries (or dorar.net/tafseer) when a verse is explained.
+// Tafsir books offered in the reader, fetched live verse by verse (the local
+// tafsirs — Al-Muyassar, Al-Mukhtasar, As-Sa'di — are served as static files).
+// The reference pack asks for sources of the first three centuries (or
+// dorar.net/tafseer): At-Tabari is the main one; the classical works of
+// Ibn Kathir, Al-Baghawi and Al-Qurtubi are offered next to it, each shown with
+// its author and death date so the reader knows what they are reading.
+//   via 'quranpedia': api.quranpedia.net/v1/ayah/{s}/{a}/book/{id} (pages of the printed book)
+//   via 'qurancom'  : api.quran.com/api/v4/tafsirs/{id}/by_ayah/{s}:{a} (verse or verse group)
 export const TAFSIR_BOOKS = {
-  4: { short: 'الطبري', name: 'جامع البيان في تأويل آي القرآن', author: 'محمد بن جرير الطبري', died: 310 },
-  // Ibn Abi Hatim (149) was tested and left out: its pages have no per-verse headings,
+  tabari: { via: 'quranpedia', ref: 4, lang: 'ar', short: 'الطبري', name: 'جامع البيان في تأويل آي القرآن', author: 'محمد بن جرير الطبري', died: 310 },
+  ibnkathir: { via: 'qurancom', ref: 14, lang: 'ar', short: 'ابن كثير', name: 'تفسير القرآن العظيم', author: 'إسماعيل بن عمر بن كثير', died: 774 },
+  baghawi: { via: 'qurancom', ref: 94, lang: 'ar', short: 'البغوي', name: 'معالم التنزيل', author: 'الحسين بن مسعود البغوي', died: 516 },
+  qurtubi: { via: 'qurancom', ref: 90, lang: 'ar', short: 'القرطبي', name: 'الجامع لأحكام القرآن', author: 'محمد بن أحمد القرطبي', died: 671 },
+  ibnkathir_en: { via: 'qurancom', ref: 169, lang: 'en', short: 'Ibn Kathir', name: 'Tafsir Ibn Kathir (abridged)', author: 'Ibn Kathir', died: 774 },
+  // Ibn Abi Hatim (Quranpedia 149) was tested and left out: its pages have no per-verse headings,
   // so the text of a neighbouring verse could be shown under the wrong verse.
 };
+const BOOK_ALIAS = { 4: 'tabari' }; // older clients sent the Quranpedia id
 
 const decode = (s) => s.replace(/&nbsp;/g, ' ').replace(/&quot;/g, '"').replace(/&#0?39;|&apos;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>')
   .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n)).replace(/&amp;/g, '&');
@@ -78,16 +89,37 @@ export function cutToVerse(content, aya) {
   return { exact: true, lines: lines.slice(start, end) };
 }
 
+// Quran.com tafsir text (HTML) → lines; headings kept as heading lines.
+export function htmlLines(html) {
+  const s = String(html || '').replace(/<h[1-4][^>]*>/gi, '\n\u0001').replace(/<\/h[1-4]>/gi, '\n')
+    .replace(/<br\s*\/?>|<\/p>|<\/div>|<p[^>]*>|<div[^>]*>/gi, '\n');
+  return s.split('\n').map(l => ({ h: l.includes('\u0001'), t: plain(l.replace('\u0001', '')) })).filter(l => l.t);
+}
+
 export async function tafsirPages(body, env, fetchImpl = fetch) {
-  const s = +(body && body.s), a = +(body && body.a), book = +(body && body.book);
+  const s = +(body && body.s), a = +(body && body.a);
+  const id = BOOK_ALIAS[body && body.book] || String(body && body.book || '');
   if (!Number.isInteger(s) || s < 1 || s > 114 || !Number.isInteger(a) || a < 1 || a > 286) return { ok: false, error: 'bad verse' };
-  if (!TAFSIR_BOOKS[book]) return { ok: false, error: 'book not offered' };
-  const r = await fetchImpl(`https://api.quranpedia.net/v1/ayah/${s}/${a}/book/${book}`, { headers: { 'user-agent': UA, accept: 'application/json' } });
+  const B = Object.prototype.hasOwnProperty.call(TAFSIR_BOOKS, id) ? TAFSIR_BOOKS[id] : null;
+  if (!B) return { ok: false, error: 'book not offered' };
+  const book = { id, short: B.short, name: B.name, author: B.author, died: B.died, lang: B.lang };
+  if (B.via === 'qurancom') {
+    const r = await fetchImpl(`https://api.quran.com/api/v4/tafsirs/${B.ref}/by_ayah/${s}:${a}`, { headers: { 'user-agent': UA, accept: 'application/json' } });
+    if (!r.ok) return { ok: false, error: `quran.com HTTP ${r.status}` };
+    const j = await r.json();
+    const t = (j && j.tafsir) || {};
+    const lines = htmlLines(t.text);
+    if (!lines.length) return { ok: true, empty: true, book, lines: [] };
+    const verses = Object.keys(t.verses || {}).filter(k => /^\d+:\d+$/.test(k));
+    return { ok: true, exact: true, book, lines: lines.slice(0, 400).map(l => ({ h: l.h, t: l.t.slice(0, 4000) })), verses,
+      url: `https://quran.com/${s}:${a}/tafsirs/${encodeURIComponent(t.slug || '')}`, source: 'Quran.com' };
+  }
+  const r = await fetchImpl(`https://api.quranpedia.net/v1/ayah/${s}/${a}/book/${B.ref}`, { headers: { 'user-agent': UA, accept: 'application/json' } });
   if (!r.ok) return { ok: false, error: `quranpedia HTTP ${r.status}` };
   const j = await r.json();
   const { exact, lines } = cutToVerse(j && j.content, a);
-  if (!lines.length) return { ok: true, empty: true, book: TAFSIR_BOOKS[book], lines: [] };
+  if (!lines.length) return { ok: true, empty: true, book, lines: [] };
   const pages = [...new Set(lines.map(l => `${l.part}/${l.page}`))];
-  return { ok: true, exact, book: { id: book, ...TAFSIR_BOOKS[book] }, lines: lines.slice(0, 400).map(l => ({ h: l.h, t: l.t.slice(0, 4000) })),
+  return { ok: true, exact, book, lines: lines.slice(0, 400).map(l => ({ h: l.h, t: l.t.slice(0, 4000) })),
     ref: pages, url: `https://quranpedia.net/surah/1/${s}?ayah_id=${a}`, source: 'الموسوعة القرآنية — Quranpedia.net' };
 }

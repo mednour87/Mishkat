@@ -9,6 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { select, expand, health, transcribe } from './functions/_lib/selector.js';
 import { hadithSearch, tafsirPages } from './functions/_lib/sources.js';
+import { speak } from './functions/_lib/tts.js';
 import { rateLimited, foreignOrigin, LIMITS } from './functions/_lib/guard.js';
 import { SECURITY_HEADERS } from './functions/_lib/csp.js';
 
@@ -22,7 +23,7 @@ if (existsSync(dv)) for (const line of readFileSync(dv, 'utf8').split(/\r?\n/)) 
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8', '.bin': 'application/octet-stream', '.svg': 'image/svg+xml', '.png': 'image/png',
   '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8' };
-const cache = new Map();
+const cache = new Map(), ttsCache = new Map();
 
 createServer(async (req, res) => {
   try {
@@ -32,16 +33,30 @@ createServer(async (req, res) => {
       if (foreignOrigin(req.headers.origin, req.headers.host)) return send(res, 403, '{"ok":false,"error":"forbidden origin"}', '.json');
       if (url.pathname === '/api/health') return send(res, 200, JSON.stringify(health(env)), '.json');
       const name = url.pathname.slice(5);
-      if (req.method !== 'POST' || !['select', 'expand', 'transcribe', 'hadith', 'tafsir'].includes(name)) return send(res, 404, '{"ok":false}', '.json');
+      if (req.method !== 'POST' || !['select', 'expand', 'transcribe', 'hadith', 'tafsir', 'tts'].includes(name)) return send(res, 404, '{"ok":false}', '.json');
       if (rateLimited(ip, name, LIMITS[name])) return send(res, 429, '{"ok":false,"error":"too many requests"}', '.json');
       const chunks = []; let size = 0;
-      const max = name === 'transcribe' ? LIMITS.maxAudioBytes : LIMITS.maxJsonBytes;
+      const max = name === 'transcribe' ? LIMITS.maxAudioBytes : name === 'tts' ? 4096 : LIMITS.maxJsonBytes;
       for await (const c of req) { size += c.length; if (size > max) return send(res, 413, '{"ok":false,"error":"too large"}', '.json'); chunks.push(c); }
       const body = Buffer.concat(chunks);
       if (name === 'transcribe') {
         const form = await new Request('http://x/', { method: 'POST', headers: { 'content-type': req.headers['content-type'] || '' }, body }).formData();
         const out = await transcribe(form.get('audio'), String(form.get('lang') || '').slice(0, 2), env);
         return send(res, 200, JSON.stringify(out), '.json');
+      }
+      if (name === 'tts') {
+        const k = body.toString('utf8');
+        let hit = ttsCache.get(k);
+        if (!hit) {
+          let out;
+          try { out = await speak(JSON.parse(k), env); } catch (e) { out = { ok: false, error: 'bad request', code: 'bad' }; }
+          if (!out.ok) return send(res, 200, JSON.stringify(out), '.json');
+          hit = Buffer.from(out.audio);
+          ttsCache.set(k, hit);
+          if (ttsCache.size > 300) ttsCache.delete(ttsCache.keys().next().value);
+        }
+        res.writeHead(200, { ...SECURITY_HEADERS, 'content-type': 'audio/wav', 'cache-control': 'no-store' });
+        return res.end(hit);
       }
       const key = name + body.toString('utf8');
       if (cache.has(key)) return send(res, 200, cache.get(key), '.json');

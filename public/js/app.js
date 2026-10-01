@@ -4,31 +4,47 @@ import { quranWordLayout } from './letters3d.js';
 import { isBasmala } from './basmala.js';
 import { lampSVG, setLampWord } from './lamp.js';
 import { listen, stopListening, cancelListening, voiceSupported } from './voice.js';
+import { createSpeaker } from './speech.js';
+
+// Work area (desktop): four zones around ONE current verse.
+//   ┌──────────────── galaxy (lamp at its edge) ┬──── answers / home ────┐
+//   ├──────────────── Mushaf reader ────────────┼──── tafsir ────────────┤
+// Choosing a verse anywhere (search result, galaxy star, Mushaf, tafsir arrows)
+// moves the reader, the tafsir and the camera together. Phones: galaxy on top,
+// then one of the three other zones, chosen with the tabs at the bottom.
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const AUDIO_BASE = 'https://verses.quran.com/';
-const REPORT_URL = 'https://github.com/mishkat-quran/mishkat/issues/new';
 const arNum = (n) => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 const HAS_LETTER = /[ء-يٱ]/;
+const LANGS = ['ar', 'en'];
+const store = {
+  get(k, d = null) { try { const v = localStorage.getItem('mishkat.' + k); return v == null ? d : v; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem('mishkat.' + k, String(v)); } catch (e) { /* private mode */ } },
+};
 
 const state = {
-  lang: 'ar', engine: null, galaxy: null, core: null, llm: null, llmModel: null,
-  result: null, reader: { sura: null, cur: null, hits: new Set(), srcTab: null },
-  audio: null, playing: false, continuous: true, timing: new Map(), saadi: new Map(), translit: new Map(), raf: 0, repeat: 1, repeatLeft: null,
+  lang: 'ar', engine: null, galaxy: null, core: null, llm: null, llmModel: null, words: null,
+  result: null, reader: { sura: null, cur: null, hits: new Set() },
+  taf: { book: null, text: '', lang: 'ar', tok: 0, idx: null },
+  audio: null, playing: false, continuous: store.get('auto', '1') === '1', timing: new Map(), saadi: new Map(), translit: new Map(), raf: 0,
+  repeat: 1, repeatLeft: null, speed: +store.get('speed', '1') || 1,
+  qs: +store.get('qs', '1') || 1, ts: +store.get('ts', '1') || 1,
+  showTranslit: store.get('tl', '1') === '1', showTr: store.get('tr', '1') === '1',
+  pane: 's', tts: false,
 };
 
 // ------------------------------------------------------------------ i18n
 function pickLang() {
   const url = new URL(location.href).searchParams.get('lang');
-  let saved = null; try { saved = localStorage.getItem('mishkat.lang'); } catch (e) { /* private mode */ }
   const nav = (navigator.language || 'ar').slice(0, 2);
-  return [url, saved, nav].find(l => ['ar', 'en', 'fr'].includes(l)) || 'ar';
+  return [url, store.get('lang'), nav].find(l => LANGS.includes(l)) || 'ar';
 }
 const T = () => UI[state.lang];
 
 function heroSlice() {
-  // 24:35, words 5–16 — taken from the Tanzil text, never typed by hand
+  // 24:35, words 5–9 — taken from the Tanzil text, never typed by hand
   if (!state.core) return '';
   const S = state.core.suras[23];
   return state.core.verses[S.first + 34].split(' ').slice(4, 9).join(' ');
@@ -39,26 +55,25 @@ function applyLang(lang) {
   const t = UI[lang];
   document.documentElement.lang = lang;
   document.documentElement.dir = t.dir;
-  try { localStorage.setItem('mishkat.lang', lang); } catch (e) { /* ignore */ }
+  store.set('lang', lang);
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t[el.dataset.i18n]; });
   document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.placeholder = t[el.dataset.i18nPh]; });
   document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t[el.dataset.i18nAria]); });
   document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t[el.dataset.i18nTitle]; });
   document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
-  $('#chips').innerHTML = t.chips.map(c => `<button type="button">${esc(c)}</button>`).join('');
-  $('#chips').querySelectorAll('button').forEach(b => b.onclick = () => { $('#q').value = b.textContent; run(b.textContent); });
   const vs = $('#viewSel');
-  if (vs && !$("#viewNote").hidden && vs.value.startsWith('q-')) $('#viewNote').textContent = t.viewNote(t['ord_' + vs.value.slice(2)]);
-  if (!$('#welcome').hidden && state.core) openWelcome();
-  if (state.core) renderHome();
+  if (vs && !$('#viewNote').hidden && vs.value.startsWith('q-')) $('#viewNote').textContent = t.viewNote(t['ord_' + vs.value.slice(2)]);
   $('#legendBox').innerHTML = t.legendItems.map(([c, x]) => `<div><i style="background:${c};color:${c}"></i>${esc(x)}</div>`).join('');
   $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice()));
   $('#aiBadge').textContent = t.ai(state.llmModel);
-  if (state.core) {
-    $('#heroVerse').textContent = `﴿${heroSlice()} …﴾`;
-    $('#heroRef').textContent = lang === 'ar' ? 'سورة النور · 35' : 'An-Nur · 24:35';
+  if (!$('#welcome').hidden && state.core) openWelcome();
+  if (state.engine) {
+    renderSide();
+    ensureSources(lang).then(() => {
+      renderSide();
+      if (state.reader.sura) { renderReader(); state.taf.idx = null; selectVerse(state.reader.cur, { fly: false, scroll: true, keepAudio: true }); }
+    });
   }
-  if (state.engine) ensureSources(lang).then(() => { if (state.result) renderResults(); if (state.reader.sura) renderReader(false); });
 }
 
 // ------------------------------------------------------------ data
@@ -99,14 +114,16 @@ async function boot() {
   const { createGalaxy } = await import('./galaxy.js');
   state.galaxy = await createGalaxy($('#galaxy'), {
     binUrl: 'data/galaxy.bin', suras: core.suras,
-    onHover: hover, onPick: (p) => openReader(state.engine.suraOf[p.verse], p.verse),
+    onHover: hover, onPick: (p) => goVerse(p.verse, { pane: 'r' }),
+    wordText: (i) => (state.words ? state.words[i] : ''),
+    suraLabel: (n) => suraName(n),
   });
   getJSON('data/words.json').then(w => { state.words = w; });
   setLoad(2);
   await ensureSources(state.lang);
   setLoad(3);
   $('#loader').classList.add('done');
-  (window.requestIdleCallback || setTimeout)(() => ['ar', 'en', 'fr'].forEach(l => ensureSources(l)));
+  (window.requestIdleCallback || setTimeout)(() => LANGS.forEach(l => ensureSources(l)));
   // AI layer: 1) pre-computed answers for frequent questions (verified again by
   // the engine like any live answer), 2) live API, 3) deterministic fallback.
   const [cache, health] = await Promise.all([
@@ -115,6 +132,7 @@ async function boot() {
   ]);
   const live = health && health.llm;
   state.stt = !!(health && health.stt);
+  state.tts = !!(health && health.tts);
   setupMic();
   state.llmModel = live ? health.model : (Object.keys(cache.select).length ? 'cache' : null);
   const key = (p) => `${p.lang}|${String(p.query).trim().toLowerCase()}`;
@@ -137,22 +155,23 @@ async function boot() {
   if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select') };
   $('#aiBadge').textContent = T().ai(state.llmModel);
   await gateDone;
-  $('#stage .st-lamp').innerHTML = lampSVG({ size: 230, word: true, title: 'Mishkat' });
-  let firstTime = true; try { firstTime = localStorage.getItem('mishkat.welcomed') !== '1'; } catch (e) { /* ignore */ }
-  try { const v = localStorage.getItem('mishkat.view'); if (v && v !== 'g0') setView(v); } catch (e) { /* ignore */ }
+  $('#lampSlot').innerHTML = lampSVG({ size: 132, word: true, title: 'Mishkat' });
+  const v = store.get('view'); if (v && v !== 'g0') setView(v);
+  setNames(store.get('names', '1') === '1');
   const sp = new URL(location.href).searchParams;
+  // the reader always holds a surah: the one asked for, else the last one read
+  const s0 = Math.min(114, Math.max(1, +sp.get('s') || lastSura()));
+  const S0 = core.suras[s0 - 1], a0 = Math.min(S0.ayas, Math.max(1, +sp.get('a') || 1));
+  openReader(s0, S0.first + a0 - 1, { fly: !!sp.get('s') });
   if (sp.get('q')) { $('#q').value = sp.get('q'); run(sp.get('q')); }
-  else if (firstTime && !sp.get('s')) openWelcome();
-  else if (sp.get('s')) openReader(+sp.get('s'), null);
-  renderHome();
+  else if (store.get('welcomed') !== '1' && !sp.get('s')) openWelcome();
+  renderSide();
 }
 
 // ------------------------------------------------------------ entry gate
 // "سمِّ الله": the visitor writes, pastes or says the basmala to enter.
 function gate() {
-  let ok = false;
-  try { ok = localStorage.getItem('mishkat.bismillah') === '1'; } catch (e) { /* private mode */ }
-  if (ok) return Promise.resolve();
+  if (store.get('bismillah') === '1') return Promise.resolve();
   const g = $('#gate'), t = () => T();
   $('#gateBasmala').textContent = state.core.verses[0];
   $('#gateLamp').innerHTML = lampSVG({ size: 124, title: 'Mishkat' });
@@ -161,7 +180,7 @@ function gate() {
   setTimeout(() => $('#gateInput').focus(), 50);
   return new Promise(resolve => {
     const accept = () => {
-      try { localStorage.setItem('mishkat.bismillah', '1'); } catch (e) { /* ignore */ }
+      store.set('bismillah', '1');
       $('#gateMsg').textContent = t().gateOk; $('#gateMsg').className = 'gmsg ok';
       g.classList.add('leaving');
       setTimeout(() => { g.hidden = true; g.classList.remove('leaving'); document.body.classList.remove('gated'); resolve(); }, 750);
@@ -194,8 +213,8 @@ function gate() {
 // A small dialog: speak (level meter, stops by itself at the pause) → the text heard
 // is shown and can be corrected → search. The spoken language is chosen explicitly.
 function voiceLang() {
-  let l = null; try { l = localStorage.getItem('mishkat.voiceLang'); } catch (e) { /* ignore */ }
-  return ['ar', 'en', 'fr'].includes(l) ? l : state.lang;
+  const l = store.get('voiceLang');
+  return LANGS.includes(l) ? l : state.lang;
 }
 function setupMic() {
   const b = $('#mic');
@@ -207,10 +226,7 @@ function openVoice() {
   const box = $('#voice'), t = T();
   let lang = voiceLang();
   const markLang = () => box.querySelectorAll('[data-vl]').forEach(x => x.setAttribute('aria-pressed', x.dataset.vl === lang));
-  box.querySelectorAll('[data-vl]').forEach(x => x.onclick = () => {
-    lang = x.dataset.vl; markLang();
-    try { localStorage.setItem('mishkat.voiceLang', lang); } catch (e) { /* ignore */ }
-  });
+  box.querySelectorAll('[data-vl]').forEach(x => x.onclick = () => { lang = x.dataset.vl; markLang(); store.set('voiceLang', lang); });
   markLang();
   const ui = (st, msg) => {
     box.dataset.st = st;
@@ -258,22 +274,30 @@ async function run(query, mode = 'auto') {
   const qLang = detectLang(query, state.lang);
   await ensureSources(qLang);
   if (qLang !== 'ar') await ensureSources('ar'); // glossary terms and the subject index are explained from the Arabic tafsir
-  if (qLang !== 'ar') await ensureSources(qLang === 'en' ? 'fr' : 'en');
   let res;
   try { await state.refReady; res = await state.engine.ask(query, { uiLang: state.lang, llm: state.llm, mode }); }
   finally { $('#status').classList.remove('on'); }
   state.result = res;
-  const url = new URL(location.href); url.searchParams.set('q', query); url.searchParams.delete('s');
-  history.replaceState(null, '', url);
-  showPanel('res');
-  renderResults();
+  const url = new URL(location.href); url.searchParams.set('q', query); history.replaceState(null, '', url);
+  showPane('s');
+  renderSide();
   const list = res.verses.filter(v => !v.closestOnly).map(v => v.idx);
   state.galaxy.highlightVerses(list.length > 400 ? [] : list);
-  if (res.focus != null) focusVerse(res.focus, { card: true });
-  else { state.galaxy.home(); state.galaxy.showLabels(null); }
+  markHits();
+  if (res.focus != null) goVerse(res.focus);
+  else state.galaxy.home();
 }
 
-function lastSura() { let n = 1; try { n = +localStorage.getItem('mishkat.lastSura') || 1; } catch (e) { /* ignore */ } return n >= 1 && n <= 114 ? n : 1; }
+function clearResults() {
+  state.result = null;
+  state.galaxy.highlightVerses([]);
+  markHits();
+  const url = new URL(location.href); url.searchParams.delete('q'); history.replaceState(null, '', url);
+  $('#q').value = '';
+  renderSide();
+}
+
+function lastSura() { const n = +store.get('lastSura', '1'); return n >= 1 && n <= 114 ? n : 1; }
 
 function suraName(n, lang = state.lang) { const S = state.core.suras[n - 1]; return lang === 'ar' ? S.ar : S.tr; }
 function refLabel(idx, lang = state.lang) {
@@ -292,11 +316,18 @@ function badgeFor(res) {
   return `<span class="badge ${cls}">${esc(B[key] || key)}</span>`;
 }
 
+// the answers zone shows either the answer to the last question, or the home page
+function renderSide() {
+  if (!state.core) return;
+  $('#resClose').hidden = !state.result;
+  if (state.result) renderResults(); else renderHome();
+}
+
 function renderResults() {
   const res = state.result, t = T(), e = state.engine;
   if (!res) return;
   const dir = res.lang === 'ar' ? 'rtl' : 'ltr';
-  let h = levelBadge(res) + badgeFor(res);
+  let h = `<p class="qline" dir="auto">«${esc(res.query)}»</p>` + levelBadge(res) + badgeFor(res);
   const texts = res.answer.filter(a => a.kind === 'text');
   const quotes = res.answer.filter(a => a.kind === 'quote');
   const notes = res.answer.filter(a => a.kind === 'note');
@@ -333,7 +364,7 @@ function renderResults() {
     const relOnly = res.verses.length && res.verses.every(v => v.relatedOnly);
     h += `<h3 class="sec">${esc(relOnly ? t.relatedNotFatwa : t.versesTitle)} (${res.verses.filter(v => !v.closestOnly).length})</h3><ul class="vlist">` +
       res.verses.slice(0, 60).map(v => {
-        const tr = e.translation(state.lang, v.idx).replace(/\[\d+\]/g, '');
+        const tr = state.lang === 'en' ? e.translation('en', v.idx).replace(/\[\d+\]/g, '') : '';
         return `<li data-idx="${v.idx}"><div class="li-head"><b>${esc(refLabel(v.idx))}</b><span>${v.to ? `→ ${esc(v.to)} ` : ''}<button class="mini" data-playv="${v.idx}" aria-label="${esc(t.listen)}">▶</button></span></div>
           <div class="ayah">${esc(e.verses[v.idx])}</div>${tr ? `<div class="tr">${esc(tr)}</div>` : ''}</li>`;
       }).join('') + '</ul>';
@@ -344,23 +375,24 @@ function renderResults() {
   const v = $('#viewRes');
   v.innerHTML = h;
   v.scrollTop = 0;
-  v.querySelectorAll('.cite').forEach(el => el.onclick = () => focusVerse(+el.dataset.idx, { card: true }));
+  v.querySelectorAll('.cite').forEach(el => el.onclick = (ev) => { ev.stopPropagation(); goVerse(+el.dataset.idx); });
   v.querySelectorAll('[data-ctx]').forEach(b => b.onclick = () => toggleContext(b));
-  v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); const i = +b.dataset.playv; openReader(e.suraOf[i], i, true); });
-  v.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openReader(e.suraOf[+b.dataset.open], +b.dataset.open));
+  v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playv, { play: true }); });
+  v.querySelectorAll('[data-open]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.open, { pane: 'r' }); });
   if (res.sensitive) { const first = v.querySelector('[data-ctx]'); if (first) toggleContext(first); }
-  v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => openReader(e.suraOf[+li.dataset.idx], +li.dataset.idx));
-  v.querySelectorAll('.sc-v').forEach(li => li.onclick = () => focusVerse(+li.dataset.idx, { card: true }));
+  v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => goVerse(+li.dataset.idx));
+  v.querySelectorAll('.sc-v').forEach(li => li.onclick = () => goVerse(+li.dataset.idx));
   v.querySelectorAll('.sc-more').forEach(b => b.onclick = () => { b.closest('.sura-card').querySelectorAll('.sc-v[hidden]').forEach(x => { x.hidden = false; }); b.remove(); });
-  v.querySelectorAll('[data-read]').forEach(b => b.onclick = () => openReader(+b.dataset.read, +b.dataset.first));
-  v.querySelectorAll('[data-listen]').forEach(b => b.onclick = () => openReader(+b.dataset.listen, +b.dataset.first, true));
+  v.querySelectorAll('[data-read]').forEach(b => b.onclick = () => goVerse(+b.dataset.first, { pane: 'r' }));
+  v.querySelectorAll('[data-listen]').forEach(b => b.onclick = () => goVerse(+b.dataset.first, { play: true }));
   const ab = $('#altBtn');
-  if (ab) ab.onclick = () => res.alt.mode === 'topic' ? run(res.alt.query, 'topic') : openReader(res.alt.sura, null);
-  const os = $('#openSura'); if (os) os.onclick = () => openReader(res.sura, res.focus);
-  const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, true);
-  v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => focusVerse(+b.dataset.idx, { card: true }));
+  if (ab) ab.onclick = () => res.alt.mode === 'topic' ? run(res.alt.query, 'topic') : openReader(res.alt.sura, null, { pane: 'r' });
+  const os = $('#openSura'); if (os) os.onclick = () => openReader(res.sura, res.focus, { pane: 'r' });
+  const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, { autoplay: true });
+  v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx));
   v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
   if (res.type === 'hadith' || res.hadithCheck) loadHadith(res.type === 'hadith' ? res.hadith.q : res.hadithCheck, res.type !== 'hadith');
+  markCurrentInResults();
 }
 
 // ------------------------------------------------ reference-pack blocks
@@ -425,12 +457,11 @@ async function fillSuraInfo(el, n, short = false) {
   } catch (e) { el.textContent = t.tafFail; }
 }
 
-
 function verseCard(q, lang) {
   const t = T(), e = state.engine, i = q.idx, dir = lang === 'ar' ? 'rtl' : 'ltr';
-  const tr = e.translation(lang, i).replace(/\[\d+\]/g, '');
+  const tr = lang === 'en' ? e.translation('en', i).replace(/\[\d+\]/g, '') : '';
   return `<article class="vcardx${q.role === 'context' ? ' ctx' : ''}" data-idx="${i}">
-    <header><span class="cite" data-idx="${i}">${esc(refLabel(i, lang))}</span>
+    <header><button class="cite" data-idx="${i}">${esc(refLabel(i, lang))}</button>
       <span class="vc-btns"><button class="mini" data-playv="${i}" aria-label="${esc(t.listen)}">▶</button><button class="mini" data-ctx="${i}" aria-expanded="false">${esc(t.ctxBtn)}</button><button class="mini" data-open="${i}">${esc(t.readHere)}</button></span></header>
     <div class="ayah">${esc(e.verses[i])}</div>
     ${tr ? `<div class="tr">${esc(tr)}</div>` : ''}
@@ -466,9 +497,9 @@ function suraCard(g, k) {
   const refs = g.verses.slice().sort((a, b) => a - b);
   const SHOW = 4;
   const row = (i, n) => {
-    const tr = state.lang !== 'ar' ? e.translation(state.lang, i).replace(/\[\d+\]/g, '') : '';
+    const tr = state.lang === 'en' ? e.translation('en', i).replace(/\[\d+\]/g, '') : '';
     const ar = qLang === 'ar' ? markTerms(e.verses[i], 'ar', terms) : esc(e.verses[i]);
-    const trH = tr ? (qLang === state.lang ? markTerms(tr, qLang, terms) : esc(tr)) : '';
+    const trH = tr ? (qLang === 'en' ? markTerms(tr, 'en', terms) : esc(tr)) : '';
     return `<li class="sc-v" data-idx="${i}"${n >= SHOW ? ' hidden' : ''}><div class="li-head"><button class="cite" data-idx="${i}">${esc(S.ar)} ${S.n}:${e.ayaOf[i]}</button>
       <span><button class="mini" data-playv="${i}" aria-label="${esc(t.listen)}">▶</button> <button class="mini" data-open="${i}">${esc(t.readHere)}</button></span></div>
       <div class="ayah">${ar}</div>${trH ? `<div class="tr">${trH}</div>` : ''}</li>`;
@@ -480,36 +511,63 @@ function suraCard(g, k) {
     <ul class="sc-list">${refs.map(row).join('')}</ul>
     ${refs.length > SHOW ? `<button class="mini sc-more">${esc(t.moreV(refs.length - SHOW))}</button>` : ''}</div>`;
 }
-
-// ------------------------------------------------------------ panel
-function showPanel(which) {
-  $('#panel').hidden = false;
-  document.body.classList.add('has-panel');
-  $('#viewRes').hidden = which !== 'res';
-  $('#viewRead').hidden = which !== 'read';
-  $('#tabRes').setAttribute('aria-selected', which === 'res');
-  $('#tabRead').setAttribute('aria-selected', which === 'read');
-  $('#tabRes').disabled = !state.result;
-  state.galaxy && state.galaxy.setCardVisible(which !== 'read');
+function markCurrentInResults() {
+  const i = state.reader.cur;
+  document.querySelectorAll('#viewRes .sc-v, #viewRes .vcardx, #viewRes .vlist li').forEach(b => b.classList.toggle('on', +b.dataset.idx === i));
 }
 
-function focusVerse(idx, { card = false, dist } = {}) {
-  state.galaxy.flyToVerse(idx, dist);
-  state.galaxy.showLabels(card ? idx : null, null, state.engine.verses[idx], refLabel(idx));
-  document.querySelectorAll('.sc-v, .vcardx').forEach(b => b.classList.toggle('on', +b.dataset.idx === idx));
+// ------------------------------------------------------------ zones & panes
+function showPane(p) {
+  state.pane = p;
+  document.body.dataset.pane = p;
+  document.querySelectorAll('#mtabs [data-pane]').forEach(b => b.setAttribute('aria-selected', b.dataset.pane === p));
+}
+// draggable separator between the two zones of a column (ratio kept in the browser)
+function setupSplit(handle, col, key) {
+  const apply = (r) => { col.style.setProperty('--a', `${r}fr`); col.style.setProperty('--b', `${1 - r}fr`); };
+  let r = +store.get(key, '0.5'); if (!(r > 0.15 && r < 0.85)) r = 0.5;
+  apply(r);
+  const set = (v) => { r = Math.min(0.82, Math.max(0.18, v)); apply(r); };
+  handle.onpointerdown = (ev) => {
+    handle.setPointerCapture(ev.pointerId); handle.classList.add('drag');
+    const move = (e2) => { const b = col.getBoundingClientRect(); set((e2.clientY - b.top) / b.height); };
+    const up = () => { handle.classList.remove('drag'); handle.removeEventListener('pointermove', move); store.set(key, r.toFixed(3)); };
+    handle.addEventListener('pointermove', move);
+    handle.addEventListener('pointerup', up, { once: true });
+    handle.addEventListener('pointercancel', up, { once: true });
+  };
+  handle.onkeydown = (ev) => {
+    if (ev.key === 'ArrowUp' || ev.key === 'ArrowDown') { ev.preventDefault(); set(r + (ev.key === 'ArrowUp' ? -0.04 : 0.04)); store.set(key, r.toFixed(3)); }
+  };
+  handle.ondblclick = () => { set(0.5); store.set(key, '0.5'); };
 }
 
-// ------------------------------------------------------------ reader
-async function openReader(sura, idx, autoplay = false) {
-  stopSpeech();
+// ------------------------------------------------------------ the current verse
+// goVerse: the single entry point to "go to this verse" from anywhere.
+function goVerse(i, { play: autoplay = false, pane = null, fly = true } = {}) {
+  openReader(state.engine.suraOf[i], i, { autoplay, fly, pane });
+}
+
+async function openReader(sura, idx, { autoplay = false, fly = true, pane = null } = {}) {
   const e = state.engine, S = state.core.suras[sura - 1];
-  const hits = new Set((state.result && state.result.verses || []).filter(v => e.suraOf[v.idx] === sura).map(v => v.idx));
-  state.reader = { sura, cur: idx == null ? S.first : idx, hits, srcTab: state.reader.srcTab };
-  stopAudio();
-  showPanel('read');
-  renderReader(true);
-  const url = new URL(location.href); url.searchParams.set('s', sura); history.replaceState(null, '', url);
-  if (autoplay) play(state.reader.cur, true);
+  const i = idx == null ? S.first : idx;
+  if (state.reader.sura !== sura) {
+    stopAudio(true);
+    state.reader = { sura, cur: i, hits: new Set() };
+    renderReader();
+    store.set('lastSura', sura);
+  }
+  markHits();
+  if (pane) showPane(pane);
+  if (autoplay) { selectVerse(i, { fly, scroll: true, keepAudio: true }); play(i, true); }
+  else selectVerse(i, { fly, scroll: true });
+  void e;
+}
+
+function markHits() {
+  const e = state.engine, sura = state.reader.sura;
+  state.reader.hits = new Set((state.result && state.result.verses || []).filter(v => e.suraOf[v.idx] === sura).map(v => v.idx));
+  document.querySelectorAll('#mushaf .v').forEach(el => el.classList.toggle('hit', state.reader.hits.has(+el.dataset.i)));
 }
 
 function verseTokens(i) {
@@ -519,48 +577,6 @@ function verseTokens(i) {
   const skip = (a === 1 && s !== 1 && s !== 9) ? 4 : 0;
   return { skip, toks };
 }
-
-function renderReader(scrollToCur) {
-  const t = T(), e = state.engine, { sura, cur } = state.reader, S = state.core.suras[sura - 1];
-  const v = $('#viewRead');
-  let words = '';
-  for (let a = 1; a <= S.ayas; a++) {
-    const i = S.first + a - 1;
-    words += `<span class="v${i === cur ? ' cur' : ''}${state.reader.hits.has(i) ? ' hit' : ''}" data-i="${i}"><button class="vplay" data-play="${i}" aria-label="${esc(t.playAya(a))}">▶</button>${verseWordsHtml(i)}<span class="end">﴿${arNum(a)}﴾</span></span> `;
-  }
-  const basmala = (sura !== 1 && sura !== 9) ? `<div class="basmala">${esc(e.verses[S.first].split(' ').slice(0, 4).join(' '))}</div>` : '';
-  const rep = state.repeat || 1;
-  v.innerHTML = `<div class="rd-head"><div class="rd-top"><div class="rd-lamp" id="rdLamp" aria-hidden="true">${lampSVG({ size: 96, word: true })}</div>
-    <div class="rd-title"><b>سورة ${esc(S.ar)}</b><small>${esc(S.tr)} · ${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</small></div>
-    <label class="rd-aya">${esc(t.ayaN)} <select id="rSel">${Array.from({ length: S.ayas }, (_, k) => `<option value="${S.first + k}"${S.first + k === cur ? ' selected' : ''}>${k + 1}</option>`).join('')}</select></label></div>
-    <div class="rd-ctrl" role="toolbar" aria-label="${esc(t.listen)}">
-      <button class="btn icon-b" id="rPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${state.lang === 'ar' ? '›' : '‹'}</button>
-      <button class="btn icon-b" id="rRestart" title="${esc(t.restartA)}" aria-label="${esc(t.restartA)}">⏮</button>
-      <button class="btn play big" id="rPlay" aria-label="${esc(t.listen)}">${state.playing ? t.pause : t.play}</button>
-      <button class="btn icon-b" id="rNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${state.lang === 'ar' ? '‹' : '›'}</button>
-      <label class="btn rep" title="${esc(t.repeatTitle)}">${esc(t.repeat)} <select id="rRep" aria-label="${esc(t.repeatTitle)}">${[1, 3, 5, 10, 0].map(n => `<option value="${n}"${(rep === n || (rep === Infinity && n === 0)) ? ' selected' : ''}>${n ? '×' + n : '∞'}</option>`).join('')}</select></label>
-      <button class="btn ${state.continuous ? 'on' : ''}" id="rAuto" aria-pressed="${state.continuous}">⟳ ${esc(t.auto)}</button>
-      <button class="btn" id="rInfo" aria-expanded="false">ℹ ${esc(t.aboutSura)}</button>
-    </div></div>
-    <div class="rd-body" id="rdBody">
-      <section class="sinfo" id="sInfo" hidden></section>
-      <section class="focus" id="focus" aria-live="polite"></section>
-      <details class="fulltext" open><summary>${esc(t.fullSura)}</summary><div class="mushaf" id="mushaf">${basmala}${words}</div></details>
-    </div>`;
-  $('#rPrev').onclick = () => step(-1);
-  $('#rNext').onclick = () => step(1);
-  $('#rPlay').onclick = () => state.playing ? stopAudio(true) : play(state.reader.cur, true);
-  $('#rRestart').onclick = () => play(state.reader.cur, true);
-  $('#rRep').onchange = (ev) => { const n = +ev.target.value; state.repeat = n || Infinity; state.repeatLeft = state.repeat; };
-  $('#mushaf').querySelectorAll('.vplay').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); play(+b.dataset.play, true); });
-  try { localStorage.setItem('mishkat.lastSura', String(sura)); } catch (e2) { /* ignore */ }
-  $('#rAuto').onclick = () => { state.continuous = !state.continuous; $('#rAuto').classList.toggle('on', state.continuous); $('#rAuto').setAttribute('aria-pressed', state.continuous); };
-  $('#rSel').onchange = (ev) => selectVerse(+ev.target.value, true);
-  $('#rInfo').onclick = () => { const p = $('#sInfo'), open = p.hidden; p.hidden = !open; $('#rInfo').setAttribute('aria-expanded', open); if (open) fillSuraInfo(p, sura); };
-  $('#mushaf').querySelectorAll('.v').forEach(el => el.onclick = () => selectVerse(+el.dataset.i, true));
-  selectVerse(cur, scrollToCur, true);
-}
-
 // words of one verse as numbered spans (the basmala Tanzil prefixes to verse 1 is shown apart)
 function verseWordsHtml(i) {
   const { skip, toks } = verseTokens(i);
@@ -572,137 +588,244 @@ function verseWordsHtml(i) {
   return html;
 }
 
-function selectVerse(i, scroll, initial = false) {
+const SPEEDS = [0.75, 1, 1.25, 1.5];
+function renderReader() {
+  const t = T(), e = state.engine, { sura } = state.reader, S = state.core.suras[sura - 1];
+  if (!sura) return;
+  const en = state.lang === 'en';
+  const basmala = (sura !== 1 && sura !== 9) ? `<div class="basmala">${esc(e.verses[S.first].split(' ').slice(0, 4).join(' '))}</div>` : '';
+  let body = '';
+  for (let a = 1; a <= S.ayas; a++) {
+    const i = S.first + a - 1;
+    if (en) {
+      // English: verse by verse — Arabic, word-by-word transliteration, translation
+      const tr = state.showTr ? e.translation('en', i).replace(/\[\d+\]/g, '') : '';
+      body += `<div class="v vb" data-i="${i}"><div class="vb-h"><button class="vplay" data-play="${i}" aria-label="${esc(t.playAya(a))}">▶</button><span class="vb-n">${sura}:${a}</span></div>
+        <div class="ayah">${verseWordsHtml(i)}<span class="end">﴿${arNum(a)}﴾</span></div>
+        ${state.showTranslit ? `<div class="tl" dir="ltr" data-tl="${a}"></div>` : ''}${tr ? `<div class="tr" dir="ltr">${esc(tr)}</div>` : ''}</div>`;
+    } else {
+      // Arabic: the Mushaf text only, as one flowing page
+      body += `<span class="v" data-i="${i}"><button class="vplay" data-play="${i}" aria-label="${esc(t.playAya(a))}">▶</button>${verseWordsHtml(i)}<span class="end">﴿${arNum(a)}﴾</span></span> `;
+    }
+  }
+  const rep = state.repeat || 1;
+  const trSrc = TRANSLATION_FOR.en ? e.sources[TRANSLATION_FOR.en] : null;
+  $('#viewRead').innerHTML = `<div class="rd-head">
+    <div class="rd-row">
+      <label class="rd-sura"><span class="sr">${esc(t.suraPick)}</span><select id="rSura" aria-label="${esc(t.suraPick)}">${state.core.suras.map(x => `<option value="${x.n}"${x.n === sura ? ' selected' : ''}>${x.n}. ${esc(en ? x.tr : x.ar)}</option>`).join('')}</select></label>
+      <span class="rd-meta">${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</span>
+      <label class="rd-aya">${esc(t.ayaN)} <select id="rSel">${Array.from({ length: S.ayas }, (_, k) => `<option value="${S.first + k}">${k + 1}</option>`).join('')}</select></label>
+      <button class="mini" id="rInfo" aria-expanded="false">ℹ ${esc(t.aboutSura)}</button>
+    </div>
+    <div class="rd-ctrl" role="toolbar" aria-label="${esc(t.listen)}">
+      <button class="btn icon-b" id="rPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${state.lang === 'ar' ? '›' : '‹'}</button>
+      <button class="btn icon-b" id="rRestart" title="${esc(t.restartA)}" aria-label="${esc(t.restartA)}">⏮</button>
+      <button class="btn play big" id="rPlay" aria-label="${esc(t.listen)}">${state.playing ? t.pause : t.play}</button>
+      <button class="btn icon-b" id="rNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${state.lang === 'ar' ? '‹' : '›'}</button>
+      <label class="btn rep" title="${esc(t.repeatTitle)}">${esc(t.repeat)} <select id="rRep" aria-label="${esc(t.repeatTitle)}">${[1, 3, 5, 10, 0].map(n => `<option value="${n}"${(rep === n || (rep === Infinity && n === 0)) ? ' selected' : ''}>${n ? '×' + n : '∞'}</option>`).join('')}</select></label>
+      <button class="btn ${state.continuous ? 'on' : ''}" id="rAuto" aria-pressed="${state.continuous}" title="${esc(t.autoTitle)}">⟳ ${esc(t.auto)}</button>
+      <label class="btn rep" title="${esc(t.speed)}">${esc(t.speed)} <select id="rSpeed" aria-label="${esc(t.speed)}">${SPEEDS.map(x => `<option value="${x}"${x === state.speed ? ' selected' : ''}>×${x}</option>`).join('')}</select></label>
+      <span class="grp"><button class="btn icon-b sm" id="rFm" aria-label="${esc(t.fontSmaller)}" title="${esc(t.fontSmaller)}">A−</button><button class="btn icon-b sm" id="rFp" aria-label="${esc(t.fontLarger)}" title="${esc(t.fontLarger)}">A+</button></span>
+      ${en ? `<button class="btn ${state.showTranslit ? 'on' : ''}" id="rTl" aria-pressed="${state.showTranslit}">${esc(t.translit)}</button><button class="btn ${state.showTr ? 'on' : ''}" id="rTr" aria-pressed="${state.showTr}">${esc(t.translationBtn)}</button>` : ''}
+      <button class="btn icon-b" id="rCopy" title="${esc(t.copyVerse)}" aria-label="${esc(t.copyVerse)}">⧉</button>
+      <button class="btn icon-b" id="rShare" title="${esc(t.shareVerse)}" aria-label="${esc(t.shareVerse)}">🔗</button>
+    </div></div>
+    <div class="rd-body" id="rdBody">
+      <section class="sinfo" id="sInfo" hidden></section>
+      <div class="mushaf${en ? ' en' : ''}" id="mushaf">${basmala}${body}</div>
+      ${en && state.showTr && trSrc ? `<p class="rd-src">${esc(trSrc.title)} · QuranEnc.com</p>` : ''}
+    </div>`;
+  $('#rzone').style.setProperty('--qs', state.qs);
+  $('#rPrev').onclick = () => step(-1);
+  $('#rNext').onclick = () => step(1);
+  $('#rPlay').onclick = () => state.playing ? stopAudio(true) : play(state.reader.cur, true);
+  $('#rRestart').onclick = () => play(state.reader.cur, true);
+  $('#rRep').onchange = (ev) => { const n = +ev.target.value; state.repeat = n || Infinity; state.repeatLeft = state.repeat; };
+  $('#rSpeed').onchange = (ev) => { state.speed = +ev.target.value; store.set('speed', state.speed); if (state.audio) state.audio.playbackRate = state.speed; };
+  $('#rAuto').onclick = () => { state.continuous = !state.continuous; store.set('auto', state.continuous ? '1' : '0'); $('#rAuto').classList.toggle('on', state.continuous); $('#rAuto').setAttribute('aria-pressed', state.continuous); };
+  const font = (d) => { state.qs = Math.round(Math.min(1.8, Math.max(0.7, state.qs + d)) * 10) / 10; store.set('qs', state.qs); $('#rzone').style.setProperty('--qs', state.qs); };
+  $('#rFm').onclick = () => font(-0.1);
+  $('#rFp').onclick = () => font(0.1);
+  if (en) {
+    $('#rTl').onclick = () => { state.showTranslit = !state.showTranslit; store.set('tl', state.showTranslit ? '1' : '0'); rerenderReader(); };
+    $('#rTr').onclick = () => { state.showTr = !state.showTr; store.set('tr', state.showTr ? '1' : '0'); rerenderReader(); };
+  }
+  $('#rCopy').onclick = async () => { const i = state.reader.cur; try { await navigator.clipboard.writeText(`${e.verses[i]} [${refLabel(i, 'ar')}]`); alertNote(t.copied); } catch (err) { /* blocked */ } };
+  $('#rShare').onclick = async () => { try { await navigator.clipboard.writeText(verseUrl(state.reader.cur)); alertNote(t.linkCopied); } catch (err) { /* blocked */ } };
+  $('#mushaf').querySelectorAll('.vplay').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); play(+b.dataset.play, true); });
+  $('#rSura').onchange = (ev) => openReader(+ev.target.value, null);
+  $('#rSel').onchange = (ev) => selectVerse(+ev.target.value, { scroll: true });
+  $('#rInfo').onclick = () => { const p = $('#sInfo'), open = p.hidden; p.hidden = !open; $('#rInfo').setAttribute('aria-expanded', open); if (open) fillSuraInfo(p, sura); };
+  $('#mushaf').querySelectorAll('.v').forEach(el => el.onclick = () => selectVerse(+el.dataset.i, { scroll: false }));
+  markHits();
+  if (en && state.showTranslit) fillTranslit(sura);
+}
+function rerenderReader() { renderReader(); selectVerse(state.reader.cur, { fly: false, scroll: true, keepAudio: true }); }
+function verseUrl(i) {
+  const u = new URL(location.href); u.search = '';
+  u.searchParams.set('s', state.engine.suraOf[i]); u.searchParams.set('a', state.engine.ayaOf[i]);
+  return u.toString();
+}
+// word-by-word transliteration (Quran.com), English mode only
+function fillTranslit(sura) {
+  suraFile('translit', sura).then(f => {
+    if (state.reader.sura !== sura) return;
+    document.querySelectorAll('#mushaf .tl[data-tl]').forEach(el => {
+      const ws = f.words[+el.dataset.tl - 1] || [];
+      el.innerHTML = ws.map((w, k) => `<span class="w" data-w="${k + 1}">${esc(w)}</span>`).join(' ');
+    });
+  }).catch(() => { /* optional */ });
+}
+
+function selectVerse(i, { scroll = true, fly = true, keepAudio = false } = {}) {
   const e = state.engine;
-  if (e.suraOf[i] !== state.reader.sura) return openReader(e.suraOf[i], i);
-  const wasPlaying = state.playing && !initial;
+  if (i == null) return;
+  if (e.suraOf[i] !== state.reader.sura) return openReader(e.suraOf[i], i, { fly });
+  const changed = state.reader.cur !== i;
+  const wasPlaying = state.playing && changed && !keepAudio;
   state.reader.cur = i;
   document.querySelectorAll('#mushaf .v').forEach(el => el.classList.toggle('cur', +el.dataset.i === i));
   const sel = $('#rSel'); if (sel) sel.value = i;
-  const el = $(`#mushaf .v[data-i="${i}"]`);
-  if (el && scroll && !initial) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  focusVerse(i, { dist: 70 });
-  renderFocus(i);
-  if (scroll) { const b = $('#rdBody'); if (b) b.scrollTo({ top: 0, behavior: initial ? 'auto' : 'smooth' }); }
+  const el = $(`#mushaf .v[data-i="${i}"]`), b = $('#rdBody');
+  if (el && b && scroll) b.scrollTo({ top: Math.max(0, el.offsetTop - b.clientHeight * 0.3), behavior: changed ? 'smooth' : 'auto' });
+  state.galaxy.setFocusVerse(i);
+  if (fly) state.galaxy.flyToVerse(i, 70);
+  if (!state.playing) $('#lampRef').textContent = refLabel(i);
+  const url = new URL(location.href); url.searchParams.set('s', e.suraOf[i]); url.searchParams.set('a', e.ayaOf[i]); history.replaceState(null, '', url);
+  if (changed || state.taf.idx !== i) renderTafsir(i);
+  markCurrentInResults();
   if (wasPlaying) play(i, true);
 }
 function step(d) {
   const i = state.reader.cur + d, S = state.core.suras[state.reader.sura - 1];
   if (i < S.first || i >= S.first + S.ayas) return;
-  selectVerse(i, true);
+  selectVerse(i, { scroll: true });
 }
 
-// The current verse in the middle of the reader: Arabic, word-by-word transliteration,
-// translation, then the tafsir — large, with a button to listen to it.
-async function renderFocus(i) {
-  const t = T(), e = state.engine, box = $('#focus');
-  if (!box) return;
-  stopSpeech();
-  const s = e.suraOf[i], a = e.ayaOf[i], lang = state.lang;
-  const tabs = lang === 'ar' ? ['muyassar_ar', 'mukhtasar_ar', 'saadi_ar', 'tabari'] : [TAFSIR_FOR[lang], 'muyassar_ar', 'saadi_ar', 'tabari'];
-  const tab = tabs.includes(state.reader.srcTab) ? state.reader.srcTab : tabs[0];
-  const tr = e.translation(lang, i).replace(/\[\d+\]/g, '');
-  const trSrc = TRANSLATION_FOR[lang] ? e.sources[TRANSLATION_FOR[lang]] : null;
-  box.innerHTML = `<div class="f-head"><span class="f-ref">${esc(refLabel(i))}</span>
-      <span class="f-tools"><button class="mini" id="fCopy">${esc(t.copy)}</button><a class="mini" href="https://quran.com/${s}/${a}" target="_blank" rel="noopener">${esc(t.verifyExt)}</a><a class="mini" href="https://dorar.net/tafseer/${s}" target="_blank" rel="noopener">${esc(t.dorarTafsir)}</a></span></div>
-    <div class="f-ayah ayah" id="fAyah">${verseWordsHtml(i)}<span class="end">﴿${arNum(a)}﴾</span></div>
-    <div class="f-translit" id="fTranslit" dir="ltr" ${state.showTranslit === false ? 'hidden' : ''}></div>
-    ${tr ? `<div class="f-trans" dir="ltr">${esc(tr)}<small>${esc(trSrc ? trSrc.title : '')}</small></div>` : ''}
-    <div class="f-taf">
-      <div class="f-taf-head"><span class="srcTabs" role="tablist">${tabs.map(id => `<button role="tab" aria-selected="${id === tab}" data-src="${id}" class="${id === tab ? 'on' : ''}">${esc(t.srcNames[id] || id)}</button>`).join('')}</span>
-        <button class="btn tts" id="fTts" aria-pressed="false">🔊 ${esc(t.readTafsir)}</button></div>
-      <div class="f-taf-body" id="tafBody">${esc(t.loadingTafsir)}</div>
-    </div>`;
-  box.querySelectorAll('[data-src]').forEach(b => b.onclick = () => { state.reader.srcTab = b.dataset.src; renderFocus(i); });
-  $('#fCopy').onclick = async () => { try { await navigator.clipboard.writeText(`${e.verses[i]} [${refLabel(i, 'ar')}]`); $('#fCopy').textContent = t.copied; } catch (err) { /* blocked */ } };
-  suraFile('translit', s).then(f => {
-    const ws = (f.words[a - 1] || []);
-    const el = $('#fTranslit');
-    if (el && state.reader.cur === i) el.innerHTML = ws.map((w, k) => `<span class="w" data-w="${k + 1}">${esc(w)}</span>`).join(' ');
-  }).catch(() => { /* optional */ });
-  let text = '', dir = 'rtl', srcLine = '', ttsLang = 'ar';
-  if (tab === 'tabari') return renderTabari(i, s, a);
-  if (tab === 'saadi_ar') {
-    const f = await suraFile('saadi', s);
-    let k = a - 1;
-    text = f.text[k];
-    if (!text) { while (k > 0 && !f.text[k]) k--; text = f.text[k] ? `${t.saadiGroup} ${f.text[k]}` : ''; }
-    srcLine = f.title;
-  } else {
-    await loadSource(tab);
-    const src = e.sources[tab];
-    text = (src.text[i] || '').replace(/^\d+\.\s*/, '');
-    dir = tab.endsWith('_ar') ? 'rtl' : 'ltr';
-    ttsLang = tab.slice(-2);
-    srcLine = `${src.title} · QuranEnc.com`;
-  }
-  if (state.reader.cur !== i) return;
-  const body = $('#tafBody');
-  body.dir = dir;
-  body.innerHTML = `<p>${esc(text)}</p><div class="src">${esc(srcLine)}</div>`;
-  $('#fTts').onclick = () => toggleSpeech(text, ttsLang, $('#fTts'));
+// ------------------------------------------------------------ tafsir zone
+// Local books (static files): Al-Muyassar, Al-Mukhtasar (ar/en), As-Sa'di.
+// Live books (api/tafsir): At-Tabari (Quranpedia), Ibn Kathir (ar/en), Al-Baghawi, Al-Qurtubi (Quran.com).
+const BOOKS = {
+  muyassar_ar: { kind: 'local', lang: 'ar' }, mukhtasar_ar: { kind: 'local', lang: 'ar' }, saadi_ar: { kind: 'saadi', lang: 'ar' },
+  tabari: { kind: 'live', lang: 'ar' }, ibnkathir: { kind: 'live', lang: 'ar' }, baghawi: { kind: 'live', lang: 'ar' }, qurtubi: { kind: 'live', lang: 'ar' },
+  mukhtasar_en: { kind: 'local', lang: 'en' }, ibnkathir_en: { kind: 'live', lang: 'en' },
+};
+const BOOK_ORDER = {
+  ar: ['muyassar_ar', 'mukhtasar_ar', 'saadi_ar', 'tabari', 'ibnkathir', 'baghawi', 'qurtubi'],
+  en: ['mukhtasar_en', 'ibnkathir_en', 'muyassar_ar', 'mukhtasar_ar', 'saadi_ar', 'tabari', 'ibnkathir', 'baghawi', 'qurtubi'],
+};
+const speaker = createSpeaker({ server: () => state.tts, onState: (st, info) => ttsState(st, info) });
+
+function renderTafsir(i) {
+  const t = T(), e = state.engine, lang = state.lang, books = BOOK_ORDER[lang];
+  if (i == null) return;
+  speaker.stop(); ttsState('idle');
+  const book = books.includes(state.taf.book) ? state.taf.book : books[0];
+  const s = e.suraOf[i], a = e.ayaOf[i];
+  const tok = ++state.taf.tok;
+  state.taf.idx = i; state.taf.text = ''; state.taf.lang = BOOKS[book].lang;
+  const prev = lang === 'ar' ? '›' : '‹', next = lang === 'ar' ? '‹' : '›';
+  $('#viewTaf').innerHTML = `<div class="zhead tz-head"><h2>${esc(t.zTafsir)}</h2><span class="tz-ref">${esc(refLabel(i))}</span>
+      <span class="tz-nav"><button class="icon" id="tPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${prev}</button><button class="icon" id="tNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${next}</button></span></div>
+    <div class="tz-books" role="tablist" aria-label="${esc(t.zTafsir)}">${books.map(id => `<button role="tab" data-book="${id}" aria-selected="${id === book}"${BOOKS[id].kind === 'live' ? ' class="live"' : ''}>${esc(t.srcNames[id] || id)}</button>`).join('')}</div>
+    <div class="tz-tools">
+      <button class="btn tts" id="tTts" aria-pressed="false">🔊 ${esc(t.readTafsir)}</button>
+      <span class="grp"><button class="btn icon-b sm" id="tFm" aria-label="${esc(t.fontSmaller)}" title="${esc(t.fontSmaller)}">A−</button><button class="btn icon-b sm" id="tFp" aria-label="${esc(t.fontLarger)}" title="${esc(t.fontLarger)}">A+</button></span>
+      <button class="mini" id="tCopy">${esc(t.copy)}</button>
+      <a class="mini" href="https://quran.com/${s}/${a}" target="_blank" rel="noopener">${esc(t.verifyExt)}</a>
+      <a class="mini" href="https://dorar.net/tafseer/${s}" target="_blank" rel="noopener">${esc(t.dorarTafsir)}</a>
+    </div>
+    <p class="tts-note" id="ttsNote" hidden></p>
+    <div class="zbody tz-body" id="tafBody" dir="${BOOKS[book].lang === 'ar' ? 'rtl' : 'ltr'}"><p class="muted">${esc(t.loadingTafsir)}</p></div>`;
+  $('#tzone').style.setProperty('--ts', state.ts);
+  $('#tPrev').onclick = () => step(-1);
+  $('#tNext').onclick = () => step(1);
+  $('#viewTaf').querySelectorAll('[data-book]').forEach(b => b.onclick = () => { state.taf.book = b.dataset.book; store.set('book', b.dataset.book); renderTafsir(i); });
+  const tfont = (d) => { state.ts = Math.round(Math.min(1.8, Math.max(0.7, state.ts + d)) * 10) / 10; store.set('ts', state.ts); $('#tzone').style.setProperty('--ts', state.ts); };
+  $('#tFm').onclick = () => tfont(-0.1);
+  $('#tFp').onclick = () => tfont(0.1);
+  $('#tTts').onclick = () => { if ($('#tTts').getAttribute('aria-pressed') === 'true') { speaker.stop(); ttsState('idle'); } else if (state.taf.text) { stopAudio(true); speaker.speak(state.taf.text, state.taf.lang); } };
+  $('#tCopy').onclick = async () => { if (!state.taf.text) return; try { await navigator.clipboard.writeText(`${state.taf.text}\n— ${state.taf.src || ''} [${refLabel(i, 'ar')}]`); alertNote(t.copied); } catch (err) { /* blocked */ } };
+  loadTafsir(book, i, tok);
 }
 
-// At-Tabari, «جامع البيان» (d. 310 AH), page by page from Quranpedia, with volume/page
-async function renderTabari(i, s, a) {
-  const t = T();
-  let j = null;
+async function loadTafsir(book, i, tok) {
+  const t = T(), e = state.engine, s = e.suraOf[i], a = e.ayaOf[i], B = BOOKS[book];
+  let paras = [], src = '', note = '', text = '';
   try {
-    const r = await fetch('api/tafsir', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ s, a, book: 4 }) });
-    j = r.ok ? await r.json() : null;
-  } catch (e) { j = null; }
-  if (state.reader.cur !== i) return;
+    if (B.kind === 'local') {
+      await loadSource(book);
+      const so = e.sources[book];
+      text = (so.text[i] || '').replace(/^\d+\.\s*/, '');
+      paras = text ? [{ t: text }] : [];
+      src = `${t.bookAbout[book] || so.title} · QuranEnc.com`;
+    } else if (B.kind === 'saadi') {
+      const f = await suraFile('saadi', s);
+      let k = a - 1;
+      text = f.text[k];
+      if (!text) { while (k > 0 && !f.text[k]) k--; if (f.text[k]) { note = t.groupWithPrev; text = f.text[k]; } }
+      paras = text ? [{ t: text }] : [];
+      src = `${t.bookAbout.saadi_ar} · Quran.com`;
+    } else {
+      const r = await fetch('api/tafsir', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ s, a, book }) });
+      const j = r.ok ? await r.json() : null;
+      if (!j || !j.ok) throw new Error('live');
+      if (j.empty || !j.lines.length) { paras = []; }
+      else {
+        const MAX = book === 'tabari' ? 40 : 160;
+        paras = j.lines.slice(0, MAX);
+        text = paras.map(l => l.t).join('\n');
+        if (book === 'tabari' && !j.exact) note = t.tafPages;
+        if (j.verses && j.verses.length > 1) note = t.tafGroup(j.verses.join('، '));
+        const refs = (j.ref || []).map(r0 => { const [v, p] = r0.split('/'); return `${t.vol} ${v} ${t.pg} ${p}`; }).join('، ');
+        const by = B.lang === 'ar' ? `${j.book.name} — ${j.book.author} (ت ${j.book.died}هـ)` : `${j.book.name} — ${j.book.author} (d. ${j.book.died} AH)`;
+        src = `${by}${refs ? ' · ' + refs : ''} · <a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(j.lines.length > MAX ? t.tafMore : j.source)}</a>`;
+      }
+    }
+  } catch (err) {
+    if (tok !== state.taf.tok) return;
+    $('#tafBody').innerHTML = `<p>${esc(t.tafFail)}</p>`;
+    return;
+  }
+  if (tok !== state.taf.tok) return;
   const body = $('#tafBody');
-  if (!body) return;
-  body.dir = 'rtl';
-  const more = `https://quranpedia.net/surah/1/${s}?ayah_id=${a}`;
-  if (!j || !j.ok) { body.innerHTML = `<p>${esc(t.tafFail)}</p><div class="src"><a href="${more}" target="_blank" rel="noopener">${esc(t.tafMore)}</a></div>`; return; }
-  if (j.empty || !j.lines.length) { body.innerHTML = `<p>${esc(t.tafEmpty)}</p>`; return; }
-  const MAX = 40, lines = j.lines.slice(0, MAX);
-  const refs = (j.ref || []).map(r => { const [v, p] = r.split('/'); return `${t.vol} ${v} ${t.pg} ${p}`; }).join('، ');
-  body.innerHTML = (j.exact ? '' : `<p class="note">${esc(t.tafPages)}</p>`) +
-    lines.map(l => l.h ? `<h4>${esc(l.t)}</h4>` : `<p>${esc(l.t)}</p>`).join('') +
-    `<div class="src">${esc(j.book.name)} — ${esc(j.book.author)} (ت ${j.book.died}هـ) · ${esc(refs)} · <a href="${more}" target="_blank" rel="noopener">${esc(j.lines.length > MAX ? t.tafMore : j.source)}</a></div>`;
-  const text = lines.map(l => l.t).join('\n');
-  $('#fTts').onclick = () => toggleSpeech(text, 'ar', $('#fTts'));
+  if (!paras.length) { body.innerHTML = `<p class="muted">${esc(t.tafEmpty)}</p>`; return; }
+  state.taf.text = text; state.taf.src = src.replace(/<[^>]+>/g, '');
+  body.innerHTML = (note ? `<p class="note">${esc(note)}</p>` : '') +
+    paras.map(l => l.h ? `<h4>${esc(l.t)}</h4>` : `<p>${esc(l.t)}</p>`).join('') +
+    `<div class="src">${src.includes('<a ') ? src : esc(src)}</div>`;
+  body.scrollTop = 0;
 }
 
-// ------------------------------------------------ listening to the tafsir (browser speech synthesis)
-const TTS_LANG = { ar: 'ar', en: 'en', fr: 'fr' };
-function toggleSpeech(text, lang, btn) {
-  const ss = window.speechSynthesis;
-  if (!ss) { alertNote(T().ttsUnavailable); return; }
-  if (ss.speaking) { stopSpeech(); return; }
-  const voices = ss.getVoices();
-  const voice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith(TTS_LANG[lang]));
-  if (!voice && voices.length) { alertNote(T().ttsNoVoice); return; }
-  stopAudio(true);
-  const u = new SpeechSynthesisUtterance(text);
-  if (voice) u.voice = voice;
-  u.lang = voice ? voice.lang : ({ ar: 'ar-SA', en: 'en-US', fr: 'fr-FR' })[lang];
-  u.rate = lang === 'ar' ? 0.9 : 1;
-  u.onend = u.onerror = () => { btn.classList.remove('on'); btn.setAttribute('aria-pressed', 'false'); };
-  btn.classList.add('on'); btn.setAttribute('aria-pressed', 'true');
-  ss.speak(u);
+// the listen button of the tafsir zone follows the speaker
+function ttsState(st, info) {
+  const t = T(), b = $('#tTts'), n = $('#ttsNote');
+  if (!b) return;
+  const on = st === 'loading' || st === 'speaking';
+  b.setAttribute('aria-pressed', on);
+  b.classList.toggle('on', on);
+  b.textContent = st === 'loading' ? `⏳ ${t.ttsLoading}` : st === 'speaking' ? `■ ${t.ttsStop}` : `🔊 ${t.readTafsir}`;
+  if (n) {
+    n.hidden = !(on || st === 'error');
+    n.className = 'tts-note' + (st === 'error' ? ' bad' : '');
+    if (st === 'error') n.textContent = info === 'terms' ? t.ttsTerms : info === 'quota' ? t.ttsQuota : info === 'novoice' ? t.ttsNoVoice : t.ttsFail;
+    else if (on) n.textContent = t.ttsNote + (info && info.trimmed ? ' ' + t.ttsTrimmed : '');
+  }
 }
-function stopSpeech() {
-  if (window.speechSynthesis && window.speechSynthesis.speaking) window.speechSynthesis.cancel();
-  const b = $('#fTts'); if (b) { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); }
-}
+function stopSpeech() { speaker.stop(); ttsState('idle'); }
 function alertNote(msg) {
   $('#status').textContent = msg; $('#status').classList.add('on');
-  setTimeout(() => $('#status').classList.remove('on'), 3500);
+  clearTimeout(alertNote.t);
+  alertNote.t = setTimeout(() => $('#status').classList.remove('on'), 3000);
 }
 
 // ------------------------------------------------ synchronised recitation
+// The recited word: inside the Mishkat lamp at the edge of the galaxy, and inside
+// a luminous disc on its own star in the galaxy (no third copy elsewhere).
 function showLampWord(w, ref) {
-  document.querySelectorAll('#stage svg, #rdLamp svg').forEach(svg => setLampWord(svg, w));
-  const big = $('#stageWord');
-  if (big) {
-    big.textContent = w || '';
-    big.classList.remove('pop'); void big.offsetWidth; if (w) big.classList.add('pop');
-  }
-  if (ref !== undefined) { const r = $('#stageRef'); if (r) r.textContent = ref; }
+  const svg = $('#lampSlot svg');
+  if (svg) setLampWord(svg, w);
+  if (ref !== undefined) $('#lampRef').textContent = ref;
 }
 
 // play(i, fromUser): fromUser resets the repetition counter
@@ -711,12 +834,13 @@ async function play(i, fromUser = false) {
   stopSpeech();
   if (fromUser || state.repeatLeft == null) state.repeatLeft = state.repeat || 1;
   const e = state.engine, s = e.suraOf[i], a = e.ayaOf[i];
+  if (state.reader.cur !== i) selectVerse(i, { scroll: true, fly: false, keepAudio: true });
   const tim = (await suraFile('timing', s))[a - 1];
-  if (state.reader.cur !== i) selectVerse(i, false);
   const au = new Audio(AUDIO_BASE + tim.u);
+  au.playbackRate = state.speed;
   state.audio = au; state.playing = true;
   const btn = $('#rPlay'); if (btn) btn.textContent = T().pause;
-  const groups = () => [...document.querySelectorAll(`#mushaf .v[data-i="${i}"], #fAyah, #fTranslit`)];
+  const groups = () => [...document.querySelectorAll(`#mushaf .v[data-i="${i}"]`)];
   const [w0] = state.galaxy.wordsOfVerse(i);
   showLampWord('', refLabel(i));
   let last = -1;
@@ -727,13 +851,15 @@ async function play(i, fromUser = false) {
       let k = -1;
       for (let j = 0; j < tim.t.length / 2; j++) if (ms >= tim.t[2 * j] && ms <= tim.t[2 * j + 1] + 120) { k = j; break; }
       if (k !== last) {
+        let arWord = '';
         for (const g of groups()) {
           g.querySelectorAll('.w.now').forEach(x => x.classList.remove('now'));
-          if (k >= 0) { const x = g.querySelector(`.w[data-w="${k + 1}"]`); if (x) x.classList.add('now'); }
+          if (k >= 0) g.querySelectorAll(`.w[data-w="${k + 1}"]`).forEach(x => { x.classList.add('now'); if (!arWord && x.closest('.ayah, span.v')) arWord = x.textContent; });
         }
-        const arWord = k >= 0 ? (($('#fAyah') && $('#fAyah').querySelector(`.w[data-w="${k + 1}"]`)) || {}).textContent : '';
         showLampWord(arWord || '');
-        if (k >= 0) { state.galaxy.setActiveWord(w0 + k); state.galaxy.lookAtWord(w0 + k); } else state.galaxy.setActiveWord(null);
+        if (k >= 0) { state.galaxy.setActiveWord(w0 + k, arWord); state.galaxy.lookAtWord(w0 + k); } else state.galaxy.setActiveWord(null);
+        const cur = groups()[0] && groups()[0].querySelector('.w.now'), b = $('#rdBody');
+        if (cur && b) { const r = cur.getBoundingClientRect(), rb = b.getBoundingClientRect(); if (r.top < rb.top + 10 || r.bottom > rb.bottom - 10) b.scrollTo({ top: b.scrollTop + r.top - rb.top - b.clientHeight * 0.35, behavior: 'smooth' }); }
         last = k;
       }
     }
@@ -746,7 +872,7 @@ async function play(i, fromUser = false) {
     stopAudio(true);
     if (state.repeatLeft > 1) { state.repeatLeft--; play(i); return; }       // تكرار
     state.repeatLeft = state.repeat || 1;
-    if (state.continuous && i + 1 < S.first + S.ayas) { selectVerse(i + 1, false); play(i + 1); }
+    if (state.continuous && i + 1 < S.first + S.ayas) { selectVerse(i + 1, { scroll: true, fly: false, keepAudio: true }); play(i + 1); }
   };
   au.play().catch(() => { stopAudio(true); alertNote(T().audioError); });
 }
@@ -771,19 +897,7 @@ function hover(p) {
   tt.style.top = Math.min(innerHeight - 90, p.y + 14) + 'px';
 }
 
-// ------------------------------------------------------------- wiring
-$('#searchForm').addEventListener('submit', (ev) => { ev.preventDefault(); const q = $('#q').value.trim(); if (q) run(q); });
-document.querySelectorAll('.langs button').forEach(b => b.onclick = () => applyLang(b.dataset.lang));
-$('#tabRes').onclick = () => state.result && showPanel('res');
-$('#tabRead').onclick = () => state.reader.sura ? showPanel('read') : openReader(lastSura(), null);
-$('#closePanel').onclick = () => {
-  stopAudio(true);
-  $('#panel').hidden = true; document.body.classList.remove('has-panel');
-  state.result = null; state.reader = { sura: null, cur: null, hits: new Set(), srcTab: state.reader.srcTab };
-  state.galaxy.highlightVerses([]); state.galaxy.showLabels(null); state.galaxy.home();
-  const url = new URL(location.href); url.search = ''; history.replaceState(null, '', url);
-};
-$('#btnHome').onclick = () => state.galaxy.home();
+// ------------------------------------------------------------- galaxy toolbar
 const viewIdx = { g0: 0, g1: 1 };
 async function setView(v) {
   if (!(v in viewIdx)) {
@@ -793,36 +907,62 @@ async function setView(v) {
   }
   state.galaxy.setLayout(viewIdx[v]);
   $('#viewSel').value = v;
-  document.body.classList.toggle('qview', v.startsWith('q-'));
   const note = $('#viewNote');
   note.hidden = v.startsWith('g');
   clearTimeout(setView.timer);
   if (!note.hidden) {
     note.textContent = T().viewNote(T()['ord_' + v.slice(2)]);
-    // the explanation is shown for a while, then gets out of the way of the home page
     setView.timer = setTimeout(() => { note.hidden = true; }, 9000);
   }
-  try { localStorage.setItem('mishkat.view', v); } catch (e) { /* ignore */ }
+  store.set('view', v);
 }
+function setNames(v) { state.galaxy.setNames(v); $('#gNames').setAttribute('aria-pressed', v); store.set('names', v ? '1' : '0'); }
 $('#viewSel').onchange = (ev) => setView(ev.target.value);
+$('#gHome').onclick = () => state.galaxy.home();
+$('#gIn').onclick = () => state.galaxy.zoom(0.6);
+$('#gOut').onclick = () => state.galaxy.zoom(1.6);
+$('#gRot').onclick = () => { const v = !state.galaxy.autoRotate; state.galaxy.setAutoRotate(v); $('#gRot').setAttribute('aria-pressed', v); };
+$('#gNames').onclick = () => setNames($('#gNames').getAttribute('aria-pressed') !== 'true');
+$('#gLegend').onclick = () => { const b = $('#legendBox'); b.hidden = !b.hidden; $('#gLegend').setAttribute('aria-expanded', !b.hidden); };
+$('#gFull').onclick = () => { const on = !document.body.classList.contains('gfull'); document.body.classList.toggle('gfull', on); $('#gFull').setAttribute('aria-pressed', on); };
+
+// ------------------------------------------------------------- wiring
+$('#searchForm').addEventListener('submit', (ev) => { ev.preventDefault(); const q = $('#q').value.trim(); if (q) run(q); });
+document.querySelectorAll('.langs button').forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+$('#resClose').onclick = clearResults;
+document.querySelectorAll('#mtabs [data-pane]').forEach(b => b.onclick = () => showPane(b.dataset.pane));
+setupSplit($('#splitMain'), $('.col-main'), 'splitMain');
+setupSplit($('#splitSide'), $('.col-side'), 'splitSide');
+showPane('s');
+state.taf.book = store.get('book');
 $('#btnMenu').onclick = () => openWelcome();
+$('#btnAbout').onclick = () => $('#about').showModal();
 $('#themeBtn').onclick = () => setTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
 document.addEventListener('keydown', (ev) => {
-  if (ev.target.closest && ev.target.closest('input,select,textarea')) return;
+  if (ev.target.closest && ev.target.closest('input,select,textarea,[contenteditable]')) return;
+  if (!$('#gate').hidden || !$('#welcome').hidden || !$('#voice').hidden || $('#about').open) return;
+  if (ev.key === '/') { ev.preventDefault(); $('#q').focus(); return; }
   if (ev.key === 'v' || ev.key === 'V') {
     const opts = [...$('#viewSel').options].map(o => o.value);
     setView(opts[(opts.indexOf($('#viewSel').value) + 1) % opts.length]);
+    return;
   }
+  if (ev.target.closest && ev.target.closest('[role=separator]')) return;
+  if (ev.key === ' ' && ev.target.closest && ev.target.closest('button,a,summary')) return; // native activation
+  if (!state.reader.sura) return;
+  const rtl = document.documentElement.dir === 'rtl';
+  if (ev.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) step(1);
+  if (ev.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) step(-1);
+  if (ev.key === ' ') { ev.preventDefault(); state.playing ? stopAudio(true) : play(state.reader.cur, true); }
 });
 
 function setTheme(th) {
   document.documentElement.dataset.theme = th;
   $('#themeBtn').textContent = th === 'light' ? '☀' : '☾';
-  try { localStorage.setItem('mishkat.theme', th); } catch (e) { /* ignore */ }
+  store.set('theme', th);
 }
-(function initTheme() { let th = 'dark'; try { th = localStorage.getItem('mishkat.theme') || 'dark'; } catch (e) { /* ignore */ } setTheme(th); })();
+setTheme(store.get('theme', 'dark'));
 
-// ------------------------------------------------------------ welcome & feature chooser
 // ------------------------------------------------------------ welcome → interests → personalised home
 const INTERESTS = ['ahkam', 'stories', 'akhlaq', 'tafsir', 'recite', 'suras', 'memorize', 'verify'];
 const ICONS = {
@@ -847,7 +987,7 @@ function suraOptions(sel = 1) {
   return state.core.suras.map(S => `<option value="${S.n}"${S.n === sel ? ' selected' : ''}>${S.n}. ${esc(state.lang === 'ar' ? S.ar : S.tr)}</option>`).join('');
 }
 function interests() {
-  try { return (JSON.parse(localStorage.getItem('mishkat.interests') || '[]') || []).filter(k => INTERESTS.includes(k)); } catch (e) { return []; }
+  try { return (JSON.parse(store.get('interests', '[]')) || []).filter(k => INTERESTS.includes(k)); } catch (e) { return []; }
 }
 
 function openWelcome() {
@@ -861,24 +1001,24 @@ function openWelcome() {
   w.hidden = false;
   $('#wGo').onclick = () => {
     const ks = [...w.querySelectorAll('.wtile[aria-pressed=true]')].map(b => b.dataset.k);
-    try { localStorage.setItem('mishkat.interests', JSON.stringify(ks)); } catch (e) { /* ignore */ }
-    closeWelcome(); renderHome();
+    store.set('interests', JSON.stringify(ks));
+    closeWelcome(); renderSide();
   };
-  $('#wClose').onclick = () => { closeWelcome(); renderHome(); };
+  $('#wClose').onclick = () => { closeWelcome(); renderSide(); };
+  w.onkeydown = (ev) => { if (ev.key === 'Escape') { closeWelcome(); renderSide(); } };
   setTimeout(() => { const first = w.querySelector('.wtile'); if (first) first.focus(); }, 50);
 }
-function closeWelcome() { $('#welcome').hidden = true; try { localStorage.setItem('mishkat.welcomed', '1'); } catch (e) { /* ignore */ } }
+function closeWelcome() { $('#welcome').hidden = true; store.set('welcomed', '1'); }
 
-// home page: suggestion groups for the chosen interests (default chips otherwise)
+// home of the answers zone: the verse of the lamp, a short guide, suggestions
 function renderHome() {
-  const box = $('#forYou'), I = INTEREST[state.lang], chosen = interests(), L = state.lang;
+  const box = $('#viewRes'), I = INTEREST[state.lang], t = T(), chosen = interests(), L = state.lang;
   if (!state.core || !box) return;
-  $('#chips').hidden = chosen.length > 0;
-  $('#heroLead').hidden = chosen.length > 0;
+  let h = `<div class="home"><div class="h-verse ayah">﴿${esc(heroSlice())} …﴾</div><div class="h-ref">${esc(L === 'ar' ? 'سورة النور · 35' : 'An-Nur · 24:35')}</div>
+    <p class="h-lead">${esc(t.lead)}</p>`;
   if (!chosen.length) {
-    box.hidden = false;
-    box.className = 'fy-empty';
-    box.innerHTML = `<button type="button" class="fy-edit">${esc(I.personalise)}</button>`;
+    h += `<div class="fy-chips h-chips">${t.chips.map(c => `<button type="button" data-q="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+      <p class="h-pers"><button type="button" class="fy-edit">${esc(I.personalise)}</button></p>`;
   } else {
     const name = (n) => L === 'ar' ? state.core.suras[n - 1].ar : state.core.suras[n - 1].tr;
     const chip = (attrs, label, ar) => `<button type="button" ${attrs}${ar ? ' class="ar"' : ''}>${esc(label)}</button>`;
@@ -899,10 +1039,9 @@ function renderHome() {
       return `<section class="fy-g"><div class="fy-t">${icon(k)}<span>${esc(I[k].title)}</span>${I[k].note ? `<small class="fy-note">${esc(I[k].note)}</small>` : ''}</div>
         <div class="fy-chips">${body}</div>${extra}</section>`;
     };
-    box.hidden = false;
-    box.className = '';
-    box.innerHTML = `<div class="fy-head"><b>${esc(I.forYou)}</b><button type="button" class="fy-edit">${esc(I.edit)}</button></div>` + chosen.map(group).join('');
+    h += `<div class="fy-head"><b>${esc(I.forYou)}</b><button type="button" class="fy-edit">${esc(I.edit)}</button></div>` + chosen.map(group).join('');
   }
+  box.innerHTML = h + `<p class="disclose">${esc(t.disclosure)}</p></div>`;
   box.querySelectorAll('.fy-edit').forEach(b => b.onclick = openWelcome);
   box.querySelectorAll('.fy-chips button').forEach(b => b.onclick = () => doPick(b.dataset));
   box.querySelectorAll('select[data-pick]').forEach(sel => sel.onchange = () => {
@@ -921,20 +1060,10 @@ function doPick(d) {
   if (d.q) { $('#q').value = d.q; run(d.q); return; }
   if (d.v) { const q = `${WELCOME[state.lang].verifyPrefix} ${d.v}`; $('#q').value = q; run(q); return; }
   const S = state.core.suras[+d.s - 1], i = S.first + (+d.a || 1) - 1;
-  if (d.act === 'tafsir') state.reader.srcTab = state.lang === 'ar' ? 'muyassar_ar' : TAFSIR_FOR[state.lang];
+  if (d.act === 'tafsir') state.taf.book = state.lang === 'ar' ? 'muyassar_ar' : 'mukhtasar_en';
   if (d.act === 'learn') { state.repeat = 3; state.repeatLeft = 3; }
-  openReader(S.n, i, d.act === 'listen' || d.act === 'learn');
+  goVerse(i, { play: d.act === 'listen' || d.act === 'learn', pane: d.act === 'tafsir' ? 't' : 'r' });
+  if (d.act === 'learn') { const r = $('#rRep'); if (r) r.value = '3'; }
 }
-$('#btnLegend').onclick = () => { $('#legendBox').hidden = !$('#legendBox').hidden; };
-$('#btnAbout').onclick = () => $('#about').showModal();
-document.addEventListener('keydown', (ev) => {
-  if (ev.target === $('#q') || ev.target.tagName === 'SELECT') return;
-  if (ev.key === '/') { ev.preventDefault(); $('#q').focus(); return; }
-  if (!state.reader.sura || $('#viewRead').hidden) return;
-  const rtl = document.documentElement.dir === 'rtl';
-  if (ev.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) step(1);
-  if (ev.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) step(-1);
-  if (ev.key === ' ') { ev.preventDefault(); state.playing ? stopAudio(true) : play(state.reader.cur); }
-});
 
 boot().catch(err => { $('#loadMsg').textContent = 'Error: ' + err.message; console.error(err); });

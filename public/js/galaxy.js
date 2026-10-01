@@ -40,7 +40,7 @@ const FRAG = /* glsl */`
     gl_FragColor = vec4(col, a * (vHl > 0.5 ? 1.0 : mix(0.9, 0.4, uDim)));
   }`;
 
-export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
+export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, wordText = () => '', suraLabel = (n) => String(n) }) {
   const buf = await (await fetch(binUrl)).arrayBuffer();
   const dv = new DataView(buf);
   const N = dv.getUint32(0, true), nLayouts = dv.getUint32(4, true);
@@ -130,51 +130,128 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
 
   let layout = 0;
   let highlighted = [];
-  // floating Arabic labels for the words of the focused verse
+
+  // thread linking the words of the focused verse, in reading order
+  const threadMat = new THREE.LineBasicMaterial({ color: 0xffd66b, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false });
+  let thread = null;
+
+  // ------------------------------------------------------------ labels (DOM)
+  // As in the word atlas: the word being recited is written INSIDE a dark,
+  // luminous disc anchored to its own star; the other words of the verse are
+  // written next to their stars when the camera is close; surah names float
+  // over the galaxy in the far views.
   const labelBox = document.createElement('div');
-  labelBox.className = 'labels';
+  labelBox.className = 'glabels';
   canvas.parentNode.appendChild(labelBox);
-  let labels = [];
+  const pool = [];
+  const lbl = (k) => { while (pool.length <= k) { const d = document.createElement('div'); labelBox.appendChild(d); pool.push(d); } return pool[k]; };
+  let focusV = null, activeI = null, activeText = '', namesOn = true;
   const v3 = new THREE.Vector3();
-  // one floating card with the verse text, anchored to the verse cluster
-  let labelVerse = null, cardOn = true;
-  function showLabels(v, words, text, title) {
-    labelBox.innerHTML = ''; labels = []; labelVerse = v;
-    if (v == null || !text) return;
-    const el = document.createElement('div');
-    el.className = 'vcard';
-    el.innerHTML = `<div class="t"></div><div class="a"></div>`;
-    el.querySelector('.t').textContent = title || '';
-    el.querySelector('.a').textContent = text;
-    labelBox.appendChild(el);
-    labels.push({ el });
+  const suraMid = []; // per layout: surah centroids
+  const suraIdxOfVerse = new Int16Array(NV);
+  suras.forEach((S, k) => { for (let a = 0; a < S.ayas; a++) suraIdxOfVerse[S.first + a] = k; });
+
+  function suraCentroids() {
+    if (suraMid[layout]) return suraMid[layout];
+    const P = layouts[layout], out = new Float32Array(suras.length * 3);
+    suras.forEach((S, k) => {
+      const a = vStart[S.first], b = vEnd[S.first + S.ayas - 1];
+      let x = 0, y = 0, z = 0;
+      for (let i = a; i < b; i++) { x += P[i * 3]; y += P[i * 3 + 1]; z += P[i * 3 + 2]; }
+      const n = Math.max(1, b - a);
+      out[k * 3] = x / n; out[k * 3 + 1] = y / n; out[k * 3 + 2] = z / n;
+    });
+    suraMid[layout] = out;
+    return out;
   }
+  function screen(x, y, z, w, h) {
+    v3.set(x, y, z).project(camera);
+    if (v3.z < -1 || v3.z > 1) return null;
+    return { x: (v3.x * 0.5 + 0.5) * w, y: (-v3.y * 0.5 + 0.5) * h, z: v3.z };
+  }
+  const put = (el, x, y) => { el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`; };
+
   function placeLabels() {
-    if (!labels.length || labelVerse == null) return;
-    const d = camera.position.distanceTo(controls.target);
-    const vis = cardOn && !morph && !anim && d < 400;
-    labelBox.style.opacity = vis ? 1 : 0;
-    if (!vis) return;
-    const c = centroid(labelVerse).project(camera);
     const w = canvas.clientWidth, h = canvas.clientHeight;
-    const { el } = labels[0];
-    el.style.display = c.z > 1 ? 'none' : '';
-    let x = (c.x * 0.5 + 0.5) * w;
-    const y = (-c.y * 0.5 + 0.5) * h;
-    // keep the card inside the free area (not under the side panel)
-    const half = el.offsetWidth / 2 + 8;
-    let lo = half, hi = w - half;
-    const panel = document.getElementById('panel');
-    if (panel && !panel.hidden) {
-      const r = panel.getBoundingClientRect();
-      if (r.left < w / 2) lo = Math.max(lo, r.right + half); else hi = Math.min(hi, r.left - half);
+    let n = 0;
+    if (!morph && w && h) {
+      const P = layouts[layout];
+      const d = camera.position.distanceTo(controls.target);
+      const boxes = [];
+      const free = (x, y, bw, bh) => {
+        if (x - bw / 2 < 2 || x + bw / 2 > w - 2 || y - bh / 2 < 2 || y + bh / 2 > h - 2) return false;
+        for (const b of boxes) if (Math.abs(b.x - x) * 2 < b.w + bw && Math.abs(b.y - y) * 2 < b.h + bh) return false;
+        boxes.push({ x, y, w: bw, h: bh });
+        return true;
+      };
+      // 1. the recited word: its place is reserved first, it is always drawn
+      let cur = null;
+      if (activeI != null) {
+        cur = screen(P[activeI * 3], P[activeI * 3 + 1], P[activeI * 3 + 2], w, h);
+        if (cur) boxes.push({ x: cur.x, y: cur.y, w: activeText.length * 16 + 44, h: 52 });
+      }
+      // 2. the other words of the focused verse, beside their stars
+      if (focusV != null && vStart[focusV] >= 0 && d < 520) {
+        const fs = Math.max(12, Math.min(21, 2400 / Math.max(60, d)));
+        const items = [];
+        for (let i = vStart[focusV]; i < vEnd[focusV]; i++) {
+          if (i === activeI) continue;
+          const p = screen(P[i * 3], P[i * 3 + 1], P[i * 3 + 2], w, h);
+          if (p) items.push({ i, p });
+        }
+        items.sort((a, b) => a.p.z - b.p.z);
+        for (const { i, p } of items.slice(0, 60)) {
+          const t = wordText(i);
+          const y = p.y - fs * 0.95;
+          if (!t || !free(p.x, y, t.length * fs * 0.52 + 6, fs * 1.5)) continue;
+          const el = lbl(n++);
+          el.className = 'gl gw';
+          el.textContent = t;
+          el.style.fontSize = fs.toFixed(1) + 'px';
+          put(el, p.x, y);
+        }
+      }
+      if (cur) {
+        const el = lbl(n++);
+        el.className = 'gl now';
+        el.textContent = activeText;
+        el.style.fontSize = '';
+        put(el, cur.x, cur.y);
+      }
+      // 3. surah names (far views)
+      if (namesOn && d > 170) {
+        const C = suraCentroids(), items = [];
+        for (let k = 0; k < suras.length; k++) {
+          const p = screen(C[k * 3], C[k * 3 + 1], C[k * 3 + 2], w, h);
+          if (p) items.push({ k, p });
+        }
+        items.sort((a, b) => a.p.z - b.p.z);
+        let shown = 0;
+        const focusK = focusV != null ? suraIdxOfVerse[focusV] : -1;
+        for (const { k, p } of items) {
+          if (shown >= 22) break;
+          const t = suraLabel(suras[k].n);
+          if (!free(p.x, p.y, t.length * 7 + 10, 20)) continue;
+          const el = lbl(n++);
+          el.className = 'gl gs' + (k === focusK ? ' on' : '');
+          el.textContent = t;
+          el.style.fontSize = '';
+          put(el, p.x, p.y);
+          shown++;
+        }
+      }
     }
-    if (lo < hi) x = Math.min(hi, Math.max(lo, x));
-    // never under the header / search bar
-    const head = document.getElementById('top');
-    const minY = (head ? head.getBoundingClientRect().bottom : 0) + el.offsetHeight + 34;
-    if (y < minY) { el.style.display = 'none'; return; }
-    el.style.transform = `translate(${x}px, ${y}px) translate(-50%, calc(-100% - 26px))`;
+    for (let k = n; k < pool.length; k++) if (pool[k].className !== 'gl off') pool[k].className = 'gl off';
+  }
+
+  function drawThread() {
+    if (thread) { scene.remove(thread); thread.geometry.dispose(); thread = null; }
+    if (focusV == null || vStart[focusV] < 0 || morph) return;
+    const P = layouts[layout], pts = [];
+    for (let i = vStart[focusV]; i < vEnd[focusV]; i++) pts.push(new THREE.Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]));
+    if (pts.length < 2) return;
+    thread = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), threadMat);
+    scene.add(thread);
   }
 
   function resize() {
@@ -243,11 +320,12 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
     posAttr.needsUpdate = pos2.needsUpdate = true;
     uniforms.uMix.value = 0;
     morph = { t0: performance.now(), to: L };
+    drawThread();
   }
   let morph = null;
 
   function home() {
-    ring.visible = false; showLabels(null);
+    ring.visible = false;
     const target = (morph ? morph.to : layout);
     const v = homes[target];
     if (v) { animateTo(new THREE.Vector3(...v.pos), new THREE.Vector3(...v.target), 1500); return; }
@@ -277,7 +355,9 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
     lastMove = now;
     onHover && onHover(pick(ev));
   });
-  canvas.addEventListener('pointerdown', (ev) => { downAt = { x: ev.clientX, y: ev.clientY }; controls.autoRotate = false; });
+  let userAt = 0;
+  canvas.addEventListener('pointerdown', (ev) => { downAt = { x: ev.clientX, y: ev.clientY }; controls.autoRotate = false; userAt = performance.now(); });
+  canvas.addEventListener('wheel', () => { userAt = performance.now(); controls.autoRotate = false; }, { passive: true });
   canvas.addEventListener('pointerup', (ev) => {
     if (!downAt || Math.hypot(ev.clientX - downAt.x, ev.clientY - downAt.y) > 5) return;
     const p = pick(ev);
@@ -305,6 +385,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
         uniforms.uMix.value = 0;
         geo.computeBoundingSphere();
         drawPath();
+        drawThread();
       }
     }
     if (ring.visible) ring.lookAt(camera.position);
@@ -315,27 +396,39 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
   loop();
 
   return {
-    flyToVerse, highlightVerses, setLayout, addLayout, home, showLabels,
+    flyToVerse, highlightVerses, setLayout, addLayout, home,
+    // the verse whose words are labelled and linked by a thread
+    setFocusVerse(v) { focusV = v == null ? null : v; drawThread(); },
     // keep the recited word in the middle of the view, gliding from word to word
+    // (paused for a few seconds after the visitor moves the camera)
     lookAtWord(i) {
       if (i == null || i < 0 || i >= N) return;
       const P = layouts[layout];
       const p = new THREE.Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]);
+      ring.position.copy(p); ring.visible = true;
+      if (performance.now() - userAt < 6000) return;
       const off = camera.position.clone().sub(controls.target);
       if (off.length() > 150) off.setLength(150);
       if (off.length() < 40) off.setLength(60);
       animateTo(p.clone().add(off), p, 650);
-      ring.position.copy(p); ring.visible = true;
     },
     get count() { return N; },
-    setCardVisible(v) { cardOn = v; if (!v) labelBox.style.opacity = 0; },
-    setActiveWord(i) {
-      if (i == null || i < 0 || i >= N) { active.visible = false; return; }
+    // the recited word: a glowing sprite + its text in a luminous disc on the star
+    setActiveWord(i, text = '') {
+      if (i == null || i < 0 || i >= N) { active.visible = false; activeI = null; activeText = ''; return; }
       const P = layouts[layout];
       active.position.set(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]);
-      active.visible = true;
+      active.visible = true; activeI = i; activeText = text || wordText(i) || '';
     },
+    zoom(f) {
+      const off = camera.position.clone().sub(controls.target);
+      const len = Math.min(controls.maxDistance, Math.max(controls.minDistance, off.length() * f));
+      controls.autoRotate = false;
+      animateTo(controls.target.clone().add(off.setLength(len)), controls.target.clone(), 450);
+    },
+    setNames(v) { namesOn = !!v; },
     get layout() { return layout; },
+    get autoRotate() { return controls.autoRotate; },
     setAutoRotate(v) { controls.autoRotate = v; },
     wordsOfVerse: (v) => [vStart[v], vEnd[v]],
     wordVerse,

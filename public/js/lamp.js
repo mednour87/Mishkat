@@ -2,7 +2,8 @@
 // The Mishkat lamp: a niche (مشكاة) holding a planet-like glass sphere (زجاجة كأنها كوكب دري)
 // holding a bottle-shaped lamp (مصباح) holding the flame. Each layer lights up in turn,
 // so the light is multiplied — "light upon light". An optional word slot shows the word
-// being recited inside the bottle, auto-fitted so even the longest words stay readable.
+// being recited inside the bottle (in place of the flame), auto-fitted so even the
+// longest words stay readable.
 let uid = 0;
 
 export function lampSVG({ size = 120, word = false, animated = true, title = 'Mishkat' } = {}) {
@@ -41,9 +42,9 @@ export function lampSVG({ size = 120, word = false, animated = true, title = 'Mi
   <path class="l1" d="M52 34 h16 v7 c0 3 11 7 11 21 v13 c0 9 -8 13 -19 13 c-11 0 -19 -4 -19 -13 v-13 c0 -14 11 -18 11 -21 z"
         fill="url(#${id}b)" stroke="#fff3cf" stroke-width="1.4" opacity=".92"/>
   <rect x="50" y="30" width="20" height="5" rx="2" fill="url(#${id}g)"/>
-  ${word ? `<text class="lamp-word" x="60" y="73" text-anchor="middle" dominant-baseline="middle" font-family="Amiri Quran, Amiri, serif" font-size="13" fill="#3b2400"></text>`
-         : `<path class="flame" d="M60 54 C66 62 66 70 60 76 C54 70 54 62 60 54 Z" fill="#fff" opacity=".95"/>
-            <path class="flame" d="M60 60 C63 65 63 70 60 73 C57 70 57 65 60 60 Z" fill="#ffb24a"/>`}
+  <g class="flames"><path class="flame" d="M60 54 C66 62 66 70 60 76 C54 70 54 62 60 54 Z" fill="#fff" opacity=".95"/>
+    <path class="flame" d="M60 60 C63 65 63 70 60 73 C57 70 57 65 60 60 Z" fill="#ffb24a"/></g>
+  ${word ? `<text class="lamp-word" x="60" y="73" text-anchor="middle" dominant-baseline="middle" font-family="Amiri Quran, Amiri, serif" font-size="13" fill="#3b2400"></text>` : ''}
   <!-- the blessed olive branches -->
   <g fill="#8fbf7a" opacity=".9"><path d="M30 108 C24 104 22 98 24 93 C30 96 32 102 30 108 Z"/><path d="M90 108 C96 104 98 98 96 93 C90 96 88 102 90 108 Z"/></g>
 </svg>`;
@@ -53,6 +54,9 @@ export function lampSVG({ size = 120, word = false, animated = true, title = 'Mi
 export function setLampWord(svgRoot, word) {
   const t = svgRoot && svgRoot.querySelector('.lamp-word');
   if (!t) return;
+  // the flame burns while no word is shown; the recited word takes its place in the bottle
+  const f = svgRoot.querySelector('.flames');
+  if (f) f.style.opacity = word ? '0' : '1';
   t.textContent = word || '';
   t.removeAttribute('textLength');
   t.removeAttribute('lengthAdjust');

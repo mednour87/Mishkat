@@ -4,7 +4,7 @@ export const UI = {
     dir: 'rtl', brand: 'مِشكاة', tagline: 'دليل مجرّة القرآن الذكي',
     placeholder: 'اكتب فكرة أو سؤالًا أو سورة أو آية… مثل: الصبر، يوسف، 2:255',
     lead: 'اسأل عن أي معنى أو قصة أو آية: يأتيك البيان من التفسير المعتمد بنصّه، وتُرتَّب لك السور حسب صلتها، ثم تطير إلى الموضع في مجرّة كلمات القرآن.',
-    search: 'ابحث', home: 'العرض الكامل', layoutMushaf: 'ترتيب المصحف', layoutNuzul: 'ترتيب النزول',
+    search: 'ابحث', home: 'العودة إلى المجرّة كاملة', layoutMushaf: 'ترتيب المصحف', layoutNuzul: 'ترتيب النزول',
     legend: 'المفتاح', about: 'عن مشكاة', close: 'إغلاق', tabResults: 'النتائج', tabReader: 'القارئ',
     chips: ['الصبر', 'كيف أتعامل مع الحزن', 'بر الوالدين', 'قصة يوسف', 'آية الكرسي', 'سورة الكهف', 'إن الله مع الصابرين', 'هل هذه آية: النظافة من الإيمان', 'ما حكم الموسيقى؟'],
     loading: ['تحميل نص المصحف…', 'بناء المجرّة: 77,433 كلمة…', 'تحميل التفسير المعتمد…', 'جاهز'],
@@ -16,7 +16,7 @@ export const UI = {
     readSura: '📖 اقرأ السورة', listen: '▶ استمع', play: '▶', pause: '❚❚', prevA: 'السابقة', nextA: 'التالية', auto: 'متتابعة',
     ayaN: 'الآية', copy: 'نسخ', copied: 'تم النسخ', verifyExt: 'تحقّق في Quran.com', report: 'أبلغ عن خطأ',
     translation: 'ترجمة المعاني', tafsirTitle: 'التفسير',
-    srcNames: { tabari: 'الطبري (ت 310هـ)', muyassar_ar: 'الميسر', mukhtasar_ar: 'المختصر', saadi_ar: 'السعدي', mukhtasar_en: 'Al-Mukhtasar', mukhtasar_fr: 'Al-Mukhtasar' },
+    srcNames: { muyassar_ar: 'الميسر', mukhtasar_ar: 'المختصر', saadi_ar: 'السعدي', tabari: 'الطبري', ibnkathir: 'ابن كثير', baghawi: 'البغوي', qurtubi: 'القرطبي', mukhtasar_en: 'المختصر (إنجليزي)', ibnkathir_en: 'ابن كثير (إنجليزي)' },
     saadiGroup: 'تفسير السعدي لهذه الآية مجمل مع ما قبلها:', loadingTafsir: 'جارٍ التحميل…',
     badges: { hadith: 'الموسوعة الحديثية', term: 'قاموس المصطلحات', khilaf: 'مسألة اجتهادية', verse: 'نص المصحف ✓', sura: 'نص المصحف ✓', range: 'نص المصحف ✓', topic: 'مسند إلى التفسير المعتمد ✓',
       exact: 'مطابق لنص المصحف ✓', near: 'نص محرَّف — راجع اللفظ الصحيح', merged: 'خلط بين آيتين', notfound: 'ليس من القرآن',
@@ -32,7 +32,7 @@ export const UI = {
     contextTitle: 'سياق ضروري لفهم السؤال (آيات وتفسيرها كاملًا)', ctxBtn: 'السياق', ctxTitle: 'ما قبل الآية وما بعدها مع تفسيرها:', readHere: 'اقرأ في السورة',
     relatedNotFatwa: 'آيات ذات صلة بالموضوع — للاطلاع، وليست فتوى',
     links: { binbaz: 'ابحث في فتاوى الشيخ ابن باز (binbaz.org.sa)', alifta: 'الرئاسة العامة للبحوث العلمية والإفتاء (alifta.gov.sa)' },
-    menu: 'القائمة', viewLabel: 'العرض', themeLabel: 'الوضع الفاتح/الداكن',
+    menu: 'اهتماماتي', viewLabel: 'العرض', themeLabel: 'الوضع الفاتح/الداكن',
     vG0: 'مجرّة · ترتيب المصحف', vG1: 'مجرّة · ترتيب النزول', vQm: '«قرآن» · ترتيب المصحف', vQn: '«قرآن» · ترتيب النزول', vQl: '«قرآن» · حسب طول السورة', vQp: '«قرآن» · مكي ثم مدني',
     ord_mushaf: 'ترتيب المصحف', ord_nuzul: 'ترتيب النزول', ord_length: 'من أطول سورة إلى أقصرها', ord_place: 'السور المكية ثم المدنية',
     viewNote: (o) => `كلمة «قرآن» مكوَّنة من كلمات القرآن كلها: لكل سورة جزءٌ من الحروف بقدر عدد كلماتها، تلتفّ كلماتها حلزونيًّا داخل الحرف، وبين كل سورتين فاصل صغير. يسير الترتيب من اليمين إلى اليسار: ${o}. (اضغط V للتبديل)`,
@@ -50,14 +50,23 @@ export const UI = {
     tafPages: 'صفحات الكتاب التي تقع فيها الآية (قد تتضمن تفسير ما يجاورها):', tafFail: 'تعذّر جلب هذا التفسير الآن (يتطلب اتصالًا بالإنترنت).', tafMore: 'أكمل القراءة في الموسوعة القرآنية', tafEmpty: 'لا يوجد نص لهذه الآية في هذا الكتاب.',
     dorarTafsir: 'موسوعة التفسير (الدرر)', vol: 'ج', pg: 'ص',
     disclosure: '«مشكاة» أداة بحث مدعومة بالذكاء الاصطناعي، تعرض النصوص من مصادرها كما هي؛ وليست عالمًا ولا مفتيًا.',
-    repeat: 'تكرار', repeatTitle: 'كرّر الآية للحفظ', fullSura: 'نص السورة كاملًا', readTafsir: 'استمع إلى التفسير', ttsUnavailable: 'القراءة الصوتية غير متاحة في هذا المتصفح.', ttsNoVoice: 'لا يوجد صوت عربي مثبت في المتصفح لقراءة التفسير.', audioError: 'تعذّر تشغيل التلاوة؛ تحقّق من الاتصال بالإنترنت.',
+    repeat: 'تكرار', repeatTitle: 'كرّر الآية للحفظ', fullSura: 'نص السورة كاملًا', readTafsir: 'استمع إلى التفسير', ttsUnavailable: 'القراءة الصوتية غير متاحة في هذا المتصفح.', ttsNoVoice: 'لا يوجد صوت لهذه اللغة في متصفحك، وصوت الخادم غير متاح الآن. ثبّت صوتًا عربيًّا في إعدادات النظام (الوقت واللغة ← الكلام) أو افتح الموقع في متصفح Edge.', audioError: 'تعذّر تشغيل التلاوة؛ تحقّق من الاتصال بالإنترنت.',
+    zGalaxy: 'المجرّة', zReader: 'المصحف', zAnswers: 'الإجابات', zTafsir: 'التفسير', gTools: 'أدوات المجرّة',
+    zoomIn: 'تقريب', zoomOut: 'إبعاد', rotate: 'الدوران التلقائي', suraNames: 'أسماء السور على المجرّة', expandG: 'تكبير المجرّة / إرجاعها', resize: 'غيّر حجم المنطقتين (اسحب)', clearRes: 'مسح الإجابة والعودة إلى البداية',
+    menuTitle: 'اختر اهتماماتك لتخصيص صفحة البداية', suraPick: 'اختر السورة', autoTitle: 'الانتقال تلقائيًا إلى الآية التالية', speed: 'السرعة',
+    fontSmaller: 'تصغير الخط', fontLarger: 'تكبير الخط', translit: 'النطق', translationBtn: 'الترجمة', copyVerse: 'نسخ الآية', shareVerse: 'نسخ رابط الآية', linkCopied: 'تم نسخ رابط الآية',
+    groupWithPrev: 'يفسّر هذا الكتاب الآية مع ما قبلها في موضع واحد:', tafGroup: (r) => `يفسّر هذا الكتاب الآيات ${r} معًا في موضع واحد:`,
+    bookAbout: { muyassar_ar: 'التفسير الميسر — نخبة من العلماء (مجمع الملك فهد)', mukhtasar_ar: 'المختصر في تفسير القرآن الكريم — مركز تفسير', saadi_ar: 'تيسير الكريم الرحمن — عبد الرحمن السعدي (ت 1376هـ)', mukhtasar_en: 'Al-Mukhtasar in Interpreting the Noble Quran — Tafsir Center' },
+    ttsLoading: 'جارٍ تجهيز الصوت…', ttsStop: 'إيقاف القراءة', ttsNote: 'قراءة آلية لنص التفسير المعروض — وليست تلاوة للقرآن.', ttsTrimmed: 'يُقرأ أول النص فقط لطوله.',
+    ttsTerms: 'صوت القراءة على الخادم غير مفعَّل بعد (يلزم قبول شروط نموذج الصوت في حساب Groq). يمكنك أيضًا تثبيت صوت عربي في نظامك أو فتح الموقع في متصفح Edge.',
+    ttsQuota: 'بلغت القراءة الصوتية حدّها المؤقت؛ أعد المحاولة بعد دقيقة.', ttsFail: 'تعذّرت القراءة الصوتية الآن؛ أعد المحاولة.',
     hoverAya: (s, a) => `سورة ${s} · الآية ${a}`,
   },
   en: {
     dir: 'ltr', brand: 'Mishkat', tagline: 'The Quran Galaxy Guide',
     placeholder: 'Type an idea, a question, a surah or a verse… e.g. patience, Joseph, 2:255',
     lead: 'Ask about any meaning, story or verse: the explanation comes verbatim from vetted tafsir, surahs are ranked by relevance, and you fly to the place in the galaxy of the Quran’s words.',
-    search: 'Search', home: 'Full view', layoutMushaf: 'Mushaf order', layoutNuzul: 'Revelation order',
+    search: 'Search', home: 'Back to the whole galaxy', layoutMushaf: 'Mushaf order', layoutNuzul: 'Revelation order',
     legend: 'Legend', about: 'About', close: 'Close', tabResults: 'Results', tabReader: 'Reader',
     chips: ['patience', 'how to deal with sadness', 'kindness to parents', 'Moses and Pharaoh', 'Maryam', 'Ayat al-Kursi', 'Al-Kahf', 'Is this a verse: «النظافة من الإيمان»', 'is music haram?'],
     loading: ['Loading the Mushaf text…', 'Building the galaxy: 77,433 words…', 'Loading vetted tafsir…', 'Ready'],
@@ -69,7 +78,7 @@ export const UI = {
     readSura: '📖 Read surah', listen: '▶ Listen', play: '▶', pause: '❚❚', prevA: 'Prev', nextA: 'Next', auto: 'Continuous',
     ayaN: 'Verse', copy: 'Copy', copied: 'Copied', verifyExt: 'Verify on Quran.com', report: 'Report an error',
     translation: 'Translation of the meanings', tafsirTitle: 'Tafsir',
-    srcNames: { tabari: 'At-Tabari (d. 310 AH, ar)', muyassar_ar: 'Al-Muyassar (ar)', mukhtasar_ar: 'Al-Mukhtasar (ar)', saadi_ar: 'As-Sa‘di (ar)', mukhtasar_en: 'Al-Mukhtasar', mukhtasar_fr: 'Al-Mukhtasar (fr)' },
+    srcNames: { mukhtasar_en: 'Al-Mukhtasar', ibnkathir_en: 'Ibn Kathir', muyassar_ar: 'Al-Muyassar (ar)', mukhtasar_ar: 'Al-Mukhtasar (ar)', saadi_ar: 'As-Sa‘di (ar)', tabari: 'At-Tabari (ar)', ibnkathir: 'Ibn Kathir (ar)', baghawi: 'Al-Baghawi (ar)', qurtubi: 'Al-Qurtubi (ar)' },
     saadiGroup: 'As-Sa‘di explains this verse together with the previous one(s):', loadingTafsir: 'Loading…',
     badges: { hadith: 'Hadith Encyclopedia', term: 'Glossary', khilaf: 'Matter of ijtihad', verse: 'Mushaf text ✓', sura: 'Mushaf text ✓', range: 'Mushaf text ✓', topic: 'Grounded in vetted tafsir ✓',
       exact: 'Matches the Mushaf ✓', near: 'Misquoted — see exact wording', merged: 'Two verses merged', notfound: 'Not from the Quran',
@@ -85,7 +94,7 @@ export const UI = {
     contextTitle: 'Essential context (verses with their full tafsir)', ctxBtn: 'Context', ctxTitle: 'Verses before and after, with tafsir:', readHere: 'Read in surah',
     relatedNotFatwa: 'Related verses — for reading, not a fatwa',
     links: { binbaz: 'Search Sheikh Ibn Baz’s fatwas (binbaz.org.sa)', alifta: 'General Presidency of Scholarly Research and Ifta (alifta.gov.sa)' },
-    menu: 'Menu', viewLabel: 'View', themeLabel: 'Light/dark mode',
+    menu: 'My interests', viewLabel: 'View', themeLabel: 'Light/dark mode',
     vG0: 'Galaxy · Mushaf order', vG1: 'Galaxy · revelation order', vQm: '“Qur’an” · Mushaf order', vQn: '“Qur’an” · revelation order', vQl: '“Qur’an” · by surah length', vQp: '“Qur’an” · Meccan then Medinan',
     ord_mushaf: 'Mushaf order', ord_nuzul: 'revelation order', ord_length: 'longest to shortest surah', ord_place: 'Meccan surahs, then Medinan',
     viewNote: (o) => `The word “قرآن” is built from all the words of the Quran: each surah fills a part of the letters proportional to its number of words, its words coiling like a snail inside the letter, with a small gap between surahs. Order, right to left: ${o}. (Press V to switch)`,
@@ -103,83 +112,39 @@ export const UI = {
     tafPages: 'Pages of the book where the verse occurs (may include the neighbouring verses):', tafFail: 'This tafsir cannot be fetched right now (internet connection needed).', tafMore: 'Continue reading on Quranpedia', tafEmpty: 'This book has no text for this verse.',
     dorarTafsir: 'Tafsir encyclopedia (Dorar)', vol: 'vol.', pg: 'p.',
     disclosure: 'Mishkat is an AI-assisted search tool that shows texts as published by their sources; it is not a scholar or a mufti.',
-    repeat: 'Repeat', repeatTitle: 'Repeat the verse to memorise it', fullSura: 'Full text of the surah', readTafsir: 'Listen to the tafsir', ttsUnavailable: 'Speech is not available in this browser.', ttsNoVoice: 'No voice for this language is installed in the browser.', audioError: 'The recitation could not start; check your internet connection.',
+    repeat: 'Repeat', repeatTitle: 'Repeat the verse to memorise it', fullSura: 'Full text of the surah', readTafsir: 'Listen to the tafsir', ttsUnavailable: 'Speech is not available in this browser.', ttsNoVoice: 'Your browser has no voice for this language and the server voice is unavailable right now. Install a voice in your system settings (Time & language → Speech) or open the site in Microsoft Edge.', audioError: 'The recitation could not start; check your internet connection.',
+    zGalaxy: 'Galaxy', zReader: 'Mushaf', zAnswers: 'Answers', zTafsir: 'Tafsir', gTools: 'Galaxy tools',
+    zoomIn: 'Zoom in', zoomOut: 'Zoom out', rotate: 'Auto-rotate', suraNames: 'Surah names on the galaxy', expandG: 'Enlarge / restore the galaxy', resize: 'Resize the two zones (drag)', clearRes: 'Clear the answer and go back home',
+    menuTitle: 'Choose your interests to personalise the home page', suraPick: 'Choose a surah', autoTitle: 'Go on to the next verse automatically', speed: 'Speed',
+    fontSmaller: 'Smaller text', fontLarger: 'Larger text', translit: 'Transliteration', translationBtn: 'Translation', copyVerse: 'Copy the verse', shareVerse: 'Copy a link to the verse', linkCopied: 'Link to the verse copied',
+    groupWithPrev: 'This book explains the verse together with the previous one(s):', tafGroup: (r) => `This book explains verses ${r} together:`,
+    bookAbout: { muyassar_ar: 'At-Tafsir Al-Muyassar — a committee of scholars (King Fahd Complex)', mukhtasar_ar: 'Al-Mukhtasar fi Tafsir Al-Quran — Tafsir Center', saadi_ar: 'Taysir Al-Karim Ar-Rahman — Abd Ar-Rahman As-Sa‘di (d. 1376 AH)', mukhtasar_en: 'Al-Mukhtasar in Interpreting the Noble Quran — Tafsir Center' },
+    ttsLoading: 'Preparing the voice…', ttsStop: 'Stop reading', ttsNote: 'Machine reading of the tafsir shown — not a recitation of the Quran.', ttsTrimmed: 'Only the beginning is read (long text).',
+    ttsTerms: 'The server voice is not enabled yet (the voice model’s terms must be accepted in the Groq account). You can also install a voice for this language in your system, or open the site in Microsoft Edge.',
+    ttsQuota: 'The reading voice reached its temporary limit; try again in a minute.', ttsFail: 'The tafsir cannot be read aloud right now; try again.',
     hoverAya: (s, a) => `Surah ${s} · verse ${a}`,
   },
-  fr: {
-    dir: 'ltr', brand: 'Mishkat', tagline: 'Le guide de la galaxie du Coran',
-    placeholder: 'Écrivez une idée, une question, une sourate ou un verset… ex. patience, Joseph, 2:255',
-    lead: 'Interrogez un sens, un récit ou un verset : l’explication vient mot pour mot d’un tafsir vérifié, les sourates sont classées par pertinence, puis vous volez vers l’endroit dans la galaxie des mots du Coran.',
-    search: 'Rechercher', home: 'Vue complète', layoutMushaf: 'Ordre du Mushaf', layoutNuzul: 'Ordre de révélation',
-    legend: 'Légende', about: 'À propos', close: 'Fermer', tabResults: 'Résultats', tabReader: 'Lecteur',
-    chips: ['la patience', 'comment surmonter la tristesse', 'les parents', 'Moïse et Pharaon', 'Marie', 'verset du trône', 'sourate Al-Kahf', 'Est-ce un verset : « النظافة من الإيمان »', 'la musique est-elle haram ?'],
-    loading: ['Chargement du texte du Mushaf…', 'Construction de la galaxie : 77 433 mots…', 'Chargement du tafsir vérifié…', 'Prêt'],
-    thinking: 'Recherche dans le Mushaf et les tafsirs vérifiés…',
-    paraTitle: 'Explication d’après le tafsir', surasTitle: 'Les versets, sourate par sourate (par pertinence)', surasNote: 'Chaque sourate figure ici parce qu’elle contient un ou plusieurs des versets trouvés ; les mots surlignés sont ceux de votre recherche.', moreV: (n) => `Afficher ${n} autre${n === 1 ? '' : 's'} verset${n === 1 ? '' : 's'}`, versesTitle: 'Emplacements',
-    paraBy: { llm: 'Tafsir complet de chaque verset ; versets choisis par l’IA dans une liste fermée', context: 'Versets de contexte choisis et vérifiés', index: 'Versets de l’index thématique de l’Encyclopédie coranique ; explication tirée d’un tafsir vérifié', none: '' },
-    matched: (n) => `${n} verset${n === 1 ? '' : 's'} lié${n === 1 ? '' : 's'}`,
-    meccan: 'mecquoise', medinan: 'médinoise', ayas: (n) => `${n} versets`,
-    readSura: '📖 Lire la sourate', listen: '▶ Écouter', play: '▶', pause: '❚❚', prevA: 'Préc.', nextA: 'Suiv.', auto: 'Continu',
-    ayaN: 'Verset', copy: 'Copier', copied: 'Copié', verifyExt: 'Vérifier sur Quran.com', report: 'Signaler une erreur',
-    translation: 'Traduction des sens', tafsirTitle: 'Tafsir',
-    srcNames: { tabari: 'At-Tabari (m. 310 H, ar)', muyassar_ar: 'Al-Muyassar (ar)', mukhtasar_ar: 'Al-Mukhtasar (ar)', saadi_ar: 'As-Sa‘di (ar)', mukhtasar_en: 'Al-Mukhtasar (en)', mukhtasar_fr: 'Al-Mukhtasar' },
-    saadiGroup: 'As-Sa‘di explique ce verset avec le(s) précédent(s) :', loadingTafsir: 'Chargement…',
-    badges: { hadith: 'Encyclopédie du hadith', term: 'Glossaire', khilaf: 'Question d’ijtihad', verse: 'Texte du Mushaf ✓', sura: 'Texte du Mushaf ✓', range: 'Texte du Mushaf ✓', topic: 'Fondé sur un tafsir vérifié ✓',
-      exact: 'Conforme au Mushaf ✓', near: 'Citation déformée — voir le texte exact', merged: 'Deux versets mélangés', notfound: 'Absent du Coran',
-      notverse: 'Pas un verset', translation: 'Trouvé dans une traduction', unverified: 'Non confirmable', abstain: 'Abstention et renvoi', notfoundTopic: 'Abstention : source insuffisante', invalid_ref: 'Référence inexistante' },
-    asTopic: (q) => `Chercher « ${q} » comme thème dans les versets →`, asSura: (n) => `📖 Ouvrir la sourate ${n}`,
-    yourText: 'Votre texte (les mots surlignés ne correspondent pas) :',
-    ai: (m) => m ? `Recherche augmentée par l’IA · ${m}` : 'Mode déterministe (sans LLM)',
-    legendItems: [['#F3D9A4', 'Mots des sourates mecquoises'], ['#8EC5F0', 'Mots des sourates médinoises'], ['#FFD66B', 'Allah et Ses beaux Noms'],
-      ['#5EE6A0', 'Noms des prophètes'], ['#8FD3FF', 'Les anges'], ['#B98CFF', 'Satan / Iblis']],
-    gateTitle: 'Prononcez le nom d’Allah', gateHint: 'Écrivez, copiez-collez ou dites la basmala pour entrer', gatePh: 'Écrivez la basmala ici…',
-    enter: 'Entrer', micLabel: 'Parler', gateOk: 'Bismillah — bienvenue…', gateWrong: 'Basmala non reconnue ; essayez le copier-coller.',
-    listening: 'J’écoute… parlez', processing: 'Transcription…', voiceError: 'Micro indisponible ; écrivez plutôt.',
-    contextTitle: 'Contexte essentiel (versets avec leur tafsir complet)', ctxBtn: 'Contexte', ctxTitle: 'Versets avant et après, avec leur tafsir :', readHere: 'Lire dans la sourate',
-    relatedNotFatwa: 'Versets liés au sujet — à lire, ce n’est pas une fatwa',
-    links: { binbaz: 'Chercher dans les fatwas du cheikh Ibn Baz (binbaz.org.sa)', alifta: 'Présidence générale de la recherche et de l’ifta (alifta.gov.sa)' },
-    menu: 'Menu', viewLabel: 'Vue', themeLabel: 'Mode clair/sombre',
-    vG0: 'Galaxie · ordre du Mushaf', vG1: 'Galaxie · ordre de révélation', vQm: '« Qur’ân » · ordre du Mushaf', vQn: '« Qur’ân » · ordre de révélation', vQl: '« Qur’ân » · par longueur', vQp: '« Qur’ân » · mecquoises puis médinoises',
-    ord_mushaf: 'ordre du Mushaf', ord_nuzul: 'ordre de révélation', ord_length: 'de la plus longue à la plus courte sourate', ord_place: 'sourates mecquoises, puis médinoises',
-    viewNote: (o) => `Le mot « قرآن » est formé de tous les mots du Coran : chaque sourate remplit une partie des lettres proportionnelle à son nombre de mots, ses mots s’enroulant en spirale dans la lettre, avec un petit vide entre les sourates. Ordre, de droite à gauche : ${o}. (Touche V pour changer)`,
-    restartA: 'Depuis le début du verset', playAya: (a) => `Écouter le verset ${a}`,
-    wTitle: 'Bienvenue dans Mishkat', wLead: 'Tafsir vérifié, récitation synchronisée, et des réponses tirées du Coran lui-même. Dites-nous ce qui vous intéresse et nous préparerons votre page d’accueil — modifiable à tout moment.', wSkip: 'Plus tard', wGo: 'Commencer', wQ: 'Qu’est-ce qui vous intéresse ? (plusieurs choix possibles)', gateCopy: 'Copier la basmala', gateFoot: 'Texte du Coran : Tanzil · tafsir de sources vérifiées · sans publicité ni pistage',
-    vTitle: 'Parlez maintenant…', vHint: 'Posez votre question clairement ; l’enregistrement s’arrête seul quand vous vous taisez.', vProc: 'Transcription de votre voix…', vHeard: 'Voici ce que j’ai entendu — vous pouvez le corriger avant de chercher :', vSearch: 'Rechercher', vRetry: 'Réenregistrer', vStop: 'Terminé', vCancel: 'Annuler', vLang: 'Langue parlée', vNoSpeech: 'Je n’ai entendu aucune parole. Rapprochez-vous du micro et réessayez.', vDenied: 'L’accès au micro n’a pas été autorisé ; activez-le dans les réglages du navigateur puis réessayez.', vFail: 'La transcription a échoué pour l’instant ; réessayez ou écrivez votre question.',
-    levels: { A: ['A', 'Niveau A : information fondamentale stable, avec sa source'], B: ['B', 'Niveau B : explication tirée du matériel approuvé, référence affichée'], C: ['C', 'Niveau C : question disputée ou très sensible — réponse limitée au matériel approuvé, ou renvoi'], D: ['D', 'Niveau D : fatwa ou cas personnel — pas d’avis indépendant ; renvoi vers une instance qualifiée'] },
-    termTitle: 'Glossaire', termEn: 'Équivalent anglais approuvé', termTr: 'Prononciation', termRule: 'Définition et règle d’usage (arabe)', termSrc: 'Source', termMore: 'Plus dans l’encyclopédie Al-Jamhara',
-    hadithTitle: 'Encyclopédie du hadith — Dorar.net', hadithCheckTitle: 'Est-ce un hadith ? — Encyclopédie du hadith (Dorar.net)', hadithLoading: 'Recherche dans l’Encyclopédie du hadith…',
-    hadithNone: 'Aucune narration correspondant à ces mots n’a été trouvée dans l’Encyclopédie du hadith ; rien ne doit être attribué au Prophète ﷺ sans source ni jugement d’authenticité reconnu.', hadithFail: 'L’Encyclopédie du hadith est injoignable pour le moment ; ouvrez la recherche directement avec le lien.',
-    hadithRawi: 'Rapporteur', hadithMuh: 'Spécialiste (muhaddith)', hadithSrc: 'Source', hadithPage: 'Page / numéro', hadithGrade: 'Verdict du spécialiste', hadithOpen: 'Ouvrir la recherche sur Dorar.net', hadithNote: 'Narrations et verdicts affichés tels que publiés par l’encyclopédie (en arabe), sans sélection ni arbitrage de Mishkat.',
-    tixTitle: 'Index thématique — Encyclopédie coranique (Quranpedia)', tixSub: (n) => `Sous-thèmes (${n})`,
-    bayTitle: 'Questions traitées dans l’encyclopédie « Bayyinat » (Centre Osoul, en arabe)', bayNote: 'La réponse complète et révisée se lit sur bayenat.net ; Mishkat l’a retrouvée d’après les mots de votre question.',
-    aboutSura: 'À propos de la sourate', sInfoIntro: 'Présentation', sInfoTopics: 'Thèmes', sInfoPurposes: 'Finalités', sInfoNames: 'Noms', sInfoSrc: 'Encyclopédie coranique — Quranpedia.net (en arabe)',
-    tafPages: 'Pages du livre où figure le verset (peuvent inclure les versets voisins) :', tafFail: 'Ce tafsir ne peut pas être chargé pour le moment (connexion Internet nécessaire).', tafMore: 'Continuer la lecture sur Quranpedia', tafEmpty: 'Ce livre n’a pas de texte pour ce verset.',
-    dorarTafsir: 'Encyclopédie du tafsir (Dorar)', vol: 't.', pg: 'p.',
-    disclosure: 'Mishkat est un outil de recherche assisté par l’IA qui affiche les textes tels que publiés par leurs sources ; ce n’est ni un savant ni un mufti.',
-    repeat: 'Répéter', repeatTitle: 'Répéter le verset pour l’apprendre', fullSura: 'Texte complet de la sourate', readTafsir: 'Écouter le tafsir', ttsUnavailable: 'La lecture vocale n’est pas disponible dans ce navigateur.', ttsNoVoice: 'Aucune voix pour cette langue n’est installée dans le navigateur.', audioError: 'La récitation n’a pas pu démarrer ; vérifiez la connexion Internet.',
-    hoverAya: (s, a) => `Sourate ${s} · verset ${a}`,
-  },
+
 };
 
 const SRC_LIST = {
   ar: `<li>نص القرآن: <a href="https://tanzil.net" target="_blank" rel="noopener">مشروع تنزيل</a> (رواية حفص) — CC BY 3.0، دون أي تعديل.</li>
 <li>التفسير: «التفسير الميسر» (مجمع الملك فهد) و«المختصر في تفسير القرآن الكريم» (مركز تفسير) عبر <a href="https://quranenc.com" target="_blank" rel="noopener">QuranEnc.com</a>؛ و«تيسير الكريم الرحمن» للسعدي عبر Quran.com.</li>
-<li>ترجمات المعاني: نور الدولية (إنجليزي)، رشيد معاش (فرنسي) — QuranEnc.com.</li>
+<li>ترجمة المعاني الإنجليزية: نور الدولية — QuranEnc.com؛ والنطق الحرفي كلمةً كلمة من Quran.com.</li>
+<li>كتب التفسير في القارئ: الميسر، المختصر، السعدي (محفوظة في الموقع)، والطبري (الموسوعة القرآنية)، وابن كثير والبغوي والقرطبي (Quran.com) تُجلب عند الطلب.</li>
+<li>القراءة الصوتية للتفسير: صوت المتصفح إن وُجد، وإلا صوت آلي من الخادم (Groq Orpheus) — قراءة آلية لنص التفسير، لا تلاوة.</li>
 <li>التلاوة وتوقيت الكلمات: الشيخ مشاري العفاسي عبر Quran.com.</li>
 <li>القاعدة والمجرّة: مشروع «كارتوغرافيا القرآن الكريم» (نسخة أساس مُعلنة).</li>
 <li>من المرجعية العلمية للتحدي: <a href="https://quranpedia.net" target="_blank" rel="noopener">الموسوعة القرآنية</a> (الفهرس الموضوعي، معلومات السور، تفسير الطبري)، <a href="https://dorar.net/hadith" target="_blank" rel="noopener">الموسوعة الحديثية</a> و<a href="https://dorar.net/tafseer" target="_blank" rel="noopener">موسوعة التفسير</a> (الدرر السنية)، <a href="https://bayenat.net/ar" target="_blank" rel="noopener">موسوعة بينات</a> (مركز أصول) للشبهات، و<a href="https://islamic-content.com/dictionary" target="_blank" rel="noopener">الجمهرة</a> للمصطلحات.</li>`,
   en: `<li>Quran text: <a href="https://tanzil.net" target="_blank" rel="noopener">Tanzil Project</a> (Hafs) — CC BY 3.0, verbatim.</li>
 <li>Tafsir: At-Tafsir Al-Muyassar (King Fahd Complex) and Al-Mukhtasar (Tafsir Center) via <a href="https://quranenc.com" target="_blank" rel="noopener">QuranEnc.com</a>; Tafsir As-Sa‘di via Quran.com.</li>
-<li>Translations of the meanings: Noor International (en), Rachid Maach (fr) — QuranEnc.com.</li>
+<li>English translation of the meanings: Noor International — QuranEnc.com; word-by-word transliteration from Quran.com.</li>
+<li>Tafsir books in the reader: Al-Muyassar, Al-Mukhtasar, As-Sa‘di (stored on the site), At-Tabari (Quranpedia), Ibn Kathir, Al-Baghawi and Al-Qurtubi (Quran.com), fetched on demand.</li>
+<li>Reading the tafsir aloud: the browser’s voice when there is one, otherwise a server voice (Groq Orpheus) — a machine reading of the tafsir text, never a recitation.</li>
 <li>Recitation & word timings: Sheikh Mishary Alafasy via Quran.com.</li>
 <li>Database & galaxy: the “Quran Cartography” project (declared baseline).</li>
 <li>From the challenge’s scientific reference pack: <a href="https://quranpedia.net" target="_blank" rel="noopener">Quranpedia</a> (subject index, surah information, Tafsir At-Tabari), Dorar.net <a href="https://dorar.net/hadith" target="_blank" rel="noopener">Hadith</a> and <a href="https://dorar.net/tafseer" target="_blank" rel="noopener">Tafsir</a> encyclopedias, <a href="https://bayenat.net/ar" target="_blank" rel="noopener">Bayyinat</a> (Osoul Center) for objections, <a href="https://islamic-content.com/dictionary" target="_blank" rel="noopener">Al-Jamhara</a> for terminology.</li>`,
-  fr: `<li>Texte coranique : <a href="https://tanzil.net" target="_blank" rel="noopener">Tanzil Project</a> (Hafs) — CC BY 3.0, sans modification.</li>
-<li>Tafsir : At-Tafsir Al-Muyassar (Complexe Roi Fahd) et Al-Mukhtasar (Centre Tafsir) via <a href="https://quranenc.com" target="_blank" rel="noopener">QuranEnc.com</a> ; Tafsir As-Sa‘di via Quran.com.</li>
-<li>Traductions des sens : Noor International (en), Rachid Maach (fr) — QuranEnc.com.</li>
-<li>Récitation et minutage des mots : Cheikh Mishary Alafasy via Quran.com.</li>
-<li>Base et galaxie : projet « Cartographie du Coran » (baseline déclarée).</li>
-<li>Référentiel scientifique du défi : <a href="https://quranpedia.net" target="_blank" rel="noopener">Quranpedia</a> (index thématique, informations sur les sourates, Tafsir At-Tabari), encyclopédies du <a href="https://dorar.net/hadith" target="_blank" rel="noopener">hadith</a> et du <a href="https://dorar.net/tafseer" target="_blank" rel="noopener">tafsir</a> de Dorar.net, <a href="https://bayenat.net/ar" target="_blank" rel="noopener">Bayyinat</a> (Centre Osoul) pour les objections, <a href="https://islamic-content.com/dictionary" target="_blank" rel="noopener">Al-Jamhara</a> pour la terminologie.</li>`,
+
 };
 
 export const ABOUT = {
@@ -211,20 +176,7 @@ export const ABOUT = {
 <li>Your questions are not stored; only the query text is sent to the ranking model, with no personal data.</li></ul>
 <h3>Answer levels (challenge reference pack)</h3><ul><li><b>A</b>: stable foundational information — direct answer documented with its source.</li><li><b>B</b>: explanation — from approved material with the reference shown.</li><li><b>C</b>: disputed or sensitive questions — answer limited to approved material, statement that scholars differ, or referral.</li><li><b>D</b>: fatwa or personal case — no independent ruling; referral to a qualified body.</li></ul>
 <h3>Transparency & privacy</h3><ul><li>Mishkat is an AI-assisted search tool, not a scholar or a mufti.</li><li>No account, no profiling, no ads, no tracking. Your preferences (language, theme, interests) stay in your browser.</li><li>The question text is sent to the ranking model; a voice recording (when you use the microphone) is sent for transcription and not kept; the text of a hadith you ask about is sent to the Hadith Encyclopedia, and a verse number to Quranpedia.</li></ul>`,
-  fr: `<h2>Mishkat — Le guide de la galaxie du Coran</h2>
-<p class="ayah" style="text-align:center">﴿{{V24_35}}﴾ <small>[24:35]</small></p><p>« Mishkāt » est le mot du verset 24:35 qui désigne la niche où se trouve la lampe. La niche rassemble la lumière de la lampe : de même, Mishkat rassemble autour de votre question la lumière des tafsirs vérifiés, dans une galaxie de 77 433 étoiles — les mots du Coran.</p>
-<h3>Règle d’or : aucun contenu religieux n’est rédigé par la machine</h3>
-<ul><li>Le texte des versets provient uniquement du texte Tanzil, sans modification, avec empreinte SHA-256.</li>
-<li>Le paragraphe explicatif est composé de phrases citées mot pour mot d’Al-Muyassar ou d’Al-Mukhtasar, chacune avec son verset et sa source.</li>
-<li>L’IA comprend la question et propose des mots de recherche, puis choisit versets et phrases dans des listes fermées numérotées ; un vérificateur rejette le reste. Le modèle n’écrit aucun mot que vous lisez.</li>
-<li>Mishkat s’abstient faute de preuve suffisante, et pour les avis juridiques, cas personnels ou rêves, en renvoyant vers les savants.</li></ul>
-<h3>Sources</h3><ul>${SRC_LIST.fr}</ul>
-<h3>Limites déclarées</h3>
-<ul><li>La recherche thématique peut manquer un passage formulé autrement : on parle d’« emplacements liés », pas de « tous les emplacements ».</li>
-<li>L’ordre de révélation est un ordre savant répandu, montré pour l’exploration visuelle seulement.</li>
-<li>Vos questions ne sont pas conservées ; seul le texte de la requête est envoyé au modèle de classement, sans donnée personnelle.</li></ul>
-<h3>Niveaux de réponse (référentiel du défi)</h3><ul><li><b>A</b> : information fondamentale stable — réponse directe documentée par sa source.</li><li><b>B</b> : explication — tirée du matériel approuvé, référence affichée.</li><li><b>C</b> : questions disputées ou sensibles — réponse limitée au matériel approuvé, mention de la divergence, ou renvoi.</li><li><b>D</b> : fatwa ou cas personnel — pas d’avis indépendant ; renvoi vers une instance qualifiée.</li></ul>
-<h3>Transparence et confidentialité</h3><ul><li>Mishkat est un outil de recherche assisté par l’IA, ni savant ni mufti.</li><li>Ni compte, ni profilage, ni publicité, ni pistage. Vos préférences (langue, thème, intérêts) restent dans votre navigateur.</li><li>Le texte de la question est envoyé au modèle de classement ; un enregistrement vocal (si vous utilisez le micro) est envoyé pour transcription puis n’est pas conservé ; le texte d’un hadith demandé est envoyé à l’Encyclopédie du hadith, et un numéro de verset à Quranpedia.</li></ul>`,
+
 };
 
 // Welcome screen: the features a visitor can tick (several at once).
@@ -247,19 +199,11 @@ export const WELCOME = {
     ask: { title: 'Ask and see your references in the Quran', desc: 'A question or idea → the verses and their tafsir, with surahs ranked by relevance.', go: 'Search', ph: 'e.g. patience, parents, story of Joseph…' },
     verify: { title: 'Check: is this text a verse?', desc: 'Paste a text attributed to the Quran to know whether it is a verse, and where.', go: 'Check', ph: 'Paste the text here…' },
   },
-  fr: {
-    sura: 'Sourate', aya: 'Verset', verifyPrefix: 'Est-ce un verset :',
-    tafsir: { title: 'Tafsir d’un verset', desc: 'Choisissez une sourate et un verset pour lire son explication (Al-Mukhtasar, Al-Muyassar, As-Sa‘di).', go: 'Afficher le tafsir' },
-    goto: { title: 'Aller à une sourate ou un verset', desc: 'Ouvrez le Mushaf où vous voulez et avancez verset par verset.', go: 'Aller' },
-    listen: { title: 'Écouter la récitation', desc: 'Récitation du cheikh Alafasy, chaque mot s’allumant quand il est récité.', go: 'Écouter' },
-    learn: { title: 'Apprendre : parcours des courtes sourates', desc: 'Commencez par une courte sourate : récitation continue avec le tafsir verset par verset.' },
-    ask: { title: 'Poser une question et voir ses références dans le Coran', desc: 'Une question ou une idée → les versets et leur tafsir, avec les sourates classées par pertinence.', go: 'Rechercher', ph: 'ex. patience, parents, histoire de Joseph…' },
-    verify: { title: 'Vérifier : ce texte est-il un verset ?', desc: 'Collez un texte attribué au Coran pour savoir si c’est un verset, et où.', go: 'Vérifier', ph: 'Collez le texte ici…' },
-  },
+
 };
 
 // Interests chosen in the welcome screen → suggestions on the home page.
-// Every query below was checked against the engine (ar/en/fr) and returns relevant verses.
+// Every query below was checked against the engine (ar/en) and returns relevant verses.
 // Rulings ("أحكام") are VERSE searches with their tafsir, never fatwas.
 export const INTEREST = {
   ar: {
@@ -284,15 +228,5 @@ export const INTEREST = {
     memorize: { title: 'Memorise & repeat', desc: 'Short surahs, each verse repeated three times.' },
     verify: { title: 'Check a quote', desc: 'Is this text a verse? Where is it?' },
   },
-  fr: {
-    forYou: 'Suggestions pour vous', edit: 'Modifier mes intérêts', personalise: '✦ Personnaliser ma page', go: 'Aller', show: 'Afficher', check: 'Vérifier', checkPh: 'Collez un texte attribué au Coran…',
-    ahkam: { title: 'Versets des règles', desc: 'Culte et transactions tels qu’énoncés dans les versets, avec le tafsir.', note: 'Des versets et leur tafsir — pas une fatwa.', q: ['jeûne du ramadan', 'le pèlerinage', 'la zakat', 'l’usure', 'le vin et les jeux de hasard', 'l’héritage', 'les ablutions', 'le testament'] },
-    stories: { title: 'Récits des prophètes', desc: 'Joseph, Moïse, Noé, les gens de la caverne… d’après le Coran.', q: ['histoire de Joseph', 'Moïse et Pharaon', 'gens de la caverne', 'Jonas', 'Noé', 'Marie'] },
-    akhlaq: { title: 'Valeurs et comportement', desc: 'Patience, bonté, véracité, pardon… dans le Coran.', q: ['la patience', 'les parents', 'la véracité', 'le pardon', 'la gratitude', 'les voisins'] },
-    tafsir: { title: 'Comprendre un verset', desc: 'Al-Mukhtasar, Al-Muyassar, As-Sa‘di — verset par verset.', labels: ['Verset du Trône', 'Verset de la Lumière', 'Fin d’Al-Baqara', 'Al-Fatiha', 'Sourate Al-Asr', 'Noms d’Allah'] },
-    recite: { title: 'Écouter la récitation', desc: 'Alafasy, chaque mot s’allumant à sa récitation.' },
-    suras: { title: 'Parcourir les sourates', desc: 'Ouvrez n’importe quelle sourate, verset par verset.' },
-    memorize: { title: 'Mémoriser et répéter', desc: 'Courtes sourates, chaque verset répété trois fois.' },
-    verify: { title: 'Vérifier une citation', desc: 'Ce texte est-il un verset ? Où se trouve-t-il ?' },
-  },
+
 };

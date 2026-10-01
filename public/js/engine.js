@@ -64,7 +64,7 @@ export function stemAr(w) {
 }
 
 export function stemLatin(w) {
-  // light verb endings (fr: dépensez/dépenser/dépensent → dépens ; en: spending → spend)
+  // light verb endings (en: spending → spend)
   if (w.length > 6 && /(ez|er|ent)$/.test(w) && !/(ier|eer)$/.test(w)) return w.replace(/(ez|er|ent)$/, '');
   if (w.length > 6 && w.endsWith('ing')) return w.slice(0, -3);
   if (w.length > 4 && w.endsWith('ies')) return w.slice(0, -3) + 'y';
@@ -76,10 +76,9 @@ export function stemLatin(w) {
 const STOP = {
   ar: new Set('في من على الى إلى عن ما ماذا متى اين أين كيف لماذا هل هو هي هم انا أنا انت نحن ذلك هذه هذا التي الذي الذين ان أن إن او أو ثم قد لا لم لن كل بعض عند مع يا الا إلا قال ايه اية ايات آية آيات القران القرآن سوره سورة يقول ذكر تحدث لو ولو كان كانت اذا إذا حتى بل لكن ولكن فيه فيها به بها له لها لهم منه منهم عليه عليهم كما غير بين اريد أريد اعرف أعرف معنى شرح اذكر'.split(' ').map(normAr)),
   en: new Set('the a an of and or in on at to for from about with by is are was were be been what which who whom whose when where why how does do did say says said quran koran verse verses ayah ayat surah sura chapter tell me show find please that this these those it its as into there their them they he she his her i you we us our your can could would should will explain meaning mean'.split(' ')),
-  fr: new Set('le la les l un une des du de d et ou en dans sur au aux a pour par avec sans que qui quoi quel quelle quels quelles est sont etait ce cet cette ces il elle ils elles je tu nous vous se sa son ses leur leurs mon ma mes ne pas plus dit dire coran verset versets sourate sourates parle parlent comment pourquoi quand ou y montre moi trouve s explique sens signifie'.split(' ')),
 };
 // words present in a large share of verses: ignored when other words are given
-const UBIQ = { ar: new Set(['له', 'رب', 'ربك', 'ربه', 'لله']), en: new Set(['allah', 'god', 'lord']), fr: new Set(['allah', 'dieu', 'seigneur']) };
+const UBIQ = { ar: new Set(['له', 'رب', 'ربك', 'ربه', 'لله']), en: new Set(['allah', 'god', 'lord']) };
 
 export function tokens(text, lang, { stem = true, stop = true } = {}) {
   const norm = lang === 'ar' ? normAr(text) : normLatin(text);
@@ -93,14 +92,8 @@ export function tokens(text, lang, { stem = true, stop = true } = {}) {
 }
 
 export function detectLang(q, uiLang = 'ar') {
-  if (AR_RANGE.test(q)) return 'ar';
-  const t = ' ' + normLatin(q) + ' ';
-  const fr = (q.match(/[éèêàùçôîœ]/gi) || []).length * 2 +
-    (t.match(/ (le|la|les|des|du|est|une|que|qui|quoi|pourquoi|comment|dans|sur|sourate|verset|parle|au|aux|et) /g) || []).length;
-  const en = (t.match(/ (the|is|what|how|why|of|and|in|about|does|verse|surah|say|says|who|where) /g) || []).length;
-  if (fr > en) return 'fr';
-  if (en > fr) return 'en';
-  return uiLang === 'fr' ? 'fr' : 'en';
+  // Mishkat speaks Arabic and English: any text without Arabic letters is searched in English
+  return AR_RANGE.test(q) ? 'ar' : 'en';
 }
 
 // Sentence splitter that returns exact substrings of the source.
@@ -217,66 +210,30 @@ export const MSG = {
     hadithNone: 'No narration matching these words was found in the Hadith Encyclopedia; nothing should be attributed to the Prophet ﷺ without a source and an authoritative grading.',
     khilaf: 'The Quran and the established foundations of the faith are agreed upon by Muslims; many detailed questions of jurisprudence, however, are subject to differences of scholarly ijtihad in understanding the evidence, and not every difference is a contradiction. Mishkat does not claim agreement or disagreement on a specific question without a source; for the scholars’ positions, refer to the official fatwa bodies below.',
   },
-  fr: {
-    sura: (s) => `Sourate ${s.tr} (${s.fr}) — ${s.type === 'meccan' ? 'mecquoise' : 'médinoise'}, ${s.ayas} versets, n° ${s.n} dans le Mushaf.`,
-    verse: (r) => `Verset ${r}`,
-    range: (r) => `Versets ${r}`,
-    exact: (n) => n === 1 ? 'Ce texte figure mot pour mot dans le Coran ici :' : `Ce texte figure mot pour mot dans le Coran à ${n} endroits :`,
-    near: (r) => `Cette formulation exacte est introuvable. Le verset le plus proche est ${r} ; les mots surlignés diffèrent. Le texte exact du Mushaf est :`,
-    merged: (a, b) => `Ce texte semble mélanger deux versets : ${a} et ${b}. Attention à la différence :`,
-    notFound: 'Ce texte est introuvable dans le Coran (lecture Hafs, texte Tanzil). Il peut s’agir d’un hadith, d’un dicton ou d’une citation déformée : il ne faut pas l’attribuer au Coran.',
-    notVerse: 'Aucun verset du Coran n’a cette formulation (lecture Hafs, texte Tanzil) ; ce texte ne doit donc pas être attribué au Coran.',
-    related: 'Versets partageant certains de ses mots ou son sens (recherche thématique) :',
-    closest: 'Versets les plus proches par la formulation (à titre indicatif, pas une correspondance) :',
-    topic: (n, q, s = 1) => `J’ai trouvé ${n} verset${n === 1 ? '' : 's'} lié${n === 1 ? '' : 's'} à « ${q} » dans ${s} sourate${s === 1 ? '' : 's'}. Voici l’explication des principaux d’après un tafsir vérifié, puis les sourates où ils figurent :`,
-    noTopic: 'Je n’ai pas trouvé de preuve suffisante dans les versets et tafsirs vérifiés dont je dispose ; je m’abstiens plutôt que d’attribuer au Coran ce qui n’y est pas. Essayez un mot-clé plus clair (ex. patience, parents, Moïse).',
-    ruling: 'Cette question demande un avis juridique (fatwa), qui relève des savants ; Mishkat ne rend aucun avis. Ci-dessous : des liens vers les sources officielles de fatwa, et des versets liés au sujet, à lire (ce n’est pas une fatwa).',
-    personal: 'Il s’agit d’une situation personnelle qui demande un savant ou un spécialiste à l’écoute des détails. Mishkat ne donne ni conseil ni avis sur les cas individuels. Vous pouvez chercher un thème général (ex. patience, parents).',
-    dream: 'L’interprétation des rêves est hors du champ de Mishkat et ne doit pas être confiée à une machine. Vous pouvez chercher les rêves mentionnés dans le Coran avec le mot « rêve ».',
-    invalidRef: (s, n) => `La sourate ${s} ne compte que ${n} versets ; ce numéro n’existe pas.`,
-    invalidSura: 'Le numéro de sourate doit être compris entre 1 et 114.',
-    empty: 'Écrivez une idée, une question, un nom de sourate, un numéro ou un fragment de verset.',
-    lowConf: 'Résultats par mots-clés (confiance faible) — vérifiez le contexte.',
-    personalNote: 'Ce sont des versets généraux sur le sujet ; pour votre situation personnelle, consultez un savant ou un spécialiste.',
-    topicLexical: (n, q, s = 1) => `J’ai trouvé ${n} verset${n === 1 ? '' : 's'} contenant les mots de « ${q} » dans ${s} sourate${s === 1 ? '' : 's'} (recherche par mots-clés). Ils sont listés ci-dessous, sourate par sourate :`,
-    lexicalOnly: 'Ces résultats par mots-clés n’ont pas été confirmés par l’IA ; certains peuvent ne pas répondre à votre question — vérifiez le contexte et le tafsir.',
-    polemic: 'Voici les versets liés à cette question, chacun affiché en entier avec son tafsir vérifié — sans en couper une partie. Le sens d’un verset se juge en le lisant avec son contexte et son tafsir.',
-    sensitiveNote: 'Ce sujet se lit dans son contexte : ouvrez « Contexte » pour voir les versets avant et après, et référez-vous aux savants pour le détail des règles.',
-    takfir: 'Juger qu’une personne ou un groupe est sorti de l’islam relève des savants et des tribunaux, pas d’un outil de recherche. Vous pouvez chercher un thème général (ex. la foi, la mécréance) pour lire les versets et leur tafsir.',
-    violence: 'Mishkat ne répond pas aux demandes de nuire à autrui. La vie humaine est sacrée ; vous pouvez chercher « caractère sacré de la vie » pour lire les versets et leur tafsir.',
-    trFound: 'Cette formulation figure dans la traduction du ou des versets suivants :',
-    trNone: 'Je ne trouve pas cette formulation dans les traductions vérifiées dont je dispose. Une phrase traduite ne peut pas être confirmée comme verset — les traductions diffèrent — ne l’attribuez donc pas au Coran ; collez le texte arabe pour une vérification exacte.',
-    topicIndex: (n, q, s, name) => `« ${name} » est un thème de l’index thématique de l’Encyclopédie coranique : ${n} verset${n === 1 ? '' : 's'} dans ${s} sourate${s === 1 ? '' : 's'}. Voici l’explication des principaux d’après un tafsir vérifié, puis les versets regroupés par sous-thème :`,
-    topicSubset: (n, q, s, name) => `Aucune réponse directe à votre question exacte n’a été trouvée ; voici les versets du thème « ${name} » qu’elle mentionne, d’après l’index thématique de l’Encyclopédie coranique (${n} verset${n === 1 ? '' : 's'} dans ${s} sourate${s === 1 ? '' : 's'}) :`,
-    term: (t) => `« ${t} » dans le glossaire des termes approuvés du référentiel du défi, avec les versets de son thème dans l’index thématique :`,
-    hadithIntro: 'Mishkat ne génère pas de hadiths et ne les juge pas. Voici les résultats de l’Encyclopédie du hadith (Dorar.net) tels quels, avec le verdict de chaque spécialiste :',
-    hadithLatin: 'Les hadiths se recherchent par leur texte arabe dans l’Encyclopédie du hadith (Dorar.net). Écrivez le texte en arabe, ou ouvrez l’encyclopédie avec le lien ci-dessous.',
-    hadithNone: 'Aucune narration correspondant à ces mots n’a été trouvée dans l’Encyclopédie du hadith ; rien ne doit être attribué au Prophète ﷺ sans source ni jugement d’authenticité reconnu.',
-    khilaf: 'Le Coran et les fondements établis de la foi font l’objet d’un accord entre les musulmans ; en revanche, de nombreuses questions détaillées de jurisprudence relèvent de divergences d’ijtihad dans la compréhension des preuves, et toute divergence n’est pas une contradiction. Mishkat n’attribue ni accord ni désaccord sur une question précise sans source ; pour les positions des savants, référez-vous aux instances de fatwa officielles ci-dessous.',
-  },
+
 };
 
 // ------------------------------------------------ cross-lingual thesaurus
-// Groups of equivalent search terms [ar, en, fr]. Used ONLY to widen the
+// Groups of equivalent search terms [ar, en]. Used ONLY to widen the
 // retrieval (which verses to look at); never shown as content.
 const THESAURUS = [
-  ['موسى', 'moses', 'moise'], ['عيسى المسيح', 'jesus messiah', 'jesus messie'], ['مريم', 'mary maryam', 'marie maryam'],
-  ['ابراهيم', 'abraham ibrahim', 'abraham ibrahim'], ['نوح', 'noah', 'noe'], ['يوسف', 'joseph yusuf', 'joseph yusuf'],
-  ['يعقوب', 'jacob', 'jacob'], ['اسحاق', 'isaac', 'isaac'], ['اسماعيل', 'ishmael ismail', 'ismael'], ['داود', 'david', 'david'],
-  ['سليمان', 'solomon', 'salomon'], ['يونس', 'jonah', 'jonas'], ['ايوب', 'job', 'job'], ['زكريا', 'zechariah zakariya', 'zacharie'],
-  ['يحيي', 'john yahya', 'jean yahya'], ['هارون', 'aaron', 'aaron'], ['لوط', 'lot', 'loth lot'], ['هود', 'hud', 'hud houd'],
-  ['صالح', 'salih', 'salih'], ['شعيب', 'shuayb', 'chouaib shuayb'], ['ادم', 'adam', 'adam'], ['محمد', 'muhammad', 'muhammad mohammed'],
-  ['فرعون', 'pharaoh', 'pharaon'], ['ابليس الشيطان', 'satan iblees', 'satan iblis diable'], ['جبريل', 'gabriel', 'gabriel'],
-  ['الجنة', 'paradise garden', 'paradis jardin'], ['النار جهنم', 'hell hellfire', 'enfer'],
-  ['الصلاة', 'prayer', 'priere salat'], ['الصيام الصوم', 'fasting', 'jeune'], ['الزكاة', 'zakah', 'aumone zakat'],
-  ['الحج', 'hajj pilgrimage', 'pelerinage hajj'], ['الصبر', 'patience patient', 'patience patient endurance'],
-  ['الوالدين', 'parent', 'parent pere mere'], ['الرحمة', 'mercy', 'misericorde'], ['التوبة', 'repentance repent', 'repentir'],
-  ['الكعبة', 'kaaba', 'kaaba'], ['القران', 'quran', 'coran'], ['الملائكة', 'angel', 'ange'], ['اليتيم', 'orphan', 'orphelin'],
-  ['الوضوء توضؤوا فتوضؤوا', 'ablution wudu', 'ablution'], ['الربا', 'usury interest riba', 'usure riba'], ['الخمر', 'intoxicant wine', 'vin alcool'],
+  ['موسى', 'moses'], ['عيسى المسيح', 'jesus messiah'], ['مريم', 'mary maryam'],
+  ['ابراهيم', 'abraham ibrahim'], ['نوح', 'noah'], ['يوسف', 'joseph yusuf'],
+  ['يعقوب', 'jacob'], ['اسحاق', 'isaac'], ['اسماعيل', 'ishmael ismail'], ['داود', 'david'],
+  ['سليمان', 'solomon'], ['يونس', 'jonah'], ['ايوب', 'job'], ['زكريا', 'zechariah zakariya'],
+  ['يحيي', 'john yahya'], ['هارون', 'aaron'], ['لوط', 'lot'], ['هود', 'hud'],
+  ['صالح', 'salih'], ['شعيب', 'shuayb'], ['ادم', 'adam'], ['محمد', 'muhammad'],
+  ['فرعون', 'pharaoh'], ['ابليس الشيطان', 'satan iblees'], ['جبريل', 'gabriel'],
+  ['الجنة', 'paradise garden'], ['النار جهنم', 'hell hellfire'],
+  ['الصلاة', 'prayer'], ['الصيام الصوم', 'fasting'], ['الزكاة', 'zakah'],
+  ['الحج', 'hajj pilgrimage'], ['الصبر', 'patience patient'],
+  ['الوالدين', 'parent'], ['الرحمة', 'mercy'], ['التوبة', 'repentance repent'],
+  ['الكعبة', 'kaaba'], ['القران', 'quran'], ['الملائكة', 'angel'], ['اليتيم', 'orphan'],
+  ['الوضوء توضؤوا فتوضؤوا', 'ablution wudu'], ['الربا', 'usury interest riba'], ['الخمر', 'intoxicant wine'],
 ];
-const THES_INDEX = { ar: new Map(), en: new Map(), fr: new Map() };
+const THES_INDEX = { ar: new Map(), en: new Map() };
 THESAURUS.forEach((g, gi) => {
-  ['ar', 'en', 'fr'].forEach((l, li) => {
+  ['ar', 'en'].forEach((l, li) => {
     for (const w of g[li].split(' ')) for (const t of tokens(w, l, { stop: false })) THES_INDEX[l].set(t, gi);
   });
 });
@@ -285,7 +242,7 @@ export function expandTokens(qtoks, fromLang, toLang) {
   for (const t of qtoks) {
     const gi = THES_INDEX[fromLang].get(t);
     if (gi == null) continue;
-    const li = ['ar', 'en', 'fr'].indexOf(toLang);
+    const li = ['ar', 'en'].indexOf(toLang);
     for (const w of THESAURUS[gi][li].split(' ')) extra.push(...tokens(w, toLang, { stop: false }));
   }
   return extra;
@@ -414,16 +371,14 @@ class FieldIndex {
 const FIELDS = {
   ar: [['quran', 1.0], ['mukhtasar_ar', 0.7], ['muyassar_ar', 0.6], ['saadi_ar', 0.35]],
   en: [['saheeh_en', 1.0], ['mukhtasar_en', 0.7]],
-  fr: [['rashid_fr', 1.0], ['mukhtasar_fr', 0.7]],
 };
 // explanatory paragraph source per language (Arabic: At-Tafsir Al-Muyassar)
-export const PARAGRAPH_FOR = { ar: 'muyassar_ar', en: 'mukhtasar_en', fr: 'mukhtasar_fr' };
-export const TAFSIR_FOR = { ar: 'mukhtasar_ar', en: 'mukhtasar_en', fr: 'mukhtasar_fr' };
-export const TRANSLATION_FOR = { ar: null, en: 'saheeh_en', fr: 'rashid_fr' };
+export const PARAGRAPH_FOR = { ar: 'muyassar_ar', en: 'mukhtasar_en' };
+export const TAFSIR_FOR = { ar: 'mukhtasar_ar', en: 'mukhtasar_en' };
+export const TRANSLATION_FOR = { ar: null, en: 'saheeh_en' };
 export const SOURCES_NEEDED = {
   ar: ['mukhtasar_ar', 'muyassar_ar'],
   en: ['mukhtasar_en', 'saheeh_en'],
-  fr: ['mukhtasar_fr', 'rashid_fr'],
 };
 
 // ------------------------------------------------------------ LLM verifiers
@@ -448,12 +403,12 @@ export function verifyLLM(out, candidates, sentenceIds = []) {
   return res;
 }
 export function verifyExpansion(out) {
-  const res = { intent: 'topic', keywords: { ar: [], en: [], fr: [] }, refs: [] };
+  const res = { intent: 'topic', keywords: { ar: [], en: [] }, refs: [] };
   if (!out || typeof out !== 'object') return res;
   res.refs = (Array.isArray(out.refs) ? out.refs : []).map(x => String(x).trim()).filter(x => /^\d{1,3}:\d{1,3}$/.test(x)).slice(0, 8);
   if (INTENTS.has(out.intent)) res.intent = out.intent;
   const kw = out.keywords && typeof out.keywords === 'object' ? out.keywords : {};
-  for (const l of ['ar', 'en', 'fr']) {
+  for (const l of ['ar', 'en']) {
     res.keywords[l] = (Array.isArray(kw[l]) ? kw[l] : []).map(x => String(x).slice(0, 30)).filter(x => x.trim()).slice(0, 8);
   }
   return res;
@@ -491,7 +446,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   }));
 
   // ------------------------------------------------------------ sura names
-  // alias -> sura; kind: 'ar' (Arabic name), 'tr' (transliteration), 'meaning' (en/fr)
+  // alias -> sura; kind: 'ar' (Arabic name), 'tr' (transliteration), 'meaning' (en)
   const aliases = new Map(), aliasKind = new Map();
   const addAlias = (a, n, kind = 'tr') => {
     if (a && (a.length >= 2 || kind === 'ar') && !aliases.has(a)) { aliases.set(a, n); aliasKind.set(a, kind); }
@@ -505,7 +460,6 @@ export function createEngine({ core, searchAr, sources = {} }) {
     addAlias(trNoArt, s.n);
     if (trNoArt.endsWith('h')) addAlias(trNoArt.slice(0, -1), s.n);
     addAlias(normLatin(s.en).replace(/^the /, '').replace(/\s/g, ''), s.n, 'meaning');
-    addAlias(normLatin(s.fr).replace(/^(la |le |les |l )/, '').replace(/\s/g, ''), s.n, 'meaning');
   }
   const SURA_WORDS = /^(سورة|سوره|سورت|surah|surat|sura|soura|sourate|chapter|chapitre)$/;
   const AYA_WORDS = /^(اية|ايه|الاية|الايه|ايات|الايات|ayah|aya|ayat|verse|verses|verset|versets|v)$/;
@@ -525,7 +479,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     cands.forEach((c, ci) => {
       if (!c || c.length < 4) return;
       const isLatin = ci === 1;
-      const ordinary = isLatin && (THES_INDEX.en.has(stemLatin(c)) || THES_INDEX.fr.has(stemLatin(c)));
+      const ordinary = isLatin && THES_INDEX.en.has(stemLatin(c));
       if (!withKeyword && !(isLatin && c.length >= 6 && !ordinary)) return;
       const maxD = c.length >= 7 ? 2 : 1;
       for (const [a, n] of aliases) {
@@ -703,7 +657,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const needle = normLatin(text.replace(/^.*?(:|\?)\s*/, '')).trim();
     const hits = [];
     if (needle.split(' ').length >= 3) {
-      for (const id of [TRANSLATION_FOR.en, TRANSLATION_FOR.fr, TAFSIR_FOR.en, TAFSIR_FOR.fr]) {
+      for (const id of [TRANSLATION_FOR.en, TAFSIR_FOR.en]) {
         const s = src[id];
         if (!s) continue;
         s.text.forEach((t, i) => { if (!hits.includes(i) && normLatin(t.replace(/\[\d+\]/g, '')).includes(needle)) hits.push(i); });
@@ -758,17 +712,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   }
 
   function topicSearchAuto(q, lang, uiLang, limit, extra = {}) {
-    if (lang === 'ar') return { lang, ...topicSearch(q, 'ar', limit, extra.ar || []) };
-    const a = topicSearch(q, lang, limit, extra[lang] || []);
-    const other = lang === 'en' ? 'fr' : 'en';
-    if (!src[FIELDS[other][0][0]]) return { lang, ...a };
-    const t = ' ' + normLatin(q) + ' ';
-    const strongFr = /[éèêàùçôîœ]/i.test(q) || / (le|la|les|des|du|est|une|dans|sur|pourquoi|comment) /.test(t);
-    const strongEn = / (the|is|what|how|why|does|about|who|where) /.test(t);
-    if (strongFr || strongEn) return { lang, ...a };
-    const b = topicSearch(q, other, limit, extra[other] || []);
-    const val = (r) => Math.min(r.nFull || 0, 30) * 1000 + (r.topScore || 0);
-    return val(b) > val(a) ? { lang: other, ...b } : { lang, ...a };
+    return { lang, ...topicSearch(q, lang, limit, extra[lang] || []) };
   }
 
   // ------------------------------------------------ explanatory paragraph

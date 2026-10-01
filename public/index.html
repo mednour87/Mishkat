@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>مشكاة — دليل مجرّة القرآن الذكي · Mishkat</title>
-<meta name="description" content="Mishkat — ask the Quran galaxy: every answer quoted from vetted tafsir, every verse from the Tanzil text, synchronised recitation, abstains when unsure. Arabic · English · Français.">
+<meta name="description" content="Mishkat — ask the Quran galaxy: every answer quoted from vetted tafsir, every verse from the Tanzil text, synchronised recitation, abstains when unsure. Arabic · English.">
 <meta name="theme-color" content="#05070d">
 <link rel="icon" href="img/logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="fonts/fonts.css">
@@ -12,12 +12,9 @@
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 </head>
 <body>
-<canvas id="galaxy" aria-label="Quran galaxy"></canvas>
-<div id="tooltip" role="tooltip"></div>
-
 <header id="top">
   <a class="brand" href="./" aria-label="Mishkat">
-    <img src="img/logo.svg" alt="" width="46" height="46">
+    <img src="img/logo.svg" alt="" width="42" height="42">
     <span class="bt"><span class="name" data-i18n="brand">مِشكاة</span><span class="tag" data-i18n="tagline">دليل مجرّة القرآن الذكي</span></span>
   </a>
   <form id="searchForm" role="search" autocomplete="off">
@@ -29,50 +26,71 @@
       <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M20 20l-4.2-4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
     </button>
   </form>
-  <div class="hright"><button id="themeBtn" class="icon" data-i18n-aria="themeLabel">☾</button>
-  <div class="langs" role="group" aria-label="Language">
-    <button data-lang="ar">ع</button><button data-lang="en">EN</button><button data-lang="fr">FR</button>
-  </div></div>
+  <div class="hright">
+    <button id="btnMenu" class="hbtn" data-i18n-title="menuTitle"><span aria-hidden="true">✦</span> <span class="hl" data-i18n="menu">اهتماماتي</span></button>
+    <button id="btnAbout" class="hbtn" data-i18n-title="about"><span aria-hidden="true">ⓘ</span> <span class="hl" data-i18n="about">عن مشكاة</span></button>
+    <button id="themeBtn" class="icon" data-i18n-aria="themeLabel">☾</button>
+    <div class="langs" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button></div>
+  </div>
 </header>
-
-<section id="hero">
-  <div id="heroVerse" class="ayah"></div>
-  <div id="heroRef"></div>
-  <p id="heroLead" data-i18n="lead"></p>
-  <div id="chips"></div>
-  <div id="forYou" hidden></div>
-</section>
 <div id="status" aria-live="polite"></div>
 
-<aside id="panel" hidden>
-  <div class="tabs" role="tablist">
-    <button role="tab" id="tabRes" data-i18n="tabResults">النتائج</button>
-    <button role="tab" id="tabRead" data-i18n="tabReader">القارئ</button>
-    <button id="closePanel" class="icon" aria-label="close">✕</button>
+<main id="work">
+  <!-- left column (right in Arabic): the galaxy above, the Mushaf below -->
+  <div class="col col-main">
+    <section id="gzone" class="zone" aria-labelledby="gTitle">
+      <h2 id="gTitle" class="sr" data-i18n="zGalaxy">المجرّة</h2>
+      <canvas id="galaxy" aria-label="Quran galaxy"></canvas>
+      <div id="tooltip" role="tooltip"></div>
+      <aside id="lampDock" aria-live="off">
+        <div id="lampSlot"></div>
+        <div id="lampRef"></div>
+      </aside>
+      <div id="gtools" role="toolbar" data-i18n-aria="gTools">
+        <button id="gHome" data-i18n-title="home" data-i18n-aria="home">⌂</button>
+        <button id="gIn" data-i18n-title="zoomIn" data-i18n-aria="zoomIn">＋</button>
+        <button id="gOut" data-i18n-title="zoomOut" data-i18n-aria="zoomOut">－</button>
+        <button id="gRot" data-i18n-title="rotate" data-i18n-aria="rotate" aria-pressed="true">⟲</button>
+        <button id="gNames" data-i18n-title="suraNames" data-i18n-aria="suraNames" aria-pressed="true">ﺱ</button>
+        <label class="viewpick"><span class="sr" data-i18n="viewLabel">العرض</span>
+          <select id="viewSel">
+            <option value="g0" data-i18n="vG0">مجرّة · ترتيب المصحف</option>
+            <option value="g1" data-i18n="vG1">مجرّة · ترتيب النزول</option>
+            <option value="q-mushaf" data-i18n="vQm">«قرآن» · ترتيب المصحف</option>
+            <option value="q-nuzul" data-i18n="vQn">«قرآن» · ترتيب النزول</option>
+            <option value="q-length" data-i18n="vQl">«قرآن» · حسب طول السورة</option>
+            <option value="q-place" data-i18n="vQp">«قرآن» · مكي ثم مدني</option>
+          </select></label>
+        <button id="gLegend" data-i18n-title="legend" data-i18n-aria="legend" aria-expanded="false">◐</button>
+        <button id="gFull" data-i18n-title="expandG" data-i18n-aria="expandG" aria-pressed="false">⤢</button>
+      </div>
+      <div id="legendBox" hidden></div>
+      <div id="viewNote" hidden></div>
+    </section>
+    <div class="split" id="splitMain" role="separator" aria-orientation="horizontal" tabindex="0" data-i18n-aria="resize"></div>
+    <section id="rzone" class="zone" aria-labelledby="rTitle"><h2 id="rTitle" class="sr" data-i18n="zReader">المصحف</h2><div id="viewRead"></div></section>
   </div>
-  <div id="viewRes" class="view"></div>
-  <div id="viewRead" class="view" hidden></div>
-</aside>
 
-<nav id="dock">
-  <button id="btnHome" data-i18n-title="home" aria-label="home">⌂</button>
-  <button id="btnMenu" data-i18n="menu">القائمة</button>
-  <label class="viewpick"><span data-i18n="viewLabel">العرض</span>
-    <select id="viewSel">
-      <option value="g0" data-i18n="vG0">مجرّة · ترتيب المصحف</option>
-      <option value="g1" data-i18n="vG1">مجرّة · ترتيب النزول</option>
-      <option value="q-mushaf" data-i18n="vQm">«قرآن» · ترتيب المصحف</option>
-      <option value="q-nuzul" data-i18n="vQn">«قرآن» · ترتيب النزول</option>
-      <option value="q-length" data-i18n="vQl">«قرآن» · حسب طول السورة</option>
-      <option value="q-place" data-i18n="vQp">«قرآن» · مكي ثم مدني</option>
-    </select></label>
-  <button id="btnLegend" data-i18n="legend">المفتاح</button>
-  <button id="btnAbout" data-i18n="about">عن مشكاة</button>
-  <span id="aiBadge"></span>
+  <!-- side column: answers above, tafsir below -->
+  <div class="col col-side">
+    <section id="szone" class="zone" aria-labelledby="sTitle">
+      <div class="zhead">
+        <h2 id="sTitle" data-i18n="zAnswers">الإجابات</h2>
+        <span id="aiBadge"></span>
+        <button id="resClose" class="icon" data-i18n-aria="clearRes" data-i18n-title="clearRes" hidden>✕</button>
+      </div>
+      <div id="viewRes" class="zbody"></div>
+    </section>
+    <div class="split" id="splitSide" role="separator" aria-orientation="horizontal" tabindex="0" data-i18n-aria="resize"></div>
+    <section id="tzone" class="zone" aria-labelledby="tTitle"><div id="viewTaf"></div></section>
+  </div>
+</main>
+
+<nav id="mtabs" role="tablist">
+  <button role="tab" data-pane="s" data-i18n="zAnswers">الإجابات</button>
+  <button role="tab" data-pane="r" data-i18n="zReader">المصحف</button>
+  <button role="tab" data-pane="t" data-i18n="zTafsir">التفسير</button>
 </nav>
-<div id="legendBox" hidden></div>
-<div id="viewNote" hidden></div>
-<div id="stage" aria-hidden="true"><div class="st-lamp"></div><div id="stageWord" class="st-word"></div><div id="stageRef" class="st-ref"></div></div>
 
 <div id="welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle" hidden>
   <div class="wbox">
@@ -91,7 +109,7 @@
 </dialog>
 
 <div id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
-  <div class="langs g-langs" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button><button data-lang="fr">FR</button></div>
+  <div class="langs g-langs" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button></div>
   <div class="gbox">
     <div id="gateLamp" class="g-lamp" aria-hidden="true"></div>
     <p class="g-brand">Mishkat · مِشكاة</p>
@@ -118,7 +136,7 @@
       <svg viewBox="0 0 24 24" width="34" height="34"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></div>
     <h3 id="vTitle"></h3>
     <p id="vHint" aria-live="polite"></p>
-    <div class="v-langs" role="group" data-i18n-aria="vLang"><button type="button" data-vl="ar">العربية</button><button type="button" data-vl="en">English</button><button type="button" data-vl="fr">Français</button></div>
+    <div class="v-langs" role="group" data-i18n-aria="vLang"><button type="button" data-vl="ar">العربية</button><button type="button" data-vl="en">English</button></div>
     <textarea id="vText" dir="auto" rows="2" hidden></textarea>
     <div class="v-btns"><button type="button" id="vMain" class="btn gold big"></button><button type="button" id="vAlt" class="btn ghost"></button></div>
   </div>

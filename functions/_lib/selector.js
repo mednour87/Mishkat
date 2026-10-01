@@ -1,13 +1,15 @@
 // The only place an LLM is called. Two narrow tasks, both returning JSON that
 // is validated here AND again in the browser (engine.verifyExpansion/verifyLLM):
 //
-//   expand(query)  → intent + search keywords (Arabic/English/French). The
+//   expand(query)  → intent + search keywords (Arabic/English). The
 //                    keywords are used ONLY to retrieve verses; never shown.
 //   select(query, candidates, sentences) → ids of relevant verses and ids of
 //                    tafsir sentences, taken from CLOSED numbered lists.
 //
 // The LLM never writes text that reaches the user.
 // Providers: Groq (OpenAI-compatible, free tier) with model fallback.
+
+import { ttsReady } from './tts.js';
 
 export const DEFAULT_MODELS = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
 
@@ -18,7 +20,7 @@ intent: "ruling" if the user asks whether something is halal/haram/permissible/o
 const SYS_EXPAND = `${RULES}
 Task: understand the query and propose search keywords that would appear in the Quran text or in classical tafsir (Al-Muyassar, Al-Mukhtasar) for this topic.
 Also list up to 8 verse references "sura:aya" that you believe are central to this topic (they will be checked against the real text; wrong ones are discarded).
-Return {"intent":"...","keywords":{"ar":[up to 6 Arabic words or short phrases, classical vocabulary, without diacritics],"en":[up to 5],"fr":[up to 5]},"refs":["17:23",...]}.
+Return {"intent":"...","keywords":{"ar":[up to 6 Arabic words or short phrases, classical vocabulary, without diacritics],"en":[up to 5]},"refs":["17:23",...]}.
 Keywords must be single words or 2-word phrases, no sentences.`;
 
 const SYS_SELECT = `${RULES}
@@ -37,7 +39,7 @@ const SID_RE = /^\d{1,3}:\d{1,3}#\d{1,2}$/;
 export function sanitizePayload(body, kind = 'select') {
   if (!body || typeof body !== 'object') throw new Error('bad body');
   const query = String(body.query || '').slice(0, 300).trim();
-  const lang = ['ar', 'en', 'fr'].includes(body.lang) ? body.lang : 'ar';
+  const lang = ['ar', 'en'].includes(body.lang) ? body.lang : 'ar';
   if (!query) throw new Error('empty query');
   if (kind === 'expand') return { query, lang };
   const candidates = (Array.isArray(body.candidates) ? body.candidates : []).slice(0, 40)
@@ -88,7 +90,7 @@ export function validateExpansion(raw) {
   const kw = obj.keywords && typeof obj.keywords === 'object' ? obj.keywords : {};
   const clean = (a) => (Array.isArray(a) ? a : []).map(x => String(x).trim().slice(0, 30)).filter(x => x && x.split(/\s+/).length <= 3).slice(0, 6);
   const refs = (Array.isArray(obj.refs) ? obj.refs : []).map(x => String(x).trim()).filter(x => ID_RE.test(x)).slice(0, 8);
-  return { intent: INTENTS.includes(obj.intent) ? obj.intent : 'topic', keywords: { ar: clean(kw.ar), en: clean(kw.en), fr: clean(kw.fr) }, refs };
+  return { intent: INTENTS.includes(obj.intent) ? obj.intent : 'topic', keywords: { ar: clean(kw.ar), en: clean(kw.en) }, refs };
 }
 
 async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, fetchImpl = fetch }) {
@@ -138,7 +140,6 @@ export function providers(env) {
 const STT_PROMPT = {
   ar: 'سؤال عن القرآن الكريم: آية، سورة، تفسير، الصبر، بر الوالدين، قصة يوسف، موسى، الصلاة، الزكاة، الصيام.',
   en: 'A question about the Quran: verse, surah, tafsir, patience, parents, Joseph, Moses, prayer, fasting.',
-  fr: 'Une question sur le Coran : verset, sourate, tafsir, patience, parents, Joseph, Moïse, prière, jeûne.',
 };
 // phrases Whisper is known to produce on silence or noise (subtitle credits, outros)
 const P = String.raw`[\s\p{P}\p{S}]*`;   // spaces / punctuation only (Unicode-aware: Arabic letters are NOT matched)
@@ -177,9 +178,9 @@ export async function transcribe(audioBlob, lang, env, fetchImpl = fetch) {
     const j = await r.json();
     return { ok: true, text: cleanTranscript(j, l), raw: String(j.text || '').trim() };
   };
-  const l = ['ar', 'en', 'fr'].includes(lang) ? lang : '';
+  const l = ['ar', 'en'].includes(lang) ? lang : '';
   let out = await once(l);
-  // speech was heard but did not fit the chosen language (e.g. French spoken, Arabic selected): auto-detect once
+  // speech was heard but did not fit the chosen language (e.g. English spoken, Arabic selected): auto-detect once
   if (out.ok && !out.text && out.raw && l) out = await once('');
   return out.ok ? { ok: true, text: out.text } : out;
 }
@@ -204,7 +205,7 @@ async function run(kind, body, env, fetchImpl) {
     }
   }
   return kind === 'expand'
-    ? { ok: false, errors, intent: 'topic', keywords: { ar: [], en: [], fr: [] } }
+    ? { ok: false, errors, intent: 'topic', keywords: { ar: [], en: [] } }
     : { ok: false, errors, intent: 'topic', ids: [], sentences: [], confidence: 'low', rejected: 0 };
 }
 
@@ -213,5 +214,5 @@ export const expand = (body, env, fetchImpl = fetch) => run('expand', body, env,
 
 export function health(env) {
   const p = providers(env);
-  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null, stt: !!(env.STT_KEY || env.GROQ_API_KEY) };
+  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null, stt: !!(env.STT_KEY || env.GROQ_API_KEY), tts: ttsReady(env) };
 }

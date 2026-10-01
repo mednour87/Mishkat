@@ -4,14 +4,14 @@
 //  - recording stops by itself after a pause, or after maxMs
 //  - nothing is sent when no speech was heard (Whisper invents text on silence)
 const SR = typeof window !== 'undefined' ? (window.SpeechRecognition || window.webkitSpeechRecognition) : null;
-const BCP = { ar: 'ar-SA', en: 'en-US', fr: 'fr-FR' };
+const BCP = { ar: 'ar-SA', en: 'en-US' };
 
 export function voiceSupported(serverStt) {
   return !!(SR || (serverStt && typeof MediaRecorder !== 'undefined' && navigator.mediaDevices));
 }
 
 // listen({ lang, serverStt, onState, onLevel, onPartial }) → Promise<string>
-//   lang: 'ar' | 'en' | 'fr' or a function returning it (read when the audio is sent)
+//   lang: 'ar' | 'en' or a function returning it (read when the audio is sent)
 //   onState('listening' | 'processing' | 'idle'), onLevel(0..1), onPartial(text)
 // Errors carry .code: 'denied' | 'nospeech' | 'failed' | 'unsupported'
 export function listen({ lang = 'ar', serverStt = false, onState = () => {}, onLevel = () => {}, onPartial = () => {},
