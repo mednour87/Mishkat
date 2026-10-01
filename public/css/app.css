@@ -576,3 +576,42 @@ html[data-theme=light] #voice { background: rgba(240, 232, 214, .62); }
 html[data-theme=light] .vbox { background: #fffdf8; border-color: rgba(168, 111, 12, .25); box-shadow: 0 30px 80px rgba(90, 60, 10, .16); }
 html[data-theme=light] #vText { background: #fff; color: #1d2433; }
 html[data-theme=light] .v-langs button[aria-pressed=true] { background: #fbefd2; color: #8a5a06; }
+
+/* ================================================ reference-pack blocks */
+.lvl { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; font-weight: 700; font-size: 14px; margin-inline-end: 6px; vertical-align: middle; }
+.lvl-A { background: rgba(110, 214, 160, .18); color: #8ee6b8; } .lvl-B { background: rgba(142, 197, 240, .18); color: #9fd0f5; }
+.lvl-C { background: rgba(255, 196, 90, .2); color: #ffd27a; } .lvl-D { background: rgba(255, 122, 122, .2); color: #ff9c9c; }
+.lvl-t { font-size: 12px; color: var(--mut); margin-inline-end: 8px; vertical-align: middle; }
+.term { border: 1px solid rgba(142, 197, 240, .35); border-radius: 14px; padding: 10px 12px; margin: 10px 0; background: rgba(142, 197, 240, .05); }
+.term header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; }
+.term-k { font-size: 11.5px; color: var(--blue); text-transform: uppercase; letter-spacing: .06em; }
+.term header b { font-family: 'Amiri', var(--ui); font-size: 24px; color: var(--txt); }
+.term-en { font-size: 15px; } .term-en small, .term-r small { color: var(--mut); font-size: 11.5px; display: block; }
+.term-r p { margin: 4px 0 6px; font-family: 'Amiri', var(--ui); font-size: 18px; line-height: 1.9; }
+.term footer { font-size: 12px; color: var(--mut); }
+.hbox .hlist { padding-inline-start: 22px; margin: 6px 0; display: grid; gap: 8px; }
+.hbox .hlist li { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; background: var(--panel2); }
+.h-text { font-family: 'Amiri', var(--ui); font-size: 19px; line-height: 1.9; }
+.h-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 12.5px; color: var(--mut); margin-top: 2px; }
+.h-meta small, .h-grade small { color: var(--mut); }
+.h-grade { margin-top: 4px; font-size: 14px; }
+.tix { border: 1px dashed rgba(255, 214, 107, .4); border-radius: 12px; padding: 8px 10px; margin: 10px 0; font-size: 13px; }
+.tix-h span { color: var(--mut); } .tix-h b { font-family: 'Amiri', var(--ui); font-size: 17px; color: var(--gold); }
+.tix ul { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 4px; }
+.tix li span { font-family: 'Amiri', var(--ui); font-size: 15px; margin-inline-end: 6px; }
+.tix li button { background: rgba(142, 197, 240, .08); border: 1px solid rgba(142, 197, 240, .25); color: var(--blue); border-radius: 7px; padding: 1px 6px; font-size: 12px; margin: 1px; cursor: pointer; }
+.bay ul { margin: 4px 0; padding-inline-start: 20px; display: grid; gap: 4px; }
+.bay a { font-family: 'Amiri', var(--ui); font-size: 17px; color: var(--gold); }
+.bay small { color: var(--mut); font-size: 11.5px; }
+.disclose { margin-top: 16px; font-size: 12px; color: var(--mut); border-top: 1px solid var(--line); padding-top: 8px; }
+.sc-info { margin-top: 6px; font-size: 13px; } .sc-info summary { cursor: pointer; color: var(--gold2); }
+.sc-info-b, .sinfo { margin-top: 6px; }
+.sinfo { border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; background: var(--panel2); margin-bottom: 12px; }
+.sinfo-t h4 { margin: 8px 0 2px; color: var(--gold); font-size: 14px; }
+.sinfo-t p { margin: 0 0 6px; font-family: 'Amiri', var(--ui); font-size: 17px; line-height: 1.9; }
+.f-taf-body h4 { font-family: 'Amiri', var(--ui); font-size: 18px; color: var(--gold); margin: 6px 0; line-height: 1.9; }
+.rd-top #rInfo { flex: none; }
+html[data-theme=light] .lvl-A { background: #dff4e8; color: #1d7a4c; } html[data-theme=light] .lvl-B { background: #e1effa; color: #1f6fb2; }
+html[data-theme=light] .lvl-C { background: #fbefd2; color: #8a5a06; } html[data-theme=light] .lvl-D { background: #fbe0e0; color: #b02a2a; }
+html[data-theme=light] .term { background: #f4f9fe; } html[data-theme=light] .hbox .hlist li, html[data-theme=light] .sinfo { background: #fffdf7; }
+html[data-theme=light] .bay a, html[data-theme=light] .tix-h b, html[data-theme=light] .sinfo-t h4, html[data-theme=light] .f-taf-body h4 { color: #8a5a06; }

@@ -88,6 +88,11 @@ async function boot() {
   const [core, searchAr] = await Promise.all([getJSON('data/core.json'), getJSON('data/search_ar.json')]);
   state.core = core;
   state.engine = createEngine({ core, searchAr });
+  // reference-pack data: Quranpedia subject index, Bayyinat question index (optional)
+  state.refReady = Promise.all([
+    getJSON('data/qp_topics.json').then(d => state.engine.addTopicIndex(d)).catch(() => {}),
+    getJSON('data/bayenat_index.json').then(d => state.engine.addBayenat(d)).catch(() => {}),
+  ]);
   applyLang(state.lang);
   const gateDone = gate();
   setLoad(1);
@@ -252,9 +257,10 @@ async function run(query, mode = 'auto') {
   $('#status').textContent = t.thinking; $('#status').classList.add('on');
   const qLang = detectLang(query, state.lang);
   await ensureSources(qLang);
+  if (qLang !== 'ar') await ensureSources('ar'); // glossary terms and the subject index are explained from the Arabic tafsir
   if (qLang !== 'ar') await ensureSources(qLang === 'en' ? 'fr' : 'en');
   let res;
-  try { res = await state.engine.ask(query, { uiLang: state.lang, llm: state.llm, mode }); }
+  try { await state.refReady; res = await state.engine.ask(query, { uiLang: state.lang, llm: state.llm, mode }); }
   finally { $('#status').classList.remove('on'); }
   state.result = res;
   const url = new URL(location.href); url.searchParams.set('q', query); url.searchParams.delete('s');
@@ -290,11 +296,13 @@ function renderResults() {
   const res = state.result, t = T(), e = state.engine;
   if (!res) return;
   const dir = res.lang === 'ar' ? 'rtl' : 'ltr';
-  let h = badgeFor(res);
+  let h = levelBadge(res) + badgeFor(res);
   const texts = res.answer.filter(a => a.kind === 'text');
   const quotes = res.answer.filter(a => a.kind === 'quote');
   const notes = res.answer.filter(a => a.kind === 'note');
   for (const a of texts) h += `<p class="lead" dir="${dir}">${esc(a.text)}</p>`;
+  if (res.term) h += termCard(res.term);
+  if (res.type === 'hadith' || res.hadithCheck) h += `<section class="hbox" id="hadithBox" aria-live="polite"></section>`;
   if (res.verdict === 'near' && res.diffWords && res.diffWords.length) {
     const diff = new Set(res.diffWords);
     const words = (res.checked || res.query).split(/\s+/).map(w => diff.has(normAr(w)) ? `<mark class="diff">${esc(w)}</mark>` : esc(w)).join(' ');
@@ -309,6 +317,7 @@ function renderResults() {
     h += `<div class="src">${srcIds.map(id => { const s0 = e.sources[id] || {}; return `<a href="${esc(s0.url || 'https://quranenc.com')}" target="_blank" rel="noopener">${esc(s0.title || id)}</a>`; }).join(' · ')}` +
       (res.paragraphBy && t.paraBy[res.paragraphBy] ? ` · <span class="ai-tag">${esc(t.paraBy[res.paragraphBy])}</span>` : '') + '</div>';
   }
+  if (res.topicIndex) h += topicIndexBox(res.topicIndex);
   // fatwa requests: official sources
   if (res.links && res.links.length) {
     h += `<div class="links">${res.links.map(l => `<a class="btn gold" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(t.links[l.id] || l.id)}</a>`).join('')}</div>`;
@@ -330,6 +339,8 @@ function renderResults() {
       }).join('') + '</ul>';
   }
   if (res.type === 'sura') h += `<p><button class="btn gold" id="openSura">${esc(t.readSura)}</button> <button class="btn play" id="playSura">${esc(t.listen)}</button></p>`;
+  if (res.bayenat && res.bayenat.length) h += `<section class="bay"><h3 class="sec">${esc(t.bayTitle)}</h3><ul>${res.bayenat.map(b => `<li><a href="${esc(b.url)}" target="_blank" rel="noopener" dir="rtl">${esc(b.q)}</a> <small>${esc(b.cat || '')}</small></li>`).join('')}</ul><p class="note">${esc(t.bayNote)}</p></section>`;
+  if (res.type !== 'empty') h += `<p class="disclose">${esc(t.disclosure)}</p>`;
   const v = $('#viewRes');
   v.innerHTML = h;
   v.scrollTop = 0;
@@ -347,7 +358,73 @@ function renderResults() {
   if (ab) ab.onclick = () => res.alt.mode === 'topic' ? run(res.alt.query, 'topic') : openReader(res.alt.sura, null);
   const os = $('#openSura'); if (os) os.onclick = () => openReader(res.sura, res.focus);
   const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, true);
+  v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => focusVerse(+b.dataset.idx, { card: true }));
+  v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
+  if (res.type === 'hadith' || res.hadithCheck) loadHadith(res.type === 'hadith' ? res.hadith.q : res.hadithCheck, res.type !== 'hadith');
 }
+
+// ------------------------------------------------ reference-pack blocks
+function levelBadge(res) {
+  if (!res.level) return '';
+  const [short, long] = T().levels[res.level];
+  return `<span class="lvl lvl-${res.level}" title="${esc(long)}">${esc(short)}</span><span class="lvl-t">${esc(long)}</span>`;
+}
+function termCard(g) {
+  const t = T();
+  return `<article class="term"><header><span class="term-k">${esc(t.termTitle)}</span><b dir="rtl">${esc(g.ar)}</b>
+    ${g.en ? `<span class="term-en"><small>${esc(t.termEn)}</small> ${esc(g.en)}</span>` : ''}${g.translit ? `<span class="term-en"><small>${esc(t.termTr)}</small> ${esc(g.translit)}</span>` : ''}</header>
+    <div class="term-r"><small>${esc(t.termRule)}</small><p dir="rtl">${esc(g.rule)}</p></div>
+    <footer><small>${esc(t.termSrc)}: ${esc(g.src)}</small> · <a href="${esc(g.more)}" target="_blank" rel="noopener">${esc(t.termMore)}</a></footer></article>`;
+}
+function topicIndexBox(x) {
+  const t = T(), e = state.engine;
+  const sub = x.groups.length > 1 || (x.groups[0] && x.groups[0].name !== x.name);
+  const ref = (i) => `<button data-idx="${i}">${e.suraOf[i]}:${e.ayaOf[i]}</button>`;
+  return `<section class="tix"><div class="tix-h"><span>${esc(t.tixTitle)}</span> <b dir="rtl">«${esc(x.name)}»</b></div>
+    ${sub ? `<details><summary>${esc(t.tixSub(x.groups.length))}</summary><ul>${x.groups.map(g => `<li><span dir="rtl">${esc(g.name)}</span> ${g.ids.map(ref).join('')}</li>`).join('')}</ul></details>` : ''}
+    <small><a href="https://quranpedia.net" target="_blank" rel="noopener">Quranpedia.net</a></small></section>`;
+}
+// Dorar Hadith Encyclopedia: results shown verbatim (text, narrator, muhaddith, source, verdict)
+async function loadHadith(q, isCheck) {
+  const box = $('#hadithBox'), t = T();
+  if (!box) return;
+  const head = `<h3 class="sec">${esc(isCheck ? t.hadithCheckTitle : t.hadithTitle)}</h3>`;
+  if (!q) { box.innerHTML = head + `<p><a class="btn gold" href="https://dorar.net/hadith" target="_blank" rel="noopener">${esc(t.hadithOpen)}</a></p>`; return; }
+  box.innerHTML = head + `<p class="note">${esc(t.hadithLoading)}</p>`;
+  const link = `https://dorar.net/hadith/search?q=${encodeURIComponent(q)}`;
+  let j = null;
+  try {
+    const r = await fetch('api/hadith', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q }) });
+    j = r.ok ? await r.json() : null;
+  } catch (e) { j = null; }
+  if (!$('#hadithBox') || box !== $('#hadithBox')) return;
+  if (!j || !j.ok) { box.innerHTML = head + `<p class="note">${esc(t.hadithFail)}</p><p><a class="btn gold" href="${esc(link)}" target="_blank" rel="noopener">${esc(t.hadithOpen)}</a></p>`; return; }
+  if (!j.items.length) { box.innerHTML = head + `<p class="lead">${esc(t.hadithNone)}</p><p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.hadithOpen)}</a></p>`; return; }
+  const row = (k, v) => v ? `<span><small>${esc(k)}:</small> ${esc(v)}</span>` : '';
+  box.innerHTML = head + `<p class="note">${esc(t.hadithNote)}</p><ol class="hlist">${j.items.map(x => `<li dir="rtl"><div class="h-text">${esc(x.text)}</div>
+    <div class="h-meta">${row(t.hadithRawi, x.rawi)}${row(t.hadithMuh, x.muhaddith)}${row(t.hadithSrc, x.source)}${row(t.hadithPage, x.page)}</div>
+    ${x.grade ? `<div class="h-grade"><small>${esc(t.hadithGrade)}:</small> <b>${esc(x.grade)}</b></div>` : ''}</li>`).join('')}</ol>
+    <p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.hadithOpen)}</a> · <small>${esc(j.source)}</small></p>`;
+}
+// Quranpedia surah information (Arabic): introduction, topics, purposes
+async function suraInfo(n) {
+  if (!state.suraInfoP) state.suraInfoP = getJSON('data/qp_surahs.json');
+  const d = await state.suraInfoP;
+  return { ...(d.items[n] || d.items[String(n)] || {}), version: d.version };
+}
+async function fillSuraInfo(el, n, short = false) {
+  if (!el || el.dataset.done) return;
+  const t = T();
+  try {
+    const x = await suraInfo(n);
+    const para = (s) => esc(s || '').split('\n').filter(Boolean).map(p => `<p>${p}</p>`).join('');
+    const part = (k, v) => v ? `<h4>${esc(k)}</h4>${para(v)}` : '';
+    el.innerHTML = `<div dir="rtl" class="sinfo-t">${part(t.sInfoIntro, x.intro)}${short ? '' : part(t.sInfoTopics, x.topics) + part(t.sInfoNames, x.names)}${part(t.sInfoPurposes, x.purposes)}</div>
+      <small><a href="https://quranpedia.net" target="_blank" rel="noopener">${esc(t.sInfoSrc)}</a>${x.version ? ` · ${esc(x.version)}` : ''}</small>`;
+    el.dataset.done = '1';
+  } catch (e) { el.textContent = t.tafFail; }
+}
+
 
 function verseCard(q, lang) {
   const t = T(), e = state.engine, i = q.idx, dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -399,6 +476,7 @@ function suraCard(g, k) {
   return `<div class="sura-card"><div class="sc-head"><span class="sc-rank">${k + 1}</span>
     <div class="sc-name"><b>${esc(S.ar)}</b><small>${esc(S.tr)} · ${S.n} · ${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.matched(g.verses.length))}</small></div>
     <span class="sc-btns"><button class="btn gold sm" data-read="${S.n}" data-first="${refs[0]}">${esc(t.readSura)}</button><button class="btn play sm" data-listen="${S.n}" data-first="${refs[0]}" aria-label="${esc(t.listen)}">▶</button></span></div>
+    <details class="sc-info" data-info="${S.n}"><summary>${esc(t.aboutSura)}</summary><div class="sc-info-b">…</div></details>
     <ul class="sc-list">${refs.map(row).join('')}</ul>
     ${refs.length > SHOW ? `<button class="mini sc-more">${esc(t.moreV(refs.length - SHOW))}</button>` : ''}</div>`;
 }
@@ -462,8 +540,10 @@ function renderReader(scrollToCur) {
       <button class="btn icon-b" id="rNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${state.lang === 'ar' ? '‹' : '›'}</button>
       <label class="btn rep" title="${esc(t.repeatTitle)}">${esc(t.repeat)} <select id="rRep" aria-label="${esc(t.repeatTitle)}">${[1, 3, 5, 10, 0].map(n => `<option value="${n}"${(rep === n || (rep === Infinity && n === 0)) ? ' selected' : ''}>${n ? '×' + n : '∞'}</option>`).join('')}</select></label>
       <button class="btn ${state.continuous ? 'on' : ''}" id="rAuto" aria-pressed="${state.continuous}">⟳ ${esc(t.auto)}</button>
+      <button class="btn" id="rInfo" aria-expanded="false">ℹ ${esc(t.aboutSura)}</button>
     </div></div>
     <div class="rd-body" id="rdBody">
+      <section class="sinfo" id="sInfo" hidden></section>
       <section class="focus" id="focus" aria-live="polite"></section>
       <details class="fulltext" open><summary>${esc(t.fullSura)}</summary><div class="mushaf" id="mushaf">${basmala}${words}</div></details>
     </div>`;
@@ -476,6 +556,7 @@ function renderReader(scrollToCur) {
   try { localStorage.setItem('mishkat.lastSura', String(sura)); } catch (e2) { /* ignore */ }
   $('#rAuto').onclick = () => { state.continuous = !state.continuous; $('#rAuto').classList.toggle('on', state.continuous); $('#rAuto').setAttribute('aria-pressed', state.continuous); };
   $('#rSel').onchange = (ev) => selectVerse(+ev.target.value, true);
+  $('#rInfo').onclick = () => { const p = $('#sInfo'), open = p.hidden; p.hidden = !open; $('#rInfo').setAttribute('aria-expanded', open); if (open) fillSuraInfo(p, sura); };
   $('#mushaf').querySelectorAll('.v').forEach(el => el.onclick = () => selectVerse(+el.dataset.i, true));
   selectVerse(cur, scrollToCur, true);
 }
@@ -518,12 +599,12 @@ async function renderFocus(i) {
   if (!box) return;
   stopSpeech();
   const s = e.suraOf[i], a = e.ayaOf[i], lang = state.lang;
-  const tabs = lang === 'ar' ? ['muyassar_ar', 'mukhtasar_ar', 'saadi_ar'] : [TAFSIR_FOR[lang], 'muyassar_ar', 'saadi_ar'];
+  const tabs = lang === 'ar' ? ['muyassar_ar', 'mukhtasar_ar', 'saadi_ar', 'tabari'] : [TAFSIR_FOR[lang], 'muyassar_ar', 'saadi_ar', 'tabari'];
   const tab = tabs.includes(state.reader.srcTab) ? state.reader.srcTab : tabs[0];
   const tr = e.translation(lang, i).replace(/\[\d+\]/g, '');
   const trSrc = TRANSLATION_FOR[lang] ? e.sources[TRANSLATION_FOR[lang]] : null;
   box.innerHTML = `<div class="f-head"><span class="f-ref">${esc(refLabel(i))}</span>
-      <span class="f-tools"><button class="mini" id="fCopy">${esc(t.copy)}</button><a class="mini" href="https://quran.com/${s}/${a}" target="_blank" rel="noopener">${esc(t.verifyExt)}</a></span></div>
+      <span class="f-tools"><button class="mini" id="fCopy">${esc(t.copy)}</button><a class="mini" href="https://quran.com/${s}/${a}" target="_blank" rel="noopener">${esc(t.verifyExt)}</a><a class="mini" href="https://dorar.net/tafseer/${s}" target="_blank" rel="noopener">${esc(t.dorarTafsir)}</a></span></div>
     <div class="f-ayah ayah" id="fAyah">${verseWordsHtml(i)}<span class="end">﴿${arNum(a)}﴾</span></div>
     <div class="f-translit" id="fTranslit" dir="ltr" ${state.showTranslit === false ? 'hidden' : ''}></div>
     ${tr ? `<div class="f-trans" dir="ltr">${esc(tr)}<small>${esc(trSrc ? trSrc.title : '')}</small></div>` : ''}
@@ -540,6 +621,7 @@ async function renderFocus(i) {
     if (el && state.reader.cur === i) el.innerHTML = ws.map((w, k) => `<span class="w" data-w="${k + 1}">${esc(w)}</span>`).join(' ');
   }).catch(() => { /* optional */ });
   let text = '', dir = 'rtl', srcLine = '', ttsLang = 'ar';
+  if (tab === 'tabari') return renderTabari(i, s, a);
   if (tab === 'saadi_ar') {
     const f = await suraFile('saadi', s);
     let k = a - 1;
@@ -559,6 +641,30 @@ async function renderFocus(i) {
   body.dir = dir;
   body.innerHTML = `<p>${esc(text)}</p><div class="src">${esc(srcLine)}</div>`;
   $('#fTts').onclick = () => toggleSpeech(text, ttsLang, $('#fTts'));
+}
+
+// At-Tabari, «جامع البيان» (d. 310 AH), page by page from Quranpedia, with volume/page
+async function renderTabari(i, s, a) {
+  const t = T();
+  let j = null;
+  try {
+    const r = await fetch('api/tafsir', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ s, a, book: 4 }) });
+    j = r.ok ? await r.json() : null;
+  } catch (e) { j = null; }
+  if (state.reader.cur !== i) return;
+  const body = $('#tafBody');
+  if (!body) return;
+  body.dir = 'rtl';
+  const more = `https://quranpedia.net/surah/1/${s}?ayah_id=${a}`;
+  if (!j || !j.ok) { body.innerHTML = `<p>${esc(t.tafFail)}</p><div class="src"><a href="${more}" target="_blank" rel="noopener">${esc(t.tafMore)}</a></div>`; return; }
+  if (j.empty || !j.lines.length) { body.innerHTML = `<p>${esc(t.tafEmpty)}</p>`; return; }
+  const MAX = 40, lines = j.lines.slice(0, MAX);
+  const refs = (j.ref || []).map(r => { const [v, p] = r.split('/'); return `${t.vol} ${v} ${t.pg} ${p}`; }).join('، ');
+  body.innerHTML = (j.exact ? '' : `<p class="note">${esc(t.tafPages)}</p>`) +
+    lines.map(l => l.h ? `<h4>${esc(l.t)}</h4>` : `<p>${esc(l.t)}</p>`).join('') +
+    `<div class="src">${esc(j.book.name)} — ${esc(j.book.author)} (ت ${j.book.died}هـ) · ${esc(refs)} · <a href="${more}" target="_blank" rel="noopener">${esc(j.lines.length > MAX ? t.tafMore : j.source)}</a></div>`;
+  const text = lines.map(l => l.t).join('\n');
+  $('#fTts').onclick = () => toggleSpeech(text, 'ar', $('#fTts'));
 }
 
 // ------------------------------------------------ listening to the tafsir (browser speech synthesis)

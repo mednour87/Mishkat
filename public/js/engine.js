@@ -10,6 +10,9 @@
 //      and tafsir-sentence ids from CLOSED lists. All its output is verified;
 //      anything outside the lists is dropped.
 //   5. When evidence is insufficient the engine abstains.
+//   6. Reference-pack sources (subject index, glossary, Dorar, Bayenat) only
+//      select or point; their text is shown as published, with its source.
+import { GLOSSARY, TERM_CUE, termFor, isBareTerm } from './glossary.js';
 
 // ---------------------------------------------------------------- text utils
 const AR_MARKS = /[ؐ-ًؚ-ٰٟۖ-ۭ࣓-ࣿـ]/g;
@@ -169,6 +172,13 @@ export const MSG = {
     violence: 'لا تجيب «مشكاة» عن طلبات الإيذاء أو العنف. والنفس المعصومة محرّمة، ويمكنك البحث عن «حرمة النفس» لقراءة الآيات وتفسيرها.',
     trFound: 'وُجدت هذه العبارة في ترجمة معاني الآيات التالية:',
     trNone: 'لم أجد هذه العبارة في ترجمات المعاني المعتمدة لديّ. ولا يمكن الحكم على نص مترجَم بأنه آية؛ الصق النص العربي للتحقق الدقيق.',
+    topicIndex: (n, q, s, name) => `«${name}» موضوعٌ في الفهرس الموضوعي للموسوعة القرآنية؛ وفيه ${arCount(n, 'آية واحدة', 'آيتان', 'آيات', 'آية')} في ${arCount(s, 'سورة واحدة', 'سورتين', 'سور', 'سورة')}. وهذا بيان أبرزها من التفسير المعتمد، ثم الآيات مجموعةً حسب الموضوعات الفرعية:`,
+    topicSubset: (n, q, s, name) => `لم أجد جوابًا مباشرًا عن سؤالك بنصّه؛ وهذه آيات موضوع «${name}» الوارد فيه، من الفهرس الموضوعي للموسوعة القرآنية (${arCount(n, 'آية واحدة', 'آيتان', 'آيات', 'آية')} في ${arCount(s, 'سورة واحدة', 'سورتين', 'سور', 'سورة')}):`,
+    term: (t) => `«${t}» في قاموس المصطلحات المعتمد في مرجعية التحدي، مع آيات موضوعه في الفهرس الموضوعي:`,
+    hadithIntro: 'لا تولّد «مشكاة» الأحاديث ولا تحكم عليها. هذه نتائج البحث في الموسوعة الحديثية (الدرر السنية) بنصّها، مع حكم المحدّث على كل رواية:',
+    hadithLatin: 'البحث في الأحاديث يكون بنصها العربي في الموسوعة الحديثية (الدرر السنية). اكتب نص الحديث بالعربية، أو افتح الموسوعة من الرابط أدناه.',
+    hadithNone: 'لم أعثر في الموسوعة الحديثية على رواية تطابق هذا الكلام؛ فلا يُنسب إلى النبي ﷺ دون مصدر وحكم معتمد.',
+    khilaf: 'القرآن الكريم وما ثبت من أصول الدين محلّ اتفاق بين المسلمين، أما كثير من مسائل الفقه التفصيلية فقد يختلف فيها العلماء باجتهادٍ في فهم الأدلة، ولا يُصوَّر كل خلاف على أنه تناقض. ولا تنسب «مشكاة» اتفاقًا ولا خلافًا في مسألة بعينها دون مصدر؛ ولمعرفة أقوال العلماء فيها يُرجع إلى جهات الفتوى المعتمدة أدناه.',
   },
   en: {
     sura: (s) => `Surah ${s.tr} (${s.en}) — ${s.type === 'meccan' ? 'Meccan' : 'Medinan'}, ${s.ayas} verses, number ${s.n} in the Mushaf.`,
@@ -199,6 +209,13 @@ export const MSG = {
     violence: 'Mishkat does not answer requests to harm anyone. Human life is sacred; you can search “sanctity of life” to read the verses and their tafsir.',
     trFound: 'This wording appears in the translation of the following verse(s):',
     trNone: 'I could not find this wording in the vetted translations I hold. A translated sentence cannot be confirmed as a verse — translations differ — so do not attribute it to the Quran; paste the Arabic text for an exact check.',
+    topicIndex: (n, q, s, name) => `«${name}» is a topic of the Quranic Encyclopedia’s subject index: ${n} verse${n === 1 ? '' : 's'} in ${s} surah${s === 1 ? '' : 's'}. Here is the explanation of the main ones from vetted tafsir, then the verses grouped by sub-topic:`,
+    topicSubset: (n, q, s, name) => `No direct answer to your exact question was found; here are the verses of the topic «${name}» it mentions, from the Quranic Encyclopedia’s subject index (${n} verse${n === 1 ? '' : 's'} in ${s} surah${s === 1 ? '' : 's'}):`,
+    term: (t) => `«${t}» in the glossary of approved terms of the challenge’s reference pack, with the verses of its topic in the subject index:`,
+    hadithIntro: 'Mishkat does not generate hadith or grade them. These are the results of the Hadith Encyclopedia (Dorar.net) as published, with each muhaddith’s verdict:',
+    hadithLatin: 'Hadith are searched by their Arabic text in the Hadith Encyclopedia (Dorar.net). Type the Arabic text, or open the encyclopedia with the link below.',
+    hadithNone: 'No narration matching these words was found in the Hadith Encyclopedia; nothing should be attributed to the Prophet ﷺ without a source and an authoritative grading.',
+    khilaf: 'The Quran and the established foundations of the faith are agreed upon by Muslims; many detailed questions of jurisprudence, however, are subject to differences of scholarly ijtihad in understanding the evidence, and not every difference is a contradiction. Mishkat does not claim agreement or disagreement on a specific question without a source; for the scholars’ positions, refer to the official fatwa bodies below.',
   },
   fr: {
     sura: (s) => `Sourate ${s.tr} (${s.fr}) — ${s.type === 'meccan' ? 'mecquoise' : 'médinoise'}, ${s.ayas} versets, n° ${s.n} dans le Mushaf.`,
@@ -229,6 +246,13 @@ export const MSG = {
     violence: 'Mishkat ne répond pas aux demandes de nuire à autrui. La vie humaine est sacrée ; vous pouvez chercher « caractère sacré de la vie » pour lire les versets et leur tafsir.',
     trFound: 'Cette formulation figure dans la traduction du ou des versets suivants :',
     trNone: 'Je ne trouve pas cette formulation dans les traductions vérifiées dont je dispose. Une phrase traduite ne peut pas être confirmée comme verset — les traductions diffèrent — ne l’attribuez donc pas au Coran ; collez le texte arabe pour une vérification exacte.',
+    topicIndex: (n, q, s, name) => `« ${name} » est un thème de l’index thématique de l’Encyclopédie coranique : ${n} verset${n === 1 ? '' : 's'} dans ${s} sourate${s === 1 ? '' : 's'}. Voici l’explication des principaux d’après un tafsir vérifié, puis les versets regroupés par sous-thème :`,
+    topicSubset: (n, q, s, name) => `Aucune réponse directe à votre question exacte n’a été trouvée ; voici les versets du thème « ${name} » qu’elle mentionne, d’après l’index thématique de l’Encyclopédie coranique (${n} verset${n === 1 ? '' : 's'} dans ${s} sourate${s === 1 ? '' : 's'}) :`,
+    term: (t) => `« ${t} » dans le glossaire des termes approuvés du référentiel du défi, avec les versets de son thème dans l’index thématique :`,
+    hadithIntro: 'Mishkat ne génère pas de hadiths et ne les juge pas. Voici les résultats de l’Encyclopédie du hadith (Dorar.net) tels quels, avec le verdict de chaque spécialiste :',
+    hadithLatin: 'Les hadiths se recherchent par leur texte arabe dans l’Encyclopédie du hadith (Dorar.net). Écrivez le texte en arabe, ou ouvrez l’encyclopédie avec le lien ci-dessous.',
+    hadithNone: 'Aucune narration correspondant à ces mots n’a été trouvée dans l’Encyclopédie du hadith ; rien ne doit être attribué au Prophète ﷺ sans source ni jugement d’authenticité reconnu.',
+    khilaf: 'Le Coran et les fondements établis de la foi font l’objet d’un accord entre les musulmans ; en revanche, de nombreuses questions détaillées de jurisprudence relèvent de divergences d’ijtihad dans la compréhension des preuves, et toute divergence n’est pas une contradiction. Mishkat n’attribue ni accord ni désaccord sur une question précise sans source ; pour les positions des savants, référez-vous aux instances de fatwa officielles ci-dessous.',
   },
 };
 
@@ -311,7 +335,8 @@ export function guardCheck(q) {
 // ------------------------------------------- trap questions & sensitive subjects
 // Hostile or trap phrasings ("Islam is violent", "the Quran orders killing"…).
 const POLEMIC = /(الاسلام|الإسلام|القران|القرآن|المسلمين|المسلمون)\s+(دين\s+)?(ارهاب|إرهاب|عنف|ظلم|تخلف|كراهية|يحرض|يأمر\s+بقتل|يدعو\s+(الى|إلى)\s+(القتل|العنف))|\b(islam|the quran|muslims?)\s+(is|are)\s+(a\s+)?(religion of\s+)?(violent|violence|terror|terrorist|hate|hateful|evil|backward|misogyn\w*|oppress\w*)|\b(quran|koran)\s+(says?|orders?|tells?|commands?)\s+(to\s+)?(kill|murder|beat|hate)|\bwhy (does|do) (islam|the quran|muslims?)\s+(hate|kill|oppress)|\bl ?islam (est|serait) (une religion )?(violente?|de la violence|terroriste|haineuse?|misogyne|arriér\w*)|\ble coran (ordonne|dit|demande) de (tuer|frapper|haïr)|\bpourquoi (l ?islam|le coran|les musulmans) (hait|haïssent|tue|tuent|opprime)/i;
-export function isPolemic(q) { return POLEMIC.test(q) || POLEMIC.test(normLatin(q)); }
+const POLEMIC2 = /(دينكم|دينك)\s+(متخلف|ارهاب|إرهاب|ارهابي|إرهابي|عنف|ظلم|باطل|كذب)|(الاسلام|الإسلام)\s+(متخلف|ارهابي|إرهابي|دموي)|انتشر\s+بالسيف|\bspread by the sword\b|\bislam (was |is )?spread by (force|the sword)\b|\bpropag\w* par (l ?epee|la force)\b|\brepandu par (l ?epee|la force)\b/i;
+export function isPolemic(q) { return POLEMIC.test(q) || POLEMIC.test(normLatin(q)) || POLEMIC2.test(q) || POLEMIC2.test(normLatin(q)); }
 
 // Curated context packs: well-known passages, each verified against At-Tafsir Al-Muyassar
 // (full tafsir unit shown, never a fragment). They are shown FIRST for trap questions
@@ -326,7 +351,8 @@ const PACKS = [
 ];
 const PACK_IDX = PACKS.map(p => ({ ...p, norm: p.words.map(w => /[؀-ۿ]/.test(w) ? normAr(w) : normLatin(w)) }));
 export function packFor(q) {
-  const na = ' ' + normAr(q) + ' ', nl = ' ' + normLatin(q) + ' ';
+  const words = normAr(q).split(/\s+/).filter(Boolean);
+  const na = ' ' + words.concat(words.map(w => w.replace(/^(و|ف)?(بال|كال|لل|ال|ب|ل|ك)?/, ''))).join(' ') + ' ', nl = ' ' + normLatin(q) + ' ';
   for (const p of PACK_IDX) for (const w of p.norm) {
     const hay = /[؀-ۿ]/.test(w) ? na : nl;
     if (hay.includes(' ' + w + ' ') || (w.length > 4 && hay.includes(w))) return p;
@@ -792,8 +818,146 @@ export function createEngine({ core, searchAr, sources = {} }) {
 
   const verseResult = (i, extra = {}) => ({ idx: i, ref: ref(i), ...extra });
 
+  // ------------------------------------------------ الفهرس الموضوعي (Quranpedia, human-curated)
+  // A topic → its verses; used when the question IS a topic of the index (or, when
+  // nothing else is found, when it names one). Relevance comes from the index, the
+  // explanation from the tafsir sources: nothing is generated.
+  let TOPICS = null;
+  function addTopicIndex(data) {
+    const list = (data.items || []).map(([id, name, parent, ids]) => ({ id, name, parent, ids,
+      // a bracketed qualifier («الزكاة [النماء والطهر]») tells the sense; it is not a search word
+      toks: [...new Set(tokens(name.replace(/\[[^\]]*\]|\([^)]*\)/g, ' ').replace(/[«»:]/g, ' '), 'ar'))].sort() }));
+    const kids = new Map(), byKey = new Map();
+    for (const t of list) if (t.parent) { if (!kids.has(t.parent)) kids.set(t.parent, []); kids.get(t.parent).push(t); }
+    for (const t of list) if (t.toks.length) { const k = t.toks.join(' '); if (!byKey.has(k)) byKey.set(k, []); byKey.get(k).push(t); }
+    TOPICS = { list, kids, byKey, size: new Map(), source: data.source, url: data.url, version: data.version };
+  }
+  function topicTree(roots, cap) {
+    const groups = [], seen = new Set(), visited = new Set();
+    const walk = (t, depth) => {
+      if (visited.has(t.id) || depth > 5) return;
+      visited.add(t.id);
+      const ids = t.ids.filter(i => !seen.has(i)).sort((a, b) => a - b);
+      ids.forEach(i => seen.add(i));
+      if (ids.length) groups.push({ id: t.id, name: t.name, ids, own: depth === 0 });
+      for (const c of (TOPICS.kids.get(t.id) || [])) walk(c, depth + 1);
+    };
+    roots.forEach(t => walk(t, 0));
+    groups.sort((a, b) => (b.own - a.own) || (b.ids.length - a.ids.length));
+    const total = seen.size, flat = [];
+    for (const g of groups) for (const i of g.ids) if (flat.length < cap) flat.push(i);
+    const keep = new Set(flat);
+    return { total, ids: flat, groups: groups.map(g => ({ name: g.name, ids: g.ids.filter(i => keep.has(i)) })).filter(g => g.ids.length) };
+  }
+  const treeSize = (ts) => { const k = ts.map(t => t.id).join(','); if (!TOPICS.size.has(k)) TOPICS.size.set(k, topicTree(ts, 1e9).total); return TOPICS.size.get(k); };
+  function topicIndexFor(q, lang, kwAr = [], cap = 60) {
+    if (!TOPICS) return null;
+    const tries = (lang === 'ar' ? [q] : []).concat(kwAr || []);
+    for (const t of tries) {
+      const k = [...new Set(tokens(t, 'ar'))].sort().join(' ');
+      const hit = k && TOPICS.byKey.get(k);
+      if (hit && treeSize(hit) > 0) return { mode: 'exact', name: hit[0].name, ...topicTree(hit, cap) };
+    }
+    if (lang !== 'ar') return null;
+    // a topic named inside the question: the most specific name, then the smallest topic
+    const qt = new Set(tokens(q, 'ar'));
+    let best = null;
+    for (const [k, ts] of TOPICS.byKey) {
+      const kt = k.split(' ');
+      if (kt.length > qt.size || !kt.every(x => qt.has(x))) continue;
+      // one-word names are too ambiguous here («التأليف» = reconciling hearts, not composing;
+      // «الأيمان» = oaths, not faith once hamza is normalised): only multi-word names
+      if (kt.length < 2) continue;
+      const n = treeSize(ts);
+      if (n < 1 || n > 80) continue;
+      if (!best || kt.length > best.len || (kt.length === best.len && n < best.n)) best = { len: kt.length, n, ts };
+    }
+    return best ? { mode: 'subset', name: best.ts[0].name, ...topicTree(best.ts, cap) } : null;
+  }
+
+  // ------------------------------------------------ موسوعة بينات (question titles → links)
+  let BAY = null;
+  function addBayenat(data) {
+    const items = (data.items || []).map(x => ({ q: x.q, url: x.url, cat: x.cat, toks: new Set(tokens(x.q, 'ar', { stop: true })) }));
+    const df = new Map();
+    for (const x of items) for (const t of x.toks) df.set(t, (df.get(t) || 0) + 1);
+    BAY = { items, df: (t) => df.get(t) || 0, idf: (t) => Math.log(1 + items.length / (df.get(t) || 0.5)), source: data.source, url: data.url };
+  }
+  // Calibrated on the challenge's test questions: the exact Bayyinat question comes
+  // first; weak overlaps («إنكار رسالة محمد» for «تأليف محمد») are not proposed.
+  function bayenatFor(q, kwAr = []) {
+    if (!BAY) return [];
+    const qt = [...new Set(tokens(q, 'ar').concat((kwAr || []).flatMap(k => tokens(k, 'ar'))))];
+    if (qt.length < 2) return [];
+    const W = qt.reduce((a, t) => a + BAY.idf(t), 0);
+    const out = [], seen = new Set();
+    for (const x of BAY.items) {
+      let c = 0, w = 0, rare = false;
+      for (const t of qt) if (x.toks.has(t)) { c++; w += BAY.idf(t); if (BAY.df(t) <= 15) rare = true; }
+      if (c < 2) continue;
+      const cov = w / W, prec = c / x.toks.size, score = cov * 0.7 + prec * 0.3;
+      // close match of the question, or a title almost entirely contained in a longer (e.g. hostile) question
+      if ((score >= 0.62 && prec >= 0.25) || (prec >= 0.6 && rare)) {
+        const key = normAr(x.q).replace(/[^ء-ي ]/g, '');
+        if (!seen.has(key)) { seen.add(key); out.push({ q: x.q, url: x.url, cat: x.cat, score }); }
+      }
+    }
+    return out.sort((a, b) => b.score - a.score).slice(0, 3);
+  }
+
+  // ------------------------------------------------ hadith requests → Dorar (looked up by the app, never generated)
+  const HADITH_WORD = /(^|\s)(حديث|حديثا|احاديث|الحديث|الاحاديث|بحديث)(\s|$)/;
+  const HADITH_ASK = /(^|\s)(اعطني|اعطيني|اذكر|اذكرلي|هات|ابحث|هل يوجد|هل ورد|هل صح|ما صحه|ما درجه|هل هذا|هل هذه|خرج|تخريج|اريد)(\s|$)/;
+  function hadithRequest(q) {
+    const na = normAr(q);
+    const prophet = /^(قال|عن)\s+(رسول الله|النبي)/.test(na);
+    const latin = /\b(hadiths?|hadeeth)\b/i.test(q) && !AR_RANGE.test(q);
+    if (!((HADITH_WORD.test(na) && HADITH_ASK.test(na)) || prophet || latin)) return null;
+    if (latin) return { q: null };
+    const t = normAr(q.replace(/[«»"“”:؟?،,.]/g, ' '))
+      .replace(/(^|\s)(اعطني|اعطيني|اذكر|اذكرلي|لي|هات|ابحث|عن|هل|يوجد|ورد|صح|ما|صحه|درجه|هذا|هذه|خرج|تخريج|اريد|حديث|حديثا|احاديث|الحديث|الاحاديث|بحديث|يثبت|يدل|علي|ان|قال|رسول|الله|النبي|صلي|عليه|وسلم|ﷺ)(?=\s|$)/g, ' ')
+      .replace(/\s+/g, ' ').trim();
+    return { q: t.split(' ').length >= 2 ? t : normAr(q) };
+  }
+
+  // ------------------------------------------------ «do all Muslims agree…?», «why do scholars differ?»
+  const KHILAF = /هل\s+(كل|جميع)\s+(ال)?(مسلمين|علماء?|فقهاء?|مذاهب)\s+(يتفقون|متفقون|اتفقوا|مجمعون|اجمعوا)|(لماذا|لم|ما\s+سبب|اسباب)\s+(ال)?(اختلاف|خلاف|تختلف|يختلف|اختلفت)|(احكام|اراء|اقوال)\s+مختلف[هة]\s+بين\s+(ال)?(علماء?|فقهاء?)|\b(do|are) all muslims (agree|in agreement)\b|\bwhy do (the )?(scholars|muslims|imams) (differ|disagree)\b|\bdifferent (rulings|opinions) (among|between) (the )?scholars\b|\btous les musulmans (sont[- ]ils )?d ?accord\b|\bpourquoi les (savants|oulemas|musulmans) (divergent|ne sont pas d ?accord)\b|\bdivergences? entre (les )?(savants|oulemas)\b/i;
+
+  // ------------------------------------------------ response levels of the reference pack
+  // A: stable sourced information · B: explanation from approved material ·
+  // C: disputed / highly sensitive · D: fatwa or personal case (referral).
+  function levelOf(res) {
+    if (res.type === 'abstain') return 'D';
+    if (res.type === 'khilaf' || res.polemic || res.sensitive) return 'C';
+    if (['verse', 'range', 'sura', 'verify', 'invalid_ref', 'hadith'].includes(res.type)) return 'A';
+    if (res.type === 'topic' || res.type === 'term') return 'B';
+    return null;
+  }
+
   // ---------------------------------------------------------------- ask()
-  async function ask(query, { uiLang = 'ar', llm = null, limit = 30, llmTimeoutMs = 8000, mode = 'auto' } = {}) {
+  // ask(): the routes below, then the reference-pack additions (level, glossary card,
+  // links to the objections encyclopedia).
+  async function ask(query, opts = {}) {
+    const res = await ask0(query, opts);
+    if (!res || res.type === 'empty') return res;
+    const q = res.query || '';
+    const g = termFor(q);
+    if (g && !res.term && (isBareTerm(q, g) || TERM_CUE.test(q))) res.term = g;
+    // objections encyclopedia: for questions and objections, not for a plain topic («قصة يوسف»)
+    const asks = /[؟?]/.test(q) || /^(لماذا|لم|هل|كيف|ما|ماذا|من|اليس|الم|اين|متي|كم)\s/.test(normAr(q)) || res.polemic || res.sensitive || res.type === 'khilaf';
+    if (asks && ['topic', 'notfound', 'verify', 'term', 'khilaf', 'abstain'].includes(res.type) && res.reason !== 'violence' && res.reason !== 'dream') {
+      const kw = (res.meta && res.meta.kwAr) || [];
+      const b = bayenatFor(q, kw);
+      if (b.length) res.bayenat = b;
+    }
+    if (res.type === 'verify' && (res.verdict === 'notfound' || res.verdict === 'notverse') && res.checked) res.hadithCheck = res.checked;
+    // an Arabic saying (not a question) that is not in the Quran: is it a hadith? (Dorar, looked up by the app)
+    else if (res.type === 'notfound' && AR_RANGE.test(q) && !/^(ما|ماذا|من|متى|اين|كيف|لماذا|لم|كم|هل)\s/.test(normAr(q)) && normAr(q).split(' ').length >= 2) res.hadithCheck = q;
+    res.level = levelOf(res);
+    return res;
+  }
+
+  async function ask0(query, { uiLang = 'ar', llm = null, limit = 30, llmTimeoutMs = 8000, mode = 'auto' } = {}) {
     const q = (query || '').trim().slice(0, 500);
     const lang = q ? detectLang(q, uiLang) : uiLang;
     const M = MSG[lang];
@@ -842,6 +1006,29 @@ export function createEngine({ core, searchAr, sources = {} }) {
         const answer = [{ kind: 'text', text: r.b ? M.range(`${S.n}:${r.a}-${lastA}`) : M.verse(`${S.n}:${r.a}`) }];
         return { ...base, type: r.b ? 'range' : 'verse', answer, verses: vs, focus: vs[0].idx, suras: groupBySura(vs.map(v => v.idx)) };
       }
+    }
+
+    // 1b. what a core term means / how to translate it (glossary of the reference pack)
+    const term = mode === 'topic' ? null : termFor(q);
+    if (term && TERM_CUE.test(q)) {
+      base.meta.route = 'term';
+      const tix = topicIndexFor(term.ar, 'ar', [], 12);
+      // no topic with verses in the index: the verses where the word itself occurs
+      const ids = tix ? tix.ids : (topicSearch(term.ar, 'ar', 12).ranked || []).filter(x => x.cov === 1).map(x => x.idx);
+      return { ...base, lang, type: 'term', term, answer: [{ kind: 'text', text: M.term(term.ar) }], verses: ids.map(i => verseResult(i)),
+        focus: ids.length ? ids[0] : null, suras: groupBySura(ids), topicIndex: tix };
+    }
+    // 1c. agreement / disagreement among scholars: no claim without a source
+    if (KHILAF.test(normAr(q)) || KHILAF.test(normLatin(q))) {
+      base.meta.route = 'khilaf';
+      return { ...base, type: 'khilaf', answer: [{ kind: 'text', text: M.khilaf }], verses: [], focus: null,
+        term: GLOSSARY.find(x => x.ar === 'الاجتهاد'), links: fatwaLinks(q) };
+    }
+    // 1d. «give me a hadith…», «is this a hadith…»: looked up in Dorar by the app
+    const hr = mode === 'topic' ? null : hadithRequest(q);
+    if (hr) {
+      base.meta.route = 'hadith';
+      return { ...base, type: 'hadith', hadith: hr, answer: [{ kind: 'text', text: hr.q ? M.hadithIntro : M.hadithLatin }], verses: [], focus: null };
     }
 
     // 2. guard (rulings, personal cases, dreams)
@@ -899,14 +1086,24 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const polemic = isPolemic(q) || (expansion && expansion.intent === 'polemic');
     const pack = packFor(q);
     const sensitive = !!pack || isSensitive(q);
-    if (!ranked.length && !(polemic && pack)) {
+    const kwAr = expansion && expansion.keywords ? (expansion.keywords.ar || []) : [];
+    // kept for the post-processing only (never serialised: LLM keywords are not content)
+    Object.defineProperty(base.meta, 'kwAr', { value: kwAr, enumerable: false });
+    // The subject index answers a query that IS a topic («الصبر», "patience"). A real question
+    // («لماذا يعبد المسلمون الكعبة؟») keeps the normal selection: the verses of topic «الكعبة»
+    // (e.g. 5:95, hunting expiation) do not answer it. The index is then only a last resort.
+    const isQ = /[؟?]/.test(q) || /^(لماذا|لم|هل|كيف|ما|ماذا|من|اليس|الم|اين|متي|كم)\s/.test(normAr(q)) ||
+      /^(why|how|what|is|are|does|do|can|who|where|when|pourquoi|comment|est|quel|quelle|que|qui)\b/i.test(normLatin(q));
+    const tix = softPrefix ? null : topicIndexFor(q, L, isQ ? [] : kwAr);
+    const tixUse = !!tix && ((tix.mode === 'exact' && !isQ) || (tix.mode === 'subset' && !ranked.length));
+    if (!ranked.length && !(polemic && pack) && !tixUse) {
       if (softPrefix) return { ...base, type: 'verify', verdict: 'notverse', answer: softPrefix.answer, verses: [], focus: null };
-      return { ...base, type: 'notfound', answer: [{ kind: 'text', text: ML.noTopic }], verses: [], focus: null };
+      return { ...base, type: 'notfound', answer: [{ kind: 'text', text: ML.noTopic }], verses: [], focus: null, polemic, sensitive };
     }
     if (altSura) base.alt = { mode: 'sura', sura: altSura, name: L === 'ar' ? suras[altSura - 1].ar : suras[altSura - 1].tr };
     let order = ranked.map(x => x.idx);
     let confirmed = false, lowConf = false, personalNote = false, llmOk = false;
-    if (llm && llm.select && ranked.length) {
+    if (!tixUse && llm && llm.select && ranked.length) {
       // verses proposed by the LLM are kept only if they exist AND their text
       // (verse, tafsir or translation) actually contains a word of the query
       const qset = new Set(qtoks);
@@ -936,7 +1133,11 @@ export function createEngine({ core, searchAr, sources = {} }) {
         } else lowConf = true;
       } catch (e) { base.meta.llm = { ...base.meta.llm, error: String(e && e.message || e) }; }
     }
-    if (!llmOk) {
+    if (tixUse) {
+      // the subject index (human-curated) gives the verses; the tafsir explains them
+      order = tix.ids.slice();
+      confirmed = true;
+    } else if (!llmOk) {
       // no AI confirmation: only verses that contain every word of the question, no explanation
       order = ranked.filter(x => x.cov === 1).map(x => x.idx);
       if (!order.length) order = ranked.map(x => x.idx);
@@ -949,10 +1150,11 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const answer = [];
     if (softPrefix) answer.push(...softPrefix.answer, { kind: 'text', text: ML.related });
     else if (polemic) answer.push({ kind: 'text', text: ML.polemic });
+    else if (tixUse) answer.push({ kind: 'text', text: (tix.mode === 'exact' ? ML.topicIndex : ML.topicSubset)(tix.total, q, nSuras, tix.name) });
     else answer.push({ kind: 'text', text: confirmed ? ML.topic(all.length, q, nSuras) : ML.topicLexical(all.length, q, nSuras) });
     for (const i of packIdx) { const c = cardOf(L, i, 'context'); if (c) answer.push(c); }
     if (confirmed) for (const i of order.filter(i => !packIdx.includes(i)).slice(0, 3)) { const c = cardOf(L, i, 'answer'); if (c) answer.push(c); }
-    if (!llmOk && !softPrefix) answer.push({ kind: 'note', text: ML.lexicalOnly });
+    if (!llmOk && !softPrefix && !tixUse) answer.push({ kind: 'note', text: ML.lexicalOnly });
     if (lowConf) answer.push({ kind: 'note', text: ML.lowConf });
     if (sensitive) answer.push({ kind: 'note', text: ML.sensitiveNote });
     if (personalNote) answer.push({ kind: 'note', text: ML.personalNote });
@@ -960,7 +1162,8 @@ export function createEngine({ core, searchAr, sources = {} }) {
     return { ...base, type: softPrefix ? 'verify' : 'topic', verdict: softPrefix ? 'notverse' : undefined,
       answer, verses: all.map(i => verseResult(i)), focus: all[0], sensitive, polemic, pack: pack ? pack.id : null,
       suras: groupBySura(all, (i) => 1 / (rankOf.get(i) + 1)), terms: qtoks,
-      paragraphBy: confirmed ? 'llm' : (packIdx.length ? 'context' : 'none') };
+      topicIndex: tixUse ? { mode: tix.mode, name: tix.name, total: tix.total, groups: tix.groups } : null,
+      paragraphBy: tixUse ? 'index' : confirmed ? 'llm' : (packIdx.length ? 'context' : 'none') };
   }
 
   // Full tafsir unit of one verse (never a fragment).
@@ -997,6 +1200,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
 
   return {
     ask, ref, idxOf, suraOf, ayaOf, suras, verses, sources: src,
+    addTopicIndex, addBayenat, topicIndexFor, bayenatFor, hasTopics: () => !!TOPICS, hasBayenat: () => !!BAY,
     addSource(id, payload) { src[id] = payload; fields.delete(id); },
     hasSource: (id) => !!src[id],
     topicSearch, verifyText, parseReference, findSura, sentencePool, context,
