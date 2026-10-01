@@ -20,7 +20,7 @@ if (existsSync(dv)) for (const line of readFileSync(dv, 'utf8').split(/\r?\n/)) 
 function keywordBaseline(q) {
   const ar = /[؀-ۿ]/.test(q);
   const body = q.replace(/^.*?(:|؟|\?)\s*/, '').replace(/[«»"“”]/g, '').trim() || q;
-  const hay = ar ? core.verses : sources.saheeh_en.text.map((t, i) => (t + ' ' + sources.rashid_fr.text[i]).toLowerCase());
+  const hay = ar ? core.verses : sources.saheeh_en.text.map((t) => t.toLowerCase());
   const needle = ar ? body : body.toLowerCase();
   let hits = [];
   hay.forEach((t, i) => { if (t.includes(needle)) hits.push(i); });

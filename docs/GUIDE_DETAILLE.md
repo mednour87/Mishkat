@@ -4,7 +4,7 @@
 
 Mishkat est un moteur de recherche coranique « ancré » : il répond à une question par des **versets exacts** (texte Tanzil) et des **tafsirs cités mot pour mot**. Il les situe dans une **galaxie 3D des 77 433 mots du Coran** et propose une **récitation synchronisée mot à mot**. L'IA ne rédige jamais de contenu religieux : elle comprend la question et choisit parmi des listes fermées. Ce que Mishkat ne peut pas fonder sur une source, il le dit, et il s'abstient.
 
-Langues de l'interface : **arabe** et **anglais**. Le français a été retiré à la demande du porteur du projet.
+Langues de l'interface : **arabe** et **anglais**. Le français a été retiré à la demande du porteur du projet ; ses fichiers ne sont plus servis.
 
 ---
 
@@ -198,6 +198,23 @@ Les limites de débit, les tailles et la carte complète des appels sont génér
 - l'historique git, chaque commit étant marqué « baseline déclarée » ou « fenêtre du défi ».
 
 ---
+
+## 7. Mesures de qualité de la recherche (requêtes parlées)
+
+Banc `eval/run_spoken.mjs` : 139 requêtes de style oral (transcriptions Whisper, dialectes, mots de remplissage), avec des versets clés justifiés par le tafsir. Les résultats détaillés sont dans `eval/results/SPOKEN_MAP_*.md`.
+
+| Mesure | Sans IA (139 requêtes) | Avec IA (échantillon de 24 questions) |
+|---|---|---|
+| questions thématiques répondues | 99/111 | 23/24 |
+| bon verset en 1re position | 96,0 % | 100 % |
+| précision des 3 premiers versets | 97,1 % | 98,3 % |
+| précision des 5 premiers | 96,0 % | 94,6 % |
+| rappel des versets clés | 34,0 % | 52,3 % (contre 33,5 % sans IA sur le même échantillon) |
+| abstentions correctes (fatwa, cas personnel, hors sujet…) | 20/20 | — |
+| demandes de sourate ou de verset dites à voix haute | 8/8 | — |
+| cartes de tafsir hors sujet · sorties dangereuses | 0 · 0 | 0 · 0 |
+
+Pendant cet échantillon, le quota gratuit de Groq était de 1 000 requêtes par jour et 8 000 jetons par minute. Une question coûte 2 appels (compréhension, puis sélection), soit environ une à deux questions par minute en pointe : pour un usage public, il faut un fournisseur payant (variables `PRIMARY_*`).
 
 ## 7. Limites connues
 

@@ -46,3 +46,9 @@ test('ta marbuta / ta / ha as the last letter only (يتم is not يهم)', () =
   assert.equal(s[0].q, 'الزكاة');
   assert.ok(!engine.suggestWords('اليتم').some(x => x.q === 'اليهم'));
 });
+
+test('several words of the Quran that never meet in one verse: no crash, no correction', async () => {
+  const r = await ask('الامانه واداء الامانات');
+  assert.ok(['topic', 'notfound'].includes(r.type));
+  assert.ok(!r.suggestFor);
+});

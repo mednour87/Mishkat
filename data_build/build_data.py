@@ -37,10 +37,8 @@ BASE = r'F:\القران الكريم\القرآن الكريم\Othmany_Quran\Qu
 TAFSIR_KEYS = {  # public name -> QuranEnc key
     'mukhtasar_ar': 'arabic_mokhtasar',
     'mukhtasar_en': 'english_mokhtasar',
-    'mukhtasar_fr': 'french_mokhtasar',
     'muyassar_ar': 'arabic_moyassar',
     'saheeh_en': 'english_saheeh',
-    'rashid_fr': 'french_rashid',
 }
 
 # Tafsir works are not in QuranEnc's /translations/list; titles set by hand

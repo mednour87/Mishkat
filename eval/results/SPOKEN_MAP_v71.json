@@ -1,0 +1,5869 @@
+{
+ "date": "2026-10-01T23:10:41.152Z",
+ "gold": "2026-10-01",
+ "items": 24,
+ "modes": {
+  "det": {
+   "summary": {
+    "n": 24,
+    "unsafe": 0,
+    "offTopicCards": 0,
+    "cards": 14,
+    "topics": 24,
+    "answered": 20,
+    "abstained": 4,
+    "microP5": 0.8846153846153846,
+    "microP3": 0.9215686274509803,
+    "meanP1": 0.9,
+    "meanP5": 0.9099999999999999,
+    "top3Clean": 17,
+    "offTop3": 3,
+    "coreRecall": 0.3354662698412698,
+    "coreRecall10": 0.28442460317460316,
+    "abstainItems": 0,
+    "abstainCorrect": 0,
+    "refItems": 0,
+    "refCorrect": 0
+   },
+   "byLang": {
+    "ar": {
+     "n": 13,
+     "unsafe": 0,
+     "offTopicCards": 0,
+     "cards": 6,
+     "topics": 13,
+     "answered": 10,
+     "abstained": 3,
+     "microP5": 0.8484848484848485,
+     "microP3": 0.9090909090909091,
+     "meanP1": 0.9,
+     "meanP5": 0.9,
+     "top3Clean": 8,
+     "offTop3": 2,
+     "coreRecall": 0.33470695970695963,
+     "coreRecall10": 0.2654761904761905,
+     "abstainItems": 0,
+     "abstainCorrect": 0,
+     "refItems": 0,
+     "refCorrect": 0
+    },
+    "en": {
+     "n": 11,
+     "unsafe": 0,
+     "offTopicCards": 0,
+     "cards": 8,
+     "topics": 11,
+     "answered": 10,
+     "abstained": 1,
+     "microP5": 0.9111111111111111,
+     "microP3": 0.9310344827586207,
+     "meanP1": 0.9,
+     "meanP5": 0.9199999999999999,
+     "top3Clean": 9,
+     "offTop3": 1,
+     "coreRecall": 0.33636363636363636,
+     "coreRecall10": 0.3068181818181818,
+     "abstainItems": 0,
+     "abstainCorrect": 0,
+     "refItems": 0,
+     "refCorrect": 0
+    }
+   },
+   "rows": [
+    {
+     "id": "ar01",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "طيب ابغى اعرف وش قال القرآن عن الصبر",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:45",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:153",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:249",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:146",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:200",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:49",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:22",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:96",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:111",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "30:60",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:127",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:137",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:250",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:155",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:214",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:15",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:120",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:125",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:186",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:46",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:109",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:115",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:110",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "20:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:85",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:34",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:80",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:58",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:44",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:69",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:102",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:102",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:128",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:90",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:66",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 1,
+     "coreRecall10": 0.6,
+     "explained": [
+      {
+       "ref": "2:45",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "2:153",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar06",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابغى ايات تريح القلب وتطمنه",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": false
+    },
+    {
+     "id": "ar11",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "قصة اصحاب الفيل",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "105:1",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.3333333333333333,
+     "coreRecall10": 0.3333333333333333,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar16",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ما هي صفات المؤمنين في القران",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "24:51",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:71",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:26",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:165",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:207",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:218",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:7",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:173",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:190",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:54",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:181",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:72",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:74",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:124",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:20",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:28",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "17:107",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:58",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:57",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:59",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:64",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:73",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:36",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:39",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "36:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:23",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:262",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:274",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:134",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:55",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:92",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:18",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:41",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:9",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:37",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:67",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:3",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:4",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:18",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:29",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:156",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:114",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:22",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:90",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:60",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:63",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:72",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:55",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:32",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:17",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 0.6666666666666666,
+     "p5": 0.4,
+     "top3Clean": false,
+     "coreRecall": 0.6666666666666666,
+     "coreRecall10": 0.16666666666666666,
+     "explained": [
+      {
+       "ref": "24:51",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "9:71",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": false
+    },
+    {
+     "id": "ar21",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابغى قصة نوح والطوفان",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "17:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "36:41",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:37",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:43",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "71:21",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:44",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "71:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "71:22",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.14285714285714285,
+     "coreRecall10": 0.14285714285714285,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar26",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "وش قال القران عن الكذب والكذابين",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "54:26",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "54:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "40:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "40:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:11",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:116",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "75:32",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:92",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 0.8,
+     "top3Clean": true,
+     "coreRecall": 0.125,
+     "coreRecall10": 0.125,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar31",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ايش هي ليلة القدر وفضلها",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": false
+    },
+    {
+     "id": "ar36",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الامانه واداء الامانات",
+     "type": "error",
+     "verdict": null,
+     "reason": null,
+     "route": "error",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": "Cannot read properties of undefined (reading 'replace')"
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": false
+    },
+    {
+     "id": "ar41",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابي اعرف عن الشيطان ووساوسه",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "4:83",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar46",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "قصة سليمان والهدهد",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "27:20",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:22",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.75,
+     "coreRecall10": 0.75,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar51",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الحجاب ولباس المراه",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "24:30",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:60",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:53",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:55",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:59",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 0,
+     "p3": 0.6666666666666666,
+     "p5": 0.8,
+     "top3Clean": false,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.5,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": false
+    },
+    {
+     "id": "ar56",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "طريقة الوضوء في القران",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "5:6",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.5,
+     "explained": [
+      {
+       "ref": "5:6",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar61",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "من هم اولو العزم من الرسل",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "46:35",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.3333333333333333,
+     "coreRecall10": 0.3333333333333333,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en01",
+     "lang": "en",
+     "kind": "topic",
+     "q": "um what does the quran say about being patient when you lose someone",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "8:46",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:250",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "40:78",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en04",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about backbiting",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "49:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "68:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "104:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "58:8",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 1,
+     "coreRecall10": 1,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en09",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about giving charity",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "58:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:280",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:156",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en14",
+     "lang": "en",
+     "kind": "topic",
+     "q": "how were the heavens and the earth created in six days",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "50:38",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:59",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "57:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:6",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.7,
+     "coreRecall10": 0.7,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en19",
+     "lang": "en",
+     "kind": "topic",
+     "q": "tell me about allah's mercy",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "7:151",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:96",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:20",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "55:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:118",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:218",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "1:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "44:42",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en24",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about death",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "44:56",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "44:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "74:47",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "50:43",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "50:19",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:57",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "69:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:59",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.25,
+     "coreRecall10": 0.25,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en29",
+     "lang": "en",
+     "kind": "topic",
+     "q": "the night of power laylatul qadr",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": false
+    },
+    {
+     "id": "en34",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about the jinn",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "6:100",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:128",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:38",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:179",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:119",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:50",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:39",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:13",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:14",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:41",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:158",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "17:88",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:112",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:38",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:184",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:26",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:68",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:25",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:70",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:31",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:8",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:30",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:212",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:6",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:81",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:36",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:210",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:40",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.25,
+     "coreRecall10": 0.125,
+     "explained": [
+      {
+       "ref": "6:100",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "6:128",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "6:130",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en39",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about envy and jealousy",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:109",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:54",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.5,
+     "explained": [
+      {
+       "ref": "2:109",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "4:54",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en41",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about seeking knowledge",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "11:47",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "40:7",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:16",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:40",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 0,
+     "p3": 0.3333333333333333,
+     "p5": 0.2,
+     "top3Clean": false,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": false
+    },
+    {
+     "id": "en44",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the koran say about patients",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:45",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:153",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:155",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:249",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:120",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:125",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:146",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:186",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:200",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:46",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:109",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:49",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:115",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:22",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:96",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:110",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "20:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:85",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:111",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:80",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "30:60",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:44",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:69",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:102",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:127",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:128",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:137",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:90",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:250",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:66",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:214",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:15",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:34",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:58",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:102",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 1,
+     "coreRecall10": 0.8,
+     "explained": [
+      {
+       "ref": "2:45",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "2:153",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "2:155",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    }
+   ]
+  },
+  "ai": {
+   "summary": {
+    "n": 24,
+    "unsafe": 0,
+    "offTopicCards": 0,
+    "cards": 46,
+    "topics": 24,
+    "answered": 23,
+    "abstained": 1,
+    "microP5": 0.9456521739130435,
+    "microP3": 0.9833333333333333,
+    "meanP1": 1,
+    "meanP5": 0.9565217391304348,
+    "top3Clean": 22,
+    "offTop3": 1,
+    "coreRecall": 0.5227513227513226,
+    "coreRecall10": 0.41273148148148153,
+    "abstainItems": 0,
+    "abstainCorrect": 0,
+    "refItems": 0,
+    "refCorrect": 0
+   },
+   "byLang": {
+    "ar": {
+     "n": 13,
+     "unsafe": 0,
+     "offTopicCards": 0,
+     "cards": 22,
+     "topics": 13,
+     "answered": 12,
+     "abstained": 1,
+     "microP5": 0.926829268292683,
+     "microP3": 0.9642857142857143,
+     "meanP1": 1,
+     "meanP5": 0.9500000000000001,
+     "top3Clean": 11,
+     "offTop3": 1,
+     "coreRecall": 0.46062271062271054,
+     "coreRecall10": 0.38040293040293044,
+     "abstainItems": 0,
+     "abstainCorrect": 0,
+     "refItems": 0,
+     "refCorrect": 0
+    },
+    "en": {
+     "n": 11,
+     "unsafe": 0,
+     "offTopicCards": 0,
+     "cards": 24,
+     "topics": 11,
+     "answered": 11,
+     "abstained": 0,
+     "microP5": 0.9607843137254902,
+     "microP3": 1,
+     "meanP1": 1,
+     "meanP5": 0.9636363636363636,
+     "top3Clean": 11,
+     "offTop3": 0,
+     "coreRecall": 0.5961760461760461,
+     "coreRecall10": 0.45093795093795097,
+     "abstainItems": 0,
+     "abstainCorrect": 0,
+     "refItems": 0,
+     "refCorrect": 0
+    }
+   },
+   "rows": [
+    {
+     "id": "ar01",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "طيب ابغى اعرف وش قال القرآن عن الصبر",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:45",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:153",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:249",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:146",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:200",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:49",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:22",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:96",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:111",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "30:60",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:127",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:137",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:250",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:155",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:214",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:15",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:120",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:125",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:186",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:46",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:109",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:115",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:110",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "20:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:85",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:34",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:80",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:58",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:44",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:69",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:102",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:102",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:128",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:90",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:66",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 1,
+     "coreRecall10": 0.6,
+     "explained": [
+      {
+       "ref": "2:45",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "2:153",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar06",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابغى ايات تريح القلب وتطمنه",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "llm",
+     "aiConfirmed": true,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "13:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "48:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "57:16",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:248",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "48:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:11",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.3333333333333333,
+     "coreRecall10": 0.3333333333333333,
+     "explained": [
+      {
+       "ref": "13:28",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "48:4",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "3:126",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar11",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "قصة اصحاب الفيل",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "llm",
+     "aiConfirmed": true,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "105:1",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.3333333333333333,
+     "coreRecall10": 0.3333333333333333,
+     "explained": [
+      {
+       "ref": "105:1",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar16",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ما هي صفات المؤمنين في القران",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "24:51",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:71",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:26",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:165",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:207",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:218",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:7",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:173",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:190",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:54",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:181",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:72",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:74",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:124",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:20",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:28",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "17:107",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:58",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:57",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:59",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:64",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:73",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:36",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:39",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "36:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:23",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:262",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:274",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:134",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:55",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:92",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:18",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:41",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:9",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:37",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:67",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:3",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:4",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:18",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:29",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:156",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:114",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:22",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:90",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:60",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:63",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:72",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:55",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:32",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:17",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 0.6666666666666666,
+     "p5": 0.4,
+     "top3Clean": false,
+     "coreRecall": 0.6666666666666666,
+     "coreRecall10": 0.16666666666666666,
+     "explained": [
+      {
+       "ref": "24:51",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "9:71",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": false
+    },
+    {
+     "id": "ar21",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابغى قصة نوح والطوفان",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "10:73",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:40",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:37",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:44",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:64",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:76",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:76",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:82",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:71",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:32",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:116",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:14",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:59",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:26",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:23",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:106",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:36",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:26",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:117",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:77",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:79",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5714285714285714,
+     "coreRecall10": 0.42857142857142855,
+     "explained": [
+      {
+       "ref": "10:73",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "11:40",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "25:37",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar26",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "وش قال القران عن الكذب والكذابين",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "10:68",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:26",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:36",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:94",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:21",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:93",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:37",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:68",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:80",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:151",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:17",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:61",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:64",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:72",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:73",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:96",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:134",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:31",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:74",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:76",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:11",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:16",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:6",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:24",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:88",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:5",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:5",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:111",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:119",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:75",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:12",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:183",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:25",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:6",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:8",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:1",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [
+      {
+       "ref": "10:68",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "21:26",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "24:11",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar31",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ايش هي ليلة القدر وفضلها",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "llm",
+     "aiConfirmed": true,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "97:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "97:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "97:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "44:3",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 1,
+     "coreRecall10": 1,
+     "explained": [
+      {
+       "ref": "97:3",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "97:1",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "97:2",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar36",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الامانه واداء الامانات",
+     "type": "error",
+     "verdict": null,
+     "reason": null,
+     "route": "error",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": "Cannot read properties of undefined (reading 'replace')"
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": false
+    },
+    {
+     "id": "ar41",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابي اعرف عن الشيطان ووساوسه",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "4:83",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar46",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "قصة سليمان والهدهد",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "27:20",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:22",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.75,
+     "coreRecall10": 0.75,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar51",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الحجاب ولباس المراه",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "llm",
+     "aiConfirmed": true,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "24:31",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:59",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:26",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:27",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.5,
+     "explained": [
+      {
+       "ref": "24:31",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "33:59",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar56",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "طريقة الوضوء في القران",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "5:6",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.5,
+     "explained": [
+      {
+       "ref": "5:6",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "ar61",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "من هم اولو العزم من الرسل",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "llm",
+     "aiConfirmed": true,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "46:35",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.3333333333333333,
+     "coreRecall10": 0.3333333333333333,
+     "explained": [
+      {
+       "ref": "46:35",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en01",
+     "lang": "en",
+     "kind": "topic",
+     "q": "um what does the quran say about being patient when you lose someone",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "8:46",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:250",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:45",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:153",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:155",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:214",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:249",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:15",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:120",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:125",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:146",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:186",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:200",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:109",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:49",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:115",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:22",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:96",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:110",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "20:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:85",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:34",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:111",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:80",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:58",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "30:60",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:44",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:69",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:102",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:102",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:127",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:128",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:137",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:90",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:66",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5555555555555556,
+     "coreRecall10": 0.2222222222222222,
+     "explained": [
+      {
+       "ref": "8:46",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "11:11",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "2:250",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en04",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about backbiting",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "49:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "68:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "104:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "58:8",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 1,
+     "coreRecall10": 1,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en09",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about giving charity",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": false,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "58:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:280",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:156",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:18",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en14",
+     "lang": "en",
+     "kind": "topic",
+     "q": "how were the heavens and the earth created in six days",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "llm",
+     "aiConfirmed": true,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "7:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "50:38",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:59",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "57:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:19",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:190",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:73",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "41:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "41:11",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.8,
+     "coreRecall10": 0.7,
+     "explained": [
+      {
+       "ref": "7:54",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "10:3",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "11:7",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en19",
+     "lang": "en",
+     "kind": "topic",
+     "q": "tell me about allah's mercy",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:64",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:23",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:149",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:47",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:53",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:14",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:21",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:151",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:64",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:92",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:109",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:118",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:52",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:203",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:57",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:89",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "17:82",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:105",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:74",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:56",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:21",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:147",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:156",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:61",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:107",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:56",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:2",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.7142857142857143,
+     "coreRecall10": 0,
+     "explained": [
+      {
+       "ref": "2:64",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "4:83",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "7:23",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en24",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about death",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "3:145",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:154",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:185",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:57",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:61",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:93",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:19",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:156",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:168",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:78",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:99",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:32",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:34",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:49",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:5",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:61",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:43",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:11",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:87",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:30",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:50",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:173",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:145",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:115",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:154",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:169",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:64",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:58",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:34",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.375,
+     "explained": [
+      {
+       "ref": "3:145",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "3:154",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "3:185",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en29",
+     "lang": "en",
+     "kind": "topic",
+     "q": "the night of power laylatul qadr",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "llm",
+     "aiConfirmed": true,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "97:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "97:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "97:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "97:5",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:185",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.6666666666666666,
+     "coreRecall10": 0.6666666666666666,
+     "explained": [
+      {
+       "ref": "97:1",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "97:2",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "97:3",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en34",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about the jinn",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "6:100",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:128",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:38",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:179",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:119",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:50",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:39",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:13",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:14",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:41",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:158",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "17:88",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:112",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:38",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:184",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:26",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:68",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:25",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:70",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:31",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:8",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:30",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:212",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:6",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:81",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:36",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:210",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:40",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.25,
+     "coreRecall10": 0.125,
+     "explained": [
+      {
+       "ref": "6:100",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "6:128",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "6:130",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en39",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about envy and jealousy",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:109",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:54",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.5,
+     "explained": [
+      {
+       "ref": "2:109",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "4:54",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en41",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about seeking knowledge",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": true,
+      "intent": "topic",
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "3:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:24",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:16",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:43",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:19",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:9",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:31",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:32",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:102",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:239",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:48",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:113",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:91",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:6",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:21",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:37",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:68",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:78",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "20:71",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:80",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:49",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:66",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:157",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:143",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:144",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:28",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:33",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:68",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:5",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:3",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:8",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:71",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:15",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:6",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:20",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:247",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:22",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:65",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:43",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:79",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:15",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:40",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:14",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:22",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:42",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:120",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:145",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:188",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:19",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:71",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:37",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:162",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:79",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:48",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "30:56",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 0.6,
+     "top3Clean": true,
+     "coreRecall": 0.5714285714285714,
+     "coreRecall10": 0.5714285714285714,
+     "explained": [
+      {
+       "ref": "3:7",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    },
+    {
+     "id": "en44",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the koran say about patients",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": false,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:45",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:153",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:155",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:249",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:120",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:125",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:146",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:186",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:200",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:46",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:109",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:49",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:115",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:22",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:96",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:110",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:126",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "20:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:85",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:111",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:80",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "30:60",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:44",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:69",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:102",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:127",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:65",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:128",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:137",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:90",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:250",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:66",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:214",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:15",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:34",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:58",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:102",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 1,
+     "coreRecall10": 0.8,
+     "explained": [
+      {
+       "ref": "2:45",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "2:153",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "2:155",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "offTopicCards": [],
+     "correct": true
+    }
+   ]
+  }
+ },
+ "llm": {
+  "httpCalls": 23,
+  "freshAnswers": 23,
+  "cacheHits": 2,
+  "cumulativeCalls": 33,
+  "quotaStop": null,
+  "errors": [],
+  "lastRateHeaders": {
+   "remReq": "960",
+   "limReq": "1000",
+   "remTok": "3896",
+   "limTok": "8000"
+  }
+ }
+}

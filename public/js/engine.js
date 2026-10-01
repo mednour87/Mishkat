@@ -1261,6 +1261,8 @@ export function createEngine({ core, searchAr, sources = {} }) {
       if (wl.toks.length === 1 && wl.verses.length <= 3) { const sg = suggestWords(wl.toks[0], { min: Math.max(6, wl.verses.length * 4) }); if (sg.length) res.suggest = sg.slice(0, 2); }
       return res;
     }
+    // every word exists but never in the same verse: nothing to correct
+    if (!wl.missing) return res;
     // a real word that is simply not in the Quran («الجهاد», «الموسيقى») is not a typo:
     // it is found in the vetted tafsirs, so no correction is offered
     if (wl.isAr) {

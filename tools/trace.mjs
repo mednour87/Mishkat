@@ -105,6 +105,7 @@ const HOSTS = {
   'api.groq.com': { name: 'Groq API (OpenAI-compatible)', ar: 'Groq', ref: 'TOOLS.md', role: 'LLM chat completions (intent, retrieval keywords, closed-list selection), Whisper speech-to-text, Orpheus text-to-speech — server side only, key never sent to the browser', licence: 'Groq terms, free tier; open-weight model licences' },
   'llm.chutes.ai': { name: 'Chutes (optional endpoint)', ar: 'Chutes', ref: 'TOOLS.md', role: 'optional OpenAI-compatible PRIMARY_URL example (comment); used only if PRIMARY_URL/KEY/MODELS are set', licence: 'provider terms' },
   'nodejs.org': { name: 'Node.js', ar: 'Node.js', ref: 'TOOLS.md', role: 'download link in the offline PC bundle instructions', licence: 'MIT' },
+  'www.w3.org': { name: 'W3C SVG namespace', ar: 'فضاء أسماء SVG', ref: '—', role: 'xmlns attribute of the Mishkat lamp SVG (public/js/lamp.js, img/logo.svg) — an identifier, never fetched', licence: '—' },
   'api.stackexchange.com': { name: 'Stack Exchange API (Islam Stack Exchange)', ar: 'Islam Stack Exchange', ref: 'eval', role: 'evaluation only: public question titles for eval/forum_questions.json (eval/collect_forum.py); never used by the app', licence: 'CC BY-SA 4.0 — titles only, no user names or bodies' },
   'islamicaich.org': { name: 'Islamic AI Challenge', ar: 'تحدي الذكاء الاصطناعي الإسلامي', ref: 'pack', role: 'challenge organiser / reference pack', licence: 'link only' },
 };
