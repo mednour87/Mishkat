@@ -15,16 +15,33 @@ Every religious text shown by Mishkat comes verbatim from one of these sources. 
 | S9 | Audio + timings | Sheikh **Mishary Rashid Alafasy**, Quran.com recitation 7: audio files and **word-level timing segments** | recitation and word-synchronised highlighting (6,230/6,236 verses synced; 6 verses fall back to verse-level) | streamed from `verses.quran.com`; timings frozen in `public/data/timing/` | public API, attribution to the reciter and Quran.com | streamed, not redistributed |
 | S10 | Baseline | **Quran Cartography** (author’s own pre-existing project): word database, semantic colour layer, galaxy geometry | galaxy points & colours | `quran.db` (not shipped; build input) | author’s own work | disclosed in [BASELINE.md](BASELINE.md) |
 
+### Sources named by the challenge’s scientific reference pack (added 1 Oct 2026)
+The pack «المرجعية والحزمة العلمية والبيانات» (islamicaich.org) lists the approved references; full study in `../02_SOURCES/REFERENTIEL_DU_DEFI.md`.
+
+| # | Content | Source | Used for | Access | Licence / conditions | How we comply |
+|---|---|---|---|---|---|---|
+| S11 | Subject index | **Quranpedia.net — «الموضوعات القرآنية»** (6,100 human-curated topics → verses), dump `topics-index.json.gz` v2026-10-01 | when the query *is* a topic («الصبر»): verses from the index, explained by S2/S3 tafsir units; sub-topics shown | official dump → `public/data/qp_topics.json` (`data_build/build_quranpedia_data.py`) | free in apps; republishing the data needs credit + version | source, URL and version inside the file and in the app; every reference checked against S1 (0 invalid of 6,100 topics); never used for a real question (test) |
+| S12 | Surah information | **Quranpedia.net — «معلومات السور»** (introduction, topics, purposes, names), dump `surahs.json.gz` v2026-09-26 | «عن السورة» in surah cards and reader | official dump → `public/data/qp_surahs.json` | same as S11 | HTML reduced to text, shown verbatim with source + version |
+| S13 | Tafsir of the first centuries | **جامع البيان — At-Tabari (d. 310 AH)**, Quranpedia book 4 | «الطبري» tab in the reader | live, `POST /api/tafsir` → `api.quranpedia.net/v1/ayah/{s}/{a}/book/4` (cached) | free live API, 120 req/min/IP | page by page with volume/page reference; starts at the verse’s own heading and stops at the next one; otherwise labelled «pages where the verse occurs». Ibn Abi Hatim (book 149) was tested and **left out**: no per-verse headings |
+| S14 | Hadith | **الموسوعة الحديثية — Dorar.net** public API (`dorar_api.json`) | «give me a hadith…», «is this a hadith?», and every Arabic saying not found in the Quran | live, `POST /api/hadith` (server-side, cached, 30 req/min) | API offered by Dorar to websites to display search results | results shown verbatim: text, narrator, muhaddith, source, page and **verdict**; Mishkat never selects, grades or generates a hadith; no match → «لا يُنسب إلى النبي ﷺ دون مصدر وحكم معتمد» |
+| S15 | Objections (الشبهات) | **موسوعة بينات — Osoul Center** (bayenat.net) | links to the reviewed answer for objection-type questions | 933 question **titles + URLs** collected from the category pages, 10 s between requests (robots.txt) | public site; only titles/links stored | no answer text copied; matching calibrated on the pack’s test questions (exact question first, weak overlaps refused) |
+| S16 | Terminology | Pack glossary (10 terms, p. 8) + **الجمهرة** (islamic-content.com) for «الاجتهاد» | term card: Arabic term, approved English equivalent, usage rule | `public/js/glossary.js` | copied word for word | no French equivalent invented; link to the Jamhara entry |
+
+Also linked (not ingested): **موسوعة التفسير — Dorar** (`dorar.net/tafseer/{surah}`, organised by sections, not verses), **binbaz.org.sa** and **alifta.gov.sa** (fatwa referral), **shamela.ws** (no public API).
+
 ## What is deliberately NOT used
 - No machine translation of the Quran or of tafsir, ever.
-- No hadith corpus (out of scope): quotes that are not verses are reported as “not found in the Quran”, never labelled as hadith by the machine.
+- No hadith text is ever produced or chosen by the machine: hadith only appear as Dorar search results, verbatim, with the muhaddith’s verdict.
+- No answer text from Bayyinat is copied: only question titles and links.
 - No numerology / “numerical miracle” claims from the baseline project.
 - No user data: the benchmark is 100 % synthetic (`eval/make_golden.mjs`, seeded); queries are not stored.
 
-## Content levels and behaviour
-| Level | Example | Behaviour |
+## Answer levels (defined by the challenge’s reference pack) and behaviour
+Every answer shows its level in the interface.
+
+| Level | Scope in the pack | Mishkat behaviour |
 |---|---|---|
-| A — Quran text | verse display | S1 only |
-| B — Vetted explanation | paragraph | verbatim sentences from S2/S3, each with verse reference and source link |
-| C — Interface text | “I found 7 verses…” | fixed human-written templates |
-| D — Everything else (rulings, personal advice, dreams, unsupported claims) | “ما حكم…؟” | abstain + referral to the official fatwa authority / a scholar |
+| A — stable foundational information | Quran, authentic hadith, … | verse / range / surah display (S1), verse verification, Dorar hadith results (S14) |
+| B — explanation, definition | concepts, general questions | complete tafsir units (S2/S3/S6/S13) for verses chosen by the AI from a closed list or by the subject index (S11); glossary (S16) |
+| C — disputed or highly sensitive | juristic differences, polemics | verified context packs first, «scholars may differ» template (no claim of agreement), ijtihad defined from S16, referral links, Bayyinat answers (S15) |
+| D — fatwa or personal case | ruling on an individual case | no ruling: fixed template + official fatwa links + related verses labelled «not a fatwa» |
