@@ -55,7 +55,7 @@ test('data: every tafsir/translation covers all 6236 verses', () => {
 // ------------------------------------------------------------- routing
 test('references: numeric, named, ranges, Arabic digits', async () => {
   const cases = [['2:255', '2:255'], ['٢:٢٥٥', '2:255'], ['البقرة 255', '2:255'], ['سورة البقرة آية 255', '2:255'],
-    ['Al-Baqarah 255', '2:255'], ['sourate 18 verset 10', '18:10'], ['surah 36 verse 1', '36:1'], ['2/255', '2:255']];
+    ['Al-Baqarah 255', '2:255'], ['surah 18 verse 10', '18:10'], ['surah 36 verse 1', '36:1'], ['2/255', '2:255'], ['verse 255 of surah 2', '2:255']];
   for (const [q, ref] of cases) {
     const r = await ask(q);
     assert.equal(r.type, 'verse', q);
@@ -65,9 +65,9 @@ test('references: numeric, named, ranges, Arabic digits', async () => {
   assert.equal(r.type, 'range'); assert.deepEqual(r.verses.map(v => v.ref), ['2:285', '2:286']);
 });
 
-test('sura names in 3 languages, with and without typos', async () => {
+test('sura names (ar/en), with and without typos', async () => {
   const cases = [['الكهف', 18], ['سورة الكهف', 18], ['Al-Kahf', 18], ['kahf', 18], ['Yasin', 36], ['Ya-Sin', 36], ['Fatiha', 1],
-    ['al fatihah', 1], ['La vache', 2], ['the cow', 2], ['Baqara', 2], ['baqarra', 2], ['Ikhlas', 112], ['surah 114', 114], ['الملك', 67], ['Maryam', 19]];
+    ['al fatihah', 1], ['the cow', 2], ['yaseen', 36], ['Baqara', 2], ['baqarra', 2], ['Ikhlas', 112], ['surah 114', 114], ['الملك', 67], ['Maryam', 19]];
   for (const [q, n] of cases) {
     const r = await ask(q);
     if (r.type === 'topic') { // surah name that is also an ordinary word: topic + one-click "open surah"
@@ -90,7 +90,7 @@ test('invalid references are reported, never invented', async () => {
 });
 
 test('well-known verse names', async () => {
-  for (const [q, ref] of [['آية الكرسي', '2:255'], ['Ayat al-Kursi', '2:255'], ['verset du trône', '2:255'], ['آية الدين', '2:282'], ['آية النور', '24:35']]) {
+  for (const [q, ref] of [['آية الكرسي', '2:255'], ['Ayat al-Kursi', '2:255'], ['the throne verse', '2:255'], ['آية الدين', '2:282'], ['آية النور', '24:35']]) {
     const r = await ask(q);
     assert.equal(r.verses[0].ref, ref, q);
   }
@@ -151,12 +151,12 @@ test('sayings that are not Quran are never attributed to the Quran', async () =>
 });
 
 // --------------------------------------------------------------- guard
-test('rulings, personal cases and dreams → abstention in 3 languages', async () => {
+test('rulings, personal cases and dreams → abstention (ar/en)', async () => {
   const cases = [['ما حكم الموسيقى', 'ruling'], ['هل يجوز الاقتراض بالربا', 'ruling'], ['هل التدخين حرام', 'ruling'],
     ['is music haram', 'ruling'], ['is it permissible to pray sitting', 'ruling'], ['fatwa on mortgages', 'ruling'],
-    ['est-ce que la musique est haram', 'ruling'], ['est-il permis de jeûner en voyage', 'ruling'],
-    ['my husband does not pray what should i do', 'personal'], ['زوجي لا يصلي ماذا أفعل', 'personal'], ['que dois-je faire avec mon mari', 'personal'],
-    ['تفسير حلم رأيت ثعبانا', 'dream'], ['what is the meaning of my dream', 'dream'], ['interprétation de mon rêve', 'dream']];
+    ['is listening to music haram', 'ruling'], ['is it allowed to fast while travelling', 'ruling'],
+    ['my husband does not pray what should i do', 'personal'], ['زوجي لا يصلي ماذا أفعل', 'personal'], ['what should i do about my husband', 'personal'],
+    ['تفسير حلم رأيت ثعبانا', 'dream'], ['what is the meaning of my dream', 'dream'], ['interpretation of my dream', 'dream']];
   for (const [q, reason] of cases) {
     const r = await ask(q);
     assert.equal(r.type, 'abstain', q); assert.equal(r.reason, reason, q);
@@ -168,16 +168,16 @@ test('rulings, personal cases and dreams → abstention in 3 languages', async (
     } else assert.equal(r.verses.length, 0, q);
   }
   // topics that merely contain sensitive words are NOT blocked
-  for (const q of ['المسجد الحرام', 'الطلاق', 'the forbidden fruit', 'le jugement dernier']) assert.notEqual((await ask(q)).type, 'abstain', q);
+  for (const q of ['المسجد الحرام', 'الطلاق', 'the forbidden fruit', 'the last day', 'how can i become more patient']) assert.notEqual((await ask(q)).type, 'abstain', q);
 });
 
 // ---------------------------------------------------------------- topics
-test('topic search: expected key verses appear (ar/en/fr)', async () => {
-  const cases = [['الصبر', ['2:153', '2:45', '3:200']], ['patience', ['2:153', '3:200']], ['la patience', ['2:153', '3:200']],
+test('topic search: expected key verses appear (ar/en)', async () => {
+  const cases = [['الصبر', ['2:153', '2:45', '3:200']], ['patience', ['2:153', '3:200']],
     ['قصة يوسف', ['12:7']], ['Moses and Pharaoh', ['7:104']], ['Maryam', ['19:16', '3:42', '19:27', '3:45', '19:34']],
-    ['بر الوالدين', ['17:23', '31:14', '46:15', '6:151']], ['les parents', ['31:14', '17:23', '46:15']]];
+    ['بر الوالدين', ['17:23', '31:14', '46:15', '6:151']], ['parents', ['31:14', '17:23', '46:15']]];
   for (const [q, refs] of cases) {
-    const r = await ask(q, { uiLang: 'fr' });
+    const r = await ask(q, { uiLang: 'en' });
     assert.ok(['topic', 'sura'].includes(r.type), q + ' ' + r.type);
     const got = new Set(r.verses.map(v => v.ref));
     assert.ok(refs.some(x => got.has(x)), `${q}: none of ${refs} in ${[...got].slice(0, 12)}`);
@@ -194,7 +194,7 @@ test('gibberish and unrelated queries abstain', async () => {
 });
 
 test('all answers are grounded (random battery)', async () => {
-  const qs = ['الرحمة', 'mercy', 'miséricorde', 'الجنة', 'paradise', 'enfer', 'الصلاة', 'fasting', 'Jesus', 'Noé', 'اليتيم', 'orphans', 'التوبة', 'repentance', 'Abraham', 'الكعبة', 'angels'];
+  const qs = ['الرحمة', 'mercy', 'الجنة', 'paradise', 'hellfire', 'الصلاة', 'fasting', 'Jesus', 'Noah', 'اليتيم', 'orphans', 'التوبة', 'repentance', 'Abraham', 'الكعبة', 'angels'];
   for (const q of qs) assertGrounded(await ask(q));
 });
 
@@ -242,7 +242,7 @@ test('without AI confirmation there is no explanation, only a labelled keyword l
 
 test('trap questions get the verified context pack first, with full tafsir units', async () => {
   for (const [q, pack, first] of [['Islam is a religion of violence', 'violence', '2:190'], ['الإسلام دين إرهاب', 'violence', '2:190'],
-    ["l'islam est misogyne", 'women', '4:1'], ['who wrote the Quran', 'source', '10:37'], ['what does the Quran say about slavery', 'slavery', '90:13']]) {
+    ['islam is misogynistic', 'women', '4:1'], ['who wrote the Quran', 'source', '10:37'], ['what does the Quran say about slavery', 'slavery', '90:13']]) {
     const r = await ask(q);
     assert.equal(r.pack, pack, q);
     assert.equal(r.verses[0].ref, first, q);
@@ -326,7 +326,8 @@ test('selector: payload sanitising and output validation', async () => {
   assert.equal(p.lang, 'ar'); assert.equal(p.candidates.length, 1);
   const v = validateOutput('noise {"intent":"topic","ids":["2:1","9:9"],"confidence":"high"} noise', p.candidates);
   assert.deepEqual(v.ids, ['2:1']); assert.equal(v.rejected, 1);
-  assert.deepEqual(health({}), { ok: true, llm: false, model: null, stt: false });
+  const h = health({});
+  assert.equal(h.ok, true); assert.equal(h.llm, false); assert.equal(h.model, null); assert.equal(h.stt, false);
   const out = await select({ query: 'x', candidates: [{ id: '2:1', text: 'a' }] }, {});
   assert.equal(out.ok, false); assert.deepEqual(out.ids, []);
   const fake = async () => ({ ok: true, json: async () => ({ choices: [{ message: { content: '{"intent":"topic","ids":["2:1","5:5"]}' } }] }) });

@@ -8,7 +8,7 @@ export function loadEngine() {
   const core = readJson('core.json');
   const searchAr = readJson('search_ar.json');
   const sources = {};
-  for (const id of ['mukhtasar_ar', 'muyassar_ar', 'mukhtasar_en', 'saheeh_en', 'mukhtasar_fr', 'rashid_fr'])
+  for (const id of ['mukhtasar_ar', 'muyassar_ar', 'mukhtasar_en', 'saheeh_en'])
     sources[id] = readJson(`tafsir_${id}.json`);
   return { engine: createEngine({ core, searchAr, sources }), core, sources };
 }

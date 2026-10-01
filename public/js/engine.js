@@ -64,18 +64,21 @@ export function stemAr(w) {
 }
 
 export function stemLatin(w) {
-  // light verb endings (en: spending → spend)
-  if (w.length > 6 && /(ez|er|ent)$/.test(w) && !/(ier|eer)$/.test(w)) return w.replace(/(ez|er|ent)$/, '');
-  if (w.length > 6 && w.endsWith('ing')) return w.slice(0, -3);
-  if (w.length > 4 && w.endsWith('ies')) return w.slice(0, -3) + 'y';
-  if (w.length > 4 && w.endsWith('es') && !w.endsWith('ses')) return w.slice(0, -1);
-  if (w.length > 3 && (w.endsWith('s') || w.endsWith('x')) && !w.endsWith('ss')) return w.slice(0, -1);
+  // English only (French was removed): plural first, then -ing, so that the stem of a word and of
+  // its plural agree ("patients" → patient = "patient"; "blessings" → bless = "blessing")
+  if (w.length > 4 && w.endsWith('ies')) w = w.slice(0, -3) + 'y';
+  else if (w.length > 4 && w.endsWith('es') && !w.endsWith('ses')) w = w.slice(0, -1);
+  else if (w.length > 3 && w.endsWith('s') && !w.endsWith('ss')) w = w.slice(0, -1);
+  if (w.length > 6 && w.endsWith('ing')) {
+    w = w.slice(0, -3);
+    if (w.length >= 5 && /([bdfglmnprt])\1$/.test(w)) w = w.slice(0, -1); // controlling → control
+  }
   return w;
 }
 
 const STOP = {
-  ar: new Set('في من على الى إلى عن ما ماذا متى اين أين كيف لماذا هل هو هي هم انا أنا انت نحن ذلك هذه هذا التي الذي الذين ان أن إن او أو ثم قد لا لم لن كل بعض عند مع يا الا إلا قال ايه اية ايات آية آيات القران القرآن سوره سورة يقول ذكر تحدث لو ولو كان كانت اذا إذا حتى بل لكن ولكن فيه فيها به بها له لها لهم منه منهم عليه عليهم كما غير بين اريد أريد اعرف أعرف معنى شرح اذكر'.split(' ').map(normAr)),
-  en: new Set('the a an of and or in on at to for from about with by is are was were be been what which who whom whose when where why how does do did say says said quran koran verse verses ayah ayat surah sura chapter tell me show find please that this these those it its as into there their them they he she his her i you we us our your can could would should will explain meaning mean'.split(' ')),
+  ar: new Set('في من على الى إلى عن ما ماذا متى اين أين كيف لماذا هل هو هي هم انا أنا انت نحن ذلك هذه هذا التي الذي الذين ان أن إن او أو ثم قد لا لم لن كل بعض عند مع يا الا إلا قال ايه اية ايات آية آيات القران القرآن سوره سورة يقول تحدث لو ولو كان كانت اذا إذا حتى بل لكن ولكن فيه فيها به بها له لها لهم منه منهم عليه عليهم كما غير بين اريد أريد اعرف أعرف معنى شرح اذكر وش ايش شو شنو اللي الي و'.split(' ').map(normAr)),
+  en: new Set('the a an of and or in on at to for from about with by is are was were be been being what which who whom whose when where why how does do did say says said quran koran verse verses ayah ayat surah sura chapter tell me show find please that this these those it its as into there their them they he she his her i you we us our your can could would should will explain meaning mean my mine im someone somebody something anyone anything really very more much many get got happen happens happened describe during while'.split(' ')),
 };
 // words present in a large share of verses: ignored when other words are given
 const UBIQ = { ar: new Set(['له', 'رب', 'ربك', 'ربه', 'لله']), en: new Set(['allah', 'god', 'lord']) };
@@ -94,6 +97,141 @@ export function tokens(text, lang, { stem = true, stop = true } = {}) {
 export function detectLang(q, uiLang = 'ar') {
   // Mishkat speaks Arabic and English: any text without Arabic letters is searched in English
   return AR_RANGE.test(q) ? 'ar' : 'en';
+}
+
+// ------------------------------------------------------- spoken questions
+// Voice search sends Whisper transcriptions: politeness, fillers, dialect question
+// frames («طيب ابغى اعرف وش قال القرآن عن الصبر», "um what does the quran say about…").
+// cleanSpoken() removes them before the lexical search and the subject-index lookup.
+// It only removes words of a fixed list (never a topic word) and never runs inside a
+// quoted verse. kind → whether it proves the text is a spoken question (not a pasted verse).
+const SPOKEN_KIND = { polite: true, filler: true, want: true, ask: true, read: true, story: true, frame: true, dq: true, q: false, honor: false };
+const SPOKEN = {
+  ar: {
+    phrases: [
+      ['polite', 'السلام عليكم ورحمة الله وبركاته|السلام عليكم ورحمة الله|السلام عليكم|وعليكم السلام|لو سمحت|لو سمحتي|لو سمحتو|لو سمحتم|من فضلك|من فضلكم|الله يعافيك|الله يخليك|الله يحفظك|الله يجزاك خير|جزاك الله خير|جزاك الله خيرا|يا شيخ|يا شيخنا|يا اخي|يا اخوي|يا اختي|يا جماعة|يا جماعه|يا مشكاة|يا مشكاه|يا استاذ|لو ممكن|اذا ممكن|ان امكن|اذا تكرمت|عندي سوال|عندي سؤال'],
+      ['honor', 'عليه الصلاة والسلام|عليه الصلاه والسلام|صلى الله عليه وسلم|صلي الله عليه وسلم|عليه السلام|عليها السلام|عليهم السلام'],
+      ['frame', 'في القران الكريم|في القرآن الكريم|في القران|في القرآن|في كتاب الله|في الاسلام|في الإسلام|في الدين|من القران|من القرآن|بالقران|بالقرآن|بالنسبة ل'],
+      ['q', 'ما هو|ما هي|ما هم|من هو|من هي|من هم|ما الذي|ما هي|ماهو|ماهي'],
+      ['dq', 'ايش هي|ايش هو|وش هي|وش هو|شو هي|شو هو|شنو هي|شنو هو|ايه هي|ايه هو'],
+      ['ask', 'ايات عن|آيات عن|اية عن|آية عن|ايه عن|ايات تتكلم عن|ايات تتحدث عن|اية تتكلم عن|ايات فيها|ايات في|اشرح لي|قل لي|قول لي|اقرا لي|اقرأ لي|افتح لي|شغل لي|تقرا لي|تقرأ لي|اعرض لي'],
+    ],
+    words: {
+      polite: 'لوسمحت ياشيخ ممكن مرحبا اهلا هلا بليز رجاء سوال سؤال سوالي سؤالي',
+      filler: 'طيب يعني بس والله شوف طب خلاص احم اوكي اوك يلا هاه ايوه ايوا ايوة اه اها ااه امم اممم ممم مم انا احنا',
+      want: 'ابغى ابغي ابغا بدي ودي عايز عاوز عايزه حابب حابه اريد نريد نبغى نبغي نبي بغيت نحب احب',
+      ask: 'اعرف نعرف افهم نفهم قولي قلي كلمني احكيلي حدثني اخبرني خبرني علمني عطني اعطني اعطيني هات هاتلي ابحث ابحثلي دورلي اعرضلي وريني ورني فرجيني جيبلي ذكرني اذكرلي اشرحلي تعطيني تقولي تقلي تكلمني تحكيلي تشرحلي تذكرلي تجيبلي توريني تفهمني اتعلم',
+      read: 'اقرا اقرأ اقرالي اقرألي تقرالي تقرألي تقرا قرالي اسمع اسمعني تسمعني شغل شغلي شغللي تشغل تشغلي افتح افتحلي تفتح تفتحلي اعرض اتلو رتل',
+      story: 'قصة قصه حكاية حكايه قصص سيرة سيره',
+      dq: 'وش ايش شو شنو شنهو ايه شلون فين وين',
+      q: 'ماذا ما ماهو ماهي كيف حول بخصوص سيدنا سيدتنا مولانا',
+    },
+    // «قال / يقول …» only as a frame: next to «القرآن / ربنا / الله…» or after a question word
+    frameVerbs: 'قال قالت يقول تقول يقوله قاله ذكر يذكر ذكرت ورد وردت جاء جات اخبر يخبر حكى يحكي تكلم يتكلم تحدث يتحدث',
+    frameSubj: 'القران القرآن ربنا ربي الله الرب الاسلام الإسلام الدين المصحف الكريم تعالى سبحانه وتعالى لنا',
+    lone: 'لي',
+    prep: 'عن على علي حول بخصوص',
+  },
+  en: {
+    phrases: [
+      ['polite', 'assalamu alaikum|as salamu alaykum|assalamu alaykum|salam alaikum|i have a question|quick question|excuse me'],
+      ['want', 'i want to know about|i want to know|i wanna know|i would like to know|i d like to know|i want to learn about|i want to learn|i want to understand|i need to know|i was wondering|i m wondering|do you know|let me know|i want|i need'],
+      ['ask', 'can you tell me about|can you tell me|could you tell me|can you show me|could you show me|can you give me|can you find|can you explain|could you explain|can you|could you|would you|will you|tell me about|tell me more about|tell me|tell us|show me|give me|find me|explain to me|teach me|verses about|verse about|ayat about|ayahs about|verses on|verses regarding|verses for'],
+      ['read', 'read me|play me|recite for me|listen to|put on'],
+      ['frame', 'what does the holy quran say about|what does the quran say about|what does the koran say about|what does allah say about|what does god say about|what does islam say about|what did allah say about|what do the quran say about|what the quran says about|what is said in the quran about|what is in the quran about|in the holy quran|in the quran|in the koran|in islam|according to the quran|according to islam|from the quran|the quran s view on|the quran s'],
+      ['frame', 'what does the quran say on|what does the quran tell us about|what does the quran teach about|what does the quran mention about|does the quran say anything about|does the quran talk about|does the quran mention'],
+      ['story', 'the story of|story of|stories of|the stories of|tell the story of'],
+      ['q', 'how do i deal with|how to deal with|how do i cope with|how to cope with|how can i deal with|how do i handle|how to handle|how do i|how can i|how should i|how to|how do we|how can we|what is|what are|what s|whats|who is|who was|who were|who are'],
+    ],
+    words: {
+      filler: 'um umm ummm uh uhh uhm erm er ah ahh hmm hmmm mm mmm like so okay ok well basically actually just please hey hi hello yeah yes alright right salam salaam mishkat sheikh brother sister',
+      read: 'read play open recite',
+      story: 'story stories tale',
+      q: 'what about regarding concerning',
+    },
+    frameVerbs: '',
+    frameSubj: '',
+    lone: 'me',
+    prep: 'about on regarding',
+  },
+};
+const SPOKEN_IDX = {};
+for (const lang of ['ar', 'en']) {
+  const S = SPOKEN[lang], n = (w) => lang === 'ar' ? normAr(w) : normLatin(w);
+  const phrases = [];
+  for (const [kind, list] of S.phrases) for (const p of list.split('|')) { const ws = n(p).split(' ').filter(Boolean); if (ws.length) phrases.push([ws, kind]); }
+  phrases.sort((a, b) => b[0].length - a[0].length);
+  const words = new Map();
+  for (const [kind, list] of Object.entries(S.words)) for (const w of list.split(' ')) if (n(w)) words.set(n(w), kind);
+  SPOKEN_IDX[lang] = { prep: new Set(S.prep.split(' ').map(n)), phrases, words, fv: new Set(S.frameVerbs.split(' ').filter(Boolean).map(n)), fs: new Set(S.frameSubj.split(' ').filter(Boolean).map(n)), lone: n(S.lone) };
+}
+// sounds and stretched fillers: «اممم», «ااه», "ummm", "hmmm"
+const FILLER_RE = { ar: /^(ا*م{2,}|ا{2,}ه*|اه{2,}|ه+م{2,}|م{2,}|ه{2,})$/, en: /^(u+m+|u+h+|h+m+|e+r+m*|a+h+|m{2,})$/ };
+
+export function cleanSpoken(q, lang) {
+  const L = lang === 'ar' ? 'ar' : 'en';
+  const X = SPOKEN_IDX[L];
+  const raw = String(q || '').replace(/[«»"“”()[\]{}.,!?؟،؛:;…_\-–—]/g, ' ').split(/\s+/).filter(Boolean);
+  const words = [], surface = [];
+  for (const w of raw) { const nw = L === 'ar' ? normAr(w) : normLatin(w); for (const p of nw.split(' ').filter(Boolean)) { words.push(p); surface.push(nw.includes(' ') ? p : w); } }
+  const gone = words.map(() => null);
+  const wordKind = (w, i) => {
+    let kind = X.words.get(w) || (FILLER_RE[L].test(w) ? 'filler' : null);
+    // Gulf «ابي» = "I want" only at the start («ابي اعرف…»); elsewhere it can be «أبي» (my father, Abu Lahab)
+    if (!kind && L === 'ar' && w === 'ابي' && gone.slice(0, i).every(Boolean)) kind = 'want';
+    return kind;
+  };
+  // 1) fillers and politeness first, so that «what does uh the quran say» still reads as a frame
+  for (let i = 0; i < words.length; i++) { const k = wordKind(words[i], i); if (k === 'filler' || k === 'polite') gone[i] = k; }
+  // 2) phrases, over the words that are left
+  const live = () => words.map((_, i) => i).filter(i => !gone[i]);
+  let idx = live();
+  for (let j = 0; j < idx.length; j++) {
+    if (gone[idx[j]]) continue;
+    for (const [ph, kind] of X.phrases) {
+      if (j + ph.length > idx.length) continue;
+      let ok = true;
+      for (let k = 0; k < ph.length && ok; k++) ok = words[idx[j + k]] === ph[k] && !gone[idx[j + k]];
+      if (ok) { for (let k = 0; k < ph.length; k++) gone[idx[j + k]] = kind; j += ph.length - 1; break; }
+    }
+  }
+  // 3) single words
+  // («ما» / «كيف» only open a question: inside a sentence «ما» is a negation)
+  for (let i = 0; i < words.length; i++) {
+    if (gone[i]) continue;
+    const k = wordKind(words[i], i);
+    if (k && (k !== 'q' || gone.slice(0, i).every(Boolean))) gone[i] = k;
+  }
+  // «وش قال القرآن عن…»: a speech verb next to its subject or after a question word
+  if (X.fv.size) {
+    const QK = ['q', 'dq', 'polite', 'filler', 'want', 'ask'];
+    for (let i = 0; i < words.length; i++) {
+      if (gone[i] || !X.fv.has(words[i])) continue;
+      const prevQ = i > 0 && gone[i - 1] && QK.includes(gone[i - 1]);
+      const nextQ = i + 1 < words.length && ['q', 'dq', 'ask'].includes(gone[i + 1]);
+      // «ذكر الله» (remembrance of Allah) is a topic: «الله» alone is not a frame subject
+      const nextS = i + 1 < words.length && X.fs.has(words[i + 1]) && words[i + 1] !== 'الله';
+      if (prevQ || nextQ || nextS) {
+        gone[i] = 'frame';
+        for (let k = i + 1; k < words.length && X.fs.has(words[k]) && !gone[k]; k++) gone[k] = 'frame';
+      }
+    }
+    // «ربنا قال ايه عن …», «القرآن وش يقول عن …» (subject before the verb / question word)
+    for (let i = words.length - 2; i >= 0; i--) if (!gone[i] && X.fs.has(words[i]) && ['frame', 'dq', 'q'].includes(gone[i + 1])) gone[i] = 'frame';
+  }
+  // the preposition that introduced the topic («… عن الصبر», "… about patience")
+  for (let i = 1; i < words.length; i++) if (!gone[i] && X.prep.has(words[i]) && gone[i - 1] && gone[i - 1] !== 'honor' && i + 1 < words.length) gone[i] = 'frame';
+  // «لي» / "me" left alone after a removed verb («افتح لي»)
+  for (let i = 1; i < words.length; i++) if (!gone[i] && words[i] === X.lone && gone[i - 1]) gone[i] = gone[i - 1];
+  const kinds = new Set(gone.filter(Boolean));
+  const keep = words.map((w, i) => gone[i] ? null : i).filter(i => i != null);
+  // a question made only of frame words («ما هو؟») is kept as it was: nothing is invented
+  const spoken = [...kinds].some(k => SPOKEN_KIND[k]);
+  return {
+    text: keep.map(i => words[i]).join(' '),
+    display: keep.map(i => surface[i]).join(' '),
+    kinds, spoken, changed: keep.length !== words.length, empty: keep.length === 0 && words.length > 0,
+  };
 }
 
 // Sentence splitter that returns exact substrings of the source.
@@ -216,20 +354,27 @@ export const MSG = {
 // ------------------------------------------------ cross-lingual thesaurus
 // Groups of equivalent search terms [ar, en]. Used ONLY to widen the
 // retrieval (which verses to look at); never shown as content.
+// English side: spellings heard in speech (Whisper writes "Musa", "Firaun", "Yousef"…)
+// are added to the group of the translation's own word.
 const THESAURUS = [
-  ['موسى', 'moses'], ['عيسى المسيح', 'jesus messiah'], ['مريم', 'mary maryam'],
-  ['ابراهيم', 'abraham ibrahim'], ['نوح', 'noah'], ['يوسف', 'joseph yusuf'],
-  ['يعقوب', 'jacob'], ['اسحاق', 'isaac'], ['اسماعيل', 'ishmael ismail'], ['داود', 'david'],
-  ['سليمان', 'solomon'], ['يونس', 'jonah'], ['ايوب', 'job'], ['زكريا', 'zechariah zakariya'],
-  ['يحيي', 'john yahya'], ['هارون', 'aaron'], ['لوط', 'lot'], ['هود', 'hud'],
-  ['صالح', 'salih'], ['شعيب', 'shuayb'], ['ادم', 'adam'], ['محمد', 'muhammad'],
-  ['فرعون', 'pharaoh'], ['ابليس الشيطان', 'satan iblees'], ['جبريل', 'gabriel'],
-  ['الجنة', 'paradise garden'], ['النار جهنم', 'hell hellfire'],
-  ['الصلاة', 'prayer'], ['الصيام الصوم', 'fasting'], ['الزكاة', 'zakah'],
-  ['الحج', 'hajj pilgrimage'], ['الصبر', 'patience patient'],
-  ['الوالدين', 'parent'], ['الرحمة', 'mercy'], ['التوبة', 'repentance repent'],
-  ['الكعبة', 'kaaba'], ['القران', 'quran'], ['الملائكة', 'angel'], ['اليتيم', 'orphan'],
-  ['الوضوء توضؤوا فتوضؤوا', 'ablution wudu'], ['الربا', 'usury interest riba'], ['الخمر', 'intoxicant wine'],
+  ['موسى', 'moses musa'], ['عيسى المسيح', 'jesus messiah isa'], ['مريم', 'mary maryam mariam'],
+  ['ابراهيم', 'abraham ibrahim'], ['نوح', 'noah nuh'], ['يوسف', 'joseph yusuf yousef yusef yousuf'],
+  ['يعقوب', 'jacob yaqub'], ['اسحاق', 'isaac ishaq'], ['اسماعيل', 'ishmael ismail'], ['داود', 'david dawud dawood'],
+  ['سليمان', 'solomon sulaiman sulayman suleiman'], ['يونس', 'jonah yunus younus'], ['ايوب', 'job ayyub'], ['زكريا', 'zechariah zakariya'],
+  ['يحيي', 'john yahya'], ['هارون', 'aaron harun'], ['لوط', 'lot lut'], ['هود', 'hud'],
+  ['صالح', 'salih'], ['شعيب', 'shuayb shoaib'], ['ادم', 'adam'], ['محمد', 'muhammad'],
+  ['فرعون', 'pharaoh firaun firawn firon pharoah'], ['ابليس الشيطان', 'satan iblees iblis shaitan shaytan devil'], ['جبريل', 'gabriel jibril'],
+  ['الجنة', 'paradise jannah'], ['النار جهنم', 'hell hellfire jahannam'],
+  ['الصلاة', 'prayer salah salat'], ['الصيام الصوم', 'fasting fast sawm'], ['الزكاة', 'zakah zakat'],
+  ['الحج', 'hajj pilgrimage'], ['الصبر', 'patience patient sabr'],
+  ['الوالدين', 'parent'], ['الرحمة', 'mercy merciful'], ['التوبة', 'repentance repent tawbah'],
+  ['الكعبة', 'kaaba'], ['القران', 'quran'], ['الملائكة', 'angel'], ['اليتيم اليتامى', 'orphan'],
+  ['الوضوء توضؤوا فتوضؤوا', 'ablution wudu'], ['الربا', 'usury riba'], ['الخمر', 'intoxicant wine alcohol khamr'],
+  ['الحسد', 'envy jealousy jealous'], ['الكذب', 'lie lying liar falsehood'], ['الصدق الصادقين', 'truthful truthfulness honesty honest'],
+  ['التكبر المتكبرين مختال', 'arrogance arrogant pride'], ['الشكر', 'gratitude grateful thankful'], ['التوكل', 'reliance rely tawakkul'],
+  ['الغيبة يغتب يغتاب مغتاب', 'backbiting backbite'], ['النفاق المنافقين', 'hypocrisy hypocrite'], ['الغيظ', 'anger angry'],
+  ['الحزن', 'sadness sad grief sorrow'], ['بر الاحسان', 'kindness dutiful'], ['الجن', 'jinn'], ['السحر', 'magic sorcery'], ['الرزق', 'provision sustenance'],
+  ['العفو', 'forgive forgiveness pardon'],
 ];
 const THES_INDEX = { ar: new Map(), en: new Map() };
 THESAURUS.forEach((g, gi) => {
@@ -273,13 +418,19 @@ function famousLookup(q) {
 // ----------------------------------------------------------------- guard
 const GUARD = [
   ['dream', /(تفسير|تعبير)\s+(حلم|الحلم|رؤيا|الرؤيا|منام)|رأيت\s+في\s+(المنام|منامي|حلمي)|\bmeaning of (my|a) dream\b|\binterpret(ation of)? (my |a )?dreams?\b|\bi (saw|dreamt|dreamed)\b|\b(interpr[eé]t\w*|signification|sens) (de |d )?(mon |ce |un )?r[eê]ve\b|\bj ai r[eê]v[eé]\b/i],
+  ['ruling', /^(is|are|was)\b.{1,60}\b(halal|haram|permissible|forbidden|lawful|unlawful|sinful|a sin)\s*\??$/im],
   ['ruling', /(^|\s)و?ما\s+حكم|حكم\s+(ال)?\S+\s+في\s+الإسلام|هل\s+(يجوز|يحل|يحرم|يصح|تجوز|تصح|يباح)|هل\s+\S*\s*(حرام|حلال|مكروه|جائز|بدعة)|(حرام|حلال)\s+(أم|او|أو)\s+(حلال|حرام)|فتو[ىي]|أفتوني|ما\s+الحكم|\bfatwa\b|\bruling (on|about|of)\b|\bis (it|this|that|\w+ing|\w+) (\w+ )?(halal|haram|permissible|allowed|forbidden|lawful|unlawful|sinful|a sin)\b|\b(halal|haram) or (halal|haram)\b|\bam i allowed\b|\best[ -](ce|il) (que )?(\w+ )?(permis|licite|illicite|haram|halal|interdit|autoris[eé]|un p[eé]ch[eé])\b|\bai[ -]je le droit\b|\bavis juridique\b|\b(est|sont|serait)[- ](il |elle )?(haram|halal|licite|illicite|interdite?s?|permise?s?|autoris[eé]e?s?)\b|\b(is|are) (it |this |that )?(halal|haram)\b/i],
   ['takfir', /هل\s+(ال)?\S+\s+(كفار|كافر|كافرة|مرتد|مرتدون|مشركون|مشرك)\s*[؟?]?$|\bis\s+\S+(\s+\S+)?\s+(a\s+)?(kafir|kaffir|infidel|apostate|disbeliever)s?\b|\bare\s+\S+(\s+\S+)?\s+(kafirs?|infidels?|apostates?|disbelievers)\b|\best[- ]ce que\s+.{1,40}\s+(est|sont)\s+(un |des )?(mécréants?|mecreants?|apostats?|kafirs?)\b/i],
   ['violence', /كيف\s+(اقتل|أقتل|نقتل|أفجر|افجر|اصنع\s+قنبلة|أصنع\s+قنبلة)|\bhow (to|do i|can i) (kill|murder|attack|make a bomb|build a bomb)\b|\bcomment (tuer|fabriquer une bombe|attaquer)\b/i],
-  ['personal', /(زوجي|زوجتي|طليقي|طليقتي|أبي|أمي|ابني|ابنتي|مديري)\s+(يضرب|تضرب|يمنع|تمنع|تمنعني|يمنعني|طلق|يريد|تريد|لا\s+يصلي|لا\s+تصلي|ترفض|يرفض)|هل\s+(أطلق|أترك|أتزوج|أسامح)|ماذا\s+أفعل|\bshould i\b|\bcan i\b|\bwhat should i do\b|\bmy (husband|wife|father|mother|son|daughter|boss)\b|\bdois[ -]je\b|\bpuis[ -]je\b|\bque dois[ -]je faire\b|\bmon (mari|p[eè]re|fils|patron)\b|\bma (femme|m[eè]re|fille)\b/i],
+  ['personal', /(زوجي|زوجتي|طليقي|طليقتي|أبي|أمي|ابني|ابنتي|مديري)\s+(يضرب|تضرب|يمنع|تمنع|تمنعني|يمنعني|طلق|يريد|تريد|لا\s+يصلي|لا\s+تصلي|ترفض|يرفض)|هل\s+(أطلق|أترك|أتزوج|أسامح)|ماذا\s+أفعل|\bshould i\b|(?<!\bhow )\bcan i\b|\bwhat should i do\b|\bmy (husband|wife|father|mother|son|daughter|boss)\b|\bdois[ -]je\b|\bpuis[ -]je\b|\bque dois[ -]je faire\b|\bmon (mari|p[eè]re|fils|patron)\b|\bma (femme|m[eè]re|fille)\b/i],
 ];
+// + spoken dialect forms (tested on normAr text): «وش حكم…», «حرام ولا حلال», «وش اسوي», «حلمت…»
 const GUARD_EXTRA = [
-  ['ruling', /^هل\s+.{1,60}\s(حرام|حلال|مكروه|مكروهة|جائز|جائزة|بدعة|مباح|مباحة|واجب|واجبة|فرض|شرك)\s*$/],
+  ['ruling', /^هل\s+.{1,60}\s(حرام|حلال|مكروه|مكروهة|جايز|جايزة|بدعة|مباح|مباحة|واجب|واجبة|فرض|شرك)\s*$/],
+  ['ruling', /(^|\s)(ايش|وش|شو|شنو|ايه|اش)\s+(حكم|الحكم)(\s|$)|(حرام|حلال)\s+(ولا|والا|او|ام|وله)\s+(حلال|حرام)|(^|\s)(يجوز|يحل|يحرم)\s+(لي|اني|نسوي|اسوي)(\s|$)/],
+  ['dream', /(^|\s)(حلمت|حلمتو|احلم|شفت\s+في\s+(المنام|منامي|الحلم|حلمي)|رايت\s+في\s+(المنام|منامي|حلمي)|رايت\s+حلما?|تفسير\s+(حلمي|منامي|المنام|الاحلام|رويا|الرويا))(\s|$)/],
+  ['personal', /(^|\s)(وش|ايش|شو|شنو|ماذا)\s+(اسوي|افعل|اعمل|ندير|نعمل|بعمل|نسوي|اتصرف)(\s|$)|(^|\s)(اعمل|نعمل|اسوي)\s+(ايه|اي|ايش|وش)(\s|$)|(^|\s)(زوجي|زوجتي|جوزي|مراتي|ابوي|ابويا|امي|اخوي|اختي|ولدي|بنتي|مديري)\s+(ما|مش|مو|لا)\s+\S+|(^|\s)(يضربني|تضربني|يهددني|تهددني|يظلمني|تظلمني|طلقني|خانني|خانتني)(\s|$)/],
+  ['takfir', /^هل\s+(اللي|الذي|من|الي)\s+(ما|لا|مش)\s+\S+\s+(كافر|كفار|مرتد|مشرك)\s*$/],
 ];
 export function guardCheck(q) {
   const t = q + ' \n ' + normLatin(q);
@@ -468,7 +619,8 @@ export function createEngine({ core, searchAr, sources = {} }) {
   // transliterations that are not ordinary words (else "الجنة" → Al-Jinn…).
   function findSura(nameStr, withKeyword = false) {
     const lat = normLatin(nameStr).replace(/^(the|la|le|les|l) /, '');
-    const cands = [normAr(nameStr).replace(/\s/g, ''), lat.replace(/\s/g, '')];
+    // spoken spellings: "yaseen" → yasin, "rahmaan" → rahman
+    const cands = [normAr(nameStr).replace(/\s/g, ''), lat.replace(/\s/g, '').replace(/ee/g, 'i').replace(/oo/g, 'u').replace(/aa/g, 'a')];
     for (const c of cands) {
       if (!c) continue;
       for (const k of [c, c.replace(/^ال/, ''), c.replace(/^(al|an|ar|as|ash|at|ad|az)(?=[a-z]{3})/, '')]) {
@@ -513,19 +665,22 @@ export function createEngine({ core, searchAr, sources = {} }) {
     if (m) return { s: +m[1], a: +m[2], b: m[3] ? +m[3] : null };
     const parts = t.replace(/[،,:()«»"'?؟]/g, ' ').split(/\s+/).filter(Boolean);
     const nums = [], words = [];
-    let hadSuraWord = false;
+    let hadSuraWord = false, ayaFirst = null;   // "verse 255 of surah 2": the verse number comes first
     for (const p of parts) {
       if (/^\d{1,3}$/.test(p)) nums.push(+p);
       else {
         const pa = normAr(p), pl = normLatin(p);
-        if (SURA_WORDS.test(pa) || SURA_WORDS.test(pl)) { hadSuraWord = true; continue; }
-        if (AYA_WORDS.test(pa) || AYA_WORDS.test(pl) || /^(رقم|number|numero|no|n)$/.test(pl || pa)) continue;
+        if (SURA_WORDS.test(pa) || SURA_WORDS.test(pl)) { if (ayaFirst == null) ayaFirst = false; hadSuraWord = true; continue; }
+        if (AYA_WORDS.test(pa) || AYA_WORDS.test(pl)) { if (ayaFirst == null) ayaFirst = true; continue; }
+        if (/^(رقم|number|numero|no|n)$/.test(pl || pa)) continue;
+        // «آية 255 من سورة البقرة», "verse 10 of surah 18"
+        if (/^(من|في|of|from|in)$/.test(pl || pa)) continue;
         words.push(p);
       }
     }
     if (words.length === 0) {
       if (nums.length === 1 && (hadSuraWord || parts.length === 1)) return { s: nums[0], a: null };
-      if (nums.length === 2) return { s: nums[0], a: nums[1] };
+      if (nums.length === 2) return ayaFirst && hadSuraWord ? { s: nums[1], a: nums[0] } : { s: nums[0], a: nums[1] };
       if (nums.length === 3) return { s: nums[0], a: nums[1], b: nums[2] };
       return null;
     }
@@ -674,13 +829,37 @@ export function createEngine({ core, searchAr, sources = {} }) {
   // BM25 over the fields of one language. Each query token is expanded with
   // its thesaurus synonyms; docs covering every token come first.
   // `extra` = LLM-proposed keywords (retrieval only), scored as an extra group.
-  function topicSearch(q, lang, limit = 30, extra = []) {
+  // segments: «الحزن والضيقة», "envy and jealousy" — covering one side fully is enough.
+  // Very frequent words («الناس», "people") are optional when a rarer word is present.
+  const weakCache = new Map();
+  function weakTok(t, lang) {
+    const k = lang + '|' + t;
+    if (!weakCache.has(k)) {
+      let mx = 0;
+      for (const [name] of FIELDS[lang]) { const f = field(name); const p = f && f.post.get(t); if (p) mx = Math.max(mx, p.length / 2 / f.N); }
+      weakCache.set(k, mx > 0.1);
+    }
+    return weakCache.get(k);
+  }
+  function topicSearch(q, lang, limit = 30, extra = [], { segments = false } = {}) {
     let qtoks = [...new Set(tokens(q, lang))];
     if (!qtoks.length) qtoks = [...new Set(tokens(q, lang, { stop: false }))]; // e.g. "القرآن" alone
     if (qtoks.length > 1) { const k = qtoks.filter(t => !UBIQ[lang].has(t)); if (k.length) qtoks = k; }
     const extraToks = [...new Set(extra.flatMap(w => tokens(w, lang)))].filter(t => !UBIQ[lang].has(t));
     if (!qtoks.length && !extraToks.length) return { qtoks, ranked: [] };
     const groups = qtoks.map(t => [t, ...new Set(expandTokens([t], lang, lang))]);
+    const all = groups.map((_, gi) => gi);
+    let segs = [all];
+    if (segments && qtoks.length > 1) {
+      const parts = lang === 'ar' ? normAr(q).split(/ و (?=S)| (?=وال)/) : normLatin(q).split(/ (?:and|or) /);
+      if (parts.length > 1) {
+        segs = parts.map(p => { const s = new Set(tokens(p, lang)); return all.filter(gi => s.has(qtoks[gi])); }).filter(x => x.length);
+        if (!segs.length) segs = [all];
+      }
+    }
+    const weak = qtoks.map(t => weakTok(t, lang) || (lang === 'ar' && SOFT.ar.has(t)));
+    const req = segs.map(sg => { const st = sg.filter(gi => !weak[gi]); return st.length ? st : sg; });
+    const minReq = Math.min(...req.map(x => x.length));
     const acc = new Map(), hitsByGroup = groups.map(() => new Set()), extraHits = new Set(), accK = new Map();
     for (const [name, w] of FIELDS[lang]) {
       const f = field(name);
@@ -693,26 +872,28 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const ranked = [...acc.entries()].map(([d, s]) => {
       let c = 0; for (const hs of hitsByGroup) if (hs.has(d)) c++;
       const cov = uq ? c / uq : 0;
-      return { idx: d, score: s * (0.4 + 0.6 * cov * cov), cov, ext: extraHits.has(d) };
+      const full = req.some(sg => sg.every(gi => hitsByGroup[gi].has(d)));
+      return { idx: d, score: s * (0.4 + 0.6 * cov * cov), cov, full, ext: extraHits.has(d) };
     });
-    if (!ranked.length) return { qtoks, ranked: [], kwTop };
-    const full = ranked.filter(r => r.cov === 1);
+    if (!ranked.length) return { qtoks, ranked: [], kwTop, fullSet: new Set() };
+    const full = ranked.filter(r => r.full);
     let kept;
-    if (!full.length && uq >= 2 && !extraToks.length) return { qtoks, ranked: [], topScore: 0, nFull: 0 };
-    if (full.length >= 5 || (uq === 1 && full.length)) {
+    if (!full.length && uq >= 2 && !extraToks.length) return { qtoks, ranked: [], topScore: 0, nFull: 0, fullSet: new Set() };
+    if (full.length >= 5 || (minReq === 1 && full.length)) {
       const top = Math.max(0, ...full.map(r => r.score));
       kept = full.filter(r => r.score >= 0.3 * top);
-      if (extraToks.length) kept = kept.concat(ranked.filter(r => r.cov < 1 && r.ext).sort((a, b) => b.score - a.score).slice(0, 20));
+      if (extraToks.length) kept = kept.concat(ranked.filter(r => !r.full && r.ext).sort((a, b) => b.score - a.score).slice(0, 20));
     } else {
       const top = Math.max(...ranked.map(r => r.score));
-      kept = ranked.filter(r => (r.cov >= 0.5 || r.ext) && r.score >= 0.3 * top);
+      kept = ranked.filter(r => (r.full || r.cov >= 0.5 || r.ext) && r.score >= 0.3 * top);
     }
-    kept.sort((a, b) => b.cov - a.cov || b.score - a.score || a.idx - b.idx);
-    return { qtoks: qtoks.concat(extraToks), ranked: kept.slice(0, limit), topScore: kept.length ? kept[0].score : 0, nFull: full.length, kwTop };
+    kept.sort((a, b) => (b.full - a.full) || b.cov - a.cov || b.score - a.score || a.idx - b.idx);
+    return { qtoks: qtoks.concat(extraToks), ranked: kept.slice(0, limit), topScore: kept.length ? kept[0].score : 0, nFull: full.length, kwTop,
+      fullSet: new Set(full.map(r => r.idx)) };
   }
 
-  function topicSearchAuto(q, lang, uiLang, limit, extra = {}) {
-    return { lang, ...topicSearch(q, lang, limit, extra[lang] || []) };
+  function topicSearchAuto(q, lang, uiLang, limit, extra = {}, opts = {}) {
+    return { lang, ...topicSearch(q, lang, limit, extra[lang] || [], opts) };
   }
 
   // ------------------------------------------------ explanatory paragraph
@@ -901,15 +1082,93 @@ export function createEngine({ core, searchAr, sources = {} }) {
     return res;
   }
 
+  // ------------------------------------------------ spoken-query helpers
+  const MAX_CANDIDATES = 36;   // closed list sent to the AI selection
+  const DET_MAX = 8;           // verses shown without any confirmation (keyword match only)
+  // Whisper repairs (Arabic), checked against the words of the Quran and its tafsir:
+  // final ه written for ة («الصلاه» → «الصلاة», «المصيبه» → «المصيبة»), a particle glued to the word («عنالصبر»)
+  let VOCAB = null, vocabKey = '';
+  function vocab() {
+    const key = Object.keys(src).sort().join(',');
+    if (VOCAB && key === vocabKey) return VOCAB;
+    VOCAB = new Map(); vocabKey = key;
+    const add = (t) => { for (const w of normAr(t || '').split(' ')) if (w) VOCAB.set(w, (VOCAB.get(w) || 0) + 1); };
+    searchAr.forEach(add);
+    for (const id of ['muyassar_ar', 'mukhtasar_ar']) if (src[id]) src[id].text.forEach(add);
+    return VOCAB;
+  }
+  // words that begin with «و» as a root letter (not the conjunction)
+  const W_KEEP = new Set('والدين والد والدة والده والدي والدته وحي وعد وعيد ولد ولي وزر وقت وسط وصف وصية وطن ودود وكيل وارث وهم وجه وجوه ورق وادي'.split(' ').map(normAr));
+  const repairWord = (w, f) => (w.length >= 3 && w.endsWith('ه') && f(w.slice(0, -1) + 'ة') >= 1 && f(w) === 0) ? w.slice(0, -1) + 'ة' : w;
+  function repairTranscript(text, lang) {
+    if (lang !== 'ar' || !text) return text;
+    const V = vocab(), f = (w) => V.get(w) || 0;
+    return text.split(' ').map(w => {
+      if (w.length >= 3 && w.endsWith('ه')) {
+        const alt = w.slice(0, -1) + 'ة';
+        if ((f(alt) >= 1 && f(w) === 0) || (f(alt) >= 3 && f(alt) > 3 * f(w))) return alt;
+      }
+      if (w.length >= 6 && f(w) === 0) {
+        const m = w.match(/^(عن|في|من|علي|يا|وش|ايش|لو)(ال.{2,})$/);
+        if (m && f(m[2]) >= 3) return m[2];
+      }
+      return w;
+    }).map((w, k) => {
+      if (k === 0 || w.length < 4 || w[0] !== 'و' || W_KEEP.has(w)) return w;
+      const rest = repairWord(w.slice(1), f);
+      return f(rest) >= 3 && f(rest) > f(w) ? 'و ' + rest : w;
+    }).join(' ');
+  }
+  // the topic of the subject index that the cleaned query names exactly («الصبر», «الصدق وفضله», "patience")
+  const SOFT = { ar: new Set(['فضل', 'وصف', 'اهوال', 'جزاء', 'عقوبة', 'عاقبة', 'حكمة', 'اهمية', 'معنى', 'طريقة', 'طريقه', 'كيفية', 'كيفيه'].map(w => stemAr(normAr(w)))) };
+  function arabicTopicOf(text) {
+    const toks = tokens(text, 'en');
+    if (!toks.length || toks.length > 3) return null;
+    const out = [];
+    for (const t of toks) { const gi = THES_INDEX.en.get(t); if (gi == null) return null; out.push(THESAURUS[gi][0].split(' ')[0]); }
+    return [...new Set(out)].join(' ');
+  }
+  function indexTopicOf(text, L) {
+    if (!TOPICS || !text) return null;
+    const tries = [];
+    if (L === 'ar') {
+      tries.push(text);
+      const hard = text.split(' ').filter(w => !tokens(w.replace(/^و(?=..)/, ''), 'ar').every(t => SOFT.ar.has(t))).join(' ');
+      if (hard && hard !== text) tries.push(hard);
+    } else { const ar = arabicTopicOf(text); if (ar) tries.push(ar); }
+    for (const t of tries) {
+      const k = [...new Set(tokens(t, 'ar'))].sort().join(' ');
+      const hit = k && TOPICS.byKey.get(k);
+      if (hit && treeSize(hit) > 0) return { mode: 'exact', name: hit[0].name, ...topicTree(hit, 60) };
+    }
+    return null;
+  }
+  // words of the question once the pack's own words and «Islam / Muslims / religion» are set aside
+  const GENERIC = { ar: new Set(tokens('الاسلام الإسلام المسلمين المسلمون مسلم دين الدين القران', 'ar', { stop: false })),
+    en: new Set(tokens('islam islamic muslim muslims religion quran', 'en', { stop: false })) };
+  function packRest(text, L, pack) {
+    const pt = new Set(pack.words.flatMap(w => tokens(w, AR_RANGE.test(w) ? 'ar' : 'en', { stop: false })));
+    return tokens(text, L).filter(t => !pt.has(t) && !GENERIC[L].has(t));
+  }
+
   async function ask0(query, { uiLang = 'ar', llm = null, limit = 30, llmTimeoutMs = 8000, mode = 'auto' } = {}) {
     const q = (query || '').trim().slice(0, 500);
     const lang = q ? detectLang(q, uiLang) : uiLang;
     const M = MSG[lang];
     const base = { query: q, lang, meta: { route: null, llm: { used: false } } };
     if (!q) return { ...base, type: 'empty', answer: [{ kind: 'text', text: MSG[uiLang].empty }], verses: [], focus: null };
+    // spoken question (voice search): fillers, politeness and question frames are set aside for the search
+    const sp = cleanSpoken(q, lang);
+    if (sp.changed) base.meta.spoken = sp.display;
+    if (sp.empty && sp.spoken) return { ...base, type: 'empty', answer: [{ kind: 'text', text: M.empty }], verses: [], focus: null };
+    const cq = sp.empty ? sp.display || q : repairTranscript(sp.text, lang);   // normalised search text
+    const shown = sp.changed && !sp.empty ? sp.display : q;                      // what the answer quotes back
+    // «افتح لي سورة الكهف», "uh play surah yaseen": the reference routes also try the cleaned text
+    const refLike = sp.changed && !sp.empty && (sp.kinds.has('read') ||
+      /(^| )(سوره|سورة|سورت|اية|ايه|الاية|الايه|surah|surat|sura|verse|ayah|aya|ayat|ayatul|ayatal)( |$)|\d/.test(sp.text));
 
     // 0. well-known verse names
-    const fam = mode === 'topic' ? null : famousLookup(q);
+    const fam = mode === 'topic' ? null : (famousLookup(q) || (refLike ? famousLookup(sp.display) : null));
     if (fam) {
       base.meta.route = 'famous';
       const vs = [];
@@ -922,7 +1181,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     }
 
     // 1. references & surah names
-    const r = mode === 'topic' ? null : parseReference(q);
+    const r = mode === 'topic' ? null : (parseReference(q) || (refLike ? parseReference(sp.display) : null));
     let altSura = null;
     if (r) {
       base.meta.route = 'reference';
@@ -958,7 +1217,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
       base.meta.route = 'term';
       const tix = topicIndexFor(term.ar, 'ar', [], 12);
       // no topic with verses in the index: the verses where the word itself occurs
-      const ids = tix ? tix.ids : (topicSearch(term.ar, 'ar', 12).ranked || []).filter(x => x.cov === 1).map(x => x.idx);
+      const ids = tix ? tix.ids : (topicSearch(term.ar, 'ar', 12).ranked || []).filter(x => x.full).map(x => x.idx);
       return { ...base, lang, type: 'term', term, answer: [{ kind: 'text', text: M.term(term.ar) }], verses: ids.map(i => verseResult(i)),
         focus: ids.length ? ids[0] : null, suras: groupBySura(ids), topicIndex: tix };
     }
@@ -994,7 +1253,9 @@ export function createEngine({ core, searchAr, sources = {} }) {
       return { ...base, ...verifyTranslation(arabicPart, lang) };
     }
     if (AR_RANGE.test(arabicPart)) {
-      const isQuestion = /^(ما|ماذا|من|متى|اين|كيف|لماذا|لم|كم|هل|اذكر|اعطني|ابحث)\s/.test(normAr(q)) && !explicit;
+      // a spoken question («طيب ابغى اعرف وش قال القرآن عن الصبر») is not a pasted verse:
+      // only an exact quotation inside it is reported, never «this is not a verse»
+      const isQuestion = (/^(ما|ماذا|من|متى|اين|كيف|لماذا|لم|كم|هل|اذكر|اعطني|ابحث)\s/.test(normAr(q)) || sp.spoken) && !explicit;
       const words = normAr(arabicPart).split(' ').filter(Boolean).length;
       if (isQuestion && words >= 3) { // the question word may be the first word of a verse
         const v = verifyText(arabicPart, false, lang);
@@ -1007,49 +1268,60 @@ export function createEngine({ core, searchAr, sources = {} }) {
       }
     }
 
-    // 4. topic: (LLM intent + keywords) → BM25 over Quran + tafsir → (LLM selection) → explanation cards
+    // 4. topic. Order of evidence:
+    //    a) the human-curated subject index when the (cleaned) query IS a topic («الصبر», "patience") — no AI call needed;
+    //    b) AI: expand (intent + keywords + central refs) → BM25 on the cleaned query + keywords → candidates
+    //       (lexical ∪ verified AI refs ∪ subject-index hits) → AI selection from that closed list → only those verses;
+    //    c) no AI: only verses covering every word of the question (or of one side of «X و Y»), at most 8, no
+    //       explanation — or abstain. Never verses that share only part of the question.
     base.meta.route = softPrefix ? 'verify+topic' : 'topic';
+    const L = lang;
+    const ML = MSG[L];
+    // «لماذا…», «هل…», "why…", "is…": a real question, which a bare topic list does not answer
+    const WHY = /^(لماذا|لم|ليش|ليه|هل|اليس|الم|why|is|are|does|do|did|was|were)( |$)/.test(L === 'ar' ? normAr(shown) : normLatin(shown));
+    const polemic0 = isPolemic(q);
+    const pack = packFor(q);
+    const sensitive = !!pack || isSensitive(q);
+    const direct = softPrefix || WHY || sp.kinds.has('story') ? null : indexTopicOf(cq, L);
     let expansion = null;
-    if (llm && llm.expand) {
+    const nWords = q.trim().split(/\s+/).length;   // a bare topic word flagged «ruling» stays a topic
+    if (llm && llm.expand && !(direct && tokens(cq, L).length <= 3)) {
       try {
         expansion = verifyExpansion(await withTimeout(llm.expand({ query: q, lang }), llmTimeoutMs));
         base.meta.llm = { used: true, stage: 'expand', intent: expansion.intent };
         // a bare topic word ("الخمر", "usury") is a topic, not a fatwa request
-        if (expansion.intent === 'ruling' && q.trim().split(/\s+/).length < 3) expansion.intent = 'topic';
+        if (expansion.intent === 'ruling' && nWords < 3) expansion.intent = 'topic';
         if (expansion.intent === 'ruling') return rulingAnswer(q, lang, uiLang, base);
         // the LLM recognised a question (not a pasted quote): answer it as a topic
         if (softPrefix && expansion.intent !== 'other') { softPrefix = null; base.meta.route = 'topic'; }
+        // not a question about the Quran at all (weather, prices, a microphone test…)
+        if (expansion.intent === 'other' && !softPrefix && !direct && !(polemic0 && pack)) {
+          return { ...base, type: 'notfound', answer: [{ kind: 'text', text: ML.noTopic }], verses: [], focus: null, polemic: false, sensitive, aiConfirmed: false, confirmedBy: null };
+        }
       } catch (e) { base.meta.llm = { used: false, error: String(e && e.message || e) }; }
-    }
-    const ts = topicSearchAuto(q, lang, uiLang, 40, expansion ? expansion.keywords : {});
+    } else if (llm && direct) base.meta.llm = { used: false, skipped: 'subject-index' };
+    const ts = topicSearchAuto(cq, L, uiLang, 40, expansion ? expansion.keywords : {}, { segments: true });
     const { qtoks, ranked } = ts;
-    const L = ts.lang;
-    const ML = MSG[L];
-    base.lang = L;
     // trap / hostile questions and sensitive subjects get verified context
-    const polemic = isPolemic(q) || (expansion && expansion.intent === 'polemic');
-    const pack = packFor(q);
-    const sensitive = !!pack || isSensitive(q);
+    const polemic = polemic0 || !!(expansion && expansion.intent === 'polemic');
+    // the context pack comes first for a trap question, or when the pack's subject IS the question
+    // («الجهاد», "slavery") — not when it is only mentioned («قصة امرأة فرعون»)
+    const usePack = !!pack && (polemic || packRest(cq, L, pack).length === 0);
     const kwAr = expansion && expansion.keywords ? (expansion.keywords.ar || []) : [];
     // kept for the post-processing only (never serialised: LLM keywords are not content)
     Object.defineProperty(base.meta, 'kwAr', { value: kwAr, enumerable: false });
-    // The subject index answers a query that IS a topic («الصبر», "patience"). A real question
-    // («لماذا يعبد المسلمون الكعبة؟») keeps the normal selection: the verses of topic «الكعبة»
-    // (e.g. 5:95, hunting expiation) do not answer it. The index is then only a last resort.
-    const isQ = /[؟?]/.test(q) || /^(لماذا|لم|هل|كيف|ما|ماذا|من|اليس|الم|اين|متي|كم)\s/.test(normAr(q)) ||
-      /^(why|how|what|is|are|does|do|can|who|where|when|pourquoi|comment|est|quel|quelle|que|qui)\b/i.test(normLatin(q));
-    const tix = softPrefix ? null : topicIndexFor(q, L, isQ ? [] : kwAr);
-    const tixUse = !!tix && ((tix.mode === 'exact' && !isQ) || (tix.mode === 'subset' && !ranked.length));
-    if (!ranked.length && !(polemic && pack) && !tixUse) {
-      if (softPrefix) return { ...base, type: 'verify', verdict: 'notverse', answer: softPrefix.answer, verses: [], focus: null };
-      return { ...base, type: 'notfound', answer: [{ kind: 'text', text: ML.noTopic }], verses: [], focus: null, polemic, sensitive };
-    }
+    // The subject index answers a query that IS a topic. A real question («لماذا يعبد المسلمون الكعبة؟»)
+    // keeps the normal selection: the verses of topic «الكعبة» (e.g. 5:95, hunting expiation) do not answer it.
+    let tix = direct;
+    if (!tix && !softPrefix && !WHY && kwAr.length) { const t = topicIndexFor(cq, L, kwAr); if (t && t.mode === 'exact') tix = t; }
+    let tixUse = !!tix;
     if (altSura) base.alt = { mode: 'sura', sura: altSura, name: L === 'ar' ? suras[altSura - 1].ar : suras[altSura - 1].tr };
-    let order = ranked.map(x => x.idx);
-    let confirmed = false, lowConf = false, personalNote = false, llmOk = false;
-    if (!tixUse && llm && llm.select && ranked.length) {
-      // verses proposed by the LLM are kept only if they exist AND their text
-      // (verse, tafsir or translation) actually contains a word of the query
+    let order = [];
+    let confirmed = false, personalNote = false, llmOk = false, aiNone = false;
+    if (!tixUse && llm && llm.select && !(expansion == null && llm.expand && base.meta.llm.error)) {
+      // candidates (closed list): verses proposed by the LLM — kept only if they exist AND their text
+      // (verse, tafsir or translation) contains a word of the query or of its keywords —, the lexical
+      // ranking, the keyword ranking and the subject-index topics named by the keywords
       const qset = new Set(qtoks);
       const proposed = (expansion ? expansion.refs : []).map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); })
         .filter(i => i >= 0 && FIELDS[L].some(([name]) => {
@@ -1057,56 +1329,77 @@ export function createEngine({ core, searchAr, sources = {} }) {
           return txt && tokens(txt, L).some(t => qset.has(t));
         }));
       base.meta.proposedKept = proposed.length;
-      const lex = ranked.map(x => x.idx), kw = ts.kwTop || [], seen = new Set(proposed), candIdx = [...proposed];
-      for (let k = 0; candIdx.length < 30 && (k < lex.length || k < kw.length); k++) {
-        for (const i of [lex[k], kw[k]]) if (i != null && !seen.has(i)) { seen.add(i); candIdx.push(i); }
+      const tixK = softPrefix ? null : topicIndexFor(cq, L, kwAr, 12);
+      const lex = ranked.map(x => x.idx), kw = ts.kwTop || [], ix = tixK ? tixK.ids : [];
+      const seen = new Set(), candIdx = [];
+      for (const i of proposed) if (!seen.has(i)) { seen.add(i); candIdx.push(i); }
+      for (let k = 0; candIdx.length < MAX_CANDIDATES && (k < lex.length || k < kw.length || k < ix.length); k++) {
+        for (const i of [lex[k], kw[k], ix[k]]) if (i != null && !seen.has(i) && candIdx.length < MAX_CANDIDATES) { seen.add(i); candIdx.push(i); }
       }
-      const cands = candIdx.slice(0, 30).map(i => ({ id: ref(i), text: snippet(L, i) }));
-      try {
-        const out = await withTimeout(llm.select({ query: q, lang: L, candidates: cands }), llmTimeoutMs);
-        const v = verifyLLM(out, cands);
-        base.meta.llm = { ...base.meta.llm, used: true, model: out && out.model, rejected: v.rejected, intent: v.intent };
-        if (v.intent === 'ruling' && q.trim().split(/\s+/).length < 3) v.intent = 'topic';
-        if (v.intent === 'ruling') return rulingAnswer(q, lang, uiLang, base);
-        if (v.intent === 'personal' || (expansion && expansion.intent === 'personal')) personalNote = true;
-        if (v.ids.length) {
-          const chosen = v.ids.map(id => { const [s, a] = id.split(':').map(Number); return idxOf(s, a); });
-          llmOk = true;
-          confirmed = v.confidence === 'high' || chosen.length >= 2;
-          order = chosen.length >= 3 ? chosen : chosen.concat(order.filter(i => !chosen.includes(i) && ranked.find(x => x.idx === i && x.cov === 1)).slice(0, 6));
-        } else lowConf = true;
-      } catch (e) { base.meta.llm = { ...base.meta.llm, error: String(e && e.message || e) }; }
+      const cands = candIdx.map(i => ({ id: ref(i), text: snippet(L, i) }));
+      if (cands.length) {
+        try {
+          const out = await withTimeout(llm.select({ query: q, lang: L, candidates: cands }), llmTimeoutMs);
+          const v = verifyLLM(out, cands);
+          base.meta.llm = { ...base.meta.llm, used: true, model: out && out.model, rejected: v.rejected, intent: v.intent, candidates: cands.length };
+          if (v.intent === 'ruling' && nWords < 3) v.intent = 'topic';
+          if (v.intent === 'ruling') return rulingAnswer(q, lang, uiLang, base);
+          if (v.intent === 'personal' || (expansion && expansion.intent === 'personal')) personalNote = true;
+          if (v.ids.length) {
+            // only the verses the AI confirmed, in its order of relevance
+            order = v.ids.map(id => { const [s, a] = id.split(':').map(Number); return idxOf(s, a); });
+            llmOk = true;
+            confirmed = v.confidence === 'high' || order.length >= 2;
+          } else if (out && typeof out === 'object' && Array.isArray(out.ids)) aiNone = true; // the AI found no candidate that answers
+        } catch (e) { base.meta.llm = { ...base.meta.llm, error: String(e && e.message || e) }; }
+      }
     }
+    let evid = null;
     if (tixUse) {
-      // the subject index (human-curated) gives the verses; the tafsir explains them
-      order = tix.ids.slice();
-      confirmed = true;
-    } else if (!llmOk) {
-      // no AI confirmation: only verses that contain every word of the question, no explanation
-      order = ranked.filter(x => x.cov === 1).map(x => x.idx);
-      if (!order.length) order = ranked.map(x => x.idx);
-      order = order.slice(0, Math.min(limit, 12));
+      // the subject index (human-curated) gives the verses; the tafsir explains them. Verses whose own
+      // text or tafsir also contains the words of the question come first, and only they get an
+      // explanation card; an index entry with no such verse gives way to the keyword match (if any).
+      const fs = ts.fullSet || new Set();
+      const withE = tix.ids.filter(i => fs.has(i)), without = tix.ids.filter(i => !fs.has(i));
+      if (!withE.length && ranked.some(x => x.full) && !llmOk) { tixUse = false; tix = null; }
+      else { order = withE.concat(without); evid = new Set(withE); confirmed = withE.length > 0; }
+    }
+    if (tixUse) { /* order set above */ } else if (!llmOk && !aiNone) {
+      // no AI confirmation: only verses that cover the whole question, no explanation
+      order = ranked.filter(x => x.full).map(x => x.idx).slice(0, Math.min(limit, DET_MAX));
+      if (!order.length && !softPrefix && !WHY && L === 'ar') {
+        // last resort: a multi-word topic of the subject index named inside the question
+        const t = topicIndexFor(cq, L, []);
+        if (t && t.mode === 'subset') { tix = t; tixUse = true; order = t.ids.slice(); }
+      }
     } else order = order.slice(0, limit);
     // context pack (verified, curated) first for trap questions / sensitive subjects
-    const packIdx = (polemic || sensitive) && pack ? pack.refs.map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); }).filter(i => i >= 0) : [];
+    const packIdx = usePack ? pack.refs.map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); }).filter(i => i >= 0) : [];
     const all = packIdx.concat(order.filter(i => !packIdx.includes(i)));
+    if (!all.length) {
+      if (softPrefix) return { ...base, type: 'verify', verdict: 'notverse', answer: softPrefix.answer, verses: [], focus: null };
+      return { ...base, type: 'notfound', answer: [{ kind: 'text', text: ML.noTopic }], verses: [], focus: null, polemic, sensitive,
+        aiConfirmed: false, confirmedBy: null, terms: qtoks };
+    }
     const nSuras = new Set(all.map(i => suraOf[i])).size;
     const answer = [];
     if (softPrefix) answer.push(...softPrefix.answer, { kind: 'text', text: ML.related });
     else if (polemic) answer.push({ kind: 'text', text: ML.polemic });
-    else if (tixUse) answer.push({ kind: 'text', text: (tix.mode === 'exact' ? ML.topicIndex : ML.topicSubset)(tix.total, q, nSuras, tix.name) });
-    else answer.push({ kind: 'text', text: confirmed ? ML.topic(all.length, q, nSuras) : ML.topicLexical(all.length, q, nSuras) });
+    else if (tixUse) answer.push({ kind: 'text', text: (tix.mode === 'exact' ? ML.topicIndex : ML.topicSubset)(tix.total, shown, nSuras, tix.name) });
+    else answer.push({ kind: 'text', text: confirmed || llmOk ? ML.topic(all.length, shown, nSuras) : ML.topicLexical(all.length, shown, nSuras) });
     for (const i of packIdx) { const c = cardOf(L, i, 'context'); if (c) answer.push(c); }
-    if (confirmed) for (const i of order.filter(i => !packIdx.includes(i)).slice(0, 3)) { const c = cardOf(L, i, 'answer'); if (c) answer.push(c); }
-    if (!llmOk && !softPrefix && !tixUse) answer.push({ kind: 'note', text: ML.lexicalOnly });
-    if (lowConf) answer.push({ kind: 'note', text: ML.lowConf });
+    if (confirmed) for (const i of order.filter(i => !packIdx.includes(i) && (!evid || evid.has(i))).slice(0, 3)) { const c = cardOf(L, i, 'answer'); if (c) answer.push(c); }
+    if (!llmOk && !softPrefix && !tixUse && order.length) answer.push({ kind: 'note', text: ML.lexicalOnly });
     if (sensitive) answer.push({ kind: 'note', text: ML.sensitiveNote });
     if (personalNote) answer.push({ kind: 'note', text: ML.personalNote });
     const rankOf = new Map(all.map((i, k) => [i, k]));
     return { ...base, type: softPrefix ? 'verify' : 'topic', verdict: softPrefix ? 'notverse' : undefined,
-      answer, verses: all.map(i => verseResult(i)), focus: all[0], sensitive, polemic, pack: pack ? pack.id : null,
+      answer, verses: all.map(i => verseResult(i, llmOk && !packIdx.includes(i) ? { ai: true } : {})), focus: all[0], sensitive, polemic, pack: pack ? pack.id : null,
       suras: groupBySura(all, (i) => 1 / (rankOf.get(i) + 1)), terms: qtoks,
       topicIndex: tixUse ? { mode: tix.mode, name: tix.name, total: tix.total, groups: tix.groups } : null,
+      // who vouches for the relevance of the verses: the AI (closed-list selection), the human-curated
+      // subject index, the verified context pack only, or nobody (keyword match → the UI shows a warning)
+      aiConfirmed: llmOk, confirmedBy: llmOk ? 'ai' : tixUse ? 'index' : (packIdx.length && !order.length ? 'context' : null),
       paragraphBy: tixUse ? 'index' : confirmed ? 'llm' : (packIdx.length ? 'context' : 'none') };
   }
 
@@ -1121,9 +1414,10 @@ export function createEngine({ core, searchAr, sources = {} }) {
   // Fatwa requests: no ruling, but related verses (labelled "not a fatwa") and links to official sources.
   function rulingAnswer(q, lang, uiLang, base) {
     const M = MSG[lang];
-    const stripped = q.replace(RULING_WORDS, ' ').replace(/\s+/g, ' ').trim();
+    const stripped0 = q.replace(RULING_WORDS, ' ').replace(/\s+/g, ' ').trim();
+    const stripped = (cleanSpoken(stripped0, lang).text || stripped0).trim();
     const ts = stripped ? topicSearchAuto(stripped, lang, uiLang, 8) : { ranked: [] };
-    const related = (ts.ranked || []).filter(x => x.cov === 1).slice(0, 6).map(x => verseResult(x.idx, { relatedOnly: true }));
+    const related = (ts.ranked || []).filter(x => x.full).slice(0, 6).map(x => verseResult(x.idx, { relatedOnly: true }));
     base.meta.route = base.meta.route || 'guard';
     return { ...base, type: 'abstain', reason: 'ruling', answer: [{ kind: 'text', text: M.ruling }], verses: related,
       focus: related.length ? related[0].idx : null, links: fatwaLinks(stripped || q) };
@@ -1138,8 +1432,10 @@ export function createEngine({ core, searchAr, sources = {} }) {
 
   function snippet(lang, i) {
     const s = src[TAFSIR_FOR[lang]] || src[TAFSIR_FOR.ar];
-    const t = (s && s.text[i]) || searchAr[i];
-    return t.replace(/^\d+\.\s*/, '').slice(0, 120);
+    const t = ((s && s.text[i]) || searchAr[i]).replace(/^\d+\.\s*/, '');
+    if (t.length <= 180) return t;
+    const cut = t.lastIndexOf(' ', 180);
+    return t.slice(0, cut > 120 ? cut : 180);
   }
 
   return {

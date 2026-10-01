@@ -13,23 +13,31 @@ import { ttsReady } from './tts.js';
 
 export const DEFAULT_MODELS = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
 
+// Queries often come from voice search (Whisper): dialect, fillers, no punctuation, small
+// transcription errors. The prompts say so, so that the model reads the intent, not the noise.
 const RULES = `You are a component of a Quran search engine. You NEVER write explanations, translations, rulings, tafsir or any religious content. You only output JSON.
+The query may be a speech transcription: dialectal Arabic (Gulf, Egyptian, Levantine, Maghrebi) or English, with filler words ("um", «طيب», «يعني»), politeness («لو سمحت»), no punctuation and small transcription errors (ه written for ة, missing hamza, "patients" for "patience", names such as Musa, Firaun, Yusuf, Isa). Read what the person is asking about.
 intent: "ruling" if the user asks whether something is halal/haram/permissible/obligatory or asks for a fatwa; "personal" ONLY if the user describes a specific private situation involving decisions about other people (family conflict, marriage, divorce, work) and asks what to do; general questions such as "how to deal with sadness", "how to be patient", "how to repent" are "topic";
-"polemic" if the query asserts or insinuates that Islam, the Quran or Muslims are violent, unjust, hateful, or is a trap question built to make Islam look bad; a bare subject word or phrase (e.g. "الخمر", "usury", "le divorce") is always "topic"; "topic" if the user looks for what the Quran says about a subject, story, person, attribute or idea; "other" otherwise.`;
+"polemic" if the query asserts or insinuates that Islam, the Quran or Muslims are violent, unjust, hateful, or is a trap question built to make Islam look bad; a bare subject word or phrase (e.g. "الخمر", "usury", "divorce") is always "topic"; "topic" if the user looks for what the Quran says about a subject, story, person, attribute or idea; "other" if the query is not about the Quran, Islam, its stories or its teachings at all (prices, weather, technology, small talk, a microphone test, an empty or meaningless text).`;
 
 const SYS_EXPAND = `${RULES}
-Task: understand the query and propose search keywords that would appear in the Quran text or in classical tafsir (Al-Muyassar, Al-Mukhtasar) for this topic.
-Also list up to 8 verse references "sura:aya" that you believe are central to this topic (they will be checked against the real text; wrong ones are discarded).
-Return {"intent":"...","keywords":{"ar":[up to 6 Arabic words or short phrases, classical vocabulary, without diacritics],"en":[up to 5]},"refs":["17:23",...]}.
+Task: understand the query and propose search keywords and central verses.
+keywords.ar: up to 6 words written exactly as they appear in the Quran or in the classical tafsirs At-Tafsir Al-Muyassar / Al-Mukhtasar — the root-bearing noun or verb (e.g. «الصبر», «الصابرين», «يغتب», «الغيبة», «الربا», «اليتيم»), without diacritics. Never dialect words, never words meaning "verse", "Quran", "what", "tell", "story".
+keywords.en: up to 5 words as used in the English translation (Saheeh International) or Al-Mukhtasar in English (e.g. "patient", "backbite", "orphan", "Pharaoh").
+refs: up to 8 references "sura:aya" of the well-known verses that most directly state the answer or tell the asked story (they are checked against the real text; wrong ones are discarded).
+Return {"intent":"...","keywords":{"ar":[...],"en":[...]},"refs":["17:23",...]}.
 Keywords must be single words or 2-word phrases, no sentences.`;
 
 const SYS_SELECT = `${RULES}
-Input: a query and a numbered list of candidate verses (id "sura:aya" + an excerpt of a vetted tafsir).
+Input: a query and a numbered list of candidate verses (id "sura:aya" + the beginning of a vetted tafsir of that verse).
 Task:
 1. intent (as defined).
-2. ids: the candidate verse ids whose tafsir genuinely answers the query, most relevant first, at most 12. Use ONLY ids from the list.
-   Judge by the tafsir meaning, not by shared words: a verse where the word has another meaning (homonym) or that speaks about the opposite subject is NOT relevant.
-   For hostile or trap questions, prefer the verses that state the general principle and its conditions. If none is relevant, [].
+2. ids: the candidate verse ids that DIRECTLY answer the query, ordered from the most to the least relevant, at most 10. Use ONLY ids from the list.
+   - Judge by the meaning of the tafsir, not by shared words. Reject homonyms (e.g. «شفا حفرة» = brink, not «شفاء» = cure; «الجاريات» = ships, not «الجار» = neighbour; "interest" = benefit, not usury) and verses about the opposite or another subject.
+   - Prefer verses that state the answer itself; skip verses that only mention the word in passing.
+   - For a story, choose the verses that narrate its main events, in the order of the story.
+   - For hostile or trap questions, prefer the verses that state the general principle and its conditions.
+   - If no candidate answers the query, return [].
 3. confidence: "high" if the selected verses clearly answer the query, else "low".
 Return {"intent":"...","ids":[...],"confidence":"high|low"}`;
 
