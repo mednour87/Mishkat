@@ -539,13 +539,14 @@ const INTENTS = new Set(['topic', 'ruling', 'personal', 'polemic', 'other']);
 export function verifyLLM(out, candidates, sentenceIds = []) {
   const allowed = new Set(candidates.map(c => c.id));
   const allowedS = new Set(sentenceIds);
-  const res = { intent: 'topic', ids: [], sentences: [], confidence: 'low', rejected: 0 };
+  const res = { intent: 'topic', ids: [], scores: {}, sentences: [], confidence: 'low', rejected: 0 };
   if (!out || typeof out !== 'object') return res;
   if (INTENTS.has(out.intent)) res.intent = out.intent;
   if (out.confidence === 'high') res.confidence = 'high';
+  const sc = out.scores && typeof out.scores === 'object' ? out.scores : {};
   for (const id of Array.isArray(out.ids) ? out.ids : []) {
     const s = String(id).trim();
-    if (allowed.has(s) && !res.ids.includes(s)) res.ids.push(s); else res.rejected++;
+    if (allowed.has(s) && !res.ids.includes(s)) { res.ids.push(s); res.scores[s] = +sc[s] === 1 ? 1 : 2; } else res.rejected++;
     if (res.ids.length >= 15) break;
   }
   for (const id of Array.isArray(out.sentences) ? out.sentences : []) {
@@ -1351,7 +1352,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
       tries.push(text);
       const hard = text.split(' ').filter(w => !tokens(w.replace(/^و(?=..)/, ''), 'ar').every(t => SOFT.ar.has(t))).join(' ');
       if (hard && hard !== text) tries.push(hard);
-    } else { const ar = arabicTopicOf(text); if (ar) tries.push(ar); }
+    } else if (tokens(text, 'en').length <= 2) { const ar = arabicTopicOf(text); if (ar) tries.push(ar); } // "patience", not a whole question
     for (const t of tries) {
       const k = [...new Set(tokens(t, 'ar'))].sort().join(' ');
       const hit = k && TOPICS.byKey.get(k);
@@ -1529,11 +1530,14 @@ export function createEngine({ core, searchAr, sources = {} }) {
     // The subject index answers a query that IS a topic. A real question («لماذا يعبد المسلمون الكعبة؟»)
     // keeps the normal selection: the verses of topic «الكعبة» (e.g. 5:95, hunting expiation) do not answer it.
     let tix = direct;
-    if (!tix && !softPrefix && !WHY && kwAr.length) { const t = topicIndexFor(cq, L, kwAr); if (t && t.mode === 'exact') tix = t; }
+    // through the AI's keywords, only a query that is itself a topic («patience», «بر الوالدين»):
+    // a real question («patience when you lose someone») keeps the AI selection, whose candidates
+    // include the index verses — the index alone would list the whole topic, not the answer
+    if (!tix && !softPrefix && !WHY && kwAr.length && tokens(cq, L).length <= 2) { const t = topicIndexFor(cq, L, kwAr); if (t && t.mode === 'exact') tix = t; }
     let tixUse = !!tix;
     if (altSura) base.alt = { mode: 'sura', sura: altSura, name: L === 'ar' ? suras[altSura - 1].ar : suras[altSura - 1].tr };
     let order = [];
-    let confirmed = false, personalNote = false, llmOk = false, aiNone = false;
+    let confirmed = false, personalNote = false, llmOk = false, aiNone = false, relatedOnly = new Set();
     if (!tixUse && llm && llm.select && !(expansion == null && llm.expand && base.meta.llm.error)) {
       // candidates (closed list): verses proposed by the LLM — kept only if they exist AND their text
       // (verse, tafsir or translation) contains a word of the query or of its keywords —, the lexical
@@ -1546,7 +1550,10 @@ export function createEngine({ core, searchAr, sources = {} }) {
         }));
       base.meta.proposedKept = proposed.length;
       const tixK = softPrefix ? null : topicIndexFor(cq, L, kwAr, 12);
-      const lex = ranked.map(x => x.idx), kw = ts.kwTop || [], ix = tixK ? tixK.ids : [];
+      // English question: the AI's Arabic keywords also search the Arabic text and tafsir
+      const arK = [];
+      if (L !== 'ar') for (const k of kwAr.slice(0, 3)) for (const x of topicSearch(k.replace(/_/g, ' '), 'ar', 8).ranked) if (!arK.includes(x.idx)) arK.push(x.idx);
+      const lex = ranked.map(x => x.idx), kw = (ts.kwTop || []).concat(arK.filter(i => !(ts.kwTop || []).includes(i))), ix = tixK ? tixK.ids : [];
       const seen = new Set(), candIdx = [];
       for (const i of proposed) if (!seen.has(i)) { seen.add(i); candIdx.push(i); }
       for (let k = 0; candIdx.length < MAX_CANDIDATES && (k < lex.length || k < kw.length || k < ix.length); k++) {
@@ -1562,10 +1569,14 @@ export function createEngine({ core, searchAr, sources = {} }) {
           if (v.intent === 'ruling') return rulingAnswer(q, lang, uiLang, base);
           if (v.intent === 'personal' || (expansion && expansion.intent === 'personal')) personalNote = true;
           if (v.ids.length) {
-            // only the verses the AI confirmed, in its order of relevance
-            order = v.ids.map(id => { const [s, a] = id.split(':').map(Number); return idxOf(s, a); });
+            // only the verses the AI confirmed: those that answer directly (score 2) first, in its
+            // order of relevance, then the merely related ones (score 1)
+            const ord = (id) => { const [s, a] = id.split(':').map(Number); return idxOf(s, a); };
+            const dIds = v.ids.filter(id => v.scores[id] !== 1), rIds = v.ids.filter(id => v.scores[id] === 1);
+            order = dIds.concat(rIds).map(ord);
+            relatedOnly = new Set(rIds.map(ord));
             llmOk = true;
-            confirmed = v.confidence === 'high' || order.length >= 2;
+            confirmed = order.some(i => !relatedOnly.has(i)) && (v.confidence === 'high' || order.length >= 2);
           } else if (out && typeof out === 'object' && Array.isArray(out.ids)) aiNone = true; // the AI found no candidate that answers
         } catch (e) { base.meta.llm = { ...base.meta.llm, error: String(e && e.message || e) }; }
       }
@@ -1604,13 +1615,13 @@ export function createEngine({ core, searchAr, sources = {} }) {
     else if (tixUse) answer.push({ kind: 'text', text: (tix.mode === 'exact' ? ML.topicIndex : ML.topicSubset)(tix.total, shown, nSuras, tix.name) });
     else answer.push({ kind: 'text', text: confirmed || llmOk ? ML.topic(all.length, shown, nSuras) : ML.topicLexical(all.length, shown, nSuras) });
     for (const i of packIdx) { const c = cardOf(L, i, 'context'); if (c) answer.push(c); }
-    if (confirmed) for (const i of order.filter(i => !packIdx.includes(i) && (!evid || evid.has(i))).slice(0, 3)) { const c = cardOf(L, i, 'answer'); if (c) answer.push(c); }
+    if (confirmed) for (const i of order.filter(i => !packIdx.includes(i) && (!evid || evid.has(i)) && !relatedOnly.has(i)).slice(0, 3)) { const c = cardOf(L, i, 'answer'); if (c) answer.push(c); }
     if (!llmOk && !softPrefix && !tixUse && order.length) answer.push({ kind: 'note', text: ML.lexicalOnly });
     if (sensitive) answer.push({ kind: 'note', text: ML.sensitiveNote });
     if (personalNote) answer.push({ kind: 'note', text: ML.personalNote });
     const rankOf = new Map(all.map((i, k) => [i, k]));
     return { ...base, type: softPrefix ? 'verify' : 'topic', verdict: softPrefix ? 'notverse' : undefined,
-      answer, verses: all.map(i => verseResult(i, llmOk && !packIdx.includes(i) ? { ai: true } : {})), focus: all[0], sensitive, polemic, pack: pack ? pack.id : null,
+      answer, verses: all.map(i => verseResult(i, llmOk && !packIdx.includes(i) ? { ai: true, ...(relatedOnly.has(i) ? { aiRelated: true } : {}) } : {})), focus: all[0], sensitive, polemic, pack: pack ? pack.id : null,
       suras: groupBySura(all, (i) => 1 / (rankOf.get(i) + 1)), terms: qtoks,
       topicIndex: tixUse ? { mode: tix.mode, name: tix.name, total: tix.total, groups: tix.groups } : null,
       // who vouches for the relevance of the verses: the AI (closed-list selection), the human-curated
@@ -1646,12 +1657,14 @@ export function createEngine({ core, searchAr, sources = {} }) {
     return out;
   }
 
+  // what the AI reads about each candidate: the verse itself (its translation in English) and the
+  // beginning of a vetted tafsir — the verse often says it more directly than the tafsir's first words
   function snippet(lang, i) {
+    const cut = (t, n) => { t = String(t || '').replace(/^\d+\.\s*/, '').replace(/\[\d+\]/g, '').trim(); if (t.length <= n) return t; const c = t.lastIndexOf(' ', n); return t.slice(0, c > n * 0.6 ? c : n); };
     const s = src[TAFSIR_FOR[lang]] || src[TAFSIR_FOR.ar];
-    const t = ((s && s.text[i]) || searchAr[i]).replace(/^\d+\.\s*/, '');
-    if (t.length <= 180) return t;
-    const cut = t.lastIndexOf(' ', 180);
-    return t.slice(0, cut > 120 ? cut : 180);
+    const verse = lang === 'ar' ? searchAr[i] : ((src[TRANSLATION_FOR[lang]] || {}).text || [])[i];
+    const v = cut(verse, 110), t = cut(s && s.text[i], 232 - v.length);
+    return v && t ? `${v} — ${t}` : (v || t);
   }
 
   return {

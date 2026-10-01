@@ -164,8 +164,9 @@ export const ABOUT = {
 <p class="ayah" style="text-align:center">﴿{{V24_35}}﴾ <small>[النور: 35]</small></p><p>المشكاة كُوّة يوضع فيها المصباح فتجمع نوره. وكذلك «مشكاة»: تجمع لك نور البيان من التفاسير المعتمدة حول سؤالك، في مجرّة من 77,433 نجمة هي كلمات القرآن.</p>
 <h3>القاعدة الذهبية: لا محتوى ديني من إنشاء الآلة</h3>
 <ul><li>نص الآيات يُعرض حصرًا من نص مشروع تنزيل، بلا أي تعديل، مع بصمة SHA-256.</li>
-<li>فقرة البيان مؤلَّفة من جمل منقولة حرفيًّا من «التفسير الميسر» أو «المختصر»، وكل جملة موسومة بآيتها ومصدرها.</li>
-<li>الذكاء الاصطناعي يفهم السؤال ويقترح كلمات بحث، ثم يختار آيات وجملًا من قوائم مغلقة مرقّمة؛ ويرفض المدقق كل ما هو خارجها. ولا يكتب النموذج حرفًا يُعرض عليك.</li>
+<li>البيان تفسيرٌ كامل لكل آية من «التفسير الميسر» أو «المختصر» بنصّه، لا مقتطفات، موسومٌ بآيته ومصدره؛ ويمكنك التنقّل بين سبعة تفاسير في القارئ.</li>
+<li>الذكاء الاصطناعي يفهم السؤال ويقترح كلمات بحث، ثم يختار الآيات من قائمة مغلقة مرقّمة ويقدّر صلة كلٍّ منها (تجيب مباشرة / ذات صلة)؛ ويرفض المدقق كل ما هو خارج القائمة. ولا يكتب النموذج حرفًا يُعرض عليك.</li>
+<li>الكلمة القرآنية تُبحث كما هي (مع السوابق واللواحق، وبالرسم العثماني، وبالحروف اللاتينية)، ويُقترح أقرب لفظ قرآني عند الخطأ الإملائي.</li>
 <li>تمتنع مشكاة عند غياب المرجع الكافي، وفي أسئلة الفتوى والحالات الشخصية وتعبير الرؤى، وتحيل إلى أهل العلم.</li></ul>
 <h3>المصادر</h3><ul>${SRC_LIST.ar}</ul>
 <h3>حدود معلنة</h3>
@@ -178,8 +179,9 @@ export const ABOUT = {
 <p class="ayah" style="text-align:center">﴿{{V24_35}}﴾ <small>[24:35]</small></p><p>“Mishkāt” is the word used in verse 24:35 for the niche that holds the lamp. A niche gathers the lamp’s light — likewise Mishkat gathers, around your question, the light of vetted tafsir, inside a galaxy of 77,433 stars: the words of the Quran.</p>
 <h3>Golden rule: no religious content is written by the machine</h3>
 <ul><li>Verse text is rendered only from the Tanzil text, unmodified and SHA-256-checked.</li>
-<li>The explanatory paragraph is made of verbatim sentences from Al-Muyassar or Al-Mukhtasar, each labelled with its verse and source.</li>
-<li>The AI understands the question and proposes search keywords, then picks verses and sentences from closed numbered lists; a verifier drops anything else. The model never writes a word you read.</li>
+<li>Each explanation is the complete tafsir of the verse from Al-Muyassar or Al-Mukhtasar, verbatim (never excerpts), labelled with its verse and source; seven tafsirs can be browsed in the reader.</li>
+<li>The AI understands the question and proposes search keywords, then picks verses from a closed numbered list and rates each one (answers directly / related); a verifier drops anything outside the list. The model never writes a word you read.</li>
+<li>A word of the Quran is found as written (with its clitics, in Uthmani script, or in Latin letters), and the closest Quranic word is suggested for a misspelling.</li>
 <li>Mishkat abstains when evidence is insufficient, and for rulings, personal cases and dream interpretation, referring you to scholars.</li></ul>
 <h3>Sources</h3><ul>${SRC_LIST.en}</ul>
 <h3>Stated limits</h3>

@@ -361,7 +361,8 @@ function renderResults() {
   if (!res) return;
   const dir = res.lang === 'ar' ? 'rtl' : 'ltr';
   let h = `<p class="qline" dir="auto">«${esc(res.query)}»</p>` + levelBadge(res) + badgeFor(res);
-  if (res.aiConfirmed === false || (res.meta && res.meta.llm && res.meta.llm.used === false && res.type === 'topic')) h += `<span class="badge warn">${esc(t.noAiBadge)}</span>`;
+  // nobody vouches for these verses (no AI selection, no subject index, not the exact word): say so
+  if (res.type === 'topic' && !res.confirmedBy && !(res.meta && res.meta.route === 'word') && res.verses.length) h += `<span class="badge warn">${esc(t.noAiBadge)}</span>`;
   const texts = res.answer.filter(a => a.kind === 'text');
   const quotes = res.answer.filter(a => a.kind === 'quote');
   const notes = res.answer.filter(a => a.kind === 'note');
@@ -1042,7 +1043,8 @@ async function setView(shape, order, { quiet = false } = {}) {
     layoutNote[key] = lay.note;
   }
   if (view.shape !== shape || view.order !== order) return; // another choice was made meanwhile
-  state.galaxy.setLayout(layoutIdx[key]);
+  // restoring the visitor's view at start must not pull the camera away from a verse or an answer
+  state.galaxy.setLayout(layoutIdx[key], !(quiet && state.mode !== 'home'));
   store.set('shape', shape); store.set('order', order);
   const note = $('#viewNote');
   clearTimeout(setView.timer);

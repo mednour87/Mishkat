@@ -32,14 +32,16 @@ const SYS_SELECT = `${RULES}
 Input: a query and a numbered list of candidate verses (id "sura:aya" + the beginning of a vetted tafsir of that verse).
 Task:
 1. intent (as defined).
-2. ids: the candidate verse ids that DIRECTLY answer the query, ordered from the most to the least relevant, at most 10. Use ONLY ids from the list.
+2. items: the candidate verses relevant to the query, ordered from the most to the least relevant, at most 12, each with a score. Use ONLY ids from the list.
+   score 2 = the verse itself DIRECTLY answers the question or states the asked subject (e.g. "seeking knowledge" → «وقل رب زدني علما»);
+   score 1 = only related (mentions the subject in passing, or a neighbouring idea). Do not list unrelated verses (score 0).
    - Judge by the meaning of the tafsir, not by shared words. Reject homonyms (e.g. «شفا حفرة» = brink, not «شفاء» = cure; «الجاريات» = ships, not «الجار» = neighbour; "interest" = benefit, not usury) and verses about the opposite or another subject.
    - Prefer verses that state the answer itself; skip verses that only mention the word in passing.
    - For a story, choose the verses that narrate its main events, in the order of the story.
    - For hostile or trap questions, prefer the verses that state the general principle and its conditions.
-   - If no candidate answers the query, return [].
+   - If no candidate answers the query, return "items": [].
 3. confidence: "high" if the selected verses clearly answer the query, else "low".
-Return {"intent":"...","ids":[...],"confidence":"high|low"}`;
+Return {"intent":"...","items":[{"id":"20:114","score":2},...],"confidence":"high|low"}`;
 
 const ID_RE = /^\d{1,3}:\d{1,3}$/;
 const SID_RE = /^\d{1,3}:\d{1,3}#\d{1,2}$/;
@@ -81,16 +83,21 @@ export function validateOutput(raw, candidates, sentences = []) {
   const obj = parseJson(raw);
   const allowed = new Set(candidates.map(c => c.id)), allowedS = new Set(sentences.map(s => s.id));
   const intent = INTENTS.includes(obj.intent) ? obj.intent : 'topic';
-  const ids = [], sids = []; let rejected = 0;
-  for (const id of Array.isArray(obj.ids) ? obj.ids : []) {
-    const s = String(id).trim();
-    if (allowed.has(s) && !ids.includes(s)) ids.push(s); else rejected++;
+  const ids = [], sids = [], scores = {}; let rejected = 0;
+  // {"items":[{"id","score"}]} (scored selection) or {"ids":[...]} (older format, score 2)
+  const items = Array.isArray(obj.items) ? obj.items : (Array.isArray(obj.ids) ? obj.ids.map(id => ({ id, score: 2 })) : []);
+  for (const it of items) {
+    const s = String(it && typeof it === 'object' ? it.id : it).trim();
+    const sc = it && typeof it === 'object' && +it.score === 1 ? 1 : 2;
+    if (it && typeof it === 'object' && +it.score === 0) continue;
+    if (allowed.has(s) && !ids.includes(s)) { ids.push(s); scores[s] = sc; } else rejected++;
   }
   for (const id of Array.isArray(obj.sentences) ? obj.sentences : []) {
     const s = String(id).trim();
     if (allowedS.has(s) && !sids.includes(s)) sids.push(s); else rejected++;
   }
-  return { intent, ids: ids.slice(0, 12), sentences: sids.slice(0, 4), confidence: obj.confidence === 'high' ? 'high' : 'low', rejected };
+  const keep = ids.slice(0, 12);
+  return { intent, ids: keep, scores: Object.fromEntries(keep.map(k => [k, scores[k]])), sentences: sids.slice(0, 4), confidence: obj.confidence === 'high' ? 'high' : 'low', rejected };
 }
 
 export function validateExpansion(raw) {

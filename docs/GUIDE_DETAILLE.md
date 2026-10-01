@@ -1,6 +1,6 @@
 # Mishkat (مِشكاة) — guide détaillé
 
-*Version 7 · 1er octobre 2026 · préparation antérieure à la fenêtre du défi (4–6 octobre), à déclarer comme baseline.*
+*Version 7.1 · 2 octobre 2026 · préparation antérieure à la fenêtre du défi (4–6 octobre), à déclarer comme baseline.*
 
 Mishkat est un moteur de recherche coranique « ancré » : il répond à une question par des **versets exacts** (texte Tanzil) et des **tafsirs cités mot pour mot**. Il les situe dans une **galaxie 3D des 77 433 mots du Coran** et propose une **récitation synchronisée mot à mot**. L'IA ne rédige jamais de contenu religieux : elle comprend la question et choisit parmi des listes fermées. Ce que Mishkat ne peut pas fonder sur une source, il le dit, et il s'abstient.
 
@@ -27,7 +27,12 @@ Sur téléphone : la galaxie occupe le haut (30–34 % de l'écran). En mode Ét
 Chaque fonction a **une seule** place.
 
 ### 2.1 Barre d'en-tête (toujours visible)
-- Recherche : idée, question, nom de sourate, référence (2:255), fragment de verset, citation à vérifier, hadith à vérifier.
+- Recherche : idée, question, nom de sourate, référence (2:255), fragment de verset, citation à vérifier, hadith à vérifier, **mot exact du Coran**.
+- **Mot exact** : un mot tapé ou collé (« مشكاة », « كمشكاة », orthographe uthmanie « مشكوة », ou en lettres latines « mishkat ») est cherché parmi les mots du Coran, quels que soient ses préfixes (و ف ب ك ل س ال) et pronoms attachés. Le verset où il se trouve vient **en premier**, avec le mot surligné. Un article est respecté : « اليتم » ne correspond pas au verbe « يتم ».
+- **Correction orthographique** :
+  - une faute sûre (une lettre manquante, en trop ou changée, dans un mot fréquent du Coran, ou ة/ت/ه en finale) est corrigée et **annoncée** (« عرضتُ نتائج «الصبر» ») ; un bouton permet de chercher le mot tel qu'il a été tapé ;
+  - sinon, Mishkat **propose** les mots du Coran les plus proches (« هل تقصد…؟ ») ;
+  - un vrai mot absent du Coran mais présent dans les tafsirs (« الجهاد », « الأخلاق ») n'est jamais « corrigé ».
 - 🎤 Recherche vocale :
   - langue parlée choisie (ع / EN) ;
   - arrêt automatique au silence ;
@@ -46,9 +51,17 @@ Chaque fonction a **une seule** place.
 | **Ordre** des sourates (touche O) | ترتيب المصحف, ترتيب النزول, المكي ثم المدني, عدد الكلمات, عدد الحروف, عدد الآيات, متوسط طول الآية |
 
   Chaque combinaison est calculée une fois puis atteinte par un **morphing** de 2,2 s. Une note d'une phrase explique ce que montre la vue, sans aucune spéculation numérologique.
-- Outils : ⌂ vue d'ensemble · ＋/－ zoom · ⟲ rotation automatique · ﺱ noms des sourates · ◐ légende des couleurs · ⤢ galaxie agrandie à toute la surface.
+- Outils : ⌂ vue d'ensemble · ＋/－ zoom · ⟲ rotation automatique · ﺱ noms des sourates · ◐ légende des couleurs · ⤢ plein écran : la vue 3D prend toute la largeur, et en mode Étude le Mushaf reste en dessous (aucune zone morte).
+- Depuis les réponses, **le ciel reste entièrement visible**. Les sourates de la réponse prennent une teinte douce de leur couleur, et leurs versets brillent davantage. Les points ne grossissent plus en vue rapprochée.
 - Survol d'une étoile : le mot, sa sourate et son verset. Clic : ouverture du verset en mode Étude.
-- **La lampe Mishkat** (24:35) au bord de la galaxie : la flamme brûle au repos et le **mot récité prend sa place dans la fiole**. Sous la lampe : la référence du verset.
+- **La lampe Mishkat** (24:35), dessinée d'après le tafsir d'as-Sa'di :
+  - la **niche** (مشكاة, la « كوّة » qui rassemble la lumière) ;
+  - le **verre** (زجاجة) qui brille « comme un astre étincelant » (كوكب دري), avec des éclats d'étoile et non comme une planète ;
+  - **dans** le verre, la **lampe** (مصباح) avec sa mèche et sa flamme, posée sur l'**huile d'olive** limpide (« يكاد زيتها يضيء ») ;
+  - en dessous, l'**olivier béni**, au centre (« لا شرقية ولا غربية »), dont l'huile monte vers la lampe ;
+  - halos superposés : « نور على نور ».
+
+  Le même dessin sert de logo. Pendant la récitation, le **mot récité prend la place de la flamme** dans le verre. Sous la lampe s'affiche la référence du verset.
 - Pendant la récitation :
   - la caméra **glisse** de mot en mot (suivi amorti, sans à-coups) et se rapproche jusqu'au zoom de lecture ;
   - **seul le mot récité est écrit**, dans un disque lumineux posé sur son étoile, qui glisse d'une étoile à l'autre avec un fondu ;
@@ -57,6 +70,12 @@ Chaque fonction a **une seule** place.
 - Hors récitation, en vue rapprochée : les mots du verset courant sont écrits près de leurs étoiles et reliés par un fil doré.
 
 ### 2.3 Zone réponses
+- Réponse structurée, dans cet ordre :
+  1. correction ou suggestions ;
+  2. le mot exact dans le Coran (s'il est rare) ;
+  3. **les versets les plus proches de la question** (au plus 3, dans l'ordre choisi par l'IA), avec leur tafsir complet ;
+  4. les explications des autres versets, repliées ;
+  5. **les autres versets, sourate par sourate, sans répéter ceux déjà expliqués**.
 - Niveau de la réponse (أ/ب/ج/د, selon le référentiel du défi) et badge de vérification (conforme au Mushaf, citation déformée, pas un verset…). Badge « recherche par mots-clés » quand l'IA n'a pas confirmé.
 - Explication : une carte par verset, avec le texte du verset et son **tafsir complet** (jamais un fragment). Bouton « السياق » : les versets d'avant et d'après, avec leur tafsir.
 - Les sourates classées par pertinence, chacune dans sa couleur, avec ses versets et les mots cherchés surlignés. Dans chaque carte : « عن السورة » (fiche Quranpedia), 📖 lire, ▶ écouter.

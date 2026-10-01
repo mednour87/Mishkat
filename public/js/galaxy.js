@@ -27,6 +27,7 @@ const VERT = /* glsl */`
   uniform vec3 uPal[8];
   varying vec3 vColor;
   varying float vHl;
+  varying float vNear;
   void main() {
     vec3 p = mix(position, position2, uMix);
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
@@ -35,7 +36,10 @@ const VERT = /* glsl */`
     // verses of the answer are a little larger, but not when the camera is very close
     float grow = mix(1.0, 1.75, clamp(-mv.z / 320.0, 0.0, 1.0));
     float pulse = strong > 0.5 ? 1.0 + 0.18 * sin(uTime * 2.4 + p.x * 0.05) : 1.0;
-    gl_PointSize = min(36.0, size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (380.0 / -mv.z));
+    // stars never become large blurred discs in front of the camera: a size ceiling, and the
+    // stars that almost touch the camera fade out
+    gl_PointSize = min((strong > 0.5 ? 15.0 : 10.0) * uPx, size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (380.0 / -mv.z));
+    vNear = smoothstep(8.0, 40.0, -mv.z);
     gl_Position = projectionMatrix * mv;
     int k = int(clamp(mod(hl - 1.0, 8.0), 0.0, 7.0) + 0.5);
     vec3 pal = uPal[0];
@@ -47,6 +51,7 @@ const FRAG = /* glsl */`
   uniform float uDim;
   varying vec3 vColor;
   varying float vHl;
+  varying float vNear;
   void main() {
     vec2 c = gl_PointCoord - 0.5;
     float d = length(c);
@@ -54,8 +59,8 @@ const FRAG = /* glsl */`
     float core = smoothstep(0.5, 0.0, d);
     float a = pow(core, 1.6);
     // strong = verse of the answer, soft = rest of its surah, the rest of the sky stays visible
-    vec3 col = vHl > 0.75 ? vColor * 1.6 : vHl > 0.25 ? vColor * 1.15 : vColor * mix(1.05, 0.55, uDim);
-    gl_FragColor = vec4(col, a * (vHl > 0.25 ? 1.0 : mix(0.9, 0.6, uDim)));
+    vec3 col = vHl > 0.75 ? vColor * 1.5 : vHl > 0.25 ? vColor : vColor * mix(1.05, 0.55, uDim);
+    gl_FragColor = vec4(col, a * vNear * (vHl > 0.75 ? 1.0 : vHl > 0.25 ? 0.9 : mix(0.9, 0.6, uDim)));
   }`;
 
 export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onLabelVerse, wordText = () => '', suraLabel = (n) => String(n) }) {
@@ -404,11 +409,13 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   // extra layouts computed in the browser; each may carry its own home view
   const homes = [];
   function addLayout(arr, view) { layouts.push(arr); homes[layouts.length - 1] = view || null; return layouts.length - 1; }
-  function setLayout(L) {
+  function setLayout(L, moveCamera = true) {
     if (L === layout || !layouts[L]) return;
     const v = homes[L];
-    if (v) animateTo(new THREE.Vector3(...v.pos), new THREE.Vector3(...v.target), 2200);
-    else animateTo(HOME.pos.clone(), HOME.target.clone(), 2200);
+    if (moveCamera) {
+      if (v) animateTo(new THREE.Vector3(...v.pos), new THREE.Vector3(...v.target), 2200);
+      else animateTo(HOME.pos.clone(), HOME.target.clone(), 2200);
+    }
     controls.autoRotate = false;
     const posAttr = geo.getAttribute('position'), pos2 = geo.getAttribute('position2');
     posAttr.array.set(layouts[layout]); pos2.array.set(layouts[L]);
