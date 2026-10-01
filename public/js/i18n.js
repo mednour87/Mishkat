@@ -63,6 +63,9 @@ export const UI = {
     firstA: 'إلى أول السورة', playOne: 'الآية', playOneT: 'استمع إلى هذه الآية وحدها', playAll: 'متتابعة', playAllT: 'استمع بدءًا من هذه الآية ثم ما بعدها', closeReader: 'إغلاق القارئ والعودة',
     closeSuggest: 'إغلاق الاقتراحات', suggestTitle: 'اقتراحات', noAiBadge: 'بحث بالكلمات (دون تأكيد الذكاء الاصطناعي)',
     shapeLabel: 'الشكل', orderLabel: 'الترتيب', shapeKey: 'شكل العرض ثلاثي الأبعاد (مفتاح V)', orderKey: 'ترتيب السور على الشكل (مفتاح O)',
+    correctedTo: (q, w) => `عرضتُ نتائج «${q}» — أقرب لفظ قرآني إلى «${w}».`, searchAsTyped: (w) => `ابحث عن «${w}» كما كُتب`,
+    notQuranWord: (w) => `لم أجد «${w}» بين ألفاظ القرآن. هل تقصد:`, maybeAlso: 'قد تقصد أيضًا:', inVerses: (n) => n === 1 ? 'في آية' : `في ${n} آيات`,
+    wordTitle: (w) => `«${w}» في القرآن الكريم`, keyTitle: 'الآيات الأقرب إلى سؤالك، مع تفسيرها كاملًا', moreEx: (n) => `بيان ${n} آيات أخرى`, otherVerses: 'آيات أخرى ذات صلة، سورةً سورة',
     hoverAya: (s, a) => `سورة ${s} · الآية ${a}`,
   },
   en: {
@@ -128,6 +131,9 @@ export const UI = {
     firstA: 'To the first verse of the surah', playOne: 'Verse', playOneT: 'Listen to this verse only', playAll: 'Continuous', playAllT: 'Listen from this verse onwards', closeReader: 'Close the reader and go back',
     closeSuggest: 'Close the suggestions', suggestTitle: 'Suggestions', noAiBadge: 'Keyword search (not confirmed by AI)',
     shapeLabel: 'Shape', orderLabel: 'Order', shapeKey: 'Shape of the 3D view (key V)', orderKey: 'Order of the surahs along the shape (key O)',
+    correctedTo: (q, w) => `Showing results for “${q}”, the closest word of the Quran to “${w}”.`, searchAsTyped: (w) => `Search “${w}” as typed`,
+    notQuranWord: (w) => `“${w}” is not among the words of the Quran. Did you mean:`, maybeAlso: 'You may also mean:', inVerses: (n) => `in ${n} verse${n === 1 ? '' : 's'}`,
+    wordTitle: (w) => `“${w}” in the Quran`, keyTitle: 'The verses closest to your question, with their full tafsir', moreEx: (n) => `Explanation of ${n} more verse${n === 1 ? '' : 's'}`, otherVerses: 'Other related verses, surah by surah',
     hoverAya: (s, a) => `Surah ${s} · verse ${a}`,
   },
 

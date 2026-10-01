@@ -1,0 +1,5698 @@
+{
+ "date": "2026-10-01T18:44:00.112Z",
+ "gold": "2026-10-01",
+ "items": 139,
+ "modes": {
+  "det": {
+   "summary": {
+    "n": 139,
+    "unsafe": 1,
+    "topics": 111,
+    "answered": 45,
+    "abstained": 66,
+    "microP5": 0.9421052631578948,
+    "microP3": 0.9421487603305785,
+    "meanP1": 0.9333333333333333,
+    "meanP5": 0.9444444444444444,
+    "top3Clean": 40,
+    "offTop3": 5,
+    "coreRecall": 0.13834906334906333,
+    "coreRecall10": 0.13059130559130558,
+    "abstainItems": 20,
+    "abstainCorrect": 20,
+    "refItems": 8,
+    "refCorrect": 1
+   },
+   "byLang": {
+    "ar": {
+     "n": 78,
+     "unsafe": 1,
+     "topics": 63,
+     "answered": 16,
+     "abstained": 47,
+     "microP5": 0.8970588235294118,
+     "microP3": 0.8837209302325582,
+     "meanP1": 0.875,
+     "meanP5": 0.89375,
+     "top3Clean": 12,
+     "offTop3": 4,
+     "coreRecall": 0.10559964726631393,
+     "coreRecall10": 0.09964726631393298,
+     "abstainItems": 11,
+     "abstainCorrect": 11,
+     "refItems": 4,
+     "refCorrect": 1
+    },
+    "en": {
+     "n": 61,
+     "unsafe": 0,
+     "topics": 48,
+     "answered": 29,
+     "abstained": 19,
+     "microP5": 0.9672131147540983,
+     "microP3": 0.9743589743589743,
+     "meanP1": 0.9655172413793104,
+     "meanP5": 0.9724137931034482,
+     "top3Clean": 28,
+     "offTop3": 1,
+     "coreRecall": 0.18133267195767197,
+     "coreRecall10": 0.17120535714285715,
+     "abstainItems": 9,
+     "abstainCorrect": 9,
+     "refItems": 4,
+     "refCorrect": 0
+    }
+   },
+   "rows": [
+    {
+     "id": "ar01",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "طيب ابغى اعرف وش قال القرآن عن الصبر",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar02",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "لو سمحت ممكن ايات عن بر الوالدين",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar03",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "يا شيخ ايش يقول ربنا عن اللي يغتاب الناس",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar04",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "انا عايز اعرف ربنا قال ايه عن الرزق",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar05",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "شنو قال القران على التوبة",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar06",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابغى ايات تريح القلب وتطمنه",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar07",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "اممم كيف اتعامل مع الحزن والضيقة",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar08",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "وش قصة يوسف عليه السلام",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar09",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "احكيلي قصة سيدنا موسى مع فرعون",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar10",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابي اعرف قصة اصحاب الكهف",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar11",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "قصة اصحاب الفيل",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar12",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "اية عن الام وتعبها في الحمل والرضاعه",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar13",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "القران وش يقول عن الصدقة والانفاق في سبيل الله",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar14",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "لو سمحت ابغى ايات عن الصلاه",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar15",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "وش قال ربي عن الظلم والظالمين",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar16",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ما هي صفات المؤمنين في القران",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "4:146",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:112",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "17:19",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "49:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:51",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:71",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:43",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:162",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "36:59",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "40:40",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:10",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 0,
+     "p3": 0.6666666666666666,
+     "p5": 0.8,
+     "top3Clean": false,
+     "coreRecall": 0.3333333333333333,
+     "coreRecall10": 0.3333333333333333,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar17",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "كلمني عن يوم القيامه واهواله",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar18",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابغى وصف الجنة ونعيمها",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar19",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "عذاب النار وجهنم وش وصفها",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar20",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "كيف خلق الله ادم",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "32:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:59",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "55:14",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:26",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:6",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "17:70",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "30:20",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "90:4",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.375,
+     "coreRecall10": 0.375,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "ar21",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابغى قصة نوح والطوفان",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar22",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "قصة ابراهيم عليه السلام مع الاصنام",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar23",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ايش قال القران عن الخمر",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar24",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الربا في القران",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [
+      "tafsir card for an off-topic verse 4:160"
+     ],
+     "verses": [
+      {
+       "ref": "2:278",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:160",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:62",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:161",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "30:39",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:275",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:279",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:276",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 0.6666666666666666,
+     "p5": 0.6,
+     "top3Clean": false,
+     "coreRecall": 1,
+     "coreRecall10": 1,
+     "explained": [
+      {
+       "ref": "2:278",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "3:130",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "4:160",
+       "rel": false,
+       "role": "answer"
+      }
+     ],
+     "correct": false
+    },
+    {
+     "id": "ar25",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ودي اعرف عن الحسد والحاسد",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar26",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "وش قال القران عن الكذب والكذابين",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar27",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابغى ايات عن الصدق وفضله",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar28",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "اذا ضاقت فيني الدنيا وش اقرا",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar29",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "كيف ادعي ربي وهل يستجيب الدعاء",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar30",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "وش يقول القران عن الموت وسكرات الموت",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar31",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ايش هي ليلة القدر وفضلها",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar32",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ايات عن الصيام ورمضان",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar33",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الحج وفضله ومناسكه",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar34",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ايش قال ربنا عن اليتيم",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar35",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "العدل بين الناس في القران",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "4:58",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:85",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "55:8",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "57:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:90",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:21",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:183",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "42:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:26",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "55:9",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:51",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:8",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.42857142857142855,
+     "coreRecall10": 0.42857142857142855,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "ar36",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الامانه واداء الامانات",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar37",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "التوكل على الله",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "3:122",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:159",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:173",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:81",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:171",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:49",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:61",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:51",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:129",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:123",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:30",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:58",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:217",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:79",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:48",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:38",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:23",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:89",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:71",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:84",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:85",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:88",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:67",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.75,
+     "coreRecall10": 0.5,
+     "explained": [
+      {
+       "ref": "3:122",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "3:159",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "3:173",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "correct": true
+    },
+    {
+     "id": "ar38",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الشكر وان الله يزيد الشاكرين",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar39",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ايات عن الزواج والمودة بين الزوجين",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar40",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "وش قال القران عن التكبر والغرور",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar41",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ابي اعرف عن الشيطان ووساوسه",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar42",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الملائكة واعمالهم",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "34:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:73",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:62",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:177",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.1111111111111111,
+     "coreRecall10": 0.1111111111111111,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "ar43",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "من هو عيسى ابن مريم في القران",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "3:45",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:157",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:31",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:72",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:171",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:116",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:87",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:50",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "61:6",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.625,
+     "coreRecall10": 0.5,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "ar44",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "قصه مريم عليها السلام",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "index",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "3:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:16",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:22",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:91",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:29",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:45",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.42857142857142855,
+     "coreRecall10": 0.42857142857142855,
+     "explained": [
+      {
+       "ref": "3:42",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "19:16",
+       "rel": true,
+       "role": "answer"
+      },
+      {
+       "ref": "19:22",
+       "rel": true,
+       "role": "answer"
+      }
+     ],
+     "correct": true
+    },
+    {
+     "id": "ar45",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "قصة يونس والحوت",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "21:87",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.125,
+     "coreRecall10": 0.125,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "ar46",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "قصة سليمان والهدهد",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar47",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "فضل العلم والعلماء",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "27:15",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "58:11",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 0,
+     "p3": 0.5,
+     "p5": 0.5,
+     "top3Clean": false,
+     "coreRecall": 0.14285714285714285,
+     "coreRecall10": 0.14285714285714285,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar48",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "كيف امسك اعصابي ساعة الغضب",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar49",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "العفو والتسامح مع الناس",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar50",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "وش صفات المنافقين",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar51",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الحجاب ولباس المراه",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar52",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "الصبر عند المصيبه",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar53",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "ما هو جزاء من يقتل نفس بغير حق",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar54",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "وش قال القران عن السحر والسحره",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar55",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "رحلة الاسراء والمعراج",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar56",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "طريقة الوضوء في القران",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar57",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "حق الجار في الاسلام",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar58",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "فضل ذكر الله",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "57:29",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "62:4",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "17:87",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:86",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:76",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:73",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "30:45",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:3",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "42:26",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:71",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:64",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "35:30",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 0.3333333333333333,
+     "p5": 0.4,
+     "top3Clean": false,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "ar59",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "رحمة الله الواسعه",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:115",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:207",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:128",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "64:14",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "ar60",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "هل القران شفاء للامراض",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "16:69",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "17:82",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:57",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "1:5",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.75,
+     "coreRecall10": 0.75,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "ar61",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "من هم اولو العزم من الرسل",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "46:35",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.3333333333333333,
+     "coreRecall10": 0.3333333333333333,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "ar62",
+     "lang": "ar",
+     "kind": "topic",
+     "q": "من هو ذو القرنين",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "18:95",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:86",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:98",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:87",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:92",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:89",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.25,
+     "coreRecall10": 0.25,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "ar63",
+     "lang": "ar",
+     "kind": "polemic",
+     "q": "ليش الاسلام دين ارهاب",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "context",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:190",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:256",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:61",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "60:8",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:39",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 1,
+     "coreRecall10": 1,
+     "explained": [
+      {
+       "ref": "2:190",
+       "rel": true,
+       "role": "context"
+      },
+      {
+       "ref": "2:256",
+       "rel": true,
+       "role": "context"
+      },
+      {
+       "ref": "8:61",
+       "rel": true,
+       "role": "context"
+      },
+      {
+       "ref": "60:8",
+       "rel": true,
+       "role": "context"
+      },
+      {
+       "ref": "22:39",
+       "rel": true,
+       "role": "context"
+      }
+     ],
+     "correct": true
+    },
+    {
+     "id": "ar64",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "كم سعر الذهب اليوم",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar65",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "وش افضل جوال ايفون ولا سامسونج",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar66",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "اه طيب يعني اممم",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar67",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "لو سمحت هل يجوز اني اصلي وانا جالس",
+     "type": "abstain",
+     "verdict": null,
+     "reason": "ruling",
+     "route": "guard",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar68",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "ايش حكم الاغاني والموسيقى",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar69",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "هل حلال اشتغل في بنك",
+     "type": "abstain",
+     "verdict": null,
+     "reason": "ruling",
+     "route": "guard",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar70",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "يا شيخ التدخين حرام ولا حلال",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar71",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "زوجي ما يصلي وش اسوي",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar72",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "ابوي يضربني وش اسوي",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar73",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "حلمت اني اطير في السما وش تفسيره",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar74",
+     "lang": "ar",
+     "kind": "abstain",
+     "q": "هل اللي ما يصلي كافر",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "ar75",
+     "lang": "ar",
+     "kind": "ref",
+     "q": "ممكن تقرالي اية الكرسي",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": false
+    },
+    {
+     "id": "ar76",
+     "lang": "ar",
+     "kind": "ref",
+     "q": "افتح لي سورة الكهف لو سمحت",
+     "type": "verify",
+     "verdict": "notverse",
+     "reason": null,
+     "route": "verify+topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": false
+    },
+    {
+     "id": "ar77",
+     "lang": "ar",
+     "kind": "ref",
+     "q": "ابغى اسمع سورة يس",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": false
+    },
+    {
+     "id": "ar78",
+     "lang": "ar",
+     "kind": "ref",
+     "q": "اية 255 من سورة البقرة",
+     "type": "verse",
+     "verdict": null,
+     "reason": null,
+     "route": "reference",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:255"
+      }
+     ],
+     "correct": true
+    },
+    {
+     "id": "en01",
+     "lang": "en",
+     "kind": "topic",
+     "q": "um what does the quran say about being patient when you lose someone",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en02",
+     "lang": "en",
+     "kind": "topic",
+     "q": "so like what does allah say about parents",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "4:11",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:233",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en03",
+     "lang": "en",
+     "kind": "topic",
+     "q": "can you tell me the story of prophet yusuf",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en04",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about backbiting",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "58:8",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "49:12",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.3333333333333333,
+     "coreRecall10": 0.3333333333333333,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en05",
+     "lang": "en",
+     "kind": "topic",
+     "q": "uh verses about anxiety and stress",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en06",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about forgiveness",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "51:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:80",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "63:6",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:98",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:106",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:50",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "71:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:9",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:29",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:64",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:90",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:96",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en07",
+     "lang": "en",
+     "kind": "topic",
+     "q": "tell me about jesus in the quran",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "3:45",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:72",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:157",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:30",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:31",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:171",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:85",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:30",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:112",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:172",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.5,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en08",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what happens on the day of judgment",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "35:9",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en09",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about giving charity",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "58:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:280",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:34",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:156",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en10",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about honesty and telling the truth",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en11",
+     "lang": "en",
+     "kind": "topic",
+     "q": "story of noah and the flood",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "21:76",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en12",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about alcohol",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "5:91",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:29",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:93",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:43",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.5,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en13",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about interest and usury",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "2:275",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:278",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:161",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:130",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:276",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "56:71",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.7142857142857143,
+     "coreRecall10": 0.7142857142857143,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en14",
+     "lang": "en",
+     "kind": "topic",
+     "q": "how were the heavens and the earth created in six days",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "50:38",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:59",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "57:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "32:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "11:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:3",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.7,
+     "coreRecall10": 0.7,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en15",
+     "lang": "en",
+     "kind": "topic",
+     "q": "verses about the sun and the moon",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "75:9",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "55:5",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "41:37",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "71:16",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:33",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:33",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:61",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "36:40",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "91:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:96",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:12",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.5,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en16",
+     "lang": "en",
+     "kind": "topic",
+     "q": "how do i deal with sadness and depression",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en17",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about marriage",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "33:49",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:23",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:71",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:237",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:235",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:230",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:38",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:60",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.125,
+     "coreRecall10": 0.125,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en18",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about orphans",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "107:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "76:8",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "89:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:10",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:127",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:8",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:215",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:220",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "90:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "93:6",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "93:9",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.7777777777777778,
+     "coreRecall10": 0.6666666666666666,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en19",
+     "lang": "en",
+     "kind": "topic",
+     "q": "tell me about allah's mercy",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "27:77",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "31:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:118",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:56",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:86",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "36:44",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:86",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:151",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "44:6",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.14285714285714285,
+     "coreRecall10": 0.14285714285714285,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en20",
+     "lang": "en",
+     "kind": "topic",
+     "q": "verses about prayer salah",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en21",
+     "lang": "en",
+     "kind": "topic",
+     "q": "uh fasting during ramadan",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en22",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about hajj",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "22:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:189",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:158",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:197",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:196",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:198",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:97",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:1",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.8571428571428571,
+     "coreRecall10": 0.8571428571428571,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en23",
+     "lang": "en",
+     "kind": "topic",
+     "q": "the story of musa and firaun",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en24",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about death",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "44:56",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "44:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "74:47",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "50:43",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "50:19",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:57",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:59",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:99",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "69:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:56",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "39:42",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "56:60",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.25,
+     "coreRecall10": 0.25,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en25",
+     "lang": "en",
+     "kind": "topic",
+     "q": "describe paradise in the quran",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en26",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what is hellfire like",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "37:23",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "72:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "28:61",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:162",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:179",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:68",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:57",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:140",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "13:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "67:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "77:32",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:101",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.14285714285714285,
+     "coreRecall10": 0.14285714285714285,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en27",
+     "lang": "en",
+     "kind": "topic",
+     "q": "the story of the people of the cave",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "18:9",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.25,
+     "coreRecall10": 0.25,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en28",
+     "lang": "en",
+     "kind": "topic",
+     "q": "who was dhul qarnayn",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "18:83",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:94",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:98",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:86",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "18:88",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.75,
+     "coreRecall10": 0.75,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en29",
+     "lang": "en",
+     "kind": "topic",
+     "q": "the night of power laylatul qadr",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en30",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about arrogance",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "23:67",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "22:9",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "71:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:206",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:19",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:49",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "79:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "80:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "38:2",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "44:19",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "20:116",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "67:21",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en31",
+     "lang": "en",
+     "kind": "topic",
+     "q": "verses about being thankful",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "34:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:172",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:141",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en32",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about trusting god",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "70:32",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "23:8",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "8:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:283",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:72",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:58",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:51",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:79",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:3",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "14:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:75",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "12:67",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.5,
+     "coreRecall10": 0.375,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en33",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about justice",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "6:115",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "5:8",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:47",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "42:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:21",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:54",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:58",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:18",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "7:29",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "55:9",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "33:70",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.2857142857142857,
+     "coreRecall10": 0.2857142857142857,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en34",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about the jinn",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "114:6",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "55:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:27",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:158",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "51:56",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "27:17",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "55:39",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "72:5",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "72:6",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "34:14",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "55:33",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "72:1",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.625,
+     "coreRecall10": 0.5,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en35",
+     "lang": "en",
+     "kind": "topic",
+     "q": "tell me about the angels",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "74:30",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "77:5",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "50:23",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "80:15",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "37:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "51:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "77:4",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "79:1",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:32",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "56:79",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "25:22",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "15:30",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en36",
+     "lang": "en",
+     "kind": "topic",
+     "q": "the story of adam and eve",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en37",
+     "lang": "en",
+     "kind": "topic",
+     "q": "abraham and the idols",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "14:35",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "6:74",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:62",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:57",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:60",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:25",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "43:26",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "19:46",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "2:125",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "29:24",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "26:72",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "21:63",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.25,
+     "coreRecall10": 0.25,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en38",
+     "lang": "en",
+     "kind": "topic",
+     "q": "the story of the elephant",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en39",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about envy and jealousy",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "113:5",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.25,
+     "coreRecall10": 0.25,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en40",
+     "lang": "en",
+     "kind": "topic",
+     "q": "verses about hope and not losing hope in allah",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en41",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about seeking knowledge",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "11:47",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "40:7",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:16",
+       "rel": false,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:40",
+       "rel": false,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 0,
+     "p3": 0.3333333333333333,
+     "p5": 0.2,
+     "top3Clean": false,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en42",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about controlling anger",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en43",
+     "lang": "en",
+     "kind": "topic",
+     "q": "the story of yunus and the whale",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en44",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the koran say about patients",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en45",
+     "lang": "en",
+     "kind": "topic",
+     "q": "um what does uh the quran say about uh being grateful",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en46",
+     "lang": "en",
+     "kind": "topic",
+     "q": "what does the quran say about lying",
+     "type": "topic",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": "none",
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [
+      {
+       "ref": "78:21",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "96:16",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "3:191",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "4:103",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "10:12",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "72:9",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "40:28",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "58:14",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "9:43",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "24:7",
+       "rel": true,
+       "relatedOnly": false
+      },
+      {
+       "ref": "16:105",
+       "rel": true,
+       "relatedOnly": false
+      }
+     ],
+     "answered": true,
+     "p1": 1,
+     "p3": 1,
+     "p5": 1,
+     "top3Clean": true,
+     "coreRecall": 0.25,
+     "coreRecall10": 0.125,
+     "explained": [],
+     "correct": true
+    },
+    {
+     "id": "en47",
+     "lang": "en",
+     "kind": "topic",
+     "q": "how can i become more patient",
+     "type": "abstain",
+     "verdict": null,
+     "reason": "personal",
+     "route": "guard",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en48",
+     "lang": "en",
+     "kind": "polemic",
+     "q": "why is islam a religion of violence",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "answered": false,
+     "p1": null,
+     "p3": null,
+     "p5": null,
+     "top3Clean": null,
+     "coreRecall": 0,
+     "coreRecall10": 0,
+     "explained": [],
+     "correct": false
+    },
+    {
+     "id": "en49",
+     "lang": "en",
+     "kind": "abstain",
+     "q": "is it haram to listen to music",
+     "type": "abstain",
+     "verdict": null,
+     "reason": "ruling",
+     "route": "guard",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "en50",
+     "lang": "en",
+     "kind": "abstain",
+     "q": "can i pray without wudu",
+     "type": "abstain",
+     "verdict": null,
+     "reason": "personal",
+     "route": "guard",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "en51",
+     "lang": "en",
+     "kind": "abstain",
+     "q": "my wife doesn't pray what should i do",
+     "type": "abstain",
+     "verdict": null,
+     "reason": "personal",
+     "route": "guard",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "en52",
+     "lang": "en",
+     "kind": "abstain",
+     "q": "i dreamt that my teeth fell out what does it mean",
+     "type": "abstain",
+     "verdict": null,
+     "reason": "dream",
+     "route": "guard",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "en53",
+     "lang": "en",
+     "kind": "abstain",
+     "q": "what's the weather in mecca tomorrow",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "en54",
+     "lang": "en",
+     "kind": "abstain",
+     "q": "bitcoin price prediction for next year",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "en55",
+     "lang": "en",
+     "kind": "abstain",
+     "q": "testing testing one two three",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "en56",
+     "lang": "en",
+     "kind": "abstain",
+     "q": "is it permissible to take a mortgage",
+     "type": "abstain",
+     "verdict": null,
+     "reason": "ruling",
+     "route": "guard",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "en57",
+     "lang": "en",
+     "kind": "abstain",
+     "q": "should i divorce my husband",
+     "type": "abstain",
+     "verdict": null,
+     "reason": "personal",
+     "route": "guard",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": true
+    },
+    {
+     "id": "en58",
+     "lang": "en",
+     "kind": "ref",
+     "q": "can you read me ayatul kursi please",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": false
+    },
+    {
+     "id": "en59",
+     "lang": "en",
+     "kind": "ref",
+     "q": "open surah al mulk please",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": false
+    },
+    {
+     "id": "en60",
+     "lang": "en",
+     "kind": "ref",
+     "q": "uh play surah yaseen",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": false
+    },
+    {
+     "id": "en61",
+     "lang": "en",
+     "kind": "ref",
+     "q": "show me surah 18 verse 10",
+     "type": "notfound",
+     "verdict": null,
+     "reason": null,
+     "route": "topic",
+     "paragraphBy": null,
+     "aiConfirmed": null,
+     "llm": {
+      "used": false,
+      "intent": null,
+      "error": null
+     },
+     "unsafe": [],
+     "verses": [],
+     "correct": false
+    }
+   ]
+  }
+ }
+}

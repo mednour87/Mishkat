@@ -17,6 +17,7 @@ const MEDINAN = new THREE.Color('#8EC5F0');
 // one colour per surah of an answer (index 1..8); 0 = not highlighted
 export const PALETTE = ['#FFD66B', '#5EE6A0', '#8FD3FF', '#FF9F7A', '#C9A2FF', '#7FE0D4', '#FFB4D2', '#B8E07A'];
 
+// hl: 0 = normal · 1..8 = verse of the answer (palette k) · 9..16 = other words of a surah of the answer (soft tint)
 const VERT = /* glsl */`
   attribute vec3 position2;
   attribute vec3 color;
@@ -29,15 +30,18 @@ const VERT = /* glsl */`
   void main() {
     vec3 p = mix(position, position2, uMix);
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
-    float on = hl > 0.5 ? 1.0 : 0.0;
-    float pulse = on > 0.5 ? 1.0 + 0.22 * sin(uTime * 2.4 + p.x * 0.05) : 1.0;
-    gl_PointSize = min(64.0, size * uPx * pulse * (on > 0.5 ? 2.5 : 1.0) * (380.0 / -mv.z));
+    float strong = (hl > 0.5 && hl < 8.5) ? 1.0 : 0.0;
+    float soft = hl > 8.5 ? 1.0 : 0.0;
+    // verses of the answer are a little larger, but not when the camera is very close
+    float grow = mix(1.0, 1.75, clamp(-mv.z / 320.0, 0.0, 1.0));
+    float pulse = strong > 0.5 ? 1.0 + 0.18 * sin(uTime * 2.4 + p.x * 0.05) : 1.0;
+    gl_PointSize = min(36.0, size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (380.0 / -mv.z));
     gl_Position = projectionMatrix * mv;
-    int k = int(clamp(hl - 1.0, 0.0, 7.0) + 0.5);
+    int k = int(clamp(mod(hl - 1.0, 8.0), 0.0, 7.0) + 0.5);
     vec3 pal = uPal[0];
     for (int j = 1; j < 8; j++) if (j == k) pal = uPal[j];
-    vColor = on > 0.5 ? mix(color, pal, 0.8) : color;
-    vHl = on;
+    vColor = strong > 0.5 ? mix(color, pal, 0.85) : soft > 0.5 ? mix(color, pal, 0.45) : color;
+    vHl = strong > 0.5 ? 1.0 : soft > 0.5 ? 0.5 : 0.0;
   }`;
 const FRAG = /* glsl */`
   uniform float uDim;
@@ -49,8 +53,9 @@ const FRAG = /* glsl */`
     if (d > 0.5) discard;
     float core = smoothstep(0.5, 0.0, d);
     float a = pow(core, 1.6);
-    vec3 col = vHl > 0.5 ? vColor * 1.7 : vColor * mix(1.05, 0.14, uDim);
-    gl_FragColor = vec4(col, a * (vHl > 0.5 ? 1.0 : mix(0.9, 0.35, uDim)));
+    // strong = verse of the answer, soft = rest of its surah, the rest of the sky stays visible
+    vec3 col = vHl > 0.75 ? vColor * 1.6 : vHl > 0.25 ? vColor * 1.15 : vColor * mix(1.05, 0.55, uDim);
+    gl_FragColor = vec4(col, a * (vHl > 0.25 ? 1.0 : mix(0.9, 0.6, uDim)));
   }`;
 
 export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onLabelVerse, wordText = () => '', suraLabel = (n) => String(n) }) {
@@ -345,9 +350,19 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   function highlightVerses(list, colorOf = () => 1) {
     highlighted = list.slice();
     hl.fill(0);
+    // the surahs of the answer get a soft tint of their colour…
+    const done = new Set();
+    for (const v of list) {
+      const k = colorOf(v) || 1, sk = suraIdxOfVerse[v];
+      if (done.has(sk)) continue;
+      done.add(sk);
+      const S = suras[sk], a = vStart[S.first], b = vEnd[S.first + S.ayas - 1];
+      for (let i = a; i < b; i++) hl[i] = 8 + k;
+    }
+    // …and their verses shine in it
     for (const v of list) { const k = colorOf(v) || 1; for (let i = vStart[v]; i < vEnd[v]; i++) hl[i] = k; }
     hlAttr.needsUpdate = true;
-    dimTarget = list.length ? 1 : 0;
+    dimTarget = list.length ? 0.6 : 0;
     drawPath();
   }
   let dimTarget = 0;
@@ -425,7 +440,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     const hits = ray.intersectObject(points);
     if (!hits.length) return null;
     // prefer highlighted words
-    const h = hits.find(x => hl[x.index] > 0.5) || hits[0];
+    const h = hits.find(x => hl[x.index] > 0.5 && hl[x.index] < 8.5) || hits[0];
     return { word: h.index, verse: wordVerse[h.index], x: ev.clientX, y: ev.clientY };
   }
   canvas.addEventListener('pointermove', (ev) => {
@@ -451,7 +466,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     const now = performance.now(), dt = Math.min(0.1, (now - last) / 1000);
     last = now;
     uniforms.uTime.value = clock.getElapsedTime();
-    const dimGoal = reciting ? Math.max(dimTarget, 0.75) : dimTarget;
+    const dimGoal = reciting ? Math.max(dimTarget, 0.7) : dimTarget;
     uniforms.uDim.value += (dimGoal - uniforms.uDim.value) * (1 - Math.exp(-dt * 4));
     if (anim) {
       const t = Math.min(1, (now - anim.t0) / anim.ms), e = ease(t);

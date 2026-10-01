@@ -275,6 +275,7 @@ function arCount(n, one, two, few, many) {
 
 export const MSG = {
   ar: {
+    wordFound: (n, w, k) => `ورد «${w}» في القرآن الكريم في ${n === 1 ? 'آية واحدة' : n + ' آيات'}${k > 1 ? ` من ${k} سور` : ''}، وهذه مواضعه بترتيب المصحف:`,
     sura: (s) => `سورة ${s.ar} (${s.tr})، ${s.type === 'meccan' ? 'مكية' : 'مدنية'}، عدد آياتها ${s.ayas}، وترتيبها في المصحف ${s.n}.`,
     verse: (r) => `الآية ${r}`,
     range: (r) => `الآيات ${r}`,
@@ -312,6 +313,7 @@ export const MSG = {
     khilaf: 'القرآن الكريم وما ثبت من أصول الدين محلّ اتفاق بين المسلمين، أما كثير من مسائل الفقه التفصيلية فقد يختلف فيها العلماء باجتهادٍ في فهم الأدلة، ولا يُصوَّر كل خلاف على أنه تناقض. ولا تنسب «مشكاة» اتفاقًا ولا خلافًا في مسألة بعينها دون مصدر؛ ولمعرفة أقوال العلماء فيها يُرجع إلى جهات الفتوى المعتمدة أدناه.',
   },
   en: {
+    wordFound: (n, w, k) => `“${w}” occurs in ${n} verse${n === 1 ? '' : 's'} of the Quran${k > 1 ? ` in ${k} surahs` : ''}; here they are in Mushaf order:`,
     sura: (s) => `Surah ${s.tr} (${s.en}) — ${s.type === 'meccan' ? 'Meccan' : 'Medinan'}, ${s.ayas} verses, number ${s.n} in the Mushaf.`,
     verse: (r) => `Verse ${r}`,
     range: (r) => `Verses ${r}`,
@@ -1059,12 +1061,226 @@ export function createEngine({ core, searchAr, sources = {} }) {
     return null;
   }
 
+  // ---------------------------------------------- exact words of the Quran & spelling help
+  // A word typed or pasted (e.g. «مشكاة», "mishkat") is looked up among the WORDS of the
+  // Quran, whatever their proclitics (و ف ب ك ل س ال) and attached pronouns, so that the
+  // verse where it occurs comes FIRST. A word that does not occur gets the closest words
+  // of the Quran as suggestions («هل تقصد…؟»). Only references are produced, never text.
+  const PROCLITICS = ['وال', 'فال', 'بال', 'كال', 'لل', 'ال', 'و', 'ف', 'ب', 'ك', 'ل', 'س'];
+  const ENCLITICS = ['هما', 'كما', 'ها', 'هم', 'هن', 'كم', 'كن', 'نا', 'ه', 'ي', 'ك'];
+  let WIDX = null;   // Map<form, Set<verse>>  (forms of every Quran word)
+  let WFREQ = null;  // Map<base form, number of verses>  (for suggestions)
+  const tmarbuta = (w) => w.replace(/ه$/, 'ة');
+  function baseForms(t) {
+    const out = new Set([t]);
+    const strip = (w, depth) => {
+      for (const p of PROCLITICS) if (w.startsWith(p) && w.length - p.length >= 2) {
+        const r = w.slice(p.length); out.add(r);
+        if (depth < 1) strip(r, depth + 1);
+      }
+    };
+    strip(t, 0);
+    for (const f of [...out]) for (const s of ENCLITICS) if (f.endsWith(s) && f.length - s.length >= 3) out.add(f.slice(0, -s.length));
+    // ة → ت before a pronoun («رحمته» → «رحمة»)
+    for (const f of [...out]) if (/ت$/.test(f) && f.length >= 4) out.add(f.slice(0, -1) + 'ة');
+    return out;
+  }
+  function wordIndex() {
+    if (WIDX) return WIDX;
+    WIDX = new Map(); WFREQ = new Map();
+    // both spellings: imla'i (how people type) and Uthmani (pasted from a Mushaf: «مشكوة»)
+    searchAr.forEach((txt, v) => {
+      const seen = new Set();
+      for (const t of (normAr(txt) + ' ' + normAr(verses[v])).split(' ')) {
+        if (!t) continue;
+        for (const f of baseForms(t)) {
+          if (seen.has(f)) continue;
+          seen.add(f);
+          if (!WIDX.has(f)) WIDX.set(f, new Set());
+          WIDX.get(f).add(v);
+        }
+      }
+      for (const f of seen) WFREQ.set(f, (WFREQ.get(f) || 0) + 1);
+    });
+    return WIDX;
+  }
+  let LATIN = null;   // Map<collapsed Latin form, Set<verse>>
+  const latinKey = (w) => w.replace(/ee/g, 'i').replace(/oo/g, 'u').replace(/(.)\1+/g, '$1');
+  const caseless = (k) => k.length > 5 ? k.replace(/(in|un|an|i|u|a)$/, '') : k;
+  function addLatinIndex(data) {
+    if (!data || !data.forms) return;
+    LATIN = new Map();
+    for (const [k, vs] of Object.entries(data.forms)) {
+      const c = latinKey(k);
+      if (!LATIN.has(c)) LATIN.set(c, new Set());
+      for (const v of vs) LATIN.get(c).add(v);
+    }
+  }
+  const latinForms = (w) => {
+    const out = [w];
+    for (const p of ['al', 'wa', 'fa', 'bi', 'li', 'ka']) if (w.startsWith(p) && w.length - p.length >= 3) out.push(w.slice(p.length));
+    return out;
+  };
+  // verses containing the word(s); every word of the query must occur in the verse
+  function wordLookup(q) {
+    const isAr = AR_RANGE.test(q);
+    const toks = isAr ? normAr(q).split(' ').filter(w => w.length >= 2) : normLatin(q).split(' ').filter(w => w.length >= 3);
+    if (!toks.length || toks.length > 3) return null;
+    const sets = [];
+    for (const t of toks) {
+      let hit = null;
+      if (isAr) {
+        const idx = wordIndex();
+        // the word as typed, then without its own clitics (the index holds every bare form)
+        const cands = /^ال/.test(t) ? [t, tmarbuta(t)] : [t, tmarbuta(t), ...baseForms(t)];
+        for (const f of cands) { const s = idx.get(f); if (s && s.size) { hit = s; break; } }
+      } else if (LATIN) {
+        const acc = new Set();
+        for (const f0 of latinForms(t)) {
+          const f = latinKey(f0);
+          for (const [k, vs] of LATIN) if (k === f || (k.startsWith(f) && k.length - f.length <= 3) || (k.length >= 5 && f.startsWith(k) && f.length - k.length <= 1)) vs.forEach(v => acc.add(v));
+        }
+        if (acc.size) hit = acc;
+      }
+      if (!hit) return { toks, verses: [], missing: t, isAr };
+      sets.push(hit);
+    }
+    let verses = [...sets[0]].filter(v => sets.every(s => s.has(v))).sort((a, b) => a - b);
+    return { toks, verses, isAr };
+  }
+  const editDist = (a, b, max) => {
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) {
+      const cur = [i]; let best = i;
+      for (let j = 1; j <= b.length; j++) {
+        // ة / ت / ه are interchangeable only as the LAST letter («الزكات» = «الزكاة»)
+        const sub = a[i - 1] === b[j - 1] || (i === a.length && j === b.length && 'ةته'.includes(a[i - 1]) && 'ةته'.includes(b[j - 1])) ? 0 : 1;
+        cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + sub);
+        if (cur[j] < best) best = cur[j];
+      }
+      if (best > max) return max + 1;
+      prev = cur;
+    }
+    return prev[b.length];
+  };
+  // the closest words of the Quran to a misspelt one (1–2 letters missing, added or wrong)
+  function suggestWords(word, { min = 0 } = {}) {
+    const isAr = AR_RANGE.test(word);
+    if (!isAr) {
+      if (!LATIN) return [];
+      const w = latinKey(normLatin(word));
+      if (w.length < 4) return [];
+      const max = w.length >= 7 ? 2 : 1, out = [];
+      for (const [k, vs] of LATIN) {
+        if (Math.abs(k.length - w.length) > max + 3) continue;
+        const d = Math.min(editDist(w, k, max), editDist(w, caseless(k), max));
+        if (k !== w && d <= max && vs.size > min) out.push({ w: caseless(k), d, n: vs.size, v: [...vs][0] });
+      }
+      return out.sort((a, b) => a.d - b.d || b.n - a.n).slice(0, 4).map(x => ({ word: x.w, q: x.w, count: x.n, first: x.v }));
+    }
+    wordIndex();
+    const hadAl = /^ال/.test(normAr(word));
+    const w = normAr(word).replace(/^(ال)/, '');
+    if (w.length < 3) return [];
+    const max = w.length >= 7 ? 2 : 1, out = [];
+    for (const [f, n] of WFREQ) {
+      if (n <= min || Math.abs(f.length - w.length) > max || f.length < 3) continue;
+      const d = editDist(w, f, max);
+      if (f !== w && d <= max) out.push({ f, d, n });
+    }
+    const subseq = (a, b) => { let i = 0; for (const c of b) if (c === a[i]) i++; return i === a.length; };
+    const rank = (x) => x.d * 10 - (subseq(w, x.f) || subseq(x.f, w) ? 4 : 0) - (x.f[0] === w[0] ? 2 : 0) - Math.log2(1 + x.n) * 0.6;
+    out.sort((a, b) => rank(a) - rank(b));
+    // keep the bare forms, best first, without near-duplicates
+    const seen = new Set(), res = [];
+    for (const x of out) {
+      if (seen.has(x.f)) continue;
+      seen.add(x.f);
+      if (res.some(r => normAr(r.word) === normAr(surface(x.f)))) continue;
+      const shown = surface(hadAl && WIDX.has('ال' + x.f) ? 'ال' + x.f : x.f);
+      // «sure»: one letter missing, added or changed in a word the Quran uses often — safe to correct
+      res.push({ word: shown, q: normAr(shown), count: x.n, first: [...WIDX.get(x.f)][0], sure: res.length === 0 && x.d <= 1 && x.n >= 3 && (x.d === 0 || subseq(w, x.f) || subseq(x.f, w)) });
+      if (res.length >= 4) break;
+    }
+    return res;
+  }
+  const refOf = (v) => `${suraOf[v]}:${ayaOf[v]}`;
+  // positions (among the words with letters) of a verse's words that match the given forms,
+  // found on the imla'i text and valid on the Uthmani text when both have the same words
+  function wordPositions(v, forms) {
+    const F = new Set(forms), hasL = (t) => /[ء-ي]/.test(normAr(t));
+    const im = String(searchAr[v]).split(/\s+/).filter(hasL), ut = String(verses[v]).split(/\s+/).filter(hasL);
+    if (im.length !== ut.length) return [];
+    const out = [];
+    im.forEach((t, k) => { const n = normAr(t); if (F.has(n) || [...baseForms(n)].some(f => F.has(f))) out.push(k); });
+    return out;
+  }
+  // how a word form is actually written in the Quran (imla'i), for display: «يتام» → «اليتامى»
+  function surface(f) {
+    const vs = WIDX.get(f);
+    if (!vs) return f;
+    for (const v of vs) for (const t of String(searchAr[v]).split(/\s+/)) {
+      const n = normAr(t);
+      if (n === f || (baseForms(n).has(f) && !/^[وفبكلس]/.test(n.replace(/^ال/, '')) === !/^[وفبكلس]/.test(f.replace(/^ال/, '')))) return t.replace(/^[وف](?=ال)/, '');
+    }
+    return f;
+  }
+
+  // result for a word of the Quran: its verses first, grouped by surah, in Mushaf order
+  function wordResult(base, wl, lang) {
+    const M = MSG[lang] || MSG.ar;
+    const verses = wl.verses.slice(0, 60).map(i => ({ idx: i, ref: refOf(i), word: true }));
+    const by = new Map();
+    for (const v of verses) { const s = suraOf[v.idx]; if (!by.has(s)) by.set(s, []); by.get(s).push(v.idx); }
+    return { ...base, type: 'topic', lang, wordQuery: wl.toks.join(' '),
+      answer: [{ kind: 'text', text: M.wordFound(wl.verses.length, wl.toks.join(' '), by.size) }],
+      verses, suras: [...by.entries()].map(([sura, vs]) => ({ sura, verses: vs })), focus: verses.length === 1 ? verses[0].idx : null,
+      terms: wl.isAr ? [...new Set(wl.toks.flatMap(t => [...baseForms(t)]))] : [], paragraphBy: 'none', meta: { ...(base.meta || {}), route: 'word' } };
+  }
+
   // ---------------------------------------------------------------- ask()
   // ask(): the routes below, then the reference-pack additions (level, glossary card,
   // links to the objections encyclopedia).
+  // the words of the query in the Quran: a rare word's own verses come first; a word that is
+  // not in the Quran gets the closest words as suggestions
+  const WORD_SKIP = new Set(['verse', 'range', 'sura', 'abstain', 'invalid_ref', 'hadith', 'khilaf']);
+  function withWords(res, query, opts) {
+    const q = String(query || '').trim();
+    if (!q || q.length > 60 || /\d/.test(q) || /[؟?:]/.test(q) || WORD_SKIP.has(res.type)) return res;
+    if (res.type === 'verify' && res.verdict === 'exact') return res;
+    const wl = wordLookup(q);
+    if (!wl) return res;
+    const lang = wl.isAr ? 'ar' : 'en';
+    if (wl.verses.length) {
+      const weak = ['notfound', 'empty'].includes(res.type) || (res.type === 'verify' && res.verdict !== 'exact') || (res.type === 'topic' && !res.verses.length);
+      if (weak) return wordResult({ query: q, lang, meta: res.meta || {} }, wl, lang);
+      if (wl.verses.length <= 12) { res.wordHits = wl.verses; res.wordQuery = wl.toks.join(' '); res.wordTerms = wl.isAr ? [...new Set(wl.toks.flatMap(t => [...baseForms(t)]))] : []; }
+      // a rare word next to a much more common one: maybe a typo («اليتم» / «اليتيم»)
+      if (wl.toks.length === 1 && wl.verses.length <= 3) { const sg = suggestWords(wl.toks[0], { min: Math.max(6, wl.verses.length * 4) }); if (sg.length) res.suggest = sg.slice(0, 2); }
+      return res;
+    }
+    // a real word that is simply not in the Quran («الجهاد», «الموسيقى») is not a typo:
+    // it is found in the vetted tafsirs, so no correction is offered
+    if (wl.isAr) {
+      const V = vocab(), m = normAr(wl.missing);
+      if (V.has(m) || [...baseForms(m)].some(f => f.length >= 3 && V.has(f))) return res;
+    }
+    const sg = suggestWords(wl.missing);
+    if (sg.length) { res.suggest = sg; res.suggestFor = wl.missing; }
+    return res;
+  }
+
   async function ask(query, opts = {}) {
-    const res = await ask0(query, opts);
-    if (!res || res.type === 'empty') return res;
+    let res = await ask0(query, opts);
+    if (!res) return res;
+    res = withWords(res, query, opts);
+    // a single misspelt word with a sure correction: answer for the corrected word, and say so
+    if (res.suggestFor && res.suggest && res.suggest[0].sure && normAr(query).split(' ').length === 1 && ['topic', 'notfound', 'verify'].includes(res.type) && !opts.noCorrect) {
+      const fixed = await ask(res.suggest[0].q, { ...opts, noCorrect: true });
+      if (fixed && fixed.type !== 'notfound' && fixed.type !== 'empty') { fixed.correctedFrom = String(query).trim(); delete fixed.suggest; delete fixed.suggestFor; return fixed; }
+    }
+    if (res.type === 'empty') return res;
     const q = res.query || '';
     const g = termFor(q);
     if (g && !res.term && (isBareTerm(q, g) || TERM_CUE.test(q))) res.term = g;
@@ -1439,7 +1655,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   }
 
   return {
-    ask, ref, idxOf, suraOf, ayaOf, suras, verses, sources: src,
+    ask, ref, idxOf, suraOf, ayaOf, suras, verses, sources: src, wordLookup, suggestWords, addLatinIndex, wordPositions,
     addTopicIndex, addBayenat, topicIndexFor, bayenatFor, hasTopics: () => !!TOPICS, hasBayenat: () => !!BAY,
     addSource(id, payload) { src[id] = payload; fields.delete(id); },
     hasSource: (id) => !!src[id],

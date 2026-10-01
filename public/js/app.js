@@ -126,7 +126,7 @@ async function boot() {
   await ensureSources(state.lang);
   setLoad(3);
   $('#loader').classList.add('done');
-  (window.requestIdleCallback || setTimeout)(() => LANGS.forEach(l => ensureSources(l)));
+  (window.requestIdleCallback || setTimeout)(() => { LANGS.forEach(l => ensureSources(l)); state.engine.wordLookup('مشكاة'); });
   // AI layer: 1) pre-computed answers for frequent questions (verified again by
   // the engine like any live answer), 2) live API, 3) deterministic fallback.
   const [cache, health] = await Promise.all([
@@ -277,10 +277,12 @@ async function run(query, mode = 'auto') {
   const t = T();
   $('#status').textContent = t.thinking; $('#status').classList.add('on');
   const qLang = detectLang(query, state.lang);
+  if (qLang !== 'ar' && !state.latinP) state.latinP = getJSON('data/latin_index.json').then(d => state.engine.addLatinIndex(d)).catch(() => {});
+  if (state.latinP) await state.latinP;
   await ensureSources(qLang);
   if (qLang !== 'ar') await ensureSources('ar'); // glossary terms and the subject index are explained from the Arabic tafsir
   let res;
-  try { await state.refReady; res = await state.engine.ask(query, { uiLang: state.lang, llm: state.llm, mode }); }
+  try { await state.refReady; res = await state.engine.ask(query, { uiLang: state.lang, llm: state.llm, mode: mode === 'raw' ? 'auto' : mode, noCorrect: mode === 'raw' }); }
   finally { $('#status').classList.remove('on'); }
   state.result = res;
   const url = new URL(location.href); url.searchParams.set('q', query); url.searchParams.delete('s'); url.searchParams.delete('a'); history.replaceState(null, '', url);
@@ -289,7 +291,7 @@ async function run(query, mode = 'auto') {
   setMode('answers');
   renderSide();
   // the answer on the map: its surahs light up in their colours, with a label each
-  const list = res.verses.filter(v => !v.closestOnly).map(v => v.idx);
+  const list = [...new Set([...(res.wordHits || []), ...res.verses.filter(v => !v.closestOnly).map(v => v.idx)])];
   const shown = list.length > 400 ? [] : list;
   state.galaxy.highlightVerses(shown, (v) => state.colorOf.get(state.engine.suraOf[v]) || 1);
   state.galaxy.setGroups(answerGroups(res));
@@ -363,6 +365,22 @@ function renderResults() {
   const texts = res.answer.filter(a => a.kind === 'text');
   const quotes = res.answer.filter(a => a.kind === 'quote');
   const notes = res.answer.filter(a => a.kind === 'note');
+  // «هل تقصد…؟» — the closest words of the Quran to a misspelt word
+  if (res.correctedFrom) h += `<div class="suggest-box"><span>${esc(t.correctedTo(res.query, res.correctedFrom))}</span> <button class="sugg" data-sq-raw="${esc(res.correctedFrom)}">${esc(t.searchAsTyped(res.correctedFrom))}</button></div>`;
+  if (res.suggest && res.suggest.length) {
+    h += `<div class="suggest-box"><span>${esc(res.suggestFor ? t.notQuranWord(res.suggestFor) : t.maybeAlso)}</span> ${res.suggest.map(x => `<button class="sugg" data-sq="${esc(x.q || x.word)}"><b>${esc(x.word)}</b> <small>${esc(t.inVerses(x.count))}</small></button>`).join('')}</div>`;
+  }
+  // a rare word of the Quran: the verses where it occurs, first
+  const shownIdx = new Set();
+  if (res.wordHits && res.wordHits.length) {
+    const terms = new Set(res.wordTerms || []);
+    h += `<h3 class="sec">${esc(t.wordTitle(res.wordQuery || res.query))}</h3><ul class="vlist wordhits">` + res.wordHits.map(i => {
+      shownIdx.add(i);
+      const tr = state.lang === 'en' ? e.translation('en', i).replace(/\[\d+\]/g, '') : '';
+      return `<li data-idx="${i}"${colorVar(e.suraOf[i])}><div class="li-head"><b><i class="dot"></i>${esc(refLabel(i))}</b><span><button class="mini" data-playv="${i}" aria-label="${esc(t.listen)}">▶</button></span></div>
+        <div class="ayah">${markWords(i, [...terms])}</div>${tr ? `<div class="tr">${esc(tr)}</div>` : ''}</li>`;
+    }).join('') + '</ul>';
+  }
   for (const a of texts) h += `<p class="lead" dir="${dir}">${esc(a.text)}</p>`;
   if (res.term) h += termCard(res.term);
   if (res.type === 'hadith' || res.hadithCheck) h += `<section class="hbox" id="hadithBox" aria-live="polite"></section>`;
@@ -375,7 +393,11 @@ function renderResults() {
   if (quotes.length && !['verse', 'range', 'sura'].includes(res.type)) {
     const ctxQ = quotes.filter(q => q.role === 'context'), ansQ = quotes.filter(q => q.role !== 'context');
     if (ctxQ.length) h += `<h3 class="sec">${esc(t.contextTitle)}</h3>` + ctxQ.map(q => verseCard(q, res.lang)).join('');
-    if (ansQ.length) h += `<h3 class="sec">${esc(t.paraTitle)}</h3>` + ansQ.map(q => verseCard(q, res.lang)).join('');
+    // the key verses first (the AI's order), the other explanations folded
+    const KEY = 3, key = ansQ.slice(0, KEY), more = ansQ.slice(KEY);
+    if (key.length) h += `<h3 class="sec">${esc(t.keyTitle)}</h3>` + key.map(q => verseCard(q, res.lang)).join('');
+    if (more.length) h += `<details class="more-ex"><summary>${esc(t.moreEx(more.length))}</summary>${more.map(q => verseCard(q, res.lang)).join('')}</details>`;
+    for (const q of quotes) shownIdx.add(q.idx);
     const srcIds = [...new Set(quotes.map(q => q.source))];
     h += `<div class="src">${srcIds.map(id => { const s0 = e.sources[id] || {}; return `<a href="${esc(s0.url || 'https://quranenc.com')}" target="_blank" rel="noopener">${esc(s0.title || id)}</a>`; }).join(' · ')}` +
       (res.paragraphBy && t.paraBy[res.paragraphBy] ? ` · <span class="ai-tag">${esc(t.paraBy[res.paragraphBy])}</span>` : '') + '</div>';
@@ -391,7 +413,9 @@ function renderResults() {
 
   // surahs ranked by relevance (topics) / verse list (verification)
   if (res.suras && res.suras.length && (res.type === 'topic' || res.verdict === 'notverse')) {
-    h += `<h3 class="sec">${esc(t.surasTitle)}</h3><p class="sc-note">${esc(t.surasNote)}</p>` + res.suras.map((g, k) => suraCard(g, k)).join('');
+    // the other verses, surah by surah — those already explained above are not repeated
+    const rest = res.suras.map(g => ({ ...g, verses: g.verses.filter(i => !shownIdx.has(i)) })).filter(g => g.verses.length);
+    if (rest.length) h += `<h3 class="sec">${esc(shownIdx.size ? t.otherVerses : t.surasTitle)}</h3><p class="sc-note">${esc(t.surasNote)}</p>` + rest.map((g, k) => suraCard(g, k)).join('');
   } else if (res.verses.length && res.type !== 'sura') {
     const relOnly = res.verses.length && res.verses.every(v => v.relatedOnly);
     h += `<h3 class="sec">${esc(relOnly ? t.relatedNotFatwa : t.versesTitle)} (${res.verses.filter(v => !v.closestOnly).length})</h3><ul class="vlist">` +
@@ -407,7 +431,9 @@ function renderResults() {
   const v = $('#viewRes');
   v.innerHTML = h;
   v.scrollTop = 0;
-  v.querySelectorAll('.cite').forEach(el => el.onclick = (ev) => { ev.stopPropagation(); goVerse(+el.dataset.idx); });
+  v.querySelectorAll('.cite').forEach(el => el.onclick = (ev) => { ev.stopPropagation(); goVerse(+el.dataset.idx, { pane: 'r' }); });
+  v.querySelectorAll('[data-sq]').forEach(b => b.onclick = () => { $('#q').value = b.dataset.sq; run(b.dataset.sq); });
+  v.querySelectorAll('[data-sq-raw]').forEach(b => b.onclick = () => run(b.dataset.sqRaw, 'raw'));
   v.querySelectorAll('[data-ctx]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); toggleContext(b); });
   v.querySelectorAll('.vcardx').forEach(c => c.onclick = (ev) => { if (ev.target.closest('button,a,.ctxbox')) return; goVerse(+c.dataset.idx, { pane: 'r' }); });
   v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playv, { play: 'one', pane: 'r' }); });
@@ -517,6 +543,12 @@ function toggleContext(btn) {
   box.dataset.done = '1';
 }
 
+// highlight the occurrences of a word of the Quran inside a verse (positions found by the engine)
+function markWords(i, forms) {
+  const pos = new Set(state.engine.wordPositions(i, forms));
+  let k = -1;
+  return state.engine.verses[i].split(' ').map(w => { if (/[ء-ي]/.test(normAr(w))) k++; return pos.has(k) && /[ء-ي]/.test(normAr(w)) ? `<mark class="hit">${esc(w)}</mark>` : esc(w); }).join(' ');
+}
 // highlight the words of the search inside a text (same tokenizer as the engine)
 function markTerms(text, lang, terms) {
   if (!terms || !terms.size) return esc(text);
