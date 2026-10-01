@@ -6,3 +6,4 @@ data_build/cache/*.json
 !data_build/cache/manifest.json
 docs/logo.png
 eval/results/run.log
+data_build/cache/quranpedia/
