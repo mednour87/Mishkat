@@ -131,7 +131,7 @@ async function boot() {
   if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select') };
   $('#aiBadge').textContent = T().ai(state.llmModel);
   await gateDone;
-  $('#bigLamp').innerHTML = lampSVG({ size: 230, word: true, title: 'Mishkat' });
+  $('#bigLamp').innerHTML = lampSVG({ size: 280, word: true, title: 'Mishkat' });
   let firstTime = true; try { firstTime = localStorage.getItem('mishkat.welcomed') !== '1'; } catch (e) { /* ignore */ }
   try { const v = localStorage.getItem('mishkat.view'); if (v && v !== 'g0') setView(v); } catch (e) { /* ignore */ }
   const sp = new URL(location.href).searchParams;
@@ -391,7 +391,7 @@ function renderReader(scrollToCur) {
     words += `<span class="v${i === cur ? ' cur' : ''}${state.reader.hits.has(i) ? ' hit' : ''}" data-i="${i}"><button class="vplay" data-play="${i}" aria-label="${esc(t.playAya(a))}">▶</button>${html}<span class="end">﴿${arNum(a)}﴾</span></span> `;
   }
   const basmala = (sura !== 1 && sura !== 9) ? `<div class="basmala">${esc(e.verses[S.first].split(' ').slice(0, 4).join(' '))}</div>` : '';
-  v.innerHTML = `<div class="rd-head"><div class="rd-top"><div class="rd-lamp" id="rdLamp" aria-hidden="true">${lampSVG({ size: 116, word: true })}</div>
+  v.innerHTML = `<div class="rd-head"><div class="rd-top"><div class="rd-lamp" id="rdLamp" aria-hidden="true">${lampSVG({ size: 128, word: true })}</div>
     <div class="rd-title"><b>سورة ${esc(S.ar)}</b><small>${esc(S.tr)} · ${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</small></div></div>
     <div class="rd-ctrl">
       <button class="btn" id="rPrev" aria-label="${esc(t.prevA)}">${state.lang === 'ar' ? '→' : '←'} ${esc(t.prevA)}</button>

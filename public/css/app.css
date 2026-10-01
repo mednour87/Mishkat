@@ -3,12 +3,12 @@
   --txt: #eceff5; --mut: #9aa3b5; --gold: #ffd66b; --gold2: #e8a93c; --blue: #8ec5f0;
   --ok: #5ee6a0; --warn: #ffb35c; --stop: #ff7a7a;
   --r: 16px; --head: 72px; --pw: min(500px, 42vw);
-  --ui: 'Inter', 'Amiri', system-ui, sans-serif; --quran: 'Amiri Quran', 'Amiri', serif;
+  --ui: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif; --quran: 'Amiri Quran', 'Amiri', serif;
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: var(--bg); color: var(--txt); font-family: var(--ui); overflow: hidden; }
 body { background: radial-gradient(ellipse at 50% 58%, #16213a 0%, #0a0f1d 40%, #05070d 78%); }
-html[lang=ar] body { font-family: 'Amiri', 'Inter', serif; }
+html[lang=ar] body { font-family: 'IBM Plex Sans Arabic', 'Amiri', sans-serif; }
 button { font: inherit; color: inherit; cursor: pointer; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 #galaxy { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; }
@@ -331,3 +331,12 @@ html[data-theme=light] .vcard .a { color: #2a1f08; }
 
 body.qview #heroLead, body.qview #chips { display: none; }
 body.qview #hero { top: calc(var(--head) + 6px); }
+
+/* design v4: comfortable touch targets, calmer chrome, Quran text in Amiri */
+.rd-ctrl .btn, .sc-btns .btn, .links .btn, #dock button, .tabs [role=tab] { min-height: 44px; }
+.rd-ctrl .btn { padding: 8px 14px; font-size: 14px; }
+.mini { min-height: 32px; padding: 4px 11px; }
+.lead, .para, .rd-detail .tafsir, .vcardx .tafsir { font-family: 'Amiri', var(--ui); }
+html[lang=en] .vcardx .tafsir, html[lang=fr] .vcardx .tafsir, html[lang=en] .lead, html[lang=fr] .lead { font-family: var(--ui); }
+.brand .name { font-family: 'Amiri', var(--ui); }
+#searchForm { min-height: 54px; }
