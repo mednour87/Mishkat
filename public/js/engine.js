@@ -153,7 +153,7 @@ export const MSG = {
     closest: 'أقرب الآيات لفظًا (للاستئناس فقط، وليست مطابقة):',
     topic: (n, q) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ذات صلة بـ«${q}». وهذا بيانها من التفسير المعتمد:`,
     noTopic: 'لم أجد مرجعًا كافيًا لهذا السؤال في الآيات والتفاسير المعتمدة لديّ، فأمتنع عن الإجابة حتى لا أنسب إلى القرآن ما ليس فيه. جرّب كلمة مفتاحية أوضح (مثل: الصبر، الوالدين، موسى).',
-    ruling: 'هذا سؤال عن حكم شرعي يحتاج إلى فتوى من أهل العلم. «مشكاة» أداة لتحديد مواضع الآيات وعرض التفسير المعتمد، ولا تُصدر أحكامًا ولا فتاوى. راجع جهة الإفتاء الرسمية في بلدك (مثل: الرئاسة العامة للبحوث العلمية والإفتاء — alifta.gov.sa).',
+    ruling: 'هذا سؤال عن حكم شرعي، والفتوى لأهل العلم؛ فلا تُصدر «مشكاة» أحكامًا. تجد أدناه روابط مصادر الفتوى الرسمية، وآيات ذات صلة بالموضوع للاطلاع (وليست فتوى).',
     personal: 'هذه مسألة شخصية تحتاج إلى عالم أو مختص يسمع تفاصيلها. لا تقدّم «مشكاة» نصائح أو أحكامًا في الحالات الخاصة. يمكنك البحث عن موضوع عام (مثل: الصبر، بر الوالدين).',
     dream: 'تعبير الرؤى لا يدخل في عمل «مشكاة»، ولا يُبنى على آلة. يمكنك البحث عن ذكر الرؤيا في القرآن بكلمة «الرؤيا».',
     invalidRef: (s, n) => `سورة ${s} عدد آياتها ${n} فقط؛ هذا الرقم غير موجود.`,
@@ -161,6 +161,12 @@ export const MSG = {
     empty: 'اكتب فكرة أو سؤالًا أو اسم سورة أو رقم آية أو جزءًا من آية.',
     lowConf: 'نتائج بحث لفظي (ثقة منخفضة) — تحقّق من السياق.',
     personalNote: 'هذه آيات عامة في الموضوع؛ أما حالتك الخاصة فاعرضها على عالم أو مختص.',
+    topicLexical: (n, q) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ورد فيها لفظ «${q}» (بحث لفظي).`,
+    lexicalOnly: 'هذه نتائج بحث لفظي لم يؤكدها الذكاء الاصطناعي؛ قد لا تكون كلها متعلقة بسؤالك، فراجع السياق والتفسير.',
+    polemic: 'هذه الآيات ذات الصلة بالسؤال، يعرضها التفسير المعتمد في سياقها كما هي، دون انتقاء جزء منها. والحكم على المعنى يكون بقراءة الآية مع سياقها وتفسيرها.',
+    sensitiveNote: 'موضوع يحتاج إلى فهمه في سياقه: افتح «السياق» لقراءة ما قبل الآية وما بعدها، ولتفصيل الأحكام يُرجع إلى أهل العلم.',
+    takfir: 'الحكم على الأشخاص أو الطوائف بالكفر من شأن أهل العلم والقضاء، لا من شأن أداة بحث. يمكنك البحث عن موضوع عام (مثل: الإيمان، الكفر) لقراءة الآيات وتفسيرها.',
+    violence: 'لا تجيب «مشكاة» عن طلبات الإيذاء أو العنف. والنفس المعصومة محرّمة، ويمكنك البحث عن «حرمة النفس» لقراءة الآيات وتفسيرها.',
     trFound: 'وُجدت هذه العبارة في ترجمة معاني الآيات التالية:',
     trNone: 'لم أجد هذه العبارة في ترجمات المعاني المعتمدة لديّ. ولا يمكن الحكم على نص مترجَم بأنه آية؛ الصق النص العربي للتحقق الدقيق.',
   },
@@ -177,7 +183,7 @@ export const MSG = {
     closest: 'Closest verses by wording (for reference only, not a match):',
     topic: (n, q) => `I found ${n} verse${n === 1 ? '' : 's'} related to “${q}”. Here is their explanation from vetted tafsir:`,
     noTopic: 'I could not find sufficient evidence for this in the vetted verses and tafsir I hold, so I abstain rather than attribute to the Quran what is not in it. Try a clearer keyword (e.g. patience, parents, Moses).',
-    ruling: 'This asks for a religious ruling, which requires a fatwa from qualified scholars. Mishkat locates verses and shows vetted tafsir; it does not issue rulings. Please consult the official fatwa authority in your country.',
+    ruling: 'This asks for a religious ruling, which belongs to qualified scholars; Mishkat does not issue rulings. Below are links to official fatwa sources, and related verses for reading (not a fatwa).',
     personal: 'This is a personal matter that needs a scholar or specialist who can hear the details. Mishkat gives no advice or rulings on individual cases. You can search a general topic instead (e.g. patience, parents).',
     dream: 'Dream interpretation is outside Mishkat’s scope and should not be done by a machine. You can search for dreams mentioned in the Quran with the word “dream”.',
     invalidRef: (s, n) => `Surah ${s} has only ${n} verses; this verse number does not exist.`,
@@ -185,6 +191,12 @@ export const MSG = {
     empty: 'Type an idea, a question, a surah name, a verse number or part of a verse.',
     lowConf: 'Keyword results (low confidence) — check the context.',
     personalNote: 'These are general verses on the subject; for your own situation, please consult a scholar or specialist.',
+    topicLexical: (n, q) => `I found ${n} verse${n === 1 ? '' : 's'} containing the words of “${q}” (keyword search).`,
+    lexicalOnly: 'These keyword results were not confirmed by the AI; some may not answer your question — check the context and the tafsir.',
+    polemic: 'Here are the verses relevant to this question, each shown in full with its vetted tafsir — no part is cut out. The meaning of a verse is judged by reading it with its context and its tafsir.',
+    sensitiveNote: 'This subject must be read in context: open “Context” to see the verses before and after, and refer to scholars for detailed rulings.',
+    takfir: 'Judging that a person or a group has left Islam belongs to scholars and courts, not to a search tool. You can search a general topic (e.g. faith, disbelief) to read the verses and their tafsir.',
+    violence: 'Mishkat does not answer requests to harm anyone. Human life is sacred; you can search “sanctity of life” to read the verses and their tafsir.',
     trFound: 'This wording appears in the translation of the following verse(s):',
     trNone: 'I could not find this wording in the vetted translations I hold. A translated sentence cannot be confirmed as a verse — translations differ — so do not attribute it to the Quran; paste the Arabic text for an exact check.',
   },
@@ -201,7 +213,7 @@ export const MSG = {
     closest: 'Versets les plus proches par la formulation (à titre indicatif, pas une correspondance) :',
     topic: (n, q) => `J’ai trouvé ${n} verset${n === 1 ? '' : 's'} lié${n === 1 ? '' : 's'} à « ${q} ». Voici leur explication d’après un tafsir vérifié :`,
     noTopic: 'Je n’ai pas trouvé de preuve suffisante dans les versets et tafsirs vérifiés dont je dispose ; je m’abstiens plutôt que d’attribuer au Coran ce qui n’y est pas. Essayez un mot-clé plus clair (ex. patience, parents, Moïse).',
-    ruling: 'Cette question demande un avis juridique (fatwa) qui relève des savants qualifiés. Mishkat localise les versets et affiche un tafsir vérifié ; il ne rend aucun avis. Consultez l’instance officielle de fatwa de votre pays.',
+    ruling: 'Cette question demande un avis juridique (fatwa), qui relève des savants ; Mishkat ne rend aucun avis. Ci-dessous : des liens vers les sources officielles de fatwa, et des versets liés au sujet, à lire (ce n’est pas une fatwa).',
     personal: 'Il s’agit d’une situation personnelle qui demande un savant ou un spécialiste à l’écoute des détails. Mishkat ne donne ni conseil ni avis sur les cas individuels. Vous pouvez chercher un thème général (ex. patience, parents).',
     dream: 'L’interprétation des rêves est hors du champ de Mishkat et ne doit pas être confiée à une machine. Vous pouvez chercher les rêves mentionnés dans le Coran avec le mot « rêve ».',
     invalidRef: (s, n) => `La sourate ${s} ne compte que ${n} versets ; ce numéro n’existe pas.`,
@@ -209,6 +221,12 @@ export const MSG = {
     empty: 'Écrivez une idée, une question, un nom de sourate, un numéro ou un fragment de verset.',
     lowConf: 'Résultats par mots-clés (confiance faible) — vérifiez le contexte.',
     personalNote: 'Ce sont des versets généraux sur le sujet ; pour votre situation personnelle, consultez un savant ou un spécialiste.',
+    topicLexical: (n, q) => `J’ai trouvé ${n} verset${n === 1 ? '' : 's'} contenant les mots de « ${q} » (recherche par mots-clés).`,
+    lexicalOnly: 'Ces résultats par mots-clés n’ont pas été confirmés par l’IA ; certains peuvent ne pas répondre à votre question — vérifiez le contexte et le tafsir.',
+    polemic: 'Voici les versets liés à cette question, chacun affiché en entier avec son tafsir vérifié — sans en couper une partie. Le sens d’un verset se juge en le lisant avec son contexte et son tafsir.',
+    sensitiveNote: 'Ce sujet se lit dans son contexte : ouvrez « Contexte » pour voir les versets avant et après, et référez-vous aux savants pour le détail des règles.',
+    takfir: 'Juger qu’une personne ou un groupe est sorti de l’islam relève des savants et des tribunaux, pas d’un outil de recherche. Vous pouvez chercher un thème général (ex. la foi, la mécréance) pour lire les versets et leur tafsir.',
+    violence: 'Mishkat ne répond pas aux demandes de nuire à autrui. La vie humaine est sacrée ; vous pouvez chercher « caractère sacré de la vie » pour lire les versets et leur tafsir.',
     trFound: 'Cette formulation figure dans la traduction du ou des versets suivants :',
     trNone: 'Je ne trouve pas cette formulation dans les traductions vérifiées dont je dispose. Une phrase traduite ne peut pas être confirmée comme verset — les traductions diffèrent — ne l’attribuez donc pas au Coran ; collez le texte arabe pour une vérification exacte.',
   },
@@ -275,6 +293,8 @@ function famousLookup(q) {
 const GUARD = [
   ['dream', /(تفسير|تعبير)\s+(حلم|الحلم|رؤيا|الرؤيا|منام)|رأيت\s+في\s+(المنام|منامي|حلمي)|\bmeaning of (my|a) dream\b|\binterpret(ation of)? (my |a )?dreams?\b|\bi (saw|dreamt|dreamed)\b|\b(interpr[eé]t\w*|signification|sens) (de |d )?(mon |ce |un )?r[eê]ve\b|\bj ai r[eê]v[eé]\b/i],
   ['ruling', /(^|\s)و?ما\s+حكم|حكم\s+(ال)?\S+\s+في\s+الإسلام|هل\s+(يجوز|يحل|يحرم|يصح|تجوز|تصح|يباح)|هل\s+\S*\s*(حرام|حلال|مكروه|جائز|بدعة)|(حرام|حلال)\s+(أم|او|أو)\s+(حلال|حرام)|فتو[ىي]|أفتوني|ما\s+الحكم|\bfatwa\b|\bruling (on|about|of)\b|\bis (it|this|that|\w+ing|\w+) (\w+ )?(halal|haram|permissible|allowed|forbidden|lawful|unlawful|sinful|a sin)\b|\b(halal|haram) or (halal|haram)\b|\bam i allowed\b|\best[ -](ce|il) (que )?(\w+ )?(permis|licite|illicite|haram|halal|interdit|autoris[eé]|un p[eé]ch[eé])\b|\bai[ -]je le droit\b|\bavis juridique\b|\b(est|sont|serait)[- ](il |elle )?(haram|halal|licite|illicite|interdite?s?|permise?s?|autoris[eé]e?s?)\b|\b(is|are) (it |this |that )?(halal|haram)\b/i],
+  ['takfir', /هل\s+(ال)?\S+\s+(كفار|كافر|كافرة|مرتد|مرتدون|مشركون|مشرك)\s*[؟?]?$|\bis\s+\S+(\s+\S+)?\s+(a\s+)?(kafir|kaffir|infidel|apostate|disbeliever)s?\b|\bare\s+\S+(\s+\S+)?\s+(kafirs?|infidels?|apostates?|disbelievers)\b|\best[- ]ce que\s+.{1,40}\s+(est|sont)\s+(un |des )?(mécréants?|mecreants?|apostats?|kafirs?)\b/i],
+  ['violence', /كيف\s+(اقتل|أقتل|نقتل|أفجر|افجر|اصنع\s+قنبلة|أصنع\s+قنبلة)|\bhow (to|do i|can i) (kill|murder|attack|make a bomb|build a bomb)\b|\bcomment (tuer|fabriquer une bombe|attaquer)\b/i],
   ['personal', /(زوجي|زوجتي|طليقي|طليقتي|أبي|أمي|ابني|ابنتي|مديري)\s+(يضرب|تضرب|يمنع|تمنع|تمنعني|يمنعني|طلق|يريد|تريد|لا\s+يصلي|لا\s+تصلي|ترفض|يرفض)|هل\s+(أطلق|أترك|أتزوج|أسامح)|ماذا\s+أفعل|\bshould i\b|\bcan i\b|\bwhat should i do\b|\bmy (husband|wife|father|mother|son|daughter|boss)\b|\bdois[ -]je\b|\bpuis[ -]je\b|\bque dois[ -]je faire\b|\bmon (mari|p[eè]re|fils|patron)\b|\bma (femme|m[eè]re|fille)\b/i],
 ];
 const GUARD_EXTRA = [
@@ -286,6 +306,44 @@ export function guardCheck(q) {
   const na = normAr(q);
   for (const [kind, re] of GUARD_EXTRA) if (re.test(na)) return kind;
   return null;
+}
+
+// ------------------------------------------- trap questions & sensitive subjects
+// Hostile or trap phrasings ("Islam is violent", "the Quran orders killing"…).
+const POLEMIC = /(الاسلام|الإسلام|القران|القرآن|المسلمين|المسلمون)\s+(دين\s+)?(ارهاب|إرهاب|عنف|ظلم|تخلف|كراهية|يحرض|يأمر\s+بقتل|يدعو\s+(الى|إلى)\s+(القتل|العنف))|\b(islam|the quran|muslims?)\s+(is|are)\s+(a\s+)?(religion of\s+)?(violent|violence|terror|terrorist|hate|hateful|evil|backward|misogyn\w*|oppress\w*)|\b(quran|koran)\s+(says?|orders?|tells?|commands?)\s+(to\s+)?(kill|murder|beat|hate)|\bwhy (does|do) (islam|the quran|muslims?)\s+(hate|kill|oppress)|\bl ?islam (est|serait) (une religion )?(violente?|de la violence|terroriste|haineuse?|misogyne|arriér\w*)|\ble coran (ordonne|dit|demande) de (tuer|frapper|haïr)|\bpourquoi (l ?islam|le coran|les musulmans) (hait|haïssent|tue|tuent|opprime)/i;
+export function isPolemic(q) { return POLEMIC.test(q) || POLEMIC.test(normLatin(q)); }
+
+// Curated context packs: well-known passages, each verified against At-Tafsir Al-Muyassar
+// (full tafsir unit shown, never a fragment). They are shown FIRST for trap questions
+// and sensitive subjects, before the verses retrieved for the question itself.
+const PACKS = [
+  { id: 'violence', words: ['عنف', 'ارهاب', 'إرهاب', 'قتل', 'قتال', 'القتال', 'جهاد', 'الجهاد', 'حرب', 'سيف', 'violence', 'violent', 'terror', 'terrorism', 'terrorist', 'kill', 'killing', 'jihad', 'war', 'sword', 'tuer', 'terrorisme', 'guerre', 'djihad'], refs: ['2:190', '2:256', '8:61', '60:8', '22:39'] },
+  { id: 'women', words: ['المراة', 'المرأة', 'امراة', 'امرأة', 'النساء', 'نساء', 'women', 'woman', 'wives', 'misogynist', 'misogynistic', 'misogyny', 'sexist', 'femme', 'femmes', 'epouse', 'épouse', 'misogyne', 'misogynie', 'sexiste'], refs: ['4:1', '4:19', '33:35', '16:97', '30:21', '4:124'] },
+  { id: 'slavery', words: ['الرق', 'رقيق', 'عبيد', 'عبودية', 'العبودية', 'slavery', 'slave', 'slaves', 'esclavage', 'esclave', 'esclaves'], refs: ['90:13', '24:33', '4:92', '58:3', '9:60'] },
+  { id: 'religions', words: ['اليهود', 'النصارى', 'المسيحيين', 'الاديان', 'الأديان', 'غير المسلمين', 'christians', 'christian', 'jews', 'jewish', 'religions', 'non muslims', 'non-muslims', 'infidel', 'infidels', 'kafir', 'chretiens', 'chrétiens', 'juifs', 'infideles', 'infidèles', 'mecreants', 'mécréants'], refs: ['109:6', '60:8', '29:46', '49:13', '2:256'] },
+  { id: 'freedom', words: ['الردة', 'المرتد', 'اكراه', 'إكراه', 'حرية', 'apostasy', 'apostate', 'compulsion', 'freedom of religion', 'apostasie', 'apostat', 'liberte', 'liberté'], refs: ['2:256', '18:29', '10:99', '88:21'] },
+  { id: 'source', words: ['من كتب القران', 'من كتب القرآن', 'مؤلف القران', 'مؤلف القرآن', 'who wrote the quran', 'wrote the quran', 'author of the quran', 'copied', 'qui a ecrit le coran', 'qui a écrit le coran', 'auteur du coran'], refs: ['10:37', '16:103', '29:48', '4:82', '2:23'] },
+];
+const PACK_IDX = PACKS.map(p => ({ ...p, norm: p.words.map(w => /[؀-ۿ]/.test(w) ? normAr(w) : normLatin(w)) }));
+export function packFor(q) {
+  const na = ' ' + normAr(q) + ' ', nl = ' ' + normLatin(q) + ' ';
+  for (const p of PACK_IDX) for (const w of p.norm) {
+    const hay = /[؀-ۿ]/.test(w) ? na : nl;
+    if (hay.includes(' ' + w + ' ') || (w.length > 4 && hay.includes(w))) return p;
+  }
+  return null;
+}
+const SENSITIVE = /(الحدود|حد\s+السرقة|قطع\s+اليد|الرجم|الجلد|القصاص|تعدد\s+الزوجات|ضرب\s+الزوجة|الميراث|stoning|amputation|flogging|polygamy|beat(ing)? (his |the )?wi(fe|ves)|lapidation|polygamie|frapper (sa|les) femmes?)/i;
+export function isSensitive(q) { return SENSITIVE.test(q) || SENSITIVE.test(normLatin(q)) || !!packFor(q); }
+
+// Words that turn a subject into a fatwa request; removed to search the related verses.
+const RULING_WORDS = /(ما\s+حكم|حكم|هل\s+يجوز|يجوز|هل|حلال|حرام|مكروه|جائز|بدعة|فتوى|أفتوني|is it|is|are|haram|halal|permissible|allowed|forbidden|ruling on|ruling|fatwa|est[- ]ce que|est[- ]il|est[- ]elle|permis|licite|illicite|interdit|avis juridique|\?|؟)/gi;
+export function fatwaLinks(q) {
+  const enc = encodeURIComponent(q.trim().slice(0, 80));
+  return [
+    { id: 'binbaz', url: `https://binbaz.org.sa/search?q=${enc}` },
+    { id: 'alifta', url: 'https://alifta.gov.sa/ar/home' },
+  ];
 }
 
 // ------------------------------------------------------------------ BM25
@@ -343,7 +401,7 @@ export const SOURCES_NEEDED = {
 };
 
 // ------------------------------------------------------------ LLM verifiers
-const INTENTS = new Set(['topic', 'ruling', 'personal', 'other']);
+const INTENTS = new Set(['topic', 'ruling', 'personal', 'polemic', 'other']);
 export function verifyLLM(out, candidates, sentenceIds = []) {
   const allowed = new Set(candidates.map(c => c.id));
   const allowedS = new Set(sentenceIds);
@@ -790,6 +848,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const g = guardCheck(q);
     if (g) {
       base.meta.route = 'guard';
+      if (g === 'ruling') return rulingAnswer(q, lang, uiLang, base);
       return { ...base, type: 'abstain', reason: g, answer: [{ kind: 'text', text: M[g] }], verses: [], focus: null };
     }
 
@@ -817,7 +876,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
       }
     }
 
-    // 4. topic: (LLM keyword expansion) → BM25 over Quran + tafsir → (LLM selection) → paragraph
+    // 4. topic: (LLM intent + keywords) → BM25 over Quran + tafsir → (LLM selection) → explanation cards
     base.meta.route = softPrefix ? 'verify+topic' : 'topic';
     let expansion = null;
     if (llm && llm.expand) {
@@ -826,11 +885,9 @@ export function createEngine({ core, searchAr, sources = {} }) {
         base.meta.llm = { used: true, stage: 'expand', intent: expansion.intent };
         // a bare topic word ("الخمر", "usury") is a topic, not a fatwa request
         if (expansion.intent === 'ruling' && q.trim().split(/\s+/).length < 3) expansion.intent = 'topic';
-        if (expansion.intent === 'ruling') {
-          return { ...base, type: 'abstain', reason: 'ruling', answer: [{ kind: 'text', text: M.ruling }], verses: [], focus: null };
-        }
+        if (expansion.intent === 'ruling') return rulingAnswer(q, lang, uiLang, base);
         // the LLM recognised a question (not a pasted quote): answer it as a topic
-        if (softPrefix && expansion.intent === 'topic') { softPrefix = null; base.meta.route = 'topic'; }
+        if (softPrefix && expansion.intent !== 'other') { softPrefix = null; base.meta.route = 'topic'; }
       } catch (e) { base.meta.llm = { used: false, error: String(e && e.message || e) }; }
     }
     const ts = topicSearchAuto(q, lang, uiLang, 40, expansion ? expansion.keywords : {});
@@ -838,15 +895,18 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const L = ts.lang;
     const ML = MSG[L];
     base.lang = L;
-    if (!ranked.length) {
+    // trap / hostile questions and sensitive subjects get verified context
+    const polemic = isPolemic(q) || (expansion && expansion.intent === 'polemic');
+    const pack = packFor(q);
+    const sensitive = !!pack || isSensitive(q);
+    if (!ranked.length && !(polemic && pack)) {
       if (softPrefix) return { ...base, type: 'verify', verdict: 'notverse', answer: softPrefix.answer, verses: [], focus: null };
       return { ...base, type: 'notfound', answer: [{ kind: 'text', text: ML.noTopic }], verses: [], focus: null };
     }
     if (altSura) base.alt = { mode: 'sura', sura: altSura, name: L === 'ar' ? suras[altSura - 1].ar : suras[altSura - 1].tr };
     let order = ranked.map(x => x.idx);
-    let chosenSentences = null, lowConf = false, personalNote = false, llmOk = false;
-    let pool = sentencePool(L, order.slice(0, 8), 2);
-    if (llm && llm.select) {
+    let confirmed = false, lowConf = false, personalNote = false, llmOk = false;
+    if (llm && llm.select && ranked.length) {
       // verses proposed by the LLM are kept only if they exist AND their text
       // (verse, tafsir or translation) actually contains a word of the query
       const qset = new Set(qtoks);
@@ -861,39 +921,71 @@ export function createEngine({ core, searchAr, sources = {} }) {
         for (const i of [lex[k], kw[k]]) if (i != null && !seen.has(i)) { seen.add(i); candIdx.push(i); }
       }
       const cands = candIdx.slice(0, 30).map(i => ({ id: ref(i), text: snippet(L, i) }));
-      pool = sentencePool(L, candIdx.slice(0, 8), 2); // paragraph sentences come from the best candidates
       try {
-        const out = await withTimeout(llm.select({ query: q, lang: L, candidates: cands, sentences: pool.map(p => ({ id: p.id, text: p.text.slice(0, 220) })) }), llmTimeoutMs);
-        const v = verifyLLM(out, cands, pool.map(p => p.id));
+        const out = await withTimeout(llm.select({ query: q, lang: L, candidates: cands }), llmTimeoutMs);
+        const v = verifyLLM(out, cands);
         base.meta.llm = { ...base.meta.llm, used: true, model: out && out.model, rejected: v.rejected, intent: v.intent };
         if (v.intent === 'ruling' && q.trim().split(/\s+/).length < 3) v.intent = 'topic';
-        if (v.intent === 'ruling') {
-          return { ...base, type: 'abstain', reason: 'ruling', answer: [{ kind: 'text', text: ML.ruling }], verses: [], focus: null };
-        }
+        if (v.intent === 'ruling') return rulingAnswer(q, lang, uiLang, base);
         if (v.intent === 'personal' || (expansion && expansion.intent === 'personal')) personalNote = true;
         if (v.ids.length) {
           const chosen = v.ids.map(id => { const [s, a] = id.split(':').map(Number); return idxOf(s, a); });
           llmOk = true;
+          confirmed = v.confidence === 'high' || chosen.length >= 2;
           order = chosen.length >= 3 ? chosen : chosen.concat(order.filter(i => !chosen.includes(i) && ranked.find(x => x.idx === i && x.cov === 1)).slice(0, 6));
         } else lowConf = true;
-        if (v.sentences.length) chosenSentences = v.sentences.map(id => pool.find(p => p.id === id));
       } catch (e) { base.meta.llm = { ...base.meta.llm, error: String(e && e.message || e) }; }
     }
-    order = order.slice(0, llmOk ? limit : Math.min(limit, 15)); // deterministic fallback: shorter, stricter list
+    if (!llmOk) {
+      // no AI confirmation: only verses that contain every word of the question, no explanation
+      order = ranked.filter(x => x.cov === 1).map(x => x.idx);
+      if (!order.length) order = ranked.map(x => x.idx);
+      order = order.slice(0, Math.min(limit, 12));
+    } else order = order.slice(0, limit);
+    // context pack (verified, curated) first for trap questions / sensitive subjects
+    const packIdx = (polemic || sensitive) && pack ? pack.refs.map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); }).filter(i => i >= 0) : [];
     const answer = [];
     if (softPrefix) answer.push(...softPrefix.answer, { kind: 'text', text: ML.related });
-    else answer.push({ kind: 'text', text: ML.topic(order.length, q) });
-    const qExp = qtoks.concat(expandTokens(qtoks, L, L));
-    const para = chosenSentences && chosenSentences.length ? chosenSentences
-      : bestSentences(sentencePool(L, order.slice(0, 6)), qExp, L, softPrefix ? 1 : 3);
-    answer.push(...para.map(quoteOf));
+    else if (polemic) answer.push({ kind: 'text', text: ML.polemic });
+    else answer.push({ kind: 'text', text: confirmed ? ML.topic(order.length, q) : ML.topicLexical(order.length, q) });
+    for (const i of packIdx) { const c = cardOf(L, i, 'context'); if (c) answer.push(c); }
+    if (confirmed) for (const i of order.filter(i => !packIdx.includes(i)).slice(0, 3)) { const c = cardOf(L, i, 'answer'); if (c) answer.push(c); }
+    if (!llmOk && !softPrefix) answer.push({ kind: 'note', text: ML.lexicalOnly });
     if (lowConf) answer.push({ kind: 'note', text: ML.lowConf });
+    if (sensitive) answer.push({ kind: 'note', text: ML.sensitiveNote });
     if (personalNote) answer.push({ kind: 'note', text: ML.personalNote });
-    const rankOf = new Map(order.map((i, k) => [i, k]));
+    const all = packIdx.concat(order.filter(i => !packIdx.includes(i)));
+    const rankOf = new Map(all.map((i, k) => [i, k]));
     return { ...base, type: softPrefix ? 'verify' : 'topic', verdict: softPrefix ? 'notverse' : undefined,
-      answer, verses: order.map(i => verseResult(i)), focus: order[0],
-      suras: groupBySura(order, (i) => 1 / (rankOf.get(i) + 1)).slice(0, 12),
-      paragraphBy: chosenSentences && chosenSentences.length ? 'llm' : 'deterministic' };
+      answer, verses: all.map(i => verseResult(i)), focus: all[0], sensitive, polemic, pack: pack ? pack.id : null,
+      suras: groupBySura(all, (i) => 1 / (rankOf.get(i) + 1)).slice(0, 12),
+      paragraphBy: confirmed ? 'llm' : (packIdx.length ? 'context' : 'none') };
+  }
+
+  // Full tafsir unit of one verse (never a fragment).
+  function cardOf(lang, i, role) {
+    const s = src[PARAGRAPH_FOR[lang]] || src[TAFSIR_FOR[lang]];
+    const text = s && s.text[i] ? s.text[i].replace(/^\d+\.\s*/, '').trim() : '';
+    if (!text) return null;
+    return { kind: 'quote', role, text, source: s.id, sourceTitle: s.title, ref: ref(i), idx: i };
+  }
+
+  // Fatwa requests: no ruling, but related verses (labelled "not a fatwa") and links to official sources.
+  function rulingAnswer(q, lang, uiLang, base) {
+    const M = MSG[lang];
+    const stripped = q.replace(RULING_WORDS, ' ').replace(/\s+/g, ' ').trim();
+    const ts = stripped ? topicSearchAuto(stripped, lang, uiLang, 8) : { ranked: [] };
+    const related = (ts.ranked || []).filter(x => x.cov === 1).slice(0, 6).map(x => verseResult(x.idx, { relatedOnly: true }));
+    base.meta.route = base.meta.route || 'guard';
+    return { ...base, type: 'abstain', reason: 'ruling', answer: [{ kind: 'text', text: M.ruling }], verses: related,
+      focus: related.length ? related[0].idx : null, links: fatwaLinks(stripped || q) };
+  }
+
+  // Neighbouring verses of the same surah (context view).
+  function context(i, n = 2) {
+    const out = [];
+    for (let k = i - n; k <= i + n; k++) if (k >= 0 && k < NV && suraOf[k] === suraOf[i]) out.push(k);
+    return out;
   }
 
   function snippet(lang, i) {
@@ -906,7 +998,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     ask, ref, idxOf, suraOf, ayaOf, suras, verses, sources: src,
     addSource(id, payload) { src[id] = payload; fields.delete(id); },
     hasSource: (id) => !!src[id],
-    topicSearch, verifyText, parseReference, findSura, sentencePool,
+    topicSearch, verifyText, parseReference, findSura, sentencePool, context,
     tafsir: (lang, i) => (src[TAFSIR_FOR[lang]] || {}).text?.[i] || '',
     text: (id, i) => (src[id] || {}).text?.[i] || '',
     translation: (lang, i) => TRANSLATION_FOR[lang] ? ((src[TRANSLATION_FOR[lang]] || {}).text?.[i] || '') : '',

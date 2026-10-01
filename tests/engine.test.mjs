@@ -159,7 +159,13 @@ test('rulings, personal cases and dreams → abstention in 3 languages', async (
     ['تفسير حلم رأيت ثعبانا', 'dream'], ['what is the meaning of my dream', 'dream'], ['interprétation de mon rêve', 'dream']];
   for (const [q, reason] of cases) {
     const r = await ask(q);
-    assert.equal(r.type, 'abstain', q); assert.equal(r.reason, reason, q); assert.equal(r.verses.length, 0, q);
+    assert.equal(r.type, 'abstain', q); assert.equal(r.reason, reason, q);
+    if (reason === 'ruling') {
+      // no ruling given: only related verses explicitly labelled "not a fatwa" + official links
+      assert.ok(r.verses.every(v => v.relatedOnly), q);
+      assert.ok(r.links && r.links.some(l => l.id === 'binbaz'), q);
+      assert.ok(!r.answer.some(a => a.kind === 'quote'), q);
+    } else assert.equal(r.verses.length, 0, q);
   }
   // topics that merely contain sensitive words are NOT blocked
   for (const q of ['المسجد الحرام', 'الطلاق', 'the forbidden fruit', 'le jugement dernier']) assert.notEqual((await ask(q)).type, 'abstain', q);
@@ -203,28 +209,63 @@ test('LLM verifier drops ids outside the candidate list', () => {
 });
 
 test('a hostile LLM cannot inject a verse, a text, or a reference', async () => {
-  let cands = null, sents = null;
+  let cands = null;
   const evil = {
     expand: async () => ({ intent: 'topic', keywords: { ar: ['صبر', 'INVENTED'], en: [], fr: [] }, text: 'INVENTED RELIGIOUS CLAIM' }),
-    select: async ({ candidates, sentences }) => {
-      cands = candidates; sents = sentences;
+    select: async ({ candidates }) => {
+      cands = candidates;
       return { intent: 'topic', confidence: 'high', model: 'evil', text: 'INVENTED RELIGIOUS CLAIM',
-        ids: ['114:7', '2:300', 'Fake 1:1', candidates[3].id, candidates[1].id], sentences: ['9:999#1', sentences[2].id, 'free text'] };
+        ids: ['114:7', '2:300', 'Fake 1:1', candidates[3].id, candidates[1].id], explanation: 'INVENTED' };
     },
   };
   const r = await ask('الصبر', { llm: evil });
   assert.equal(r.meta.llm.used, true);
-  assert.equal(r.meta.llm.rejected, 5);
+  assert.equal(r.meta.llm.rejected, 3);
   assert.deepEqual(r.verses.slice(0, 2).map(v => v.ref), [cands[3].id, cands[1].id]);
-  const allowed = new Set(cands.map(c => c.id));
   for (const v of r.verses) assert.ok(v.idx >= 0 && v.idx < 6236);
   assert.equal(r.paragraphBy, 'llm');
   const quotes = r.answer.filter(a => a.kind === 'quote');
-  assert.equal(quotes.length, 1);
-  assert.equal(quotes[0].ref + '#' + sents[2].id.split('#')[1], sents[2].id);
+  assert.ok(quotes.length >= 1 && quotes.length <= 3);
+  // every explanation is the COMPLETE tafsir unit of its verse — never a fragment
+  for (const qt of quotes) assert.equal(qt.text, sources[qt.source].text[qt.idx].replace(/^\d+\.\s*/, '').trim());
   assert.ok(!JSON.stringify(r).includes('INVENTED'));
   assertGrounded(r);
-  assert.ok(allowed.has(r.verses[0].ref));
+});
+
+test('without AI confirmation there is no explanation, only a labelled keyword list', async () => {
+  const r = await ask('الصبر');
+  assert.equal(r.type, 'topic');
+  assert.ok(!r.answer.some(a => a.kind === 'quote'));
+  assert.ok(r.answer.some(a => a.kind === 'note'));
+  assert.equal(r.paragraphBy, 'none');
+});
+
+test('trap questions get the verified context pack first, with full tafsir units', async () => {
+  for (const [q, pack, first] of [['Islam is a religion of violence', 'violence', '2:190'], ['الإسلام دين إرهاب', 'violence', '2:190'],
+    ["l'islam est misogyne", 'women', '4:1'], ['who wrote the Quran', 'source', '10:37'], ['what does the Quran say about slavery', 'slavery', '90:13']]) {
+    const r = await ask(q);
+    assert.equal(r.pack, pack, q);
+    assert.equal(r.verses[0].ref, first, q);
+    const ctx = r.answer.filter(a => a.kind === 'quote' && a.role === 'context');
+    assert.ok(ctx.length >= 4, q);
+    for (const c of ctx) assert.equal(c.text, sources[c.source].text[c.idx].replace(/^\d+\.\s*/, '').trim());
+    assert.ok(r.sensitive, q);
+    assertGrounded(r);
+  }
+  assert.ok((await ask('الجهاد')).sensitive);
+  assert.ok(!(await ask('الصبر')).sensitive);
+});
+
+test('takfir and violence requests are refused', async () => {
+  for (const [q, reason] of [['هل الشيعة كفار', 'takfir'], ['is my neighbour a kafir', 'takfir'], ['how to make a bomb', 'violence'], ['كيف أقتل شخصا', 'violence']]) {
+    const r = await ask(q);
+    assert.equal(r.type, 'abstain', q); assert.equal(r.reason, reason, q); assert.equal(r.verses.length, 0, q);
+  }
+});
+
+test('context() returns neighbouring verses of the same surah only', () => {
+  assert.deepEqual(E.context(E.idxOf(1, 1)).map(E.ref), ['1:1', '1:2', '1:3']);
+  assert.deepEqual(E.context(E.idxOf(2, 3)).map(E.ref), ['2:1', '2:2', '2:3', '2:4', '2:5']);
 });
 
 test('verse references proposed by the LLM are kept only if real and on-topic', async () => {
@@ -285,7 +326,7 @@ test('selector: payload sanitising and output validation', async () => {
   assert.equal(p.lang, 'ar'); assert.equal(p.candidates.length, 1);
   const v = validateOutput('noise {"intent":"topic","ids":["2:1","9:9"],"confidence":"high"} noise', p.candidates);
   assert.deepEqual(v.ids, ['2:1']); assert.equal(v.rejected, 1);
-  assert.deepEqual(health({}), { ok: true, llm: false, model: null });
+  assert.deepEqual(health({}), { ok: true, llm: false, model: null, stt: false });
   const out = await select({ query: 'x', candidates: [{ id: '2:1', text: 'a' }] }, {});
   assert.equal(out.ok, false); assert.deepEqual(out.ids, []);
   const fake = async () => ({ ok: true, json: async () => ({ choices: [{ message: { content: '{"intent":"topic","ids":["2:1","5:5"]}' } }] }) });

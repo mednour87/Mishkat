@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
-import { select, expand, health } from './functions/_lib/selector.js';
+import { select, expand, health, transcribe } from './functions/_lib/selector.js';
 
 const ROOT = fileURLToPath(new URL('./public/', import.meta.url));
 const PORT = +(process.argv[2] || process.env.PORT || 8787);
@@ -24,6 +24,14 @@ createServer(async (req, res) => {
   try {
     const url = new URL(req.url, 'http://x');
     if (url.pathname === '/api/health') return send(res, 200, JSON.stringify(health(env)), '.json');
+    if (url.pathname === '/api/transcribe' && req.method === 'POST') {
+      const chunks = []; for await (const c of req) chunks.push(c);
+      const body = Buffer.concat(chunks);
+      if (body.length > 4 * 1024 * 1024) return send(res, 400, '{"ok":false,"error":"too large"}', '.json');
+      const form = await new Request('http://x/', { method: 'POST', headers: { 'content-type': req.headers['content-type'] }, body }).formData();
+      const out = await transcribe(form.get('audio'), String(form.get('lang') || ''), env);
+      return send(res, 200, JSON.stringify(out), '.json');
+    }
     const apiFn = { '/api/select': select, '/api/expand': expand }[url.pathname];
     if (apiFn && req.method === 'POST') {
       let body = ''; for await (const c of req) body += c;

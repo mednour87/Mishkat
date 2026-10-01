@@ -12,7 +12,8 @@
 export const DEFAULT_MODELS = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
 
 const RULES = `You are a component of a Quran search engine. You NEVER write explanations, translations, rulings, tafsir or any religious content. You only output JSON.
-intent: "ruling" if the user asks whether something is halal/haram/permissible/obligatory or asks for a fatwa; "personal" ONLY if the user describes a specific private situation involving decisions about other people (family conflict, marriage, divorce, work) and asks what to do; general questions such as "how to deal with sadness", "how to be patient", "how to repent" are "topic"; a bare subject word or phrase (e.g. "الخمر", "usury", "le divorce") is always "topic"; "topic" if the user looks for what the Quran says about a subject, story, person, attribute or idea; "other" otherwise.`;
+intent: "ruling" if the user asks whether something is halal/haram/permissible/obligatory or asks for a fatwa; "personal" ONLY if the user describes a specific private situation involving decisions about other people (family conflict, marriage, divorce, work) and asks what to do; general questions such as "how to deal with sadness", "how to be patient", "how to repent" are "topic";
+"polemic" if the query asserts or insinuates that Islam, the Quran or Muslims are violent, unjust, hateful, or is a trap question built to make Islam look bad; a bare subject word or phrase (e.g. "الخمر", "usury", "le divorce") is always "topic"; "topic" if the user looks for what the Quran says about a subject, story, person, attribute or idea; "other" otherwise.`;
 
 const SYS_EXPAND = `${RULES}
 Task: understand the query and propose search keywords that would appear in the Quran text or in classical tafsir (Al-Muyassar, Al-Mukhtasar) for this topic.
@@ -21,13 +22,14 @@ Return {"intent":"...","keywords":{"ar":[up to 6 Arabic words or short phrases, 
 Keywords must be single words or 2-word phrases, no sentences.`;
 
 const SYS_SELECT = `${RULES}
-Input: a query, a numbered list of candidate verses (id "sura:aya" + tafsir excerpt) and a list of tafsir sentences (id "sura:aya#k").
+Input: a query and a numbered list of candidate verses (id "sura:aya" + an excerpt of a vetted tafsir).
 Task:
 1. intent (as defined).
-2. ids: the candidate verse ids that are genuinely about the query, most relevant first, at most 12. Use ONLY ids from the candidate list. If none is relevant, [].
-3. sentences: 2 to 4 sentence ids that, read in order, best explain what the Quran says about the query. Use ONLY sentence ids from the list; prefer sentences from different verses. [] if none fits.
-4. confidence: "high" if the selected verses clearly answer the query, else "low".
-Return {"intent":"...","ids":[...],"sentences":[...],"confidence":"high|low"}`;
+2. ids: the candidate verse ids whose tafsir genuinely answers the query, most relevant first, at most 12. Use ONLY ids from the list.
+   Judge by the tafsir meaning, not by shared words: a verse where the word has another meaning (homonym) or that speaks about the opposite subject is NOT relevant.
+   For hostile or trap questions, prefer the verses that state the general principle and its conditions. If none is relevant, [].
+3. confidence: "high" if the selected verses clearly answer the query, else "low".
+Return {"intent":"...","ids":[...],"confidence":"high|low"}`;
 
 const ID_RE = /^\d{1,3}:\d{1,3}$/;
 const SID_RE = /^\d{1,3}:\d{1,3}#\d{1,2}$/;
@@ -51,10 +53,9 @@ export function sanitizePayload(body, kind = 'select') {
 export function buildMessages(p, kind = 'select') {
   if (kind === 'expand') return [{ role: 'system', content: SYS_EXPAND }, { role: 'user', content: `Query (${p.lang}): ${p.query}` }];
   const list = p.candidates.map((c, i) => `${i + 1}. [${c.id}] ${c.text}`).join('\n');
-  const sents = p.sentences.map(s => `[${s.id}] ${s.text}`).join('\n');
   return [
     { role: 'system', content: SYS_SELECT },
-    { role: 'user', content: `Query (${p.lang}): ${p.query}\n\nCandidate verses:\n${list}\n\nTafsir sentences:\n${sents || '(none)'}` },
+    { role: 'user', content: `Query (${p.lang}): ${p.query}\n\nCandidate verses:\n${list}` },
   ];
 }
 
@@ -65,7 +66,7 @@ function parseJson(raw) {
   return JSON.parse(m[0]);
 }
 
-const INTENTS = ['topic', 'ruling', 'personal', 'other'];
+const INTENTS = ['topic', 'ruling', 'personal', 'polemic', 'other'];
 export function validateOutput(raw, candidates, sentences = []) {
   const obj = parseJson(raw);
   const allowed = new Set(candidates.map(c => c.id)), allowedS = new Set(sentences.map(s => s.id));
@@ -113,15 +114,39 @@ async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, f
   } finally { clearTimeout(t); }
 }
 
-// env: GROQ_API_KEY, GROQ_MODELS (comma list), FALLBACK_URL / FALLBACK_KEY / FALLBACK_MODEL
+// Providers, in order of preference (all OpenAI-compatible):
+//   PRIMARY_URL / PRIMARY_KEY / PRIMARY_MODELS  — e.g. the Chutes subscription
+//     (PRIMARY_URL=https://llm.chutes.ai/v1/chat/completions)
+//   GROQ_API_KEY / GROQ_MODELS                   — Groq free tier (backup)
+//   FALLBACK_URL / FALLBACK_KEY / FALLBACK_MODEL — any other endpoint
 export function providers(env) {
   const out = [];
+  const list = (v, d) => (v || d).split(',').map(x => x.trim()).filter(Boolean);
+  if (env.PRIMARY_URL && env.PRIMARY_KEY && env.PRIMARY_MODELS) {
+    for (const m of list(env.PRIMARY_MODELS)) out.push({ name: 'primary', url: env.PRIMARY_URL, key: env.PRIMARY_KEY, model: m });
+  }
   if (env.GROQ_API_KEY) {
-    const models = (env.GROQ_MODELS || DEFAULT_MODELS.join(',')).split(',').map(s => s.trim()).filter(Boolean);
-    for (const m of models) out.push({ name: 'groq', url: 'https://api.groq.com/openai/v1/chat/completions', key: env.GROQ_API_KEY, model: m });
+    for (const m of list(env.GROQ_MODELS, DEFAULT_MODELS.join(','))) out.push({ name: 'groq', url: 'https://api.groq.com/openai/v1/chat/completions', key: env.GROQ_API_KEY, model: m });
   }
   if (env.FALLBACK_URL && env.FALLBACK_KEY && env.FALLBACK_MODEL) out.push({ name: 'fallback', url: env.FALLBACK_URL, key: env.FALLBACK_KEY, model: env.FALLBACK_MODEL });
   return out;
+}
+
+// Speech-to-text (Whisper on Groq). Returns the transcription text only.
+export async function transcribe(audioBlob, lang, env, fetchImpl = fetch) {
+  const key = env.STT_KEY || env.GROQ_API_KEY;
+  if (!key) return { ok: false, error: 'no stt key' };
+  const fd = new FormData();
+  fd.append('file', audioBlob, 'speech.webm');
+  fd.append('model', env.STT_MODEL || 'whisper-large-v3');
+  if (['ar', 'en', 'fr'].includes(lang)) fd.append('language', lang);
+  fd.append('response_format', 'json');
+  fd.append('temperature', '0');
+  const r = await fetchImpl(env.STT_URL || 'https://api.groq.com/openai/v1/audio/transcriptions', {
+    method: 'POST', headers: { authorization: `Bearer ${key}` }, body: fd });
+  if (!r.ok) return { ok: false, error: `stt HTTP ${r.status}` };
+  const j = await r.json();
+  return { ok: true, text: String(j.text || '').trim().slice(0, 500) };
 }
 
 // per-model circuit breaker: a model that returned 429 is skipped for 2 minutes
@@ -153,5 +178,5 @@ export const expand = (body, env, fetchImpl = fetch) => run('expand', body, env,
 
 export function health(env) {
   const p = providers(env);
-  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null };
+  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null, stt: !!(env.STT_KEY || env.GROQ_API_KEY) };
 }

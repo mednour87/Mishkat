@@ -1,5 +1,7 @@
-import { createEngine, detectLang, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, normAr } from './engine.js';
+import { createEngine, detectLang, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr } from './engine.js';
 import { UI, ABOUT } from './i18n.js';
+import { isBasmala } from './basmala.js';
+import { listen, stopListening, voiceSupported } from './voice.js';
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -82,6 +84,7 @@ async function boot() {
   state.core = core;
   state.engine = createEngine({ core, searchAr });
   applyLang(state.lang);
+  const gateDone = gate();
   setLoad(1);
   const { createGalaxy } = await import('./galaxy.js');
   state.galaxy = await createGalaxy($('#galaxy'), {
@@ -101,6 +104,8 @@ async function boot() {
     fetch('api/health').then(r => r.ok ? r.json() : null).catch(() => null),
   ]);
   const live = health && health.llm;
+  state.stt = !!(health && health.stt);
+  setupMic();
   state.llmModel = live ? health.model : (Object.keys(cache.select).length ? 'cache' : null);
   const key = (p) => `${p.lang}|${String(p.query).trim().toLowerCase()}`;
   // circuit breaker: after a failure (quota…), skip the live API for 5 minutes
@@ -121,9 +126,69 @@ async function boot() {
   };
   if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select') };
   $('#aiBadge').textContent = T().ai(state.llmModel);
+  await gateDone;
   const sp = new URL(location.href).searchParams;
   if (sp.get('q')) { $('#q').value = sp.get('q'); run(sp.get('q')); }
   else if (sp.get('s')) openReader(+sp.get('s'), null);
+}
+
+// ------------------------------------------------------------ entry gate
+// "سمِّ الله": the visitor writes, pastes or says the basmala to enter.
+function gate() {
+  let ok = false;
+  try { ok = localStorage.getItem('mishkat.bismillah') === '1'; } catch (e) { /* private mode */ }
+  if (ok) return Promise.resolve();
+  const g = $('#gate'), t = () => T();
+  $('#gateBasmala').textContent = state.core.verses[0];
+  g.hidden = false;
+  document.body.classList.add('gated');
+  setTimeout(() => $('#gateInput').focus(), 50);
+  return new Promise(resolve => {
+    const accept = () => {
+      try { localStorage.setItem('mishkat.bismillah', '1'); } catch (e) { /* ignore */ }
+      $('#gateMsg').textContent = t().gateOk; $('#gateMsg').className = 'gmsg ok';
+      setTimeout(() => { g.hidden = true; document.body.classList.remove('gated'); $('#q').focus(); resolve(); }, 450);
+    };
+    const check = (txt) => {
+      if (isBasmala(txt)) return accept();
+      $('#gateMsg').textContent = t().gateWrong; $('#gateMsg').className = 'gmsg bad';
+    };
+    $('#gateForm').onsubmit = (ev) => { ev.preventDefault(); check($('#gateInput').value); };
+    $('#gateInput').oninput = () => { if (isBasmala($('#gateInput').value)) accept(); };
+    $('#gateCopy').onclick = async () => {
+      const txt = state.core.verses[0];
+      try { await navigator.clipboard.writeText(txt); $('#gateCopy').textContent = t().copied; }
+      catch (e) { $('#gateInput').value = txt; check(txt); }
+    };
+    $('#gateMic').onclick = async () => {
+      try {
+        const txt = await listen({ lang: 'ar', serverStt: state.stt, onState: (st) => { $('#gateMsg').textContent = st === 'listening' ? t().listening : st === 'processing' ? t().processing : ''; $('#gateMsg').className = 'gmsg'; $('#gateMic').classList.toggle('rec', st === 'listening'); } });
+        $('#gateInput').value = txt;
+        check(txt);
+      } catch (e) { $('#gateMsg').textContent = t().voiceError; $('#gateMsg').className = 'gmsg bad'; }
+    };
+  });
+}
+
+// ------------------------------------------------------------ voice search
+function setupMic() {
+  const b = $('#mic');
+  if (!voiceSupported(state.stt)) { b.hidden = true; return; }
+  b.hidden = false;
+  let busy = false;
+  b.onclick = async () => {
+    if (busy) { stopListening(); return; }
+    busy = true;
+    try {
+      const txt = await listen({ lang: state.stt ? '' : state.lang, serverStt: state.stt, onState: (st) => {
+        b.classList.toggle('rec', st === 'listening');
+        $('#status').textContent = st === 'listening' ? T().listening : st === 'processing' ? T().processing : '';
+        $('#status').classList.toggle('on', st !== 'idle');
+      } });
+      if (txt) { $('#q').value = txt; run(txt); }
+    } catch (e) { $('#status').textContent = T().voiceError; $('#status').classList.add('on'); setTimeout(() => $('#status').classList.remove('on'), 2500); }
+    finally { busy = false; }
+  };
 }
 
 // ------------------------------------------------------------ search
@@ -178,18 +243,18 @@ function renderResults() {
     const words = (res.checked || res.query).split(/\s+/).map(w => diff.has(normAr(w)) ? `<mark class="diff">${esc(w)}</mark>` : esc(w)).join(' ');
     h += `<p class="note" dir="${dir}">${esc(t.yourText)}</p><p class="ayah">${words}</p>`;
   }
-  // explanatory paragraph: verbatim sentences, consecutive sentences of a verse merged
+  // explanation: one card per verse = verse text + COMPLETE tafsir unit (never a fragment)
   if (quotes.length && !['verse', 'range', 'sura'].includes(res.type)) {
-    const groups = [];
-    for (const q of quotes) {
-      const last = groups[groups.length - 1];
-      if (last && last.idx === q.idx) last.texts.push(q.text); else groups.push({ idx: q.idx, source: q.source, texts: [q.text] });
-    }
+    const ctxQ = quotes.filter(q => q.role === 'context'), ansQ = quotes.filter(q => q.role !== 'context');
+    if (ctxQ.length) h += `<h3 class="sec">${esc(t.contextTitle)}</h3>` + ctxQ.map(q => verseCard(q, res.lang)).join('');
+    if (ansQ.length) h += `<h3 class="sec">${esc(t.paraTitle)}</h3>` + ansQ.map(q => verseCard(q, res.lang)).join('');
     const srcIds = [...new Set(quotes.map(q => q.source))];
-    h += `<h3 class="sec">${esc(t.paraTitle)}</h3><div class="para" dir="${dir}">` +
-      groups.map(g => `<span class="sent">${esc(g.texts.join(' '))}</span><span class="cite" data-idx="${g.idx}">${esc(refLabel(g.idx, res.lang))}</span>`).join(' ') +
-      `</div><div class="src">${srcIds.map(id => { const s = e.sources[id] || {}; return `<a href="${esc(s.url || 'https://quranenc.com')}" target="_blank" rel="noopener">${esc(s.title || id)}</a>`; }).join(' · ')}` +
-      (res.paragraphBy ? ` · <span class="ai-tag">${esc(t.paraBy[res.paragraphBy])}</span>` : '') + '</div>';
+    h += `<div class="src">${srcIds.map(id => { const s0 = e.sources[id] || {}; return `<a href="${esc(s0.url || 'https://quranenc.com')}" target="_blank" rel="noopener">${esc(s0.title || id)}</a>`; }).join(' · ')}` +
+      (res.paragraphBy && t.paraBy[res.paragraphBy] ? ` · <span class="ai-tag">${esc(t.paraBy[res.paragraphBy])}</span>` : '') + '</div>';
+  }
+  // fatwa requests: official sources
+  if (res.links && res.links.length) {
+    h += `<div class="links">${res.links.map(l => `<a class="btn gold" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(t.links[l.id] || l.id)}</a>`).join('')}</div>`;
   }
   for (const a of notes) h += `<p class="note" dir="${dir}">${esc(a.text)}</p>`;
   if (res.alt && res.alt.mode === 'topic') h += `<p><button class="btn alt" id="altBtn">${esc(t.asTopic(res.alt.query))}</button></p>`;
@@ -199,7 +264,8 @@ function renderResults() {
   if (res.suras && res.suras.length && (res.type === 'topic' || res.verdict === 'notverse')) {
     h += `<h3 class="sec">${esc(t.surasTitle)}</h3>` + res.suras.map((g, k) => suraCard(g, k)).join('');
   } else if (res.verses.length && res.type !== 'sura') {
-    h += `<h3 class="sec">${esc(t.versesTitle)} (${res.verses.filter(v => !v.closestOnly).length})</h3><ul class="vlist">` +
+    const relOnly = res.verses.length && res.verses.every(v => v.relatedOnly);
+    h += `<h3 class="sec">${esc(relOnly ? t.relatedNotFatwa : t.versesTitle)} (${res.verses.filter(v => !v.closestOnly).length})</h3><ul class="vlist">` +
       res.verses.slice(0, 60).map(v => {
         const tr = e.translation(state.lang, v.idx).replace(/\[\d+\]/g, '');
         return `<li data-idx="${v.idx}"><div class="li-head"><b>${esc(refLabel(v.idx))}</b>${v.to ? `<span>→ ${esc(v.to)}</span>` : ''}</div>
@@ -211,6 +277,9 @@ function renderResults() {
   v.innerHTML = h;
   v.scrollTop = 0;
   v.querySelectorAll('.cite').forEach(el => el.onclick = () => focusVerse(+el.dataset.idx, { card: true }));
+  v.querySelectorAll('[data-ctx]').forEach(b => b.onclick = () => toggleContext(b));
+  v.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openReader(e.suraOf[+b.dataset.open], +b.dataset.open));
+  if (res.sensitive) { const first = v.querySelector('[data-ctx]'); if (first) toggleContext(first); }
   v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => openReader(e.suraOf[+li.dataset.idx], +li.dataset.idx));
   v.querySelectorAll('.sc-refs button').forEach(b => b.onclick = () => focusVerse(+b.dataset.idx, { card: true }));
   v.querySelectorAll('[data-read]').forEach(b => b.onclick = () => openReader(+b.dataset.read, +b.dataset.first));
@@ -219,6 +288,33 @@ function renderResults() {
   if (ab) ab.onclick = () => res.alt.mode === 'topic' ? run(res.alt.query, 'topic') : openReader(res.alt.sura, null);
   const os = $('#openSura'); if (os) os.onclick = () => openReader(res.sura, res.focus);
   const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, true);
+}
+
+function verseCard(q, lang) {
+  const t = T(), e = state.engine, i = q.idx, dir = lang === 'ar' ? 'rtl' : 'ltr';
+  const tr = e.translation(lang, i).replace(/\[\d+\]/g, '');
+  return `<article class="vcardx${q.role === 'context' ? ' ctx' : ''}" data-idx="${i}">
+    <header><span class="cite" data-idx="${i}">${esc(refLabel(i, lang))}</span>
+      <span class="vc-btns"><button class="mini" data-ctx="${i}" aria-expanded="false">${esc(t.ctxBtn)}</button><button class="mini" data-open="${i}">${esc(t.readHere)}</button></span></header>
+    <div class="ayah">${esc(e.verses[i])}</div>
+    ${tr ? `<div class="tr">${esc(tr)}</div>` : ''}
+    <div class="tafsir" dir="${dir}">${esc(q.text)}</div>
+    <div class="ctxbox" hidden></div></article>`;
+}
+
+// verses before/after with their complete tafsir
+function toggleContext(btn) {
+  const i = +btn.dataset.ctx, box = btn.closest('.vcardx').querySelector('.ctxbox'), e = state.engine, t = T();
+  const open = box.hidden;
+  box.hidden = !open; btn.setAttribute('aria-expanded', open);
+  if (!open || box.dataset.done) return;
+  const lang = state.result ? state.result.lang : state.lang;
+  const srcId = PARAGRAPH_FOR[lang] in e.sources ? PARAGRAPH_FOR[lang] : TAFSIR_FOR[lang];
+  box.innerHTML = `<div class="ctx-title">${esc(t.ctxTitle)}</div>` + e.context(i, 2).map(k => {
+    const taf = (e.text(srcId, k) || '').replace(/^\d+\.\s*/, '');
+    return `<div class="ctx-v${k === i ? ' me' : ''}"><b>${esc(refLabel(k, lang))}</b><div class="ayah">${esc(e.verses[k])}</div>${taf ? `<div class="tafsir" dir="${lang === 'ar' ? 'rtl' : 'ltr'}">${esc(taf)}</div>` : ''}</div>`;
+  }).join('');
+  box.dataset.done = '1';
 }
 
 function suraCard(g, k) {

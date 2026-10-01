@@ -24,6 +24,9 @@
   </a>
   <form id="searchForm" role="search" autocomplete="off">
     <input id="q" type="search" enterkeyhint="search" data-i18n-ph="placeholder" aria-label="Search">
+    <button type="button" id="mic" class="mic" data-i18n-aria="micLabel" hidden>
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+    </button>
     <button type="submit" id="go" data-i18n-aria="search">
       <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M20 20l-4.2-4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
     </button>
@@ -64,6 +67,24 @@
   <div id="aboutBody"></div>
   <form method="dialog"><button data-i18n="close">إغلاق</button></form>
 </dialog>
+
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
+  <div class="gbox">
+    <img src="img/logo.svg" alt="" width="76" height="76">
+    <h1 id="gateTitle" data-i18n="gateTitle">سَمِّ الله</h1>
+    <p class="ghint" data-i18n="gateHint">اكتب البسملة أو الصقها أو قُلها بصوتك للدخول</p>
+    <div class="gverse"><span id="gateBasmala" class="ayah"></span>
+      <button type="button" id="gateCopy" class="btn gold" data-i18n="copy">نسخ</button></div>
+    <form id="gateForm" autocomplete="off">
+      <input id="gateInput" dir="auto" data-i18n-ph="gatePh" aria-labelledby="gateTitle">
+      <button type="button" id="gateMic" class="mic big" data-i18n-aria="micLabel">
+        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+      </button>
+      <button type="submit" class="btn gold" data-i18n="enter">دخول</button>
+    </form>
+    <div id="gateMsg" class="gmsg" aria-live="polite"></div>
+  </div>
+</div>
 
 <div id="loader"><img src="img/logo.svg" alt="" width="84" height="84"><div class="spin"></div><div id="loadMsg">…</div></div>
 <script type="module" src="js/app.js"></script>
