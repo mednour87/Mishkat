@@ -1,6 +1,6 @@
 # Mishkat — Traceability · مِشكاة — سجلّ التتبّع
 
-> Generated **2026-10-01T23:16:30Z** by `node tools/trace.mjs` (Node v22.17.0) from git HEAD `bd85d5a935fa00b65576dfbdb9cc5a9bb9ff2ec6` (branch master, committed 2026-10-02T01:12:30+02:00) with **16 uncommitted change(s)** in the working tree.
+> Generated **2026-10-01T23:16:46Z** by `node tools/trace.mjs` (Node v22.17.0) from git HEAD `ea7767531da4039fd85affe63b07d1bb122a9f4e` (branch master, committed 2026-10-02T01:16:45+02:00), clean working tree.
 > Do not edit by hand: every value below is derived from the repository files. Re-run the tool to refresh it.
 
 [Summary](#summary) · [External services & APIs](#external) · [Internal API endpoints](#api) · [AI models](#models) · [Data files](#data) · [Code inventory](#code) · [Tools & libraries](#tools) · [Tests & evaluation](#tests) · [Git history](#git)
@@ -12,18 +12,18 @@ Every number on this page is computed from the repository by `tools/trace.mjs`; 
 
 | Item | Count |
 |---|---|
-| External hosts referenced (classified) | 16 |
-| External hosts unclassified | 1 |
+| External hosts referenced (classified) | 17 |
+| External hosts unclassified | 0 |
 | External URL occurrences | 67 |
 | Internal API endpoints (functions/api) | 7 |
 | AI models wired in production code | 6 |
 | Data files in public/data (top level) | 14 |
 | Data sub-folders (files) | saadi/ 114 · timing/ 114 · translit/ 114 |
 | Data total size | 21.23 MiB |
-| Source files (js/mjs/py/html/css) | 56 files · 9,062 non-blank lines |
+| Source files (js/mjs/py/html/css) | 56 files · 9,063 non-blank lines |
 | Tests (`test(` calls) | 66 in 7 files |
-| Commits | 17 — baseline (declared): 17 |
-| Uncommitted changes in the working tree | 16 |
+| Commits | 18 — baseline (declared): 18 |
+| Uncommitted changes in the working tree | 0 |
 
 <a id="external"></a>
 ## External services & APIs · الخدمات والواجهات الخارجية
@@ -52,7 +52,7 @@ The browser itself may contact only these external origins (CSP in functions/_li
 | `api.stackexchange.com` | Stack Exchange API (Islam Stack Exchange) · Islam Stack Exchange | eval | evaluation only: public question titles for eval/forum_questions.json (eval/collect_forum.py); never used by the app | CC BY-SA 4.0 — titles only, no user names or bodies | reference ×1 | eval/collect_forum.py |
 | `binbaz.org.sa` | Official site of Sheikh Ibn Baz · موقع الشيخ ابن باز | — | fatwa referral link (level D questions: no ruling given) | link only, not ingested | link ×1 | public/js/engine.js |
 | `llm.chutes.ai` | Chutes (optional endpoint) · Chutes | TOOLS.md | optional OpenAI-compatible PRIMARY_URL example (comment); used only if PRIMARY_URL/KEY/MODELS are set | provider terms | comment ×1 | functions/_lib/selector.js |
-| `www.w3.org` | unclassified | — | unclassified — add it to HOSTS in tools/trace.mjs | ? | link ×1 | public/js/lamp.js |
+| `www.w3.org` | W3C SVG namespace · فضاء أسماء SVG | — | xmlns attribute of the Mishkat lamp SVG (public/js/lamp.js, img/logo.svg) — an identifier, never fetched | — | link ×1 | public/js/lamp.js |
 
 **Every occurrence (file:line)** (67)
 
@@ -138,7 +138,7 @@ The browser itself may contact only these external origins (CSP in functions/_li
 
 *Local / placeholder URLs ignored (6): data_build/make_pc_bundle.py:41, data_build/make_pc_bundle.py:44, data_build/make_pc_bundle.py:60, server.mjs:30, server.mjs:43, server.mjs:81.*
 
-*Unclassified hosts: www.w3.org.*
+*Unclassified hosts: none — every host found is in the role table.*
 
 <a id="api"></a>
 ## Internal API endpoints · نقاط الواجهة الداخلية
@@ -274,14 +274,14 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | public/js | 11 | 4,353 |
 | (root) | 1 | 83 |
 | tests | 8 | 730 |
-| tools | 1 | 682 |
+| tools | 1 | 683 |
 
 **Files** (56)
 
 | File | Language | Lines | LOC | Last commit | State | Exports (JS) / functions (Python) |
 |---|---|---|---|---|---|---|
 | `data_build/baseline_snapshot.py` | Python | 41 | 33 | f0b1b80 · 2026-09-29 | committed | — |
-| `data_build/build_data.py` | Python | 266 | 237 | f0b1b80 · 2026-09-29 | modified | dump(), load_cache(), load_manifest(), read_tanzil(), spiral_layout(), main() |
+| `data_build/build_data.py` | Python | 266 | 237 | ea77675 · 2026-10-02 | committed | dump(), load_cache(), load_manifest(), read_tanzil(), spiral_layout(), main() |
 | `data_build/build_latin_index.py` | Python | 53 | 44 | 69587d2 · 2026-10-02 | committed | norm(), forms() |
 | `data_build/build_quranpedia_data.py` | Python | 97 | 83 | cca405e · 2026-10-01 | committed | idx(), load(), text() |
 | `data_build/fetch_bayenat_index.py` | Python | 77 | 66 | cca405e · 2026-10-01 | committed | get(), clean() |
@@ -296,7 +296,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `eval/make_golden.mjs` | JavaScript (ESM) | 132 | 126 | f0b1b80 · 2026-09-29 | committed | — |
 | `eval/precompute_cache.mjs` | JavaScript (ESM) | 48 | 46 | 6bd8633 · 2026-09-29 | committed | cacheKey |
 | `eval/report.mjs` | JavaScript (ESM) | 46 | 44 | 6bd8633 · 2026-09-29 | committed | — |
-| `eval/run_eval.mjs` | JavaScript (ESM) | 153 | 143 | f0b1b80 · 2026-09-29 | modified | — |
+| `eval/run_eval.mjs` | JavaScript (ESM) | 153 | 143 | ea77675 · 2026-10-02 | committed | — |
 | `eval/run_spoken.mjs` | JavaScript (ESM) | 258 | 249 | a997890 · 2026-10-02 | committed | — |
 | `functions/_lib/csp.js` | JavaScript | 9 | 9 | cbc159c · 2026-10-01 | committed | SECURITY_HEADERS |
 | `functions/_lib/guard.js` | JavaScript | 26 | 22 | 8955dff · 2026-10-01 | committed | rateLimited, foreignOrigin, LIMITS, deny |
@@ -317,7 +317,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `public/index.html` | HTML | 147 | 139 | ee86382 · 2026-10-01 | committed | — |
 | `public/js/app.js` | JavaScript | 1,215 | 1,168 | bd85d5a · 2026-10-02 | committed | — |
 | `public/js/basmala.js` | JavaScript | 46 | 43 | d74d462 · 2026-10-01 | committed | isBasmala |
-| `public/js/engine.js` | JavaScript | 1,682 | 1,617 | bd85d5a · 2026-10-02 | modified | AR_RANGE, toAsciiDigits, normAr, normLatin, stemAr, stemLatin, tokens, detectLang, cleanSpoken, sentences, stripTags, MSG, expandTokens, guardCheck, isPolemic, packFor, isSensitive, fatwaLinks, PARAGRAPH_FOR, TAFSIR_FOR, TRANSLATION_FOR, SOURCES_NEEDED, verifyLLM, verifyExpansion, createEngine |
+| `public/js/engine.js` | JavaScript | 1,682 | 1,617 | ea77675 · 2026-10-02 | committed | AR_RANGE, toAsciiDigits, normAr, normLatin, stemAr, stemLatin, tokens, detectLang, cleanSpoken, sentences, stripTags, MSG, expandTokens, guardCheck, isPolemic, packFor, isSensitive, fatwaLinks, PARAGRAPH_FOR, TAFSIR_FOR, TRANSLATION_FOR, SOURCES_NEEDED, verifyLLM, verifyExpansion, createEngine |
 | `public/js/galaxy.js` | JavaScript | 561 | 534 | bd85d5a · 2026-10-02 | committed | PALETTE, createGalaxy |
 | `public/js/glossary.js` | JavaScript | 60 | 54 | cca405e · 2026-10-01 | committed | GLOSSARY, TERM_CUE, termFor, isBareTerm |
 | `public/js/i18n.js` | JavaScript | 246 | 237 | bd85d5a · 2026-10-02 | committed | UI, ABOUT, WELCOME, INTEREST |
@@ -334,8 +334,8 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `tests/pack.test.mjs` | JavaScript (ESM) | 144 | 127 | cca405e · 2026-10-01 | committed | — |
 | `tests/security.test.mjs` | JavaScript (ESM) | 42 | 38 | cbc159c · 2026-10-01 | committed | — |
 | `tests/voice.test.mjs` | JavaScript (ESM) | 38 | 34 | a997890 · 2026-10-02 | committed | — |
-| `tests/words.test.mjs` | JavaScript (ESM) | 54 | 47 | 69587d2 · 2026-10-02 | modified | — |
-| `tools/trace.mjs` | JavaScript (ESM) | 715 | 682 | ee86382 · 2026-10-01 | committed | — |
+| `tests/words.test.mjs` | JavaScript (ESM) | 54 | 47 | ea77675 · 2026-10-02 | committed | — |
+| `tools/trace.mjs` | JavaScript (ESM) | 716 | 683 | ea77675 · 2026-10-02 | committed | — |
 
 <a id="tools"></a>
 ## Tools & libraries · الأدوات والمكتبات
@@ -390,7 +390,7 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 | `tests/pack.test.mjs` | 16 | 127 | cca405e · 2026-10-01 | committed | pack: «Why do Muslims worship the Kaaba?» — no invented answer; points to the reviewed answer ‖ pack: «Did Islam spread by the sword?» — level C, verified context verses + the objection answered in Bayyinat ‖ pack: «Why do scholars differ?» / «do all Muslims agree?» — level C, no claim of agreement, ijtihad defined from Al-Jamhara, referral ‖ pack: personal case («in my country, may I … in my marriage?») — level D, no ruling, referral ‖ pack: «give me a hadith proving this» — no hadith is produced by Mishkat; the lookup goes to Dorar ‖ pack: «what is tawhid?», «translate tawhid into English» — glossary of the pack, word for word ‖ pack: hostile phrasing («…your religion is backward») — not followed; level C; the reviewed answer is offered ‖ pack: misquoted verse — corrected gently with surah and verse, never built upon ‖ subject index: «الصبر» comes from the human-curated index, explained by complete tafsir units ‖ subject index: one-word topic names are never matched inside a question (ambiguous senses) ‖ Bayyinat: plain topics get no objection links; unrelated questions get none ‖ Dorar parser: text, narrator, muhaddith, source and verdict, no markup ‖ Tafsir pages: the verse heading starts the text, the next verse heading ends it ‖ Tafsir endpoint refuses books and verses it does not offer ‖ reference data: every subject-index reference exists in the Tanzil text ‖ subject index never overrides the AI selection for a real question (LLM keyword «الكعبة» → not topic 5:95) |
 | `tests/security.test.mjs` | 4 | 38 | cbc159c · 2026-10-01 | committed | rate limiter blocks after the limit within the window ‖ foreign origins are rejected, same origin accepted ‖ CSP allows only our inline importmap (hash matches index.html) and no remote scripts ‖ no secret is shipped in public files |
 | `tests/voice.test.mjs` | 4 | 34 | a997890 · 2026-10-02 | committed | stt: genuine questions are kept (Arabic letters are not "punctuation") ‖ stt: ghosts, silence and prompt echo are dropped ‖ stt: low-confidence / no-speech segments are removed ‖ stt: language hint, prompt, real file extension; auto-detect retry when the language did not fit |
-| `tests/words.test.mjs` | 6 | 47 | 69587d2 · 2026-10-02 | modified | a rare word of the Quran brings its verse first, whatever its clitics or spelling ‖ the word is highlighted at its place in the Uthmani text ‖ a misspelt word: a sure correction is applied and announced; otherwise suggestions ‖ real words that are not in the Quran are not "corrected" ‖ ta marbuta / ta / ha as the last letter only (يتم is not يهم) ‖ several words of the Quran that never meet in one verse: no crash, no correction |
+| `tests/words.test.mjs` | 6 | 47 | ea77675 · 2026-10-02 | committed | a rare word of the Quran brings its verse first, whatever its clitics or spelling ‖ the word is highlighted at its place in the Uthmani text ‖ a misspelt word: a sure correction is applied and announced; otherwise suggestions ‖ real words that are not in the Quran are not "corrected" ‖ ta marbuta / ta / ha as the last letter only (يتم is not يهم) ‖ several words of the Quran that never meet in one verse: no crash, no correction |
 
 **Evaluation scripts** (8)
 
@@ -402,7 +402,7 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 | `eval/make_golden.mjs` | Builds eval/golden.jsonl — a 100 % synthetic test set (no user data). | 126 | f0b1b80 · 2026-09-29 |
 | `eval/precompute_cache.mjs` | Pre-computes the LLM outputs (expand + select) for frequent questions and | 46 | 6bd8633 · 2026-09-29 |
 | `eval/report.mjs` | Builds eval/results/REPORT.md from eval/results/results.json (no API calls). | 44 | 6bd8633 · 2026-09-29 |
-| `eval/run_eval.mjs` | Evaluation of Mishkat against a simple baseline on the synthetic golden set. | 143 | f0b1b80 · 2026-09-29 |
+| `eval/run_eval.mjs` | Evaluation of Mishkat against a simple baseline on the synthetic golden set. | 143 | ea77675 · 2026-10-02 |
 | `eval/run_spoken.mjs` | Spoken-query evaluation: runs the engine on eval/spoken_queries.json | 249 | a997890 · 2026-10-02 |
 
 **Evaluation data** (3)
@@ -422,16 +422,16 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 | `eval/results/SPOKEN_MAP.md` | 38.7 KiB | `76212aa5f1c6f4e3…` | a997890 · 2026-10-02 | committed |
 | `eval/results/SPOKEN_MAP_before.json` | 109.5 KiB | `396efc15efb264f8…` | 69587d2 · 2026-10-02 | committed |
 | `eval/results/SPOKEN_MAP_before.md` | 32.7 KiB | `fa1f62ef9a520c3f…` | a997890 · 2026-10-02 | committed |
-| `eval/results/SPOKEN_MAP_det71.json` | 201.5 KiB | `78383b5b9f450a04…` | — (never committed) | untracked |
-| `eval/results/SPOKEN_MAP_det71.md` | 38.7 KiB | `959654ec7e5260b2…` | — (never committed) | untracked |
+| `eval/results/SPOKEN_MAP_det71.json` | 201.5 KiB | `78383b5b9f450a04…` | ea77675 · 2026-10-02 | committed |
+| `eval/results/SPOKEN_MAP_det71.md` | 38.7 KiB | `959654ec7e5260b2…` | ea77675 · 2026-10-02 | committed |
 | `eval/results/SPOKEN_MAP_dev.json` | 34.5 KiB | `157b61f7e29e2eff…` | 69587d2 · 2026-10-02 | committed |
 | `eval/results/SPOKEN_MAP_dev.md` | 5.1 KiB | `20bf12f7eb24f094…` | a997890 · 2026-10-02 | committed |
-| `eval/results/SPOKEN_MAP_t1.json` | 28.6 KiB | `72a8d090eb05058a…` | — (never committed) | untracked |
-| `eval/results/SPOKEN_MAP_t1.md` | 4.5 KiB | `c7a6901f3cf5d024…` | — (never committed) | untracked |
-| `eval/results/SPOKEN_MAP_t2.json` | 23.0 KiB | `efd11e082faee33b…` | — (never committed) | untracked |
-| `eval/results/SPOKEN_MAP_t2.md` | 3.3 KiB | `875f266dc1ce7a61…` | — (never committed) | untracked |
-| `eval/results/SPOKEN_MAP_v71.json` | 105.4 KiB | `7d02c755d3312e12…` | — (never committed) | untracked |
-| `eval/results/SPOKEN_MAP_v71.md` | 13.8 KiB | `097bd403d962d687…` | — (never committed) | untracked |
+| `eval/results/SPOKEN_MAP_t1.json` | 28.6 KiB | `72a8d090eb05058a…` | ea77675 · 2026-10-02 | committed |
+| `eval/results/SPOKEN_MAP_t1.md` | 4.5 KiB | `c7a6901f3cf5d024…` | ea77675 · 2026-10-02 | committed |
+| `eval/results/SPOKEN_MAP_t2.json` | 23.0 KiB | `efd11e082faee33b…` | ea77675 · 2026-10-02 | committed |
+| `eval/results/SPOKEN_MAP_t2.md` | 3.3 KiB | `875f266dc1ce7a61…` | ea77675 · 2026-10-02 | committed |
+| `eval/results/SPOKEN_MAP_v71.json` | 105.4 KiB | `7d02c755d3312e12…` | ea77675 · 2026-10-02 | committed |
+| `eval/results/SPOKEN_MAP_v71.md` | 13.8 KiB | `097bd403d962d687…` | ea77675 · 2026-10-02 | committed |
 | `eval/results/audit2.txt` | 27.9 KiB | `84849fa8660739f4…` | 6bd8633 · 2026-09-29 | committed |
 | `eval/results/audit3.txt` | 17.3 KiB | `608c938e0b6ac3b5…` | 6bd8633 · 2026-09-29 | committed |
 | `eval/results/audit_crit.txt` | 28.7 KiB | `6db930e9e1ffffb8…` | d74d462 · 2026-10-01 | committed |
@@ -447,10 +447,11 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 <a id="git"></a>
 ## Git history · سجل git
 
-The challenge evaluates only the work done in the build window (2026-10-04 → 2026-10-06). Commits dated before 2026-10-04 are the declared baseline (see BASELINE.md). Phase uses the commit date. Showing the last 17 of 17 commits.
+The challenge evaluates only the work done in the build window (2026-10-04 → 2026-10-06). Commits dated before 2026-10-04 are the declared baseline (see BASELINE.md). Phase uses the commit date. Showing the last 18 of 18 commits.
 
 | Hash | Date | Time | Phase | Subject |
 |---|---|---|---|---|
+| `ea77675` | 2026-10-02 | 01:16:45+02:00 | baseline (declared) | French data files removed; sources registry S17-S19 (classical tafsirs, transliteration index, server voice); guide with search metrics; traceability regenerated; crash fix for multi-word queries whose words never meet |
 | `bd85d5a` | 2026-10-02 | 01:12:30+02:00 | baseline (declared) | AI search: subject index only for bare topics, candidates show the verse/translation, Arabic keywords for English questions, scored selection (direct vs related); points never blur near the camera; view restore keeps the camera; About updated |
 | `69587d2` | 2026-10-02 | 00:56:31+02:00 | baseline (declared) | Logo after As-Sa'di on 24:35 (niche > shining glass like a brilliant star > lamp, olive oil, central olive tree); answers keep the sky visible (soft surah tint, brighter verses); narrower tafsir; full view = 3D + Mushaf; exact Quran words first (clitics, Uthmani spelling, Latin transliteration), spelling correction and suggestions; structured answer (key verses, folded explanations, no repeats) |
 | `a997890` | 2026-10-02 | 00:42:46+02:00 | baseline (declared) | Search for spoken queries (pre-challenge preparation, to be declared as baseline): spoken-query cleaning (dialect fillers, Whisper repairs), spoken surah/verse requests, stricter no-AI path, better expand/select prompts, 139-query spoken evaluation set and results map; detailed guide |
@@ -468,24 +469,3 @@ The challenge evaluates only the work done in the build window (2026-10-04 → 2
 | `d74d462` | 2026-10-01 | 08:36:33+02:00 | baseline (declared) | v3 (pre-challenge, declared): full-tafsir verse cards, paragraph only when AI-confirmed, verified context packs for trap questions, sensitive-topic context mode, fatwa questions → official sources (binbaz/alifta) + related verses, takfir/violence guard, basmala entry gate (text/copy/voice), voice search (Whisper/Web Speech), multi-provider LLM (subscription-ready), forum question collection |
 | `6bd8633` | 2026-09-29 | 10:02:27+02:00 | baseline (declared) | Relevance audit fixes: verified AI recall, precision-first display, ta marbuta & stemming fixes, circuit breakers, pre-computed AI cache, upload tutorial |
 | `f0b1b80` | 2026-09-29 | 08:56:37+02:00 | baseline (declared) | Mishkat v2 — declared baseline before the challenge window (29 Sep 2026) |
-
-**Uncommitted changes at generation time** (16)
-
-| Path | git status |
-|---|---|
-| `SOURCES.md` | M |
-| `data_build/build_data.py` | M |
-| `docs/GUIDE_DETAILLE.md` | M |
-| `eval/run_eval.mjs` | M |
-| `public/data/tafsir_mukhtasar_fr.json` | D |
-| `public/data/tafsir_rashid_fr.json` | D |
-| `public/js/engine.js` | M |
-| `tests/words.test.mjs` | M |
-| `eval/results/SPOKEN_MAP_det71.json` | ?? |
-| `eval/results/SPOKEN_MAP_det71.md` | ?? |
-| `eval/results/SPOKEN_MAP_t1.json` | ?? |
-| `eval/results/SPOKEN_MAP_t1.md` | ?? |
-| `eval/results/SPOKEN_MAP_t2.json` | ?? |
-| `eval/results/SPOKEN_MAP_t2.md` | ?? |
-| `eval/results/SPOKEN_MAP_v71.json` | ?? |
-| `eval/results/SPOKEN_MAP_v71.md` | ?? |
