@@ -401,3 +401,20 @@ html[data-theme=light] .btn.gold { background: #b8790f; border-color: #b8790f; c
 html[data-theme=light] .btn.play { background: #1d8a57; border-color: #1d8a57; color: #fff; }
 html[data-theme=light] .mini { background: #fff; border-color: rgba(40, 30, 10, .18); color: #1d2433; }
 html[data-theme=light] .rd-aya select, html[data-theme=light] .rep select { color: #1d2433; }
+
+/* ------------------------------------------------ results v2: verses listed inside each surah */
+.sc-note { font-size: 12.5px; color: var(--mut); margin: -2px 0 10px; }
+.sura-card .sc-btns { margin-inline-start: auto; }
+.btn.sm { min-height: 36px; padding: 4px 12px; font-size: 13px; }
+.sc-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.sc-v { border-radius: 10px; padding: 6px 8px; background: rgba(255, 255, 255, .025); border: 1px solid transparent; cursor: pointer; }
+.sc-v:hover, .sc-v.on, .vcardx.on { border-color: rgba(255, 214, 107, .45); }
+.sc-v .ayah { font-size: 21px; line-height: 2; }
+.sc-v .tr { font-size: 13.5px; }
+.sc-v .cite { background: none; border: 0; color: var(--gold); font: inherit; font-weight: 600; cursor: pointer; padding: 0; }
+mark.hit { background: rgba(255, 214, 107, .28); color: inherit; border-radius: 5px; padding: 0 2px; }
+.sc-more { margin-top: 6px; }
+html[data-theme=light] .sc-v { background: #fffdf7; border-color: rgba(40, 30, 10, .08); }
+html[data-theme=light] .sc-v .cite { color: #8a5a06; }
+html[data-theme=light] mark.hit { background: #f6dd9c; }
+html[data-theme=light] .sc-note { color: #5b6476; }

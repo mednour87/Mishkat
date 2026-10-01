@@ -1,4 +1,4 @@
-import { createEngine, detectLang, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr } from './engine.js';
+import { createEngine, detectLang, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens } from './engine.js';
 import { UI, ABOUT, WELCOME } from './i18n.js';
 import { quranWordLayout } from './letters3d.js';
 import { isBasmala } from './basmala.js';
@@ -272,7 +272,7 @@ function renderResults() {
 
   // surahs ranked by relevance (topics) / verse list (verification)
   if (res.suras && res.suras.length && (res.type === 'topic' || res.verdict === 'notverse')) {
-    h += `<h3 class="sec">${esc(t.surasTitle)}</h3>` + res.suras.map((g, k) => suraCard(g, k)).join('');
+    h += `<h3 class="sec">${esc(t.surasTitle)}</h3><p class="sc-note">${esc(t.surasNote)}</p>` + res.suras.map((g, k) => suraCard(g, k)).join('');
   } else if (res.verses.length && res.type !== 'sura') {
     const relOnly = res.verses.length && res.verses.every(v => v.relatedOnly);
     h += `<h3 class="sec">${esc(relOnly ? t.relatedNotFatwa : t.versesTitle)} (${res.verses.filter(v => !v.closestOnly).length})</h3><ul class="vlist">` +
@@ -292,7 +292,8 @@ function renderResults() {
   v.querySelectorAll('[data-open]').forEach(b => b.onclick = () => openReader(e.suraOf[+b.dataset.open], +b.dataset.open));
   if (res.sensitive) { const first = v.querySelector('[data-ctx]'); if (first) toggleContext(first); }
   v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => openReader(e.suraOf[+li.dataset.idx], +li.dataset.idx));
-  v.querySelectorAll('.sc-refs button').forEach(b => b.onclick = () => focusVerse(+b.dataset.idx, { card: true }));
+  v.querySelectorAll('.sc-v').forEach(li => li.onclick = () => focusVerse(+li.dataset.idx, { card: true }));
+  v.querySelectorAll('.sc-more').forEach(b => b.onclick = () => { b.closest('.sura-card').querySelectorAll('.sc-v[hidden]').forEach(x => { x.hidden = false; }); b.remove(); });
   v.querySelectorAll('[data-read]').forEach(b => b.onclick = () => openReader(+b.dataset.read, +b.dataset.first));
   v.querySelectorAll('[data-listen]').forEach(b => b.onclick = () => openReader(+b.dataset.listen, +b.dataset.first, true));
   const ab = $('#altBtn');
@@ -328,14 +329,31 @@ function toggleContext(btn) {
   box.dataset.done = '1';
 }
 
+// highlight the words of the search inside a text (same tokenizer as the engine)
+function markTerms(text, lang, terms) {
+  if (!terms || !terms.size) return esc(text);
+  return text.split(/(\s+)/).map(w => /\S/.test(w) && tokens(w, lang).some(x => terms.has(x)) ? `<mark class="hit">${esc(w)}</mark>` : esc(w)).join('');
+}
+
+// one card per surah, listing ITS verses from the results, so the link with the search is visible
 function suraCard(g, k) {
-  const t = T(), S = state.core.suras[g.sura - 1], e = state.engine;
+  const t = T(), S = state.core.suras[g.sura - 1], e = state.engine, res = state.result;
+  const terms = new Set(res.terms || []), qLang = res.lang;
   const refs = g.verses.slice().sort((a, b) => a - b);
+  const SHOW = 4;
+  const row = (i, n) => {
+    const tr = state.lang !== 'ar' ? e.translation(state.lang, i).replace(/\[\d+\]/g, '') : '';
+    const ar = qLang === 'ar' ? markTerms(e.verses[i], 'ar', terms) : esc(e.verses[i]);
+    const trH = tr ? (qLang === state.lang ? markTerms(tr, qLang, terms) : esc(tr)) : '';
+    return `<li class="sc-v" data-idx="${i}"${n >= SHOW ? ' hidden' : ''}><div class="li-head"><button class="cite" data-idx="${i}">${esc(S.ar)} ${S.n}:${e.ayaOf[i]}</button>
+      <span><button class="mini" data-playv="${i}" aria-label="${esc(t.listen)}">▶</button> <button class="mini" data-open="${i}">${esc(t.readHere)}</button></span></div>
+      <div class="ayah">${ar}</div>${trH ? `<div class="tr">${trH}</div>` : ''}</li>`;
+  };
   return `<div class="sura-card"><div class="sc-head"><span class="sc-rank">${k + 1}</span>
-    <div class="sc-name"><b>${esc(S.ar)}</b><small>${esc(S.tr)} · ${S.n} · ${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.matched(g.verses.length))}</small></div></div>
-    <div class="sc-refs">${refs.slice(0, 14).map(i => `<button data-idx="${i}">${e.ayaOf[i]}</button>`).join('')}${refs.length > 14 ? '<span>…</span>' : ''}</div>
-    <div class="sc-btns"><button class="btn gold" data-read="${S.n}" data-first="${g.verses[0]}">${esc(t.readSura)}</button>
-    <button class="btn play" data-listen="${S.n}" data-first="${g.verses[0]}">${esc(t.listen)}</button></div></div>`;
+    <div class="sc-name"><b>${esc(S.ar)}</b><small>${esc(S.tr)} · ${S.n} · ${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.matched(g.verses.length))}</small></div>
+    <span class="sc-btns"><button class="btn gold sm" data-read="${S.n}" data-first="${refs[0]}">${esc(t.readSura)}</button><button class="btn play sm" data-listen="${S.n}" data-first="${refs[0]}" aria-label="${esc(t.listen)}">▶</button></span></div>
+    <ul class="sc-list">${refs.map(row).join('')}</ul>
+    ${refs.length > SHOW ? `<button class="mini sc-more">${esc(t.moreV(refs.length - SHOW))}</button>` : ''}</div>`;
 }
 
 // ------------------------------------------------------------ panel
@@ -353,7 +371,7 @@ function showPanel(which) {
 function focusVerse(idx, { card = false, dist } = {}) {
   state.galaxy.flyToVerse(idx, dist);
   state.galaxy.showLabels(card ? idx : null, null, state.engine.verses[idx], refLabel(idx));
-  document.querySelectorAll('.sc-refs button').forEach(b => b.classList.toggle('on', +b.dataset.idx === idx));
+  document.querySelectorAll('.sc-v, .vcardx').forEach(b => b.classList.toggle('on', +b.dataset.idx === idx));
 }
 
 // ------------------------------------------------------------ reader

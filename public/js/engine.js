@@ -151,7 +151,7 @@ export const MSG = {
     notVerse: 'لا توجد آية بهذا اللفظ في القرآن الكريم (رواية حفص، نص مشروع تنزيل)؛ فلا يُنسب هذا النص إلى القرآن.',
     related: 'آيات ورد فيها بعض ألفاظه أو معناه (بحث موضوعي):',
     closest: 'أقرب الآيات لفظًا (للاستئناس فقط، وليست مطابقة):',
-    topic: (n, q) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ذات صلة بـ«${q}». وهذا بيانها من التفسير المعتمد:`,
+    topic: (n, q, s = 1) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ذات صلة بـ«${q}» في ${arCount(s, 'سورة واحدة', 'سورتين', 'سور', 'سورة')}. وهذا بيان أبرزها من التفسير المعتمد، ثم السور التي وردت فيها:`,
     noTopic: 'لم أجد مرجعًا كافيًا لهذا السؤال في الآيات والتفاسير المعتمدة لديّ، فأمتنع عن الإجابة حتى لا أنسب إلى القرآن ما ليس فيه. جرّب كلمة مفتاحية أوضح (مثل: الصبر، الوالدين، موسى).',
     ruling: 'هذا سؤال عن حكم شرعي، والفتوى لأهل العلم؛ فلا تُصدر «مشكاة» أحكامًا. تجد أدناه روابط مصادر الفتوى الرسمية، وآيات ذات صلة بالموضوع للاطلاع (وليست فتوى).',
     personal: 'هذه مسألة شخصية تحتاج إلى عالم أو مختص يسمع تفاصيلها. لا تقدّم «مشكاة» نصائح أو أحكامًا في الحالات الخاصة. يمكنك البحث عن موضوع عام (مثل: الصبر، بر الوالدين).',
@@ -161,7 +161,7 @@ export const MSG = {
     empty: 'اكتب فكرة أو سؤالًا أو اسم سورة أو رقم آية أو جزءًا من آية.',
     lowConf: 'نتائج بحث لفظي (ثقة منخفضة) — تحقّق من السياق.',
     personalNote: 'هذه آيات عامة في الموضوع؛ أما حالتك الخاصة فاعرضها على عالم أو مختص.',
-    topicLexical: (n, q) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ورد فيها لفظ «${q}» (بحث لفظي).`,
+    topicLexical: (n, q, s = 1) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ورد فيها لفظ «${q}» في ${arCount(s, 'سورة واحدة', 'سورتين', 'سور', 'سورة')} (بحث لفظي). الآيات مرتّبة أدناه حسب السورة:`,
     lexicalOnly: 'هذه نتائج بحث لفظي لم يؤكدها الذكاء الاصطناعي؛ قد لا تكون كلها متعلقة بسؤالك، فراجع السياق والتفسير.',
     polemic: 'هذه الآيات ذات الصلة بالسؤال، يعرضها التفسير المعتمد في سياقها كما هي، دون انتقاء جزء منها. والحكم على المعنى يكون بقراءة الآية مع سياقها وتفسيرها.',
     sensitiveNote: 'موضوع يحتاج إلى فهمه في سياقه: افتح «السياق» لقراءة ما قبل الآية وما بعدها، ولتفصيل الأحكام يُرجع إلى أهل العلم.',
@@ -181,7 +181,7 @@ export const MSG = {
     notVerse: 'No verse of the Quran has this wording (Hafs, Tanzil text), so this text should not be attributed to the Quran.',
     related: 'Verses sharing some of its words or meaning (topic search):',
     closest: 'Closest verses by wording (for reference only, not a match):',
-    topic: (n, q) => `I found ${n} verse${n === 1 ? '' : 's'} related to “${q}”. Here is their explanation from vetted tafsir:`,
+    topic: (n, q, s = 1) => `I found ${n} verse${n === 1 ? '' : 's'} related to “${q}” in ${s} surah${s === 1 ? '' : 's'}. Here is the explanation of the main ones from vetted tafsir, then the surahs where they occur:`,
     noTopic: 'I could not find sufficient evidence for this in the vetted verses and tafsir I hold, so I abstain rather than attribute to the Quran what is not in it. Try a clearer keyword (e.g. patience, parents, Moses).',
     ruling: 'This asks for a religious ruling, which belongs to qualified scholars; Mishkat does not issue rulings. Below are links to official fatwa sources, and related verses for reading (not a fatwa).',
     personal: 'This is a personal matter that needs a scholar or specialist who can hear the details. Mishkat gives no advice or rulings on individual cases. You can search a general topic instead (e.g. patience, parents).',
@@ -191,7 +191,7 @@ export const MSG = {
     empty: 'Type an idea, a question, a surah name, a verse number or part of a verse.',
     lowConf: 'Keyword results (low confidence) — check the context.',
     personalNote: 'These are general verses on the subject; for your own situation, please consult a scholar or specialist.',
-    topicLexical: (n, q) => `I found ${n} verse${n === 1 ? '' : 's'} containing the words of “${q}” (keyword search).`,
+    topicLexical: (n, q, s = 1) => `I found ${n} verse${n === 1 ? '' : 's'} containing the words of “${q}” in ${s} surah${s === 1 ? '' : 's'} (keyword search). They are listed below, surah by surah:`,
     lexicalOnly: 'These keyword results were not confirmed by the AI; some may not answer your question — check the context and the tafsir.',
     polemic: 'Here are the verses relevant to this question, each shown in full with its vetted tafsir — no part is cut out. The meaning of a verse is judged by reading it with its context and its tafsir.',
     sensitiveNote: 'This subject must be read in context: open “Context” to see the verses before and after, and refer to scholars for detailed rulings.',
@@ -211,7 +211,7 @@ export const MSG = {
     notVerse: 'Aucun verset du Coran n’a cette formulation (lecture Hafs, texte Tanzil) ; ce texte ne doit donc pas être attribué au Coran.',
     related: 'Versets partageant certains de ses mots ou son sens (recherche thématique) :',
     closest: 'Versets les plus proches par la formulation (à titre indicatif, pas une correspondance) :',
-    topic: (n, q) => `J’ai trouvé ${n} verset${n === 1 ? '' : 's'} lié${n === 1 ? '' : 's'} à « ${q} ». Voici leur explication d’après un tafsir vérifié :`,
+    topic: (n, q, s = 1) => `J’ai trouvé ${n} verset${n === 1 ? '' : 's'} lié${n === 1 ? '' : 's'} à « ${q} » dans ${s} sourate${s === 1 ? '' : 's'}. Voici l’explication des principaux d’après un tafsir vérifié, puis les sourates où ils figurent :`,
     noTopic: 'Je n’ai pas trouvé de preuve suffisante dans les versets et tafsirs vérifiés dont je dispose ; je m’abstiens plutôt que d’attribuer au Coran ce qui n’y est pas. Essayez un mot-clé plus clair (ex. patience, parents, Moïse).',
     ruling: 'Cette question demande un avis juridique (fatwa), qui relève des savants ; Mishkat ne rend aucun avis. Ci-dessous : des liens vers les sources officielles de fatwa, et des versets liés au sujet, à lire (ce n’est pas une fatwa).',
     personal: 'Il s’agit d’une situation personnelle qui demande un savant ou un spécialiste à l’écoute des détails. Mishkat ne donne ni conseil ni avis sur les cas individuels. Vous pouvez chercher un thème général (ex. patience, parents).',
@@ -221,7 +221,7 @@ export const MSG = {
     empty: 'Écrivez une idée, une question, un nom de sourate, un numéro ou un fragment de verset.',
     lowConf: 'Résultats par mots-clés (confiance faible) — vérifiez le contexte.',
     personalNote: 'Ce sont des versets généraux sur le sujet ; pour votre situation personnelle, consultez un savant ou un spécialiste.',
-    topicLexical: (n, q) => `J’ai trouvé ${n} verset${n === 1 ? '' : 's'} contenant les mots de « ${q} » (recherche par mots-clés).`,
+    topicLexical: (n, q, s = 1) => `J’ai trouvé ${n} verset${n === 1 ? '' : 's'} contenant les mots de « ${q} » dans ${s} sourate${s === 1 ? '' : 's'} (recherche par mots-clés). Ils sont listés ci-dessous, sourate par sourate :`,
     lexicalOnly: 'Ces résultats par mots-clés n’ont pas été confirmés par l’IA ; certains peuvent ne pas répondre à votre question — vérifiez le contexte et le tafsir.',
     polemic: 'Voici les versets liés à cette question, chacun affiché en entier avec son tafsir vérifié — sans en couper une partie. Le sens d’un verset se juge en le lisant avec son contexte et son tafsir.',
     sensitiveNote: 'Ce sujet se lit dans son contexte : ouvrez « Contexte » pour voir les versets avant et après, et référez-vous aux savants pour le détail des règles.',
@@ -944,21 +944,22 @@ export function createEngine({ core, searchAr, sources = {} }) {
     } else order = order.slice(0, limit);
     // context pack (verified, curated) first for trap questions / sensitive subjects
     const packIdx = (polemic || sensitive) && pack ? pack.refs.map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); }).filter(i => i >= 0) : [];
+    const all = packIdx.concat(order.filter(i => !packIdx.includes(i)));
+    const nSuras = new Set(all.map(i => suraOf[i])).size;
     const answer = [];
     if (softPrefix) answer.push(...softPrefix.answer, { kind: 'text', text: ML.related });
     else if (polemic) answer.push({ kind: 'text', text: ML.polemic });
-    else answer.push({ kind: 'text', text: confirmed ? ML.topic(order.length, q) : ML.topicLexical(order.length, q) });
+    else answer.push({ kind: 'text', text: confirmed ? ML.topic(all.length, q, nSuras) : ML.topicLexical(all.length, q, nSuras) });
     for (const i of packIdx) { const c = cardOf(L, i, 'context'); if (c) answer.push(c); }
     if (confirmed) for (const i of order.filter(i => !packIdx.includes(i)).slice(0, 3)) { const c = cardOf(L, i, 'answer'); if (c) answer.push(c); }
     if (!llmOk && !softPrefix) answer.push({ kind: 'note', text: ML.lexicalOnly });
     if (lowConf) answer.push({ kind: 'note', text: ML.lowConf });
     if (sensitive) answer.push({ kind: 'note', text: ML.sensitiveNote });
     if (personalNote) answer.push({ kind: 'note', text: ML.personalNote });
-    const all = packIdx.concat(order.filter(i => !packIdx.includes(i)));
     const rankOf = new Map(all.map((i, k) => [i, k]));
     return { ...base, type: softPrefix ? 'verify' : 'topic', verdict: softPrefix ? 'notverse' : undefined,
       answer, verses: all.map(i => verseResult(i)), focus: all[0], sensitive, polemic, pack: pack ? pack.id : null,
-      suras: groupBySura(all, (i) => 1 / (rankOf.get(i) + 1)).slice(0, 12),
+      suras: groupBySura(all, (i) => 1 / (rankOf.get(i) + 1)), terms: qtoks,
       paragraphBy: confirmed ? 'llm' : (packIdx.length ? 'context' : 'none') };
   }
 
