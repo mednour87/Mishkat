@@ -1,5 +1,5 @@
 import { createEngine, detectLang, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens } from './engine.js';
-import { UI, ABOUT, WELCOME } from './i18n.js';
+import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
 import { quranWordLayout } from './letters3d.js';
 import { isBasmala } from './basmala.js';
 import { lampSVG, setLampWord } from './lamp.js';
@@ -48,8 +48,9 @@ function applyLang(lang) {
   $('#chips').innerHTML = t.chips.map(c => `<button type="button">${esc(c)}</button>`).join('');
   $('#chips').querySelectorAll('button').forEach(b => b.onclick = () => { $('#q').value = b.textContent; run(b.textContent); });
   const vs = $('#viewSel');
-  if (vs && !$('#viewNote').hidden && vs.value.startsWith('q-')) $('#viewNote').textContent = t.viewNote(t['ord_' + vs.value.slice(2)]);
+  if (vs && !$("#viewNote").hidden && vs.value.startsWith('q-')) $('#viewNote').textContent = t.viewNote(t['ord_' + vs.value.slice(2)]);
   if (!$('#welcome').hidden && state.core) openWelcome();
+  if (state.core) renderHome();
   $('#legendBox').innerHTML = t.legendItems.map(([c, x]) => `<div><i style="background:${c};color:${c}"></i>${esc(x)}</div>`).join('');
   $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice()));
   $('#aiBadge').textContent = t.ai(state.llmModel);
@@ -138,6 +139,7 @@ async function boot() {
   if (sp.get('q')) { $('#q').value = sp.get('q'); run(sp.get('q')); }
   else if (firstTime && !sp.get('s')) openWelcome();
   else if (sp.get('s')) openReader(+sp.get('s'), null);
+  renderHome();
 }
 
 // ------------------------------------------------------------ entry gate
@@ -148,6 +150,7 @@ function gate() {
   if (ok) return Promise.resolve();
   const g = $('#gate'), t = () => T();
   $('#gateBasmala').textContent = state.core.verses[0];
+  $('#gateLamp').innerHTML = lampSVG({ size: 124, title: 'Mishkat' });
   g.hidden = false;
   document.body.classList.add('gated');
   setTimeout(() => $('#gateInput').focus(), 50);
@@ -155,7 +158,8 @@ function gate() {
     const accept = () => {
       try { localStorage.setItem('mishkat.bismillah', '1'); } catch (e) { /* ignore */ }
       $('#gateMsg').textContent = t().gateOk; $('#gateMsg').className = 'gmsg ok';
-      setTimeout(() => { g.hidden = true; document.body.classList.remove('gated'); $('#q').focus(); resolve(); }, 450);
+      g.classList.add('leaving');
+      setTimeout(() => { g.hidden = true; g.classList.remove('leaving'); document.body.classList.remove('gated'); resolve(); }, 750);
     };
     const check = (txt) => {
       if (isBasmala(txt)) return accept();
@@ -165,7 +169,7 @@ function gate() {
     $('#gateInput').oninput = () => { if (isBasmala($('#gateInput').value)) accept(); };
     $('#gateCopy').onclick = async () => {
       const txt = state.core.verses[0];
-      try { await navigator.clipboard.writeText(txt); $('#gateCopy').textContent = t().copied; }
+      try { await navigator.clipboard.writeText(txt); $('#gateCopy').textContent = t().copied; $('#gateInput').focus(); }
       catch (e) { $('#gateInput').value = txt; check(txt); }
     };
     $('#gateMic').onclick = async () => {
@@ -643,7 +647,12 @@ async function setView(v) {
   document.body.classList.toggle('qview', v.startsWith('q-'));
   const note = $('#viewNote');
   note.hidden = v.startsWith('g');
-  if (!note.hidden) note.textContent = T().viewNote(T()['ord_' + v.slice(2)]);
+  clearTimeout(setView.timer);
+  if (!note.hidden) {
+    note.textContent = T().viewNote(T()['ord_' + v.slice(2)]);
+    // the explanation is shown for a while, then gets out of the way of the home page
+    setView.timer = setTimeout(() => { note.hidden = true; }, 9000);
+  }
   try { localStorage.setItem('mishkat.view', v); } catch (e) { /* ignore */ }
 }
 $('#viewSel').onchange = (ev) => setView(ev.target.value);
@@ -665,53 +674,107 @@ function setTheme(th) {
 (function initTheme() { let th = 'dark'; try { th = localStorage.getItem('mishkat.theme') || 'dark'; } catch (e) { /* ignore */ } setTheme(th); })();
 
 // ------------------------------------------------------------ welcome & feature chooser
-const FEATURES = ['tafsir', 'goto', 'listen', 'learn', 'ask', 'verify'];
-const LESSONS = [1, 112, 113, 114, 108, 103, 110, 109, 107, 106, 105, 97];
+// ------------------------------------------------------------ welcome → interests → personalised home
+const INTERESTS = ['ahkam', 'stories', 'akhlaq', 'tafsir', 'recite', 'suras', 'memorize', 'verify'];
+const ICONS = {
+  ahkam: 'M12 3v17M6 20h12M4 7h16M7 7l-3 6a3 3 0 0 0 6 0zM17 7l-3 6a3 3 0 0 0 6 0z',
+  stories: 'M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z',
+  akhlaq: 'M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z',
+  tafsir: 'M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9V16h7v-2.1A6 6 0 0 0 12 3z',
+  recite: 'M4 15v-3a8 8 0 0 1 16 0v3M4 15h3v5H4zM17 15h3v5h-3z',
+  suras: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM15.5 8.5l-2 5-5 2 2-5z',
+  memorize: 'M4 12a8 8 0 0 1 14-5.3M20 4v4h-4M20 12a8 8 0 0 1-14 5.3M4 20v-4h4',
+  verify: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6zM8.5 12l2.5 2.5 4.5-5',
+};
+const icon = (k) => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="${ICONS[k]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const PICKS = {
+  tafsir: [[2, 255], [24, 35], [2, 285], [1, 1], [103, 1], [59, 22]],
+  recite: [1, 18, 36, 55, 67, 56],
+  suras: [2, 3, 12, 18, 19, 36],
+  memorize: [112, 113, 114, 108, 103, 1],
+};
+const VERIFY_EX = ['النظافة من الإيمان', 'إن الله مع الصابرين', 'اطلبوا العلم ولو في الصين', 'وقل رب زدني علما'];
 function suraOptions(sel = 1) {
   return state.core.suras.map(S => `<option value="${S.n}"${S.n === sel ? ' selected' : ''}>${S.n}. ${esc(state.lang === 'ar' ? S.ar : S.tr)}</option>`).join('');
 }
+function interests() {
+  try { return (JSON.parse(localStorage.getItem('mishkat.interests') || '[]') || []).filter(k => INTERESTS.includes(k)); } catch (e) { return []; }
+}
+
 function openWelcome() {
-  const W = WELCOME[state.lang], w = $('#welcome');
-  $('#wBasmala').textContent = state.core.verses[0];
-  let chosen = [];
-  try { chosen = JSON.parse(localStorage.getItem('mishkat.features') || '[]'); } catch (e) { chosen = []; }
-  $('#wOptions').innerHTML = FEATURES.map(f => `<div class="wopt${chosen.includes(f) ? ' on' : ''}" data-f="${f}">
-    <label><input type="checkbox" value="${f}"${chosen.includes(f) ? ' checked' : ''}> <b>${esc(W[f].title)}</b><small>${esc(W[f].desc)}</small></label>
-    <div class="wctl">${featureControls(f, W)}</div></div>`).join('');
+  const I = INTEREST[state.lang], w = $('#welcome'), chosen = new Set(interests());
+  $('#wLamp').innerHTML = lampSVG({ size: 92, title: 'Mishkat' });
+  $('#wOptions').innerHTML = INTERESTS.map(k => `<button type="button" class="wtile" data-k="${k}" aria-pressed="${chosen.has(k)}">
+    <span class="wi">${icon(k)}</span><b>${esc(I[k].title)}</b><small>${esc(I[k].desc)}</small><span class="wcheck" aria-hidden="true"></span></button>`).join('');
+  const count = () => { const n = w.querySelectorAll('.wtile[aria-pressed=true]').length; $('#wCount').textContent = n ? `(${n})` : ''; };
+  w.querySelectorAll('.wtile').forEach(b => b.onclick = () => { b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'); count(); });
+  count();
   w.hidden = false;
-  const save = () => { try { localStorage.setItem('mishkat.features', JSON.stringify([...w.querySelectorAll('input[type=checkbox]:checked')].map(c => c.value))); } catch (e) { /* ignore */ } };
-  w.querySelectorAll('input[type=checkbox]').forEach(c => c.onchange = () => { c.closest('.wopt').classList.toggle('on', c.checked); save(); });
-  w.querySelectorAll('select[data-sura]').forEach(sel => sel.onchange = () => {
-    const n = +sel.value, inp = sel.parentElement.querySelector('input[type=number]');
-    if (inp) { inp.max = state.core.suras[n - 1].ayas; if (+inp.value > +inp.max) inp.value = 1; }
-  });
-  w.querySelectorAll('[data-go]').forEach(b => b.onclick = () => runFeature(b.dataset.go, b.closest('.wctl')));
-  w.querySelectorAll('[data-lesson]').forEach(b => b.onclick = () => { closeWelcome(); openReader(+b.dataset.lesson, null, true); });
-  $('#wClose').onclick = closeWelcome;
-  setTimeout(() => { const first = w.querySelector('input[type=checkbox]'); if (first) first.focus(); }, 50);
+  $('#wGo').onclick = () => {
+    const ks = [...w.querySelectorAll('.wtile[aria-pressed=true]')].map(b => b.dataset.k);
+    try { localStorage.setItem('mishkat.interests', JSON.stringify(ks)); } catch (e) { /* ignore */ }
+    closeWelcome(); renderHome();
+  };
+  $('#wClose').onclick = () => { closeWelcome(); renderHome(); };
+  setTimeout(() => { const first = w.querySelector('.wtile'); if (first) first.focus(); }, 50);
 }
 function closeWelcome() { $('#welcome').hidden = true; try { localStorage.setItem('mishkat.welcomed', '1'); } catch (e) { /* ignore */ } }
-function featureControls(f, W) {
-  const pick = `<select data-sura aria-label="${esc(W.sura)}">${suraOptions()}</select><input type="number" min="1" max="7" value="1" aria-label="${esc(W.aya)}">`;
-  if (f === 'tafsir' || f === 'goto' || f === 'listen') return `${pick}<button class="btn gold" data-go="${f}">${esc(W[f].go)}</button>`;
-  if (f === 'learn') return LESSONS.map(n => `<button class="mini" data-lesson="${n}">${esc(state.lang === 'ar' ? state.core.suras[n - 1].ar : state.core.suras[n - 1].tr)}</button>`).join('');
-  return `<input type="text" dir="auto" placeholder="${esc(W[f].ph)}"><button class="btn gold" data-go="${f}">${esc(W[f].go)}</button>`;
-}
-function runFeature(f, box) {
-  const sel = box.querySelector('select'), num = box.querySelector('input[type=number]'), txt = box.querySelector('input[type=text]');
-  if (sel) {
-    const S = state.core.suras[+sel.value - 1], a = Math.min(Math.max(1, +num.value || 1), S.ayas), i = S.first + a - 1;
-    closeWelcome();
-    if (f === 'tafsir') state.reader.srcTab = state.lang === 'ar' ? 'muyassar_ar' : TAFSIR_FOR[state.lang];
-    openReader(S.n, i, f === 'listen');
-    if (f === 'tafsir') setTimeout(() => { const d = $('#rDetail'); if (d) d.scrollIntoView({ behavior: 'smooth' }); }, 300);
-    return;
+
+// home page: suggestion groups for the chosen interests (default chips otherwise)
+function renderHome() {
+  const box = $('#forYou'), I = INTEREST[state.lang], chosen = interests(), L = state.lang;
+  if (!state.core || !box) return;
+  $('#chips').hidden = chosen.length > 0;
+  $('#heroLead').hidden = chosen.length > 0;
+  if (!chosen.length) {
+    box.hidden = false;
+    box.className = 'fy-empty';
+    box.innerHTML = `<button type="button" class="fy-edit">${esc(I.personalise)}</button>`;
+  } else {
+    const name = (n) => L === 'ar' ? state.core.suras[n - 1].ar : state.core.suras[n - 1].tr;
+    const chip = (attrs, label, ar) => `<button type="button" ${attrs}${ar ? ' class="ar"' : ''}>${esc(label)}</button>`;
+    const picker = (act, btn) => `<div class="fy-pick"><select data-pick aria-label="${esc(WELCOME[L].sura)}">${suraOptions()}</select><input type="number" min="1" max="7" value="1" aria-label="${esc(WELCOME[L].aya)}"><button type="button" class="btn gold sm" data-pickgo="${act}">${esc(btn)}</button></div>`;
+    const group = (k) => {
+      let body = '';
+      if (I[k].q) body = I[k].q.map(q => chip(`data-q="${esc(q)}"`, q, L === 'ar')).join('');
+      if (k === 'tafsir') body = PICKS.tafsir.map(([s0, a], j) => chip(`data-s="${s0}" data-a="${a}" data-act="tafsir"`, I.tafsir.labels[j], L === 'ar')).join('');
+      if (k === 'recite' || k === 'suras' || k === 'memorize') {
+        const act = { recite: 'listen', suras: 'read', memorize: 'learn' }[k];
+        body = PICKS[k].map(n => chip(`data-s="${n}" data-act="${act}"`, (k === 'recite' ? '▶ ' : k === 'memorize' ? '↻ ' : '') + name(n), L === 'ar')).join('');
+      }
+      if (k === 'verify') body = VERIFY_EX.map(v => chip(`data-v="${esc(v)}"`, `«${v}»`, true)).join('');
+      let extra = '';
+      if (k === 'tafsir') extra = picker('tafsir', I.show);
+      if (k === 'suras') extra = picker('read', I.go);
+      if (k === 'verify') extra = `<form class="fy-pick" data-verify><input type="text" dir="auto" placeholder="${esc(I.checkPh)}"><button class="btn gold sm">${esc(I.check)}</button></form>`;
+      return `<section class="fy-g"><div class="fy-t">${icon(k)}<span>${esc(I[k].title)}</span>${I[k].note ? `<small class="fy-note">${esc(I[k].note)}</small>` : ''}</div>
+        <div class="fy-chips">${body}</div>${extra}</section>`;
+    };
+    box.hidden = false;
+    box.className = '';
+    box.innerHTML = `<div class="fy-head"><b>${esc(I.forYou)}</b><button type="button" class="fy-edit">${esc(I.edit)}</button></div>` + chosen.map(group).join('');
   }
-  const q = (txt.value || '').trim();
-  if (!q) { txt.focus(); return; }
-  closeWelcome();
-  const query = f === 'verify' ? `${WELCOME[state.lang].verifyPrefix} ${q}` : q;
-  $('#q').value = query; run(query);
+  box.querySelectorAll('.fy-edit').forEach(b => b.onclick = openWelcome);
+  box.querySelectorAll('.fy-chips button').forEach(b => b.onclick = () => doPick(b.dataset));
+  box.querySelectorAll('select[data-pick]').forEach(sel => sel.onchange = () => {
+    const inp = sel.parentElement.querySelector('input[type=number]');
+    inp.max = state.core.suras[+sel.value - 1].ayas; if (+inp.value > +inp.max) inp.value = 1;
+  });
+  box.querySelectorAll('[data-pickgo]').forEach(b => b.onclick = () => {
+    const f = b.parentElement, s0 = +f.querySelector('select').value, S = state.core.suras[s0 - 1];
+    doPick({ s: s0, a: Math.min(Math.max(1, +f.querySelector('input').value || 1), S.ayas), act: b.dataset.pickgo });
+  });
+  box.querySelectorAll('form[data-verify]').forEach(f => f.onsubmit = (ev) => {
+    ev.preventDefault(); const v = f.querySelector('input').value.trim(); if (v) doPick({ v }); else f.querySelector('input').focus();
+  });
+}
+function doPick(d) {
+  if (d.q) { $('#q').value = d.q; run(d.q); return; }
+  if (d.v) { const q = `${WELCOME[state.lang].verifyPrefix} ${d.v}`; $('#q').value = q; run(q); return; }
+  const S = state.core.suras[+d.s - 1], i = S.first + (+d.a || 1) - 1;
+  if (d.act === 'tafsir') state.reader.srcTab = state.lang === 'ar' ? 'muyassar_ar' : TAFSIR_FOR[state.lang];
+  if (d.act === 'learn') { state.repeat = 3; state.repeatLeft = 3; }
+  openReader(S.n, i, d.act === 'listen' || d.act === 'learn');
 }
 $('#btnLegend').onclick = () => { $('#legendBox').hidden = !$('#legendBox').hidden; };
 $('#btnAbout').onclick = () => $('#about').showModal();

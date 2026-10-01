@@ -37,7 +37,7 @@ export const UI = {
     ord_mushaf: 'ترتيب المصحف', ord_nuzul: 'ترتيب النزول', ord_length: 'من أطول سورة إلى أقصرها', ord_place: 'السور المكية ثم المدنية',
     viewNote: (o) => `كلمة «قرآن» مكوَّنة من كلمات القرآن كلها: لكل سورة جزءٌ من الحروف بقدر عدد كلماتها، تلتفّ كلماتها حلزونيًّا داخل الحرف، وبين كل سورتين فاصل صغير. يسير الترتيب من اليمين إلى اليسار: ${o}. (اضغط V للتبديل)`,
     restartA: 'من بداية الآية', playAya: (a) => `استمع إلى الآية ${a}`,
-    wTitle: 'أهلًا بك في مِشكاة', wLead: 'دليلك إلى القرآن الكريم: تفسيرٌ موثَّق، وتلاوةٌ متزامنة، وبحثٌ يجيبك من القرآن نفسه. اختر ما تريد — يمكنك اختيار أكثر من أمر:', wSkip: 'استكشف المجرّة',
+    wTitle: 'أهلًا بك في مِشكاة', wLead: 'تفسيرٌ موثَّق، وتلاوةٌ متزامنة، وبحثٌ يجيبك من القرآن نفسه. اختر ما يهمّك لنهيّئ لك صفحة البداية — يمكنك تغيير اختيارك متى شئت.', wSkip: 'تخطَّ الآن', wGo: 'ابدأ', wQ: 'ما الذي يهمّك؟ (يمكنك اختيار أكثر من أمر)', gateCopy: 'انسخ البسملة', gateFoot: 'نص المصحف من Tanzil · التفسير من مصادر موثّقة · بلا إعلانات ولا تتبّع',
     repeat: 'تكرار', repeatTitle: 'كرّر الآية للحفظ', fullSura: 'نص السورة كاملًا', readTafsir: 'استمع إلى التفسير', ttsUnavailable: 'القراءة الصوتية غير متاحة في هذا المتصفح.', ttsNoVoice: 'لا يوجد صوت عربي مثبت في المتصفح لقراءة التفسير.', audioError: 'تعذّر تشغيل التلاوة؛ تحقّق من الاتصال بالإنترنت.',
     hoverAya: (s, a) => `سورة ${s} · الآية ${a}`,
   },
@@ -78,7 +78,7 @@ export const UI = {
     ord_mushaf: 'Mushaf order', ord_nuzul: 'revelation order', ord_length: 'longest to shortest surah', ord_place: 'Meccan surahs, then Medinan',
     viewNote: (o) => `The word “قرآن” is built from all the words of the Quran: each surah fills a part of the letters proportional to its number of words, its words coiling like a snail inside the letter, with a small gap between surahs. Order, right to left: ${o}. (Press V to switch)`,
     restartA: 'From the start of the verse', playAya: (a) => `Listen to verse ${a}`,
-    wTitle: 'Welcome to Mishkat', wLead: 'Your guide to the Quran: vetted tafsir, synchronised recitation, and answers drawn from the Quran itself. Choose what you want — you can pick several:', wSkip: 'Explore the galaxy',
+    wTitle: 'Welcome to Mishkat', wLead: 'Vetted tafsir, synchronised recitation, and answers drawn from the Quran itself. Tell us what interests you and we will prepare your home page — you can change it anytime.', wSkip: 'Skip for now', wGo: 'Start', wQ: 'What interests you? (several choices possible)', gateCopy: 'Copy the basmala', gateFoot: 'Quran text from Tanzil · tafsir from vetted sources · no ads, no tracking',
     repeat: 'Repeat', repeatTitle: 'Repeat the verse to memorise it', fullSura: 'Full text of the surah', readTafsir: 'Listen to the tafsir', ttsUnavailable: 'Speech is not available in this browser.', ttsNoVoice: 'No voice for this language is installed in the browser.', audioError: 'The recitation could not start; check your internet connection.',
     hoverAya: (s, a) => `Surah ${s} · verse ${a}`,
   },
@@ -119,7 +119,7 @@ export const UI = {
     ord_mushaf: 'ordre du Mushaf', ord_nuzul: 'ordre de révélation', ord_length: 'de la plus longue à la plus courte sourate', ord_place: 'sourates mecquoises, puis médinoises',
     viewNote: (o) => `Le mot « قرآن » est formé de tous les mots du Coran : chaque sourate remplit une partie des lettres proportionnelle à son nombre de mots, ses mots s’enroulant en spirale dans la lettre, avec un petit vide entre les sourates. Ordre, de droite à gauche : ${o}. (Touche V pour changer)`,
     restartA: 'Depuis le début du verset', playAya: (a) => `Écouter le verset ${a}`,
-    wTitle: 'Bienvenue dans Mishkat', wLead: 'Votre guide du Coran : tafsir vérifié, récitation synchronisée, et des réponses tirées du Coran lui-même. Choisissez ce que vous voulez — plusieurs choix possibles :', wSkip: 'Explorer la galaxie',
+    wTitle: 'Bienvenue dans Mishkat', wLead: 'Tafsir vérifié, récitation synchronisée, et des réponses tirées du Coran lui-même. Dites-nous ce qui vous intéresse et nous préparerons votre page d’accueil — modifiable à tout moment.', wSkip: 'Plus tard', wGo: 'Commencer', wQ: 'Qu’est-ce qui vous intéresse ? (plusieurs choix possibles)', gateCopy: 'Copier la basmala', gateFoot: 'Texte du Coran : Tanzil · tafsir de sources vérifiées · sans publicité ni pistage',
     repeat: 'Répéter', repeatTitle: 'Répéter le verset pour l’apprendre', fullSura: 'Texte complet de la sourate', readTafsir: 'Écouter le tafsir', ttsUnavailable: 'La lecture vocale n’est pas disponible dans ce navigateur.', ttsNoVoice: 'Aucune voix pour cette langue n’est installée dans le navigateur.', audioError: 'La récitation n’a pas pu démarrer ; vérifiez la connexion Internet.',
     hoverAya: (s, a) => `Sourate ${s} · verset ${a}`,
   },
@@ -210,5 +210,44 @@ export const WELCOME = {
     learn: { title: 'Apprendre : parcours des courtes sourates', desc: 'Commencez par une courte sourate : récitation continue avec le tafsir verset par verset.' },
     ask: { title: 'Poser une question et voir ses références dans le Coran', desc: 'Une question ou une idée → les versets et leur tafsir, avec les sourates classées par pertinence.', go: 'Rechercher', ph: 'ex. patience, parents, histoire de Joseph…' },
     verify: { title: 'Vérifier : ce texte est-il un verset ?', desc: 'Collez un texte attribué au Coran pour savoir si c’est un verset, et où.', go: 'Vérifier', ph: 'Collez le texte ici…' },
+  },
+};
+
+// Interests chosen in the welcome screen → suggestions on the home page.
+// Every query below was checked against the engine (ar/en/fr) and returns relevant verses.
+// Rulings ("أحكام") are VERSE searches with their tafsir, never fatwas.
+export const INTEREST = {
+  ar: {
+    forYou: 'مقترحات لك', edit: 'تعديل الاهتمامات', personalise: '✦ خصِّص صفحتك', go: 'اذهب', show: 'اعرض', check: 'تحقّق', checkPh: 'الصق نصًّا منسوبًا إلى القرآن…',
+    ahkam: { title: 'آيات الأحكام', desc: 'العبادات والمعاملات كما وردت في الآيات مع تفسيرها.', note: 'آيات وتفسيرها — وليست فتوى.', q: ['صيام رمضان', 'الحج', 'الزكاة', 'الربا', 'الخمر', 'الميراث', 'الطلاق', 'كتابة الدين', 'كفارة اليمين'] },
+    stories: { title: 'قصص الأنبياء', desc: 'يوسف، موسى، نوح، أصحاب الكهف… من آيات القرآن.', q: ['قصة يوسف', 'موسى وفرعون', 'أصحاب الكهف', 'يونس', 'نوح', 'مريم'] },
+    akhlaq: { title: 'القيم والأخلاق', desc: 'الصبر، البر، الصدق، العفو… وما قاله القرآن فيها.', q: ['الصبر', 'بر الوالدين', 'الصدق', 'العفو', 'الشكر', 'الجار'] },
+    tafsir: { title: 'فهم آية وتفسيرها', desc: 'الميسر والمختصر والسعدي، آيةً آية.', labels: ['آية الكرسي', 'آية النور', 'خواتيم البقرة', 'الفاتحة', 'سورة العصر', 'من أسماء الله الحسنى'] },
+    recite: { title: 'الاستماع إلى التلاوة', desc: 'تلاوة العفاسي مع إبراز كل كلمة.' },
+    suras: { title: 'التنقّل بين السور', desc: 'افتح أي سورة وتنقّل آيةً آية.' },
+    memorize: { title: 'الحفظ والتكرار', desc: 'قصار السور مع تكرار كل آية ثلاث مرات.' },
+    verify: { title: 'التحقّق من النصوص', desc: 'هل هذا النص آية؟ وأين موضعه؟' },
+  },
+  en: {
+    forYou: 'Suggested for you', edit: 'Edit interests', personalise: '✦ Personalise your page', go: 'Go', show: 'Show', check: 'Check', checkPh: 'Paste a text attributed to the Quran…',
+    ahkam: { title: 'Verses of rulings', desc: 'Worship and dealings as stated in the verses, with tafsir.', note: 'Verses and their tafsir — not a fatwa.', q: ['fasting in Ramadan', 'pilgrimage', 'zakat', 'usury', 'wine and gambling', 'inheritance', 'divorce', 'writing down debts'] },
+    stories: { title: 'Stories of the prophets', desc: 'Joseph, Moses, Noah, the people of the cave… from the Quran.', q: ['story of Joseph', 'Moses and Pharaoh', 'people of the cave', 'Jonah', 'Noah', 'Mary'] },
+    akhlaq: { title: 'Values & character', desc: 'Patience, kindness, truthfulness, forgiveness… in the Quran.', q: ['patience', 'kindness to parents', 'truthfulness', 'forgiveness', 'gratitude', 'neighbours'] },
+    tafsir: { title: 'Understand a verse', desc: 'Al-Mukhtasar, Al-Muyassar, As-Sa‘di — verse by verse.', labels: ['Ayat al-Kursi', 'The Light verse', 'End of Al-Baqarah', 'Al-Fatiha', 'Surah Al-Asr', 'Names of Allah'] },
+    recite: { title: 'Listen to recitation', desc: 'Alafasy, each word lighting up as it is recited.' },
+    suras: { title: 'Browse the surahs', desc: 'Open any surah and move verse by verse.' },
+    memorize: { title: 'Memorise & repeat', desc: 'Short surahs, each verse repeated three times.' },
+    verify: { title: 'Check a quote', desc: 'Is this text a verse? Where is it?' },
+  },
+  fr: {
+    forYou: 'Suggestions pour vous', edit: 'Modifier mes intérêts', personalise: '✦ Personnaliser ma page', go: 'Aller', show: 'Afficher', check: 'Vérifier', checkPh: 'Collez un texte attribué au Coran…',
+    ahkam: { title: 'Versets des règles', desc: 'Culte et transactions tels qu’énoncés dans les versets, avec le tafsir.', note: 'Des versets et leur tafsir — pas une fatwa.', q: ['jeûne du ramadan', 'le pèlerinage', 'la zakat', 'l’usure', 'le vin et les jeux de hasard', 'l’héritage', 'les ablutions', 'le testament'] },
+    stories: { title: 'Récits des prophètes', desc: 'Joseph, Moïse, Noé, les gens de la caverne… d’après le Coran.', q: ['histoire de Joseph', 'Moïse et Pharaon', 'gens de la caverne', 'Jonas', 'Noé', 'Marie'] },
+    akhlaq: { title: 'Valeurs et comportement', desc: 'Patience, bonté, véracité, pardon… dans le Coran.', q: ['la patience', 'les parents', 'la véracité', 'le pardon', 'la gratitude', 'les voisins'] },
+    tafsir: { title: 'Comprendre un verset', desc: 'Al-Mukhtasar, Al-Muyassar, As-Sa‘di — verset par verset.', labels: ['Verset du Trône', 'Verset de la Lumière', 'Fin d’Al-Baqara', 'Al-Fatiha', 'Sourate Al-Asr', 'Noms d’Allah'] },
+    recite: { title: 'Écouter la récitation', desc: 'Alafasy, chaque mot s’allumant à sa récitation.' },
+    suras: { title: 'Parcourir les sourates', desc: 'Ouvrez n’importe quelle sourate, verset par verset.' },
+    memorize: { title: 'Mémoriser et répéter', desc: 'Courtes sourates, chaque verset répété trois fois.' },
+    verify: { title: 'Vérifier une citation', desc: 'Ce texte est-il un verset ? Où se trouve-t-il ?' },
   },
 };

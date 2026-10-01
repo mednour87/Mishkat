@@ -40,6 +40,7 @@
   <div id="heroRef"></div>
   <p id="heroLead" data-i18n="lead"></p>
   <div id="chips"></div>
+  <div id="forYou" hidden></div>
 </section>
 <div id="status" aria-live="polite"></div>
 
@@ -75,11 +76,12 @@
 
 <div id="welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle" hidden>
   <div class="wbox">
-    <div id="wBasmala" class="ayah"></div>
-    <h2 id="wTitle" data-i18n="wTitle">أهلًا بك في مِشكاة</h2>
-    <p data-i18n="wLead">دليلك إلى القرآن الكريم: تفسيرٌ موثَّق، وتلاوةٌ متزامنة، وبحثٌ يجيبك من القرآن نفسه. اختر ما تريد — يمكنك اختيار أكثر من أمر:</p>
-    <div id="wOptions" class="wopts"></div>
-    <div class="wfoot"><button id="wClose" class="btn" data-i18n="wSkip">استكشف المجرّة</button></div>
+    <header class="w-head"><div id="wLamp" aria-hidden="true"></div>
+      <div><h2 id="wTitle" data-i18n="wTitle">أهلًا بك في مِشكاة</h2><p id="wLead" data-i18n="wLead"></p></div></header>
+    <div class="w-q" data-i18n="wQ">ما الذي يهمّك؟</div>
+    <div id="wOptions" class="wgrid"></div>
+    <div class="wfoot"><button id="wClose" class="btn ghost" data-i18n="wSkip">تخطَّ الآن</button>
+      <button id="wGo" class="btn gold big"><span data-i18n="wGo">ابدأ</span> <span id="wCount"></span></button></div>
   </div>
 </div>
 
@@ -89,21 +91,25 @@
 </dialog>
 
 <div id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle" hidden>
+  <div class="langs g-langs" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button><button data-lang="fr">FR</button></div>
   <div class="gbox">
-    <img src="img/logo.svg" alt="" width="76" height="76">
+    <div id="gateLamp" class="g-lamp" aria-hidden="true"></div>
+    <p class="g-brand">Mishkat · مِشكاة</p>
     <h1 id="gateTitle" data-i18n="gateTitle">سَمِّ الله</h1>
+    <div class="g-orn" aria-hidden="true">✦</div>
+    <p id="gateBasmala" class="g-basmala"></p>
     <p class="ghint" data-i18n="gateHint">اكتب البسملة أو الصقها أو قُلها بصوتك للدخول</p>
-    <div class="gverse"><span id="gateBasmala" class="ayah"></span>
-      <button type="button" id="gateCopy" class="btn gold" data-i18n="copy">نسخ</button></div>
-    <form id="gateForm" autocomplete="off">
-      <input id="gateInput" dir="auto" data-i18n-ph="gatePh" aria-labelledby="gateTitle">
-      <button type="button" id="gateMic" class="mic big" data-i18n-aria="micLabel">
-        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+    <form id="gateForm" class="g-field" autocomplete="off">
+      <input id="gateInput" dir="rtl" data-i18n-ph="gatePh" aria-labelledby="gateTitle">
+      <button type="button" id="gateMic" class="mic" data-i18n-aria="micLabel">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
       </button>
-      <button type="submit" class="btn gold" data-i18n="enter">دخول</button>
+      <button type="submit" class="g-enter" data-i18n-aria="enter"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </form>
+    <div class="g-alt"><button type="button" id="gateCopy" class="g-link" data-i18n="gateCopy">انسخ البسملة</button></div>
     <div id="gateMsg" class="gmsg" aria-live="polite"></div>
   </div>
+  <p class="g-foot" data-i18n="gateFoot"></p>
 </div>
 
 <div id="loader"><img src="img/logo.svg" alt="" width="84" height="84"><div class="spin"></div><div id="loadMsg">…</div></div>
