@@ -60,6 +60,9 @@ export const UI = {
     ttsLoading: 'جارٍ تجهيز الصوت…', ttsStop: 'إيقاف القراءة', ttsNote: 'قراءة آلية لنص التفسير المعروض — وليست تلاوة للقرآن.', ttsTrimmed: 'يُقرأ أول النص فقط لطوله.',
     ttsTerms: 'صوت القراءة على الخادم غير مفعَّل بعد (يلزم قبول شروط نموذج الصوت في حساب Groq). يمكنك أيضًا تثبيت صوت عربي في نظامك أو فتح الموقع في متصفح Edge.',
     ttsQuota: 'بلغت القراءة الصوتية حدّها المؤقت؛ أعد المحاولة بعد دقيقة.', ttsFail: 'تعذّرت القراءة الصوتية الآن؛ أعد المحاولة.',
+    firstA: 'إلى أول السورة', playOne: 'الآية', playOneT: 'استمع إلى هذه الآية وحدها', playAll: 'متتابعة', playAllT: 'استمع بدءًا من هذه الآية ثم ما بعدها', closeReader: 'إغلاق القارئ والعودة',
+    closeSuggest: 'إغلاق الاقتراحات', suggestTitle: 'اقتراحات', noAiBadge: 'بحث بالكلمات (دون تأكيد الذكاء الاصطناعي)',
+    shapeLabel: 'الشكل', orderLabel: 'الترتيب', shapeKey: 'شكل العرض ثلاثي الأبعاد (مفتاح V)', orderKey: 'ترتيب السور على الشكل (مفتاح O)',
     hoverAya: (s, a) => `سورة ${s} · الآية ${a}`,
   },
   en: {
@@ -122,6 +125,9 @@ export const UI = {
     ttsLoading: 'Preparing the voice…', ttsStop: 'Stop reading', ttsNote: 'Machine reading of the tafsir shown — not a recitation of the Quran.', ttsTrimmed: 'Only the beginning is read (long text).',
     ttsTerms: 'The server voice is not enabled yet (the voice model’s terms must be accepted in the Groq account). You can also install a voice for this language in your system, or open the site in Microsoft Edge.',
     ttsQuota: 'The reading voice reached its temporary limit; try again in a minute.', ttsFail: 'The tafsir cannot be read aloud right now; try again.',
+    firstA: 'To the first verse of the surah', playOne: 'Verse', playOneT: 'Listen to this verse only', playAll: 'Continuous', playAllT: 'Listen from this verse onwards', closeReader: 'Close the reader and go back',
+    closeSuggest: 'Close the suggestions', suggestTitle: 'Suggestions', noAiBadge: 'Keyword search (not confirmed by AI)',
+    shapeLabel: 'Shape', orderLabel: 'Order', shapeKey: 'Shape of the 3D view (key V)', orderKey: 'Order of the surahs along the shape (key O)',
     hoverAya: (s, a) => `Surah ${s} · verse ${a}`,
   },
 

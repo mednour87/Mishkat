@@ -287,10 +287,11 @@ mark.hit { background: rgba(255, 214, 107, .28); color: inherit; border-radius: 
   .split { display: none; }
   #gzone { grid-row: 1; }
   #szone, #rzone, #tzone { grid-row: 2; grid-column: 1; }
-  body:not([data-pane=s]) #szone, body:not([data-pane=r]) #rzone, body:not([data-pane=t]) #tzone { display: none; }
+  body[data-mode=study]:not([data-pane=s]) #szone, body[data-mode=study]:not([data-pane=r]) #rzone, body[data-mode=study]:not([data-pane=t]) #tzone { display: none; }
   body.gfull #work { grid-template-rows: minmax(0, 1fr); }
   body.gfull #szone, body.gfull #rzone, body.gfull #tzone { display: none; }
-  #mtabs { display: flex; position: fixed; bottom: 0; inset-inline: 0; height: 56px; z-index: 9; gap: 4px; padding: 6px 8px; background: rgba(5, 7, 13, .95); border-top: 1px solid var(--line); }
+  body[data-mode=study] #mtabs { display: flex; }
+  #mtabs { position: fixed; bottom: 0; inset-inline: 0; height: 56px; z-index: 9; gap: 4px; padding: 6px 8px; background: rgba(5, 7, 13, .95); border-top: 1px solid var(--line); }
   #mtabs button { flex: 1; border: 1px solid transparent; background: none; border-radius: 10px; color: var(--mut); font-size: 14px; }
   #mtabs button[aria-selected=true] { color: var(--gold); background: rgba(255, 214, 107, .1); border-color: rgba(255, 214, 107, .35); }
   #lampDock { top: 8px; transform: none; inset-inline-start: 6px; }
@@ -511,3 +512,134 @@ html[data-theme=light] .lvl-C { background: #fbefd2; color: #8a5a06; } html[data
 html[data-theme=light] .term { background: #f4f9fe; } html[data-theme=light] .hbox .hlist li, html[data-theme=light] .sinfo { background: #fffdf7; }
 html[data-theme=light] .bay a, html[data-theme=light] .tix-h b, html[data-theme=light] .sinfo-t h4, html[data-theme=light] .tz-body h4 { color: #8a5a06; }
 html[data-theme=light] dialog { background: #fffdf8; color: #1d2433; }
+
+/* ================================================================ v7: three moments
+   home: galaxy + suggestion card · answers: galaxy + large answers · study: galaxy/Mushaf + tafsir */
+#work { transition: grid-template-columns .5s cubic-bezier(.3, .7, .2, 1); }
+.col { row-gap: 0; transition: grid-template-rows .5s cubic-bezier(.3, .7, .2, 1); }
+#gzone { grid-row: 1; } #splitMain { grid-row: 2; } #rzone { grid-row: 3; }
+#szone { grid-row: 1; } #splitSide { grid-row: 2; } #tzone { grid-row: 3; }
+@media (min-width: 861px) {
+  body[data-mode=home] #work { grid-template-columns: minmax(0, 1fr) 0; column-gap: 0; }
+  body[data-mode=home] .col-side { visibility: hidden; }
+  body[data-mode=home] .col-main, body[data-mode=answers] .col-main { grid-template-rows: minmax(0, 1fr) 0 0; }
+  body[data-mode=home] #rzone, body[data-mode=answers] #rzone, body[data-mode=home] #splitMain, body[data-mode=answers] #splitMain { visibility: hidden; border: 0; }
+  body[data-mode=answers] #work { grid-template-columns: minmax(0, 1fr) min(900px, 55vw); }
+  body[data-mode=answers] .col-side { grid-template-rows: minmax(0, 1fr) 0 0; }
+  body[data-mode=answers] #tzone, body[data-mode=answers] #splitSide { visibility: hidden; border: 0; }
+  body[data-mode=study] #work { grid-template-columns: minmax(0, 1fr) clamp(400px, 40vw, 680px); }
+  body[data-mode=study] .col-side { grid-template-rows: auto 8px minmax(0, 1fr); }
+  body[data-mode=study] #splitSide { visibility: hidden; }
+  body[data-mode=study].ans-open .col-side, body[data-mode=study].ans-peek .col-side { grid-template-rows: minmax(0, 1fr) 8px auto; }
+}
+/* answers folded in the study view: only their bar; unfolded: the tafsir folds to its bar */
+body[data-mode=study]:not(.ans-open):not(.ans-peek) #viewRes { display: none; }
+body[data-mode=study].ans-open #viewTaf > :not(.tz-head), body[data-mode=study].ans-peek #viewTaf > :not(.tz-head) { display: none; }
+body[data-mode=study].ans-open .tz-head, body[data-mode=study].ans-peek .tz-head { cursor: pointer; border-bottom: 0; }
+body[data-mode=study] #sHead { cursor: pointer; }
+body:not([data-mode=study]) .chev { display: none; }
+.ans-toggle { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; padding: 0; color: inherit; font: inherit; cursor: pointer; }
+.chev { color: var(--gold); transition: transform .3s; display: inline-block; }
+body[data-mode=study]:not(.ans-open):not(.ans-peek) .chev { transform: rotate(-90deg); }
+html[dir=rtl] body[data-mode=study]:not(.ans-open):not(.ans-peek) .chev { transform: rotate(90deg); }
+#ansCount { font-size: 12px; color: var(--mut); }
+
+/* suggestion card in the middle of the galaxy (home) */
+#suggest { position: absolute; z-index: 5; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(760px, calc(100% - 32px)); max-height: calc(100% - 120px);
+  overflow-y: auto; padding: 18px 22px 16px; border-radius: 22px; background: rgba(9, 12, 21, .72); border: 1px solid rgba(255, 214, 107, .22);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 30px 90px rgba(0, 0, 0, .55); animation: sgin .7s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes sgin { from { opacity: 0; transform: translate(-50%, -46%) scale(.98); } to { opacity: 1; transform: translate(-50%, -50%); } }
+.sg-x { position: absolute; top: 10px; inset-inline-end: 10px; z-index: 1; }
+.sg-open { position: absolute; z-index: 5; bottom: 14px; left: 50%; transform: translateX(-50%); background: rgba(9, 12, 21, .8); border: 1px solid rgba(255, 214, 107, .35);
+  color: var(--txt); border-radius: 999px; padding: 8px 16px; font-size: 13px; }
+.sg-open span[aria-hidden] { color: var(--gold); }
+html[data-theme=light] #suggest { background: rgba(251, 248, 241, .93); }
+
+/* answers: large, each surah in its colour (same colour as on the map) */
+body[data-mode=answers] #viewRes { padding: 16px 24px 24px; }
+body[data-mode=answers] #viewRes .ayah { font-size: 23px; }
+.sura-card[style], .vcardx[style] { border-inline-start: 4px solid var(--c); }
+.sura-card[style] .sc-rank { background: var(--c); color: #12100a; border-color: transparent; font-weight: 700; }
+.vlist li[style] { border-inline-start: 4px solid var(--c); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c, var(--gold)); margin-inline-end: 6px; box-shadow: 0 0 8px var(--c, var(--gold)); }
+/* the answer's surahs on the map: clickable labels with their verses */
+.gans { position: absolute; left: 0; top: 0; pointer-events: auto; display: flex; flex-direction: column; gap: 3px; align-items: center; max-width: 230px;
+  background: rgba(8, 11, 18, .86); border: 1px solid var(--c); border-radius: 12px; padding: 4px 8px 6px; box-shadow: 0 0 18px rgba(0, 0, 0, .5);
+  will-change: transform; z-index: 2; }
+.gans b { font-family: 'Amiri', var(--ui); font-size: 15px; color: var(--c); font-weight: 700; white-space: nowrap; }
+.gans-a { display: flex; flex-wrap: wrap; gap: 3px; justify-content: center; }
+.gans-a button { min-width: 26px; height: 24px; padding: 0 5px; border-radius: 7px; border: 1px solid var(--c); background: rgba(255, 255, 255, .04);
+  color: #f2f4f8; font-size: 12px; cursor: pointer; }
+.gans-a button:hover, .gans-a button:focus-visible { background: var(--c); color: #12100a; }
+.gl.now.pop { animation: gpop .45s cubic-bezier(.2, .9, .3, 1.15); }
+@keyframes gpop { from { opacity: .25; filter: blur(4px); } to { opacity: 1; filter: none; } }
+
+/* study: an airy Mushaf */
+body[data-mode=study] .rd-body { padding: 16px 30px 34px; }
+.mushaf { line-height: 2.7; word-spacing: .06em; }
+.mushaf .v { padding: 3px 2px; }
+.mushaf.en .vb { padding: 12px 14px; margin-bottom: 10px; }
+.rd-ctrl .btn.play { min-width: 92px; justify-content: center; }
+.rd-ctrl .btn.play.on { background: rgba(94, 230, 160, .22); box-shadow: 0 0 0 1px var(--ok) inset; }
+#rClose { margin-inline-start: 4px; }
+
+/* study: the tafsir, larger, on a warm sepia ground that echoes the lamp's gold */
+#tzone { background: linear-gradient(180deg, rgba(30, 24, 13, .96), rgba(20, 16, 9, .97)); border-color: rgba(232, 169, 60, .3); }
+#tzone .zhead { border-bottom-color: rgba(232, 169, 60, .18); }
+#tzone .tz-tools, #tzone .tts-note { border-bottom-color: rgba(232, 169, 60, .15); }
+#tzone .tz-ref { color: #f6e7c4; }
+.tz-body { padding: 18px 26px 28px; }
+.tz-body p { font-size: calc(21px * var(--ts)); line-height: 2.2; color: #f4ead3; margin-bottom: 14px; }
+.tz-body[dir=ltr] p { font-size: calc(17px * var(--ts)); line-height: 1.85; color: #f1e9d8; }
+.tz-body .src { color: #c9b98f; } .tz-body .src a { color: #f0c46a; }
+.tz-books button { color: #cdbf9c; border-color: rgba(232, 169, 60, .22); }
+html[data-theme=light] #tzone { background: linear-gradient(180deg, #fbf3e2, #f6ead2); border-color: rgba(168, 111, 12, .3); }
+html[data-theme=light] .tz-body p, html[data-theme=light] .tz-body[dir=ltr] p { color: #2c2212; }
+html[data-theme=light] #tzone .tz-ref { color: #4a3510; }
+html[data-theme=light] .tz-books button { color: #6b5426; }
+html[data-theme=light] .tz-body .src { color: #6b5a35; } html[data-theme=light] .tz-body .src a { color: #8a5a06; }
+
+@media (max-width: 860px) {
+  body[data-mode=home] #work { grid-template-rows: minmax(0, 1fr); bottom: 0; }
+  body[data-mode=home] #szone, body[data-mode=home] #rzone, body[data-mode=home] #tzone { display: none; }
+  body[data-mode=answers] #work { grid-template-rows: 32vh minmax(0, 1fr); bottom: 0; }
+  body[data-mode=answers] #rzone, body[data-mode=answers] #tzone { display: none; }
+  body[data-mode=study] #work { grid-template-rows: 30vh minmax(0, 1fr); }
+  body[data-mode=study] #gzone, body[data-mode=answers] #gzone, body[data-mode=home] #gzone { grid-row: 1; }
+  body[data-mode=study] #szone, body[data-mode=study] #rzone, body[data-mode=study] #tzone, body[data-mode=answers] #szone { grid-row: 2; }
+  body[data-mode=study] #viewRes { display: block !important; }
+  body[data-mode=study] #viewTaf > * { display: revert !important; }
+  body[data-mode=study] #viewTaf > .tts-note[hidden] { display: none !important; }
+  #suggest { max-height: calc(100% - 70px); padding: 14px 14px 12px; }
+  .gans { max-width: 160px; } .gans b { font-size: 13px; }
+  body[data-mode=study] .rd-body { padding: 10px 14px 24px; }
+  .tz-body { padding: 12px 14px 22px; }
+}
+
+.vcardx { cursor: pointer; } .vcardx:hover { border-color: rgba(255, 214, 107, .5); }
+@media (max-width: 860px) {
+  #gtools { flex-wrap: nowrap; overflow-x: auto; max-width: calc(100% - 12px); inset-inline-start: 6px; justify-content: flex-start; scrollbar-width: none; padding-bottom: 1px; }
+  #gtools::-webkit-scrollbar { display: none; }
+  #gtools > button { flex: none; width: 32px; height: 32px; font-size: 13px; border-radius: 9px; }
+  .viewpick { flex: none; height: 32px; }
+  #aiBadge { display: none; }
+  #legendBox { bottom: 44px; }
+}
+/* home: a slim suggestion bar */
+#suggest { width: min(880px, calc(100% - 32px)); padding: 12px 52px 12px 16px; border-radius: 18px; top: auto; bottom: 64px; transform: translateX(-50%); animation: sgbar .7s cubic-bezier(.2, .8, .2, 1) both; }
+html[dir=rtl] #suggest { padding: 12px 16px 12px 52px; }
+@keyframes sgbar { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translateX(-50%); } }
+#suggest .h-chips { justify-content: center; }
+#suggest .h-pers { margin: 8px 0 0; }
+#suggest .fy-g { padding: 6px 0 2px; }
+#suggest .fy-head { margin-top: 0; }
+.sg-x { top: 50%; transform: translateY(-50%); }
+#suggest:has(.fy-g) .sg-x { top: 10px; transform: none; }
+@media (max-width: 860px) { #suggest { bottom: 12px; padding: 10px 44px 10px 10px; } html[dir=rtl] #suggest { padding: 10px 10px 10px 44px; } }
+.viewpick { gap: 4px; } .viewpick .vk { color: var(--gold); font-size: 13px; }
+.viewpick select { max-width: 150px; }
+@media (max-width: 860px) { #suggest { bottom: 50px; max-height: calc(100% - 150px); } .sg-open { bottom: 50px; } }
+/* the suggestion bar sits in the middle of the galaxy */
+#suggest { top: 50%; bottom: auto; transform: translate(-50%, -50%); animation: sgmid .7s cubic-bezier(.2, .8, .2, 1) both; }
+@keyframes sgmid { from { opacity: 0; transform: translate(-50%, -46%); } to { opacity: 1; transform: translate(-50%, -50%); } }
+@media (max-width: 860px) { #suggest { top: 50%; bottom: auto; max-height: calc(100% - 110px); } }

@@ -52,19 +52,18 @@
         <button id="gOut" data-i18n-title="zoomOut" data-i18n-aria="zoomOut">－</button>
         <button id="gRot" data-i18n-title="rotate" data-i18n-aria="rotate" aria-pressed="true">⟲</button>
         <button id="gNames" data-i18n-title="suraNames" data-i18n-aria="suraNames" aria-pressed="true">ﺱ</button>
-        <label class="viewpick"><span class="sr" data-i18n="viewLabel">العرض</span>
-          <select id="viewSel">
-            <option value="g0" data-i18n="vG0">مجرّة · ترتيب المصحف</option>
-            <option value="g1" data-i18n="vG1">مجرّة · ترتيب النزول</option>
-            <option value="q-mushaf" data-i18n="vQm">«قرآن» · ترتيب المصحف</option>
-            <option value="q-nuzul" data-i18n="vQn">«قرآن» · ترتيب النزول</option>
-            <option value="q-length" data-i18n="vQl">«قرآن» · حسب طول السورة</option>
-            <option value="q-place" data-i18n="vQp">«قرآن» · مكي ثم مدني</option>
-          </select></label>
+        <label class="viewpick" data-i18n-title="shapeKey"><span class="vk" aria-hidden="true">◈</span><span class="sr" data-i18n="shapeLabel">الشكل</span><select id="shapeSel"></select></label>
+        <label class="viewpick" data-i18n-title="orderKey"><span class="vk" aria-hidden="true">⇅</span><span class="sr" data-i18n="orderLabel">الترتيب</span><select id="orderSel"></select></label>
         <button id="gLegend" data-i18n-title="legend" data-i18n-aria="legend" aria-expanded="false">◐</button>
         <button id="gFull" data-i18n-title="expandG" data-i18n-aria="expandG" aria-pressed="false">⤢</button>
       </div>
       <div id="legendBox" hidden></div>
+      <section id="suggest" aria-labelledby="sgTitle">
+        <button id="sgClose" class="icon sg-x" data-i18n-aria="closeSuggest" data-i18n-title="closeSuggest">✕</button>
+        <h2 id="sgTitle" class="sr" data-i18n="suggestTitle">اقتراحات</h2>
+        <div id="viewHome"></div>
+      </section>
+      <button id="sgOpen" class="sg-open" hidden><span aria-hidden="true">✦</span> <span data-i18n="suggestTitle">اقتراحات</span></button>
       <div id="viewNote" hidden></div>
     </section>
     <div class="split" id="splitMain" role="separator" aria-orientation="horizontal" tabindex="0" data-i18n-aria="resize"></div>
@@ -74,10 +73,10 @@
   <!-- side column: answers above, tafsir below -->
   <div class="col col-side">
     <section id="szone" class="zone" aria-labelledby="sTitle">
-      <div class="zhead">
-        <h2 id="sTitle" data-i18n="zAnswers">الإجابات</h2>
+      <div class="zhead" id="sHead">
+        <button id="ansToggle" class="ans-toggle" aria-expanded="true"><span class="chev" aria-hidden="true">▾</span> <h2 id="sTitle" data-i18n="zAnswers">الإجابات</h2> <span id="ansCount"></span></button>
         <span id="aiBadge"></span>
-        <button id="resClose" class="icon" data-i18n-aria="clearRes" data-i18n-title="clearRes" hidden>✕</button>
+        <button id="resClose" class="icon" data-i18n-aria="clearRes" data-i18n-title="clearRes">✕</button>
       </div>
       <div id="viewRes" class="zbody"></div>
     </section>

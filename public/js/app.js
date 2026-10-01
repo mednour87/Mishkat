@@ -1,17 +1,21 @@
 import { createEngine, detectLang, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens } from './engine.js';
 import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
-import { quranWordLayout } from './letters3d.js';
+import { SHAPES, ORDERS, buildLayout } from './layouts.js';
 import { isBasmala } from './basmala.js';
 import { lampSVG, setLampWord } from './lamp.js';
 import { listen, stopListening, cancelListening, voiceSupported } from './voice.js';
 import { createSpeaker } from './speech.js';
+import { PALETTE } from './galaxy.js';
 
-// Work area (desktop): four zones around ONE current verse.
-//   ┌──────────────── galaxy (lamp at its edge) ┬──── answers / home ────┐
-//   ├──────────────── Mushaf reader ────────────┼──── tafsir ────────────┤
-// Choosing a verse anywhere (search result, galaxy star, Mushaf, tafsir arrows)
-// moves the reader, the tafsir and the camera together. Phones: galaxy on top,
-// then one of the three other zones, chosen with the tabs at the bottom.
+// Three moments, one current verse (body[data-mode]):
+//   home    — the galaxy alone, with a suggestion card in the middle (can be closed);
+//   answers — after a question: the answers, large, beside the galaxy where the
+//             surahs of the answer light up, each in its own colour, with clickable labels;
+//   study   — after choosing a verse: galaxy above, the Mushaf with the recitation
+//             below, the tafsir at the side; the answers fold into a bar above the
+//             tafsir (hover or click to unfold them — the tafsir then folds).
+// Choosing a verse anywhere (answer, galaxy star or label, Mushaf, tafsir arrows)
+// moves the reader, the tafsir and the camera together.
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -32,7 +36,7 @@ const state = {
   repeat: 1, repeatLeft: null, speed: +store.get('speed', '1') || 1,
   qs: +store.get('qs', '1') || 1, ts: +store.get('ts', '1') || 1,
   showTranslit: store.get('tl', '1') === '1', showTr: store.get('tr', '1') === '1',
-  pane: 's', tts: false,
+  pane: 'r', tts: false, mode: 'home', playMode: 'one', suggestClosed: false, colorOf: new Map(),
 };
 
 // ------------------------------------------------------------------ i18n
@@ -61,8 +65,7 @@ function applyLang(lang) {
   document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t[el.dataset.i18nAria]); });
   document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t[el.dataset.i18nTitle]; });
   document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
-  const vs = $('#viewSel');
-  if (vs && !$('#viewNote').hidden && vs.value.startsWith('q-')) $('#viewNote').textContent = t.viewNote(t['ord_' + vs.value.slice(2)]);
+  fillViewPickers();
   $('#legendBox').innerHTML = t.legendItems.map(([c, x]) => `<div><i style="background:${c};color:${c}"></i>${esc(x)}</div>`).join('');
   $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice()));
   $('#aiBadge').textContent = t.ai(state.llmModel);
@@ -114,11 +117,11 @@ async function boot() {
   const { createGalaxy } = await import('./galaxy.js');
   state.galaxy = await createGalaxy($('#galaxy'), {
     binUrl: 'data/galaxy.bin', suras: core.suras,
-    onHover: hover, onPick: (p) => goVerse(p.verse, { pane: 'r' }),
+    onHover: hover, onPick: (p) => goVerse(p.verse, { pane: 'r' }), onLabelVerse: (v) => goVerse(v, { pane: 'r' }),
     wordText: (i) => (state.words ? state.words[i] : ''),
     suraLabel: (n) => suraName(n),
   });
-  getJSON('data/words.json').then(w => { state.words = w; });
+  state.wordsP = getJSON('data/words.json').then(w => { state.words = w; return w; });
   setLoad(2);
   await ensureSources(state.lang);
   setLoad(3);
@@ -156,16 +159,18 @@ async function boot() {
   $('#aiBadge').textContent = T().ai(state.llmModel);
   await gateDone;
   $('#lampSlot').innerHTML = lampSVG({ size: 132, word: true, title: 'Mishkat' });
-  const v = store.get('view'); if (v && v !== 'g0') setView(v);
+  { const sh = store.get('shape', 'galaxy'), od = store.get('order', 'mushaf'); if (sh !== 'galaxy' || od !== 'mushaf') setView(sh, od, { quiet: true }); }
   setNames(store.get('names', '1') === '1');
   const sp = new URL(location.href).searchParams;
-  // the reader always holds a surah: the one asked for, else the last one read
-  const s0 = Math.min(114, Math.max(1, +sp.get('s') || lastSura()));
-  const S0 = core.suras[s0 - 1], a0 = Math.min(S0.ayas, Math.max(1, +sp.get('a') || 1));
-  openReader(s0, S0.first + a0 - 1, { fly: !!sp.get('s') });
-  if (sp.get('q')) { $('#q').value = sp.get('q'); run(sp.get('q')); }
-  else if (store.get('welcomed') !== '1' && !sp.get('s')) openWelcome();
+  setMode('home');
   renderSide();
+  if (sp.get('q')) { $('#q').value = sp.get('q'); await run(sp.get('q')); }
+  if (sp.get('s')) {
+    // a shared link to a verse opens it directly
+    const s0 = Math.min(114, Math.max(1, +sp.get('s') || 1)), S0 = core.suras[s0 - 1];
+    const a0 = Math.min(S0.ayas, Math.max(1, +sp.get('a') || 1));
+    openReader(s0, S0.first + a0 - 1, { fly: true });
+  } else if (!sp.get('q') && store.get('welcomed') !== '1') openWelcome();
 }
 
 // ------------------------------------------------------------ entry gate
@@ -278,22 +283,47 @@ async function run(query, mode = 'auto') {
   try { await state.refReady; res = await state.engine.ask(query, { uiLang: state.lang, llm: state.llm, mode }); }
   finally { $('#status').classList.remove('on'); }
   state.result = res;
-  const url = new URL(location.href); url.searchParams.set('q', query); history.replaceState(null, '', url);
-  showPane('s');
+  const url = new URL(location.href); url.searchParams.set('q', query); url.searchParams.delete('s'); url.searchParams.delete('a'); history.replaceState(null, '', url);
+  stopAudio(true); stopSpeech();
+  colorResults(res);
+  setMode('answers');
   renderSide();
+  // the answer on the map: its surahs light up in their colours, with a label each
   const list = res.verses.filter(v => !v.closestOnly).map(v => v.idx);
-  state.galaxy.highlightVerses(list.length > 400 ? [] : list);
+  const shown = list.length > 400 ? [] : list;
+  state.galaxy.highlightVerses(shown, (v) => state.colorOf.get(state.engine.suraOf[v]) || 1);
+  state.galaxy.setGroups(answerGroups(res));
+  state.galaxy.setFocusVerse(null);
   markHits();
-  if (res.focus != null) goVerse(res.focus);
+  if (shown.length) state.galaxy.fitVerses(shown);
   else state.galaxy.home();
 }
 
+// one colour per surah of the answer, in the order of the answer (same colours on the map and in the list)
+function colorResults(res) {
+  state.colorOf = new Map();
+  const order = res.suras && res.suras.length ? res.suras.map(g => g.sura) : res.verses.filter(v => !v.closestOnly).map(v => state.engine.suraOf[v.idx]);
+  for (const sn of order) if (!state.colorOf.has(sn)) state.colorOf.set(sn, (state.colorOf.size % PALETTE.length) + 1);
+}
+function answerGroups(res) {
+  const e = state.engine, by = new Map();
+  for (const v of res.verses) { if (v.closestOnly) continue; const sn = e.suraOf[v.idx]; if (!by.has(sn)) by.set(sn, []); by.get(sn).push(v.idx); }
+  return [...by.entries()].slice(0, 10).map(([sn, vs]) => {
+    const verses = vs.sort((a, b) => a - b).slice(0, 12);
+    return { sura: sn, verses, ayas: verses.map(i => state.lang === 'ar' ? arNum(e.ayaOf[i]) : e.ayaOf[i]), title: suraName(sn), color: PALETTE[(state.colorOf.get(sn) || 1) - 1] };
+  });
+}
+const colorVar = (sn) => { const k = state.colorOf.get(sn); return k ? ` style="--c:${PALETTE[k - 1]}"` : ''; };
+
 function clearResults() {
   state.result = null;
+  state.colorOf = new Map();
   state.galaxy.highlightVerses([]);
+  state.galaxy.setGroups([]);
   markHits();
   const url = new URL(location.href); url.searchParams.delete('q'); history.replaceState(null, '', url);
   $('#q').value = '';
+  if (state.mode === 'answers') { setMode('home'); state.galaxy.home(); } else setMode(state.mode);
   renderSide();
 }
 
@@ -319,8 +349,9 @@ function badgeFor(res) {
 // the answers zone shows either the answer to the last question, or the home page
 function renderSide() {
   if (!state.core) return;
-  $('#resClose').hidden = !state.result;
-  if (state.result) renderResults(); else renderHome();
+  renderHome();
+  if (state.result) renderResults(); else $('#viewRes').innerHTML = '';
+  $('#ansCount').textContent = state.result ? `(${state.result.verses.filter(v => !v.closestOnly).length})` : '';
 }
 
 function renderResults() {
@@ -328,6 +359,7 @@ function renderResults() {
   if (!res) return;
   const dir = res.lang === 'ar' ? 'rtl' : 'ltr';
   let h = `<p class="qline" dir="auto">«${esc(res.query)}»</p>` + levelBadge(res) + badgeFor(res);
+  if (res.aiConfirmed === false || (res.meta && res.meta.llm && res.meta.llm.used === false && res.type === 'topic')) h += `<span class="badge warn">${esc(t.noAiBadge)}</span>`;
   const texts = res.answer.filter(a => a.kind === 'text');
   const quotes = res.answer.filter(a => a.kind === 'quote');
   const notes = res.answer.filter(a => a.kind === 'note');
@@ -365,7 +397,7 @@ function renderResults() {
     h += `<h3 class="sec">${esc(relOnly ? t.relatedNotFatwa : t.versesTitle)} (${res.verses.filter(v => !v.closestOnly).length})</h3><ul class="vlist">` +
       res.verses.slice(0, 60).map(v => {
         const tr = state.lang === 'en' ? e.translation('en', v.idx).replace(/\[\d+\]/g, '') : '';
-        return `<li data-idx="${v.idx}"><div class="li-head"><b>${esc(refLabel(v.idx))}</b><span>${v.to ? `→ ${esc(v.to)} ` : ''}<button class="mini" data-playv="${v.idx}" aria-label="${esc(t.listen)}">▶</button></span></div>
+        return `<li data-idx="${v.idx}"${colorVar(e.suraOf[v.idx])}><div class="li-head"><b><i class="dot"></i>${esc(refLabel(v.idx))}</b><span>${v.to ? `→ ${esc(v.to)} ` : ''}<button class="mini" data-playv="${v.idx}" aria-label="${esc(t.listen)}">▶</button></span></div>
           <div class="ayah">${esc(e.verses[v.idx])}</div>${tr ? `<div class="tr">${esc(tr)}</div>` : ''}</li>`;
       }).join('') + '</ul>';
   }
@@ -376,19 +408,20 @@ function renderResults() {
   v.innerHTML = h;
   v.scrollTop = 0;
   v.querySelectorAll('.cite').forEach(el => el.onclick = (ev) => { ev.stopPropagation(); goVerse(+el.dataset.idx); });
-  v.querySelectorAll('[data-ctx]').forEach(b => b.onclick = () => toggleContext(b));
-  v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playv, { play: true }); });
+  v.querySelectorAll('[data-ctx]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); toggleContext(b); });
+  v.querySelectorAll('.vcardx').forEach(c => c.onclick = (ev) => { if (ev.target.closest('button,a,.ctxbox')) return; goVerse(+c.dataset.idx, { pane: 'r' }); });
+  v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playv, { play: 'one', pane: 'r' }); });
   v.querySelectorAll('[data-open]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.open, { pane: 'r' }); });
   if (res.sensitive) { const first = v.querySelector('[data-ctx]'); if (first) toggleContext(first); }
-  v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => goVerse(+li.dataset.idx));
-  v.querySelectorAll('.sc-v').forEach(li => li.onclick = () => goVerse(+li.dataset.idx));
+  v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => goVerse(+li.dataset.idx, { pane: 'r' }));
+  v.querySelectorAll('.sc-v').forEach(li => li.onclick = () => goVerse(+li.dataset.idx, { pane: 'r' }));
   v.querySelectorAll('.sc-more').forEach(b => b.onclick = () => { b.closest('.sura-card').querySelectorAll('.sc-v[hidden]').forEach(x => { x.hidden = false; }); b.remove(); });
   v.querySelectorAll('[data-read]').forEach(b => b.onclick = () => goVerse(+b.dataset.first, { pane: 'r' }));
-  v.querySelectorAll('[data-listen]').forEach(b => b.onclick = () => goVerse(+b.dataset.first, { play: true }));
+  v.querySelectorAll('[data-listen]').forEach(b => b.onclick = () => goVerse(+b.dataset.first, { play: 'all', pane: 'r' }));
   const ab = $('#altBtn');
   if (ab) ab.onclick = () => res.alt.mode === 'topic' ? run(res.alt.query, 'topic') : openReader(res.alt.sura, null, { pane: 'r' });
   const os = $('#openSura'); if (os) os.onclick = () => openReader(res.sura, res.focus, { pane: 'r' });
-  const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, { autoplay: true });
+  const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, { autoplay: 'all', pane: 'r' });
   v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx));
   v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
   if (res.type === 'hadith' || res.hadithCheck) loadHadith(res.type === 'hadith' ? res.hadith.q : res.hadithCheck, res.type !== 'hadith');
@@ -460,7 +493,7 @@ async function fillSuraInfo(el, n, short = false) {
 function verseCard(q, lang) {
   const t = T(), e = state.engine, i = q.idx, dir = lang === 'ar' ? 'rtl' : 'ltr';
   const tr = lang === 'en' ? e.translation('en', i).replace(/\[\d+\]/g, '') : '';
-  return `<article class="vcardx${q.role === 'context' ? ' ctx' : ''}" data-idx="${i}">
+  return `<article class="vcardx${q.role === 'context' ? ' ctx' : ''}" data-idx="${i}"${colorVar(e.suraOf[i])}>
     <header><button class="cite" data-idx="${i}">${esc(refLabel(i, lang))}</button>
       <span class="vc-btns"><button class="mini" data-playv="${i}" aria-label="${esc(t.listen)}">▶</button><button class="mini" data-ctx="${i}" aria-expanded="false">${esc(t.ctxBtn)}</button><button class="mini" data-open="${i}">${esc(t.readHere)}</button></span></header>
     <div class="ayah">${esc(e.verses[i])}</div>
@@ -504,7 +537,7 @@ function suraCard(g, k) {
       <span><button class="mini" data-playv="${i}" aria-label="${esc(t.listen)}">▶</button> <button class="mini" data-open="${i}">${esc(t.readHere)}</button></span></div>
       <div class="ayah">${ar}</div>${trH ? `<div class="tr">${trH}</div>` : ''}</li>`;
   };
-  return `<div class="sura-card"><div class="sc-head"><span class="sc-rank">${k + 1}</span>
+  return `<div class="sura-card"${colorVar(S.n)}><div class="sc-head"><span class="sc-rank">${k + 1}</span>
     <div class="sc-name"><b>${esc(S.ar)}</b><small>${esc(S.tr)} · ${S.n} · ${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.matched(g.verses.length))}</small></div>
     <span class="sc-btns"><button class="btn gold sm" data-read="${S.n}" data-first="${refs[0]}">${esc(t.readSura)}</button><button class="btn play sm" data-listen="${S.n}" data-first="${refs[0]}" aria-label="${esc(t.listen)}">▶</button></span></div>
     <details class="sc-info" data-info="${S.n}"><summary>${esc(t.aboutSura)}</summary><div class="sc-info-b">…</div></details>
@@ -516,7 +549,26 @@ function markCurrentInResults() {
   document.querySelectorAll('#viewRes .sc-v, #viewRes .vcardx, #viewRes .vlist li').forEach(b => b.classList.toggle('on', +b.dataset.idx === i));
 }
 
-// ------------------------------------------------------------ zones & panes
+// ------------------------------------------------------------ modes, zones & panes
+function setMode(m) {
+  state.mode = m;
+  document.body.dataset.mode = m;
+  if (state.galaxy) state.galaxy.setGroupsVisible(m === 'answers');
+  document.body.classList.remove('ans-open', 'ans-peek');
+  $('#ansToggle').setAttribute('aria-expanded', m !== 'study');
+  $('#suggest').hidden = m !== 'home' || state.suggestClosed;
+  $('#sgOpen').hidden = m !== 'home' || !state.suggestClosed;
+  $('#szone').hidden = m === 'home' || !state.result;
+  $('#mtabs [data-pane=s]').hidden = !state.result;
+  if (m === 'study' && !['r', 't', 's'].includes(state.pane)) showPane('r');
+  if (m === 'study' && state.pane === 's' && !state.result) showPane('r');
+}
+// in the study view: unfold the answers (the tafsir folds), or fold them back
+function openAnswers(on) {
+  document.body.classList.toggle('ans-open', on);
+  document.body.classList.remove('ans-peek');
+  $('#ansToggle').setAttribute('aria-expanded', on);
+}
 function showPane(p) {
   state.pane = p;
   document.body.dataset.pane = p;
@@ -551,6 +603,8 @@ function goVerse(i, { play: autoplay = false, pane = null, fly = true } = {}) {
 async function openReader(sura, idx, { autoplay = false, fly = true, pane = null } = {}) {
   const e = state.engine, S = state.core.suras[sura - 1];
   const i = idx == null ? S.first : idx;
+  if (state.mode !== 'study') setMode('study');
+  else if (document.body.classList.contains('ans-open')) openAnswers(false);
   if (state.reader.sura !== sura) {
     stopAudio(true);
     state.reader = { sura, cur: i, hits: new Set() };
@@ -559,7 +613,7 @@ async function openReader(sura, idx, { autoplay = false, fly = true, pane = null
   }
   markHits();
   if (pane) showPane(pane);
-  if (autoplay) { selectVerse(i, { fly, scroll: true, keepAudio: true }); play(i, true); }
+  if (autoplay) { state.playMode = autoplay === 'one' ? 'one' : 'all'; selectVerse(i, { fly, scroll: true, keepAudio: true }); play(i, true); }
   else selectVerse(i, { fly, scroll: true });
   void e;
 }
@@ -616,14 +670,15 @@ function renderReader() {
       <span class="rd-meta">${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</span>
       <label class="rd-aya">${esc(t.ayaN)} <select id="rSel">${Array.from({ length: S.ayas }, (_, k) => `<option value="${S.first + k}">${k + 1}</option>`).join('')}</select></label>
       <button class="mini" id="rInfo" aria-expanded="false">ℹ ${esc(t.aboutSura)}</button>
+      <button class="icon" id="rClose" title="${esc(t.closeReader)}" aria-label="${esc(t.closeReader)}">✕</button>
     </div>
     <div class="rd-ctrl" role="toolbar" aria-label="${esc(t.listen)}">
+      <button class="btn icon-b" id="rFirst" title="${esc(t.firstA)}" aria-label="${esc(t.firstA)}">⏮</button>
       <button class="btn icon-b" id="rPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${state.lang === 'ar' ? '›' : '‹'}</button>
-      <button class="btn icon-b" id="rRestart" title="${esc(t.restartA)}" aria-label="${esc(t.restartA)}">⏮</button>
-      <button class="btn play big" id="rPlay" aria-label="${esc(t.listen)}">${state.playing ? t.pause : t.play}</button>
+      <button class="btn play" id="rPlayOne" title="${esc(t.playOneT)}">${esc(t.play)} ${esc(t.playOne)}</button>
+      <button class="btn play" id="rPlayAll" title="${esc(t.playAllT)}">⏵⏵ ${esc(t.playAll)}</button>
       <button class="btn icon-b" id="rNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${state.lang === 'ar' ? '‹' : '›'}</button>
       <label class="btn rep" title="${esc(t.repeatTitle)}">${esc(t.repeat)} <select id="rRep" aria-label="${esc(t.repeatTitle)}">${[1, 3, 5, 10, 0].map(n => `<option value="${n}"${(rep === n || (rep === Infinity && n === 0)) ? ' selected' : ''}>${n ? '×' + n : '∞'}</option>`).join('')}</select></label>
-      <button class="btn ${state.continuous ? 'on' : ''}" id="rAuto" aria-pressed="${state.continuous}" title="${esc(t.autoTitle)}">⟳ ${esc(t.auto)}</button>
       <label class="btn rep" title="${esc(t.speed)}">${esc(t.speed)} <select id="rSpeed" aria-label="${esc(t.speed)}">${SPEEDS.map(x => `<option value="${x}"${x === state.speed ? ' selected' : ''}>×${x}</option>`).join('')}</select></label>
       <span class="grp"><button class="btn icon-b sm" id="rFm" aria-label="${esc(t.fontSmaller)}" title="${esc(t.fontSmaller)}">A−</button><button class="btn icon-b sm" id="rFp" aria-label="${esc(t.fontLarger)}" title="${esc(t.fontLarger)}">A+</button></span>
       ${en ? `<button class="btn ${state.showTranslit ? 'on' : ''}" id="rTl" aria-pressed="${state.showTranslit}">${esc(t.translit)}</button><button class="btn ${state.showTr ? 'on' : ''}" id="rTr" aria-pressed="${state.showTr}">${esc(t.translationBtn)}</button>` : ''}
@@ -638,11 +693,13 @@ function renderReader() {
   $('#rzone').style.setProperty('--qs', state.qs);
   $('#rPrev').onclick = () => step(-1);
   $('#rNext').onclick = () => step(1);
-  $('#rPlay').onclick = () => state.playing ? stopAudio(true) : play(state.reader.cur, true);
-  $('#rRestart').onclick = () => play(state.reader.cur, true);
+  $('#rPlayOne').onclick = () => togglePlay('one');
+  $('#rPlayAll').onclick = () => togglePlay('all');
+  $('#rFirst').onclick = () => { const was = state.playing; selectVerse(S.first, { scroll: true, keepAudio: true }); if (was) play(S.first, true); };
+  $('#rClose').onclick = closeReader;
+  playButtons();
   $('#rRep').onchange = (ev) => { const n = +ev.target.value; state.repeat = n || Infinity; state.repeatLeft = state.repeat; };
   $('#rSpeed').onchange = (ev) => { state.speed = +ev.target.value; store.set('speed', state.speed); if (state.audio) state.audio.playbackRate = state.speed; };
-  $('#rAuto').onclick = () => { state.continuous = !state.continuous; store.set('auto', state.continuous ? '1' : '0'); $('#rAuto').classList.toggle('on', state.continuous); $('#rAuto').setAttribute('aria-pressed', state.continuous); };
   const font = (d) => { state.qs = Math.round(Math.min(1.8, Math.max(0.7, state.qs + d)) * 10) / 10; store.set('qs', state.qs); $('#rzone').style.setProperty('--qs', state.qs); };
   $('#rFm').onclick = () => font(-0.1);
   $('#rFp').onclick = () => font(0.1);
@@ -660,6 +717,30 @@ function renderReader() {
   markHits();
   if (en && state.showTranslit) fillTranslit(sura);
 }
+// ▶ this verse only · ⏵⏵ from this verse onwards (continuous); pressing the playing one pauses
+function togglePlay(mode) {
+  if (state.playing && state.playMode === mode) { stopAudio(true); return; }
+  state.playMode = mode;
+  play(state.reader.cur, true);
+}
+function playButtons() {
+  const t = T(), one = $('#rPlayOne'), all = $('#rPlayAll');
+  if (!one) return;
+  const p1 = state.playing && state.playMode === 'one', p2 = state.playing && state.playMode === 'all';
+  one.textContent = `${p1 ? t.pause : t.play} ${t.playOne}`; one.classList.toggle('on', p1); one.setAttribute('aria-pressed', p1);
+  all.textContent = `${p2 ? t.pause : '⏵⏵'} ${t.playAll}`; all.classList.toggle('on', p2); all.setAttribute('aria-pressed', p2);
+}
+function closeReader() {
+  stopAudio(true); stopSpeech();
+  state.galaxy.setFocusVerse(null);
+  if (state.result) {
+    setMode('answers');
+    const list = state.result.verses.filter(v => !v.closestOnly).map(v => v.idx);
+    if (list.length && list.length <= 400) state.galaxy.fitVerses(list); else state.galaxy.home();
+  } else { setMode('home'); state.galaxy.home(); }
+  const url = new URL(location.href); url.searchParams.delete('s'); url.searchParams.delete('a'); history.replaceState(null, '', url);
+}
+
 function rerenderReader() { renderReader(); selectVerse(state.reader.cur, { fly: false, scroll: true, keepAudio: true }); }
 function verseUrl(i) {
   const u = new URL(location.href); u.search = '';
@@ -738,8 +819,9 @@ function renderTafsir(i) {
     <p class="tts-note" id="ttsNote" hidden></p>
     <div class="zbody tz-body" id="tafBody" dir="${BOOKS[book].lang === 'ar' ? 'rtl' : 'ltr'}"><p class="muted">${esc(t.loadingTafsir)}</p></div>`;
   $('#tzone').style.setProperty('--ts', state.ts);
-  $('#tPrev').onclick = () => step(-1);
-  $('#tNext').onclick = () => step(1);
+  $('#tPrev').onclick = (ev) => { ev.stopPropagation(); step(-1); };
+  $('#tNext').onclick = (ev) => { ev.stopPropagation(); step(1); };
+  $('#viewTaf .tz-head').onclick = () => { if (document.body.classList.contains('ans-open')) openAnswers(false); };
   $('#viewTaf').querySelectorAll('[data-book]').forEach(b => b.onclick = () => { state.taf.book = b.dataset.book; store.set('book', b.dataset.book); renderTafsir(i); });
   const tfont = (d) => { state.ts = Math.round(Math.min(1.8, Math.max(0.7, state.ts + d)) * 10) / 10; store.set('ts', state.ts); $('#tzone').style.setProperty('--ts', state.ts); };
   $('#tFm').onclick = () => tfont(-0.1);
@@ -839,12 +921,16 @@ async function play(i, fromUser = false) {
   const au = new Audio(AUDIO_BASE + tim.u);
   au.playbackRate = state.speed;
   state.audio = au; state.playing = true;
-  const btn = $('#rPlay'); if (btn) btn.textContent = T().pause;
+  state.continuous = state.playMode === 'all';
+  playButtons();
+  state.galaxy.setReciting(true);
   const groups = () => [...document.querySelectorAll(`#mushaf .v[data-i="${i}"]`)];
   const [w0] = state.galaxy.wordsOfVerse(i);
   showLampWord('', refLabel(i));
   let last = -1;
-  const tick = () => {
+  // word sync: every animation frame, and on 'timeupdate' too (animation frames stop in hidden windows)
+  const tick = () => { if (state.audio !== au) return; update(); state.raf = requestAnimationFrame(tick); };
+  const update = () => {
     if (state.audio !== au) return;
     if (tim.t) {
       const ms = au.currentTime * 1000;
@@ -863,8 +949,8 @@ async function play(i, fromUser = false) {
         last = k;
       }
     }
-    state.raf = requestAnimationFrame(tick);
   };
+  au.ontimeupdate = update;
   au.onplay = () => { cancelAnimationFrame(state.raf); document.body.classList.add('reciting'); tick(); };
   au.onended = () => {
     if (state.audio !== au) return;
@@ -878,12 +964,12 @@ async function play(i, fromUser = false) {
 }
 function stopAudio(updateBtn) {
   cancelAnimationFrame(state.raf);
-  if (state.audio) { state.audio.onended = null; state.audio.pause(); }
+  if (state.audio) { state.audio.onended = state.audio.ontimeupdate = null; state.audio.pause(); }
   state.audio = null; state.playing = false;
   document.body.classList.remove('reciting'); showLampWord('');
   document.querySelectorAll('.w.now').forEach(w => w.classList.remove('now'));
-  if (state.galaxy) state.galaxy.setActiveWord(null);
-  if (updateBtn) { const b = $('#rPlay'); if (b) b.textContent = T().play; }
+  if (state.galaxy) { state.galaxy.setActiveWord(null); state.galaxy.setReciting(false); }
+  if (updateBtn) playButtons();
 }
 
 // ------------------------------------------------------------- hover
@@ -898,26 +984,46 @@ function hover(p) {
 }
 
 // ------------------------------------------------------------- galaxy toolbar
-const viewIdx = { g0: 0, g1: 1 };
-async function setView(v) {
-  if (!(v in viewIdx)) {
-    const order = v.slice(2);
-    const lay = await quranWordLayout({ wordVerse: state.galaxy.wordVerse, suraOf: state.engine.suraOf, suras: state.core.suras, order });
-    viewIdx[v] = state.galaxy.addLayout(lay.positions, lay.view);
-  }
-  state.galaxy.setLayout(viewIdx[v]);
-  $('#viewSel').value = v;
-  const note = $('#viewNote');
-  note.hidden = v.startsWith('g');
-  clearTimeout(setView.timer);
-  if (!note.hidden) {
-    note.textContent = T().viewNote(T()['ord_' + v.slice(2)]);
-    setView.timer = setTimeout(() => { note.hidden = true; }, 9000);
-  }
-  store.set('view', v);
+// Two keys for the 3D view: the SHAPE (galaxy, «قرآن», rose, dome, petals) and the
+// ORDER in which the surahs are laid along it (Mushaf, revelation, place, length,
+// letters, verses, verse length). Layouts are computed once, then morphed.
+const layoutIdx = { 'galaxy|mushaf': 0, 'galaxy|nuzul': 1 };
+const layoutNote = {};
+const view = { shape: 'galaxy', order: 'mushaf' };
+function fillViewPickers() {
+  const L = state.lang;
+  $('#shapeSel').innerHTML = SHAPES.map(x => `<option value="${x.id}">${esc(x[L])}</option>`).join('');
+  $('#orderSel').innerHTML = ORDERS.map(x => `<option value="${x.id}">${esc(x[L])}</option>`).join('');
+  $('#shapeSel').value = view.shape; $('#orderSel').value = view.order;
+  const k = view.shape + '|' + view.order;
+  if (!$('#viewNote').hidden && layoutNote[k]) $('#viewNote').textContent = layoutNote[k][L];
 }
+async function setView(shape, order, { quiet = false } = {}) {
+  if (!SHAPES.some(x => x.id === shape)) shape = 'galaxy';
+  if (!ORDERS.some(x => x.id === order)) order = 'mushaf';
+  const key = shape + '|' + order;
+  view.shape = shape; view.order = order;
+  $('#shapeSel').value = shape; $('#orderSel').value = order;
+  if (!(key in layoutIdx) || !layoutNote[key]) {
+    const lay = await buildLayout({ shape, order, wordVerse: state.galaxy.wordVerse, suras: state.core.suras, words: order === 'letters' ? await state.wordsP : null });
+    if (!(key in layoutIdx)) layoutIdx[key] = state.galaxy.addLayout(lay.positions, lay.view);
+    layoutNote[key] = lay.note;
+  }
+  if (view.shape !== shape || view.order !== order) return; // another choice was made meanwhile
+  state.galaxy.setLayout(layoutIdx[key]);
+  store.set('shape', shape); store.set('order', order);
+  const note = $('#viewNote');
+  clearTimeout(setView.timer);
+  if (!quiet) {
+    note.textContent = layoutNote[key][state.lang];
+    note.hidden = false;
+    setView.timer = setTimeout(() => { note.hidden = true; }, 7000);
+  }
+}
+const cycle = (list, cur, d = 1) => list[(list.findIndex(x => x.id === cur) + d + list.length) % list.length].id;
 function setNames(v) { state.galaxy.setNames(v); $('#gNames').setAttribute('aria-pressed', v); store.set('names', v ? '1' : '0'); }
-$('#viewSel').onchange = (ev) => setView(ev.target.value);
+$('#shapeSel').onchange = (ev) => setView(ev.target.value, view.order);
+$('#orderSel').onchange = (ev) => setView(view.shape, ev.target.value);
 $('#gHome').onclick = () => state.galaxy.home();
 $('#gIn').onclick = () => state.galaxy.zoom(0.6);
 $('#gOut').onclick = () => state.galaxy.zoom(1.6);
@@ -930,10 +1036,18 @@ $('#gFull').onclick = () => { const on = !document.body.classList.contains('gful
 $('#searchForm').addEventListener('submit', (ev) => { ev.preventDefault(); const q = $('#q').value.trim(); if (q) run(q); });
 document.querySelectorAll('.langs button').forEach(b => b.onclick = () => applyLang(b.dataset.lang));
 $('#resClose').onclick = clearResults;
+$('#ansToggle').onclick = () => { if (state.mode === 'study') openAnswers(!document.body.classList.contains('ans-open')); };
+// hovering the folded answers bar unfolds them for a look; leaving the side column folds them back
+let peekT = 0;
+$('#sHead').addEventListener('mouseenter', () => { if (state.mode === 'study' && !document.body.classList.contains('ans-open')) peekT = setTimeout(() => document.body.classList.add('ans-peek'), 260); });
+$('#sHead').addEventListener('mouseleave', () => clearTimeout(peekT));
+$('.col-side').addEventListener('mouseleave', () => { clearTimeout(peekT); document.body.classList.remove('ans-peek'); });
+$('#sgClose').onclick = () => { state.suggestClosed = true; setMode(state.mode); };
+$('#sgOpen').onclick = () => { state.suggestClosed = false; setMode(state.mode); };
 document.querySelectorAll('#mtabs [data-pane]').forEach(b => b.onclick = () => showPane(b.dataset.pane));
 setupSplit($('#splitMain'), $('.col-main'), 'splitMain');
 setupSplit($('#splitSide'), $('.col-side'), 'splitSide');
-showPane('s');
+showPane('r');
 state.taf.book = store.get('book');
 $('#btnMenu').onclick = () => openWelcome();
 $('#btnAbout').onclick = () => $('#about').showModal();
@@ -942,18 +1056,16 @@ document.addEventListener('keydown', (ev) => {
   if (ev.target.closest && ev.target.closest('input,select,textarea,[contenteditable]')) return;
   if (!$('#gate').hidden || !$('#welcome').hidden || !$('#voice').hidden || $('#about').open) return;
   if (ev.key === '/') { ev.preventDefault(); $('#q').focus(); return; }
-  if (ev.key === 'v' || ev.key === 'V') {
-    const opts = [...$('#viewSel').options].map(o => o.value);
-    setView(opts[(opts.indexOf($('#viewSel').value) + 1) % opts.length]);
-    return;
-  }
+  if (ev.key === 'v' || ev.key === 'V') { setView(cycle(SHAPES, view.shape, ev.shiftKey ? -1 : 1), view.order); return; }
+  if (ev.key === 'o' || ev.key === 'O') { setView(view.shape, cycle(ORDERS, view.order, ev.shiftKey ? -1 : 1)); return; }
   if (ev.target.closest && ev.target.closest('[role=separator]')) return;
   if (ev.key === ' ' && ev.target.closest && ev.target.closest('button,a,summary')) return; // native activation
-  if (!state.reader.sura) return;
+  if (!state.reader.sura || state.mode !== 'study') return;
   const rtl = document.documentElement.dir === 'rtl';
   if (ev.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) step(1);
   if (ev.key === (rtl ? 'ArrowRight' : 'ArrowLeft')) step(-1);
-  if (ev.key === ' ') { ev.preventDefault(); state.playing ? stopAudio(true) : play(state.reader.cur, true); }
+  if (ev.key === ' ' && state.mode === 'study') { ev.preventDefault(); togglePlay(state.playMode); }
+  if (ev.key === 'Escape' && state.mode === 'study') closeReader();
 });
 
 function setTheme(th) {
@@ -1012,10 +1124,10 @@ function closeWelcome() { $('#welcome').hidden = true; store.set('welcomed', '1'
 
 // home of the answers zone: the verse of the lamp, a short guide, suggestions
 function renderHome() {
-  const box = $('#viewRes'), I = INTEREST[state.lang], t = T(), chosen = interests(), L = state.lang;
+  const box = $('#viewHome'), I = INTEREST[state.lang], t = T(), chosen = interests(), L = state.lang;
   if (!state.core || !box) return;
-  let h = `<div class="home"><div class="h-verse ayah">﴿${esc(heroSlice())} …﴾</div><div class="h-ref">${esc(L === 'ar' ? 'سورة النور · 35' : 'An-Nur · 24:35')}</div>
-    <p class="h-lead">${esc(t.lead)}</p>`;
+  // a quiet bar of suggestions: what to ask, or the visitor's chosen interests
+  let h = `<div class="home">`;
   if (!chosen.length) {
     h += `<div class="fy-chips h-chips">${t.chips.map(c => `<button type="button" data-q="${esc(c)}">${esc(c)}</button>`).join('')}</div>
       <p class="h-pers"><button type="button" class="fy-edit">${esc(I.personalise)}</button></p>`;
@@ -1041,7 +1153,7 @@ function renderHome() {
     };
     h += `<div class="fy-head"><b>${esc(I.forYou)}</b><button type="button" class="fy-edit">${esc(I.edit)}</button></div>` + chosen.map(group).join('');
   }
-  box.innerHTML = h + `<p class="disclose">${esc(t.disclosure)}</p></div>`;
+  box.innerHTML = h + `</div>`;
   box.querySelectorAll('.fy-edit').forEach(b => b.onclick = openWelcome);
   box.querySelectorAll('.fy-chips button').forEach(b => b.onclick = () => doPick(b.dataset));
   box.querySelectorAll('select[data-pick]').forEach(sel => sel.onchange = () => {
@@ -1062,7 +1174,7 @@ function doPick(d) {
   const S = state.core.suras[+d.s - 1], i = S.first + (+d.a || 1) - 1;
   if (d.act === 'tafsir') state.taf.book = state.lang === 'ar' ? 'muyassar_ar' : 'mukhtasar_en';
   if (d.act === 'learn') { state.repeat = 3; state.repeatLeft = 3; }
-  goVerse(i, { play: d.act === 'listen' || d.act === 'learn', pane: d.act === 'tafsir' ? 't' : 'r' });
+  goVerse(i, { play: d.act === 'listen' || d.act === 'learn' ? 'all' : false, pane: d.act === 'tafsir' ? 't' : 'r' });
   if (d.act === 'learn') { const r = $('#rRep'); if (r) r.value = '3'; }
 }
 
