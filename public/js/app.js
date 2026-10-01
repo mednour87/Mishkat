@@ -15,7 +15,7 @@ const HAS_LETTER = /[ء-يٱ]/;
 const state = {
   lang: 'ar', engine: null, galaxy: null, core: null, llm: null, llmModel: null,
   result: null, reader: { sura: null, cur: null, hits: new Set(), srcTab: null },
-  audio: null, playing: false, continuous: true, timing: new Map(), saadi: new Map(), raf: 0,
+  audio: null, playing: false, continuous: true, timing: new Map(), saadi: new Map(), translit: new Map(), raf: 0, repeat: 1, repeatLeft: null,
 };
 
 // ------------------------------------------------------------------ i18n
@@ -131,7 +131,7 @@ async function boot() {
   if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select') };
   $('#aiBadge').textContent = T().ai(state.llmModel);
   await gateDone;
-  $('#bigLamp').innerHTML = lampSVG({ size: 280, word: true, title: 'Mishkat' });
+  $('#stage .st-lamp').innerHTML = lampSVG({ size: 230, word: true, title: 'Mishkat' });
   let firstTime = true; try { firstTime = localStorage.getItem('mishkat.welcomed') !== '1'; } catch (e) { /* ignore */ }
   try { const v = localStorage.getItem('mishkat.view'); if (v && v !== 'g0') setView(v); } catch (e) { /* ignore */ }
   const sp = new URL(location.href).searchParams;
@@ -358,6 +358,7 @@ function focusVerse(idx, { card = false, dist } = {}) {
 
 // ------------------------------------------------------------ reader
 async function openReader(sura, idx, autoplay = false) {
+  stopSpeech();
   const e = state.engine, S = state.core.suras[sura - 1];
   const hits = new Set((state.result && state.result.verses || []).filter(v => e.suraOf[v.idx] === sura).map(v => v.idx));
   state.reader = { sura, cur: idx == null ? S.first : idx, hits, srcTab: state.reader.srcTab };
@@ -365,7 +366,7 @@ async function openReader(sura, idx, autoplay = false) {
   showPanel('read');
   renderReader(true);
   const url = new URL(location.href); url.searchParams.set('s', sura); history.replaceState(null, '', url);
-  if (autoplay) play(state.reader.cur);
+  if (autoplay) play(state.reader.cur, true);
 }
 
 function verseTokens(i) {
@@ -382,37 +383,47 @@ function renderReader(scrollToCur) {
   let words = '';
   for (let a = 1; a <= S.ayas; a++) {
     const i = S.first + a - 1;
-    const { skip, toks } = verseTokens(i);
-    let w = 0, html = '';
-    toks.forEach((tok, k) => {
-      if (k < skip) return;
-      if (HAS_LETTER.test(tok)) { w++; html += `<span class="w" data-w="${w}">${esc(tok)}</span> `; } else html += `${esc(tok)} `;
-    });
-    words += `<span class="v${i === cur ? ' cur' : ''}${state.reader.hits.has(i) ? ' hit' : ''}" data-i="${i}"><button class="vplay" data-play="${i}" aria-label="${esc(t.playAya(a))}">▶</button>${html}<span class="end">﴿${arNum(a)}﴾</span></span> `;
+    words += `<span class="v${i === cur ? ' cur' : ''}${state.reader.hits.has(i) ? ' hit' : ''}" data-i="${i}"><button class="vplay" data-play="${i}" aria-label="${esc(t.playAya(a))}">▶</button>${verseWordsHtml(i)}<span class="end">﴿${arNum(a)}﴾</span></span> `;
   }
   const basmala = (sura !== 1 && sura !== 9) ? `<div class="basmala">${esc(e.verses[S.first].split(' ').slice(0, 4).join(' '))}</div>` : '';
-  v.innerHTML = `<div class="rd-head"><div class="rd-top"><div class="rd-lamp" id="rdLamp" aria-hidden="true">${lampSVG({ size: 128, word: true })}</div>
-    <div class="rd-title"><b>سورة ${esc(S.ar)}</b><small>${esc(S.tr)} · ${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</small></div></div>
-    <div class="rd-ctrl">
-      <button class="btn" id="rPrev" aria-label="${esc(t.prevA)}">${state.lang === 'ar' ? '→' : '←'} ${esc(t.prevA)}</button>
-      <button class="btn" id="rRestart" title="${esc(t.restartA)}" aria-label="${esc(t.restartA)}">⏮</button>
-      <button class="btn play" id="rPlay" aria-label="${esc(t.listen)}">${state.playing ? t.pause : t.play}</button>
-      <button class="btn" id="rNext" aria-label="${esc(t.nextA)}">${esc(t.nextA)} ${state.lang === 'ar' ? '←' : '→'}</button>
-      <button class="btn ${state.continuous ? 'on' : ''}" id="rAuto">⟳ ${esc(t.auto)}</button>
-      <label>${esc(t.ayaN)} <select id="rSel">${Array.from({ length: S.ayas }, (_, k) => `<option value="${S.first + k}"${S.first + k === cur ? ' selected' : ''}>${k + 1}</option>`).join('')}</select></label>
+  const rep = state.repeat || 1;
+  v.innerHTML = `<div class="rd-head"><div class="rd-top"><div class="rd-lamp" id="rdLamp" aria-hidden="true">${lampSVG({ size: 96, word: true })}</div>
+    <div class="rd-title"><b>سورة ${esc(S.ar)}</b><small>${esc(S.tr)} · ${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</small></div>
+    <label class="rd-aya">${esc(t.ayaN)} <select id="rSel">${Array.from({ length: S.ayas }, (_, k) => `<option value="${S.first + k}"${S.first + k === cur ? ' selected' : ''}>${k + 1}</option>`).join('')}</select></label></div>
+    <div class="rd-ctrl" role="toolbar" aria-label="${esc(t.listen)}">
+      <button class="btn icon-b" id="rPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${state.lang === 'ar' ? '›' : '‹'}</button>
+      <button class="btn icon-b" id="rRestart" title="${esc(t.restartA)}" aria-label="${esc(t.restartA)}">⏮</button>
+      <button class="btn play big" id="rPlay" aria-label="${esc(t.listen)}">${state.playing ? t.pause : t.play}</button>
+      <button class="btn icon-b" id="rNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${state.lang === 'ar' ? '‹' : '›'}</button>
+      <label class="btn rep" title="${esc(t.repeatTitle)}">${esc(t.repeat)} <select id="rRep" aria-label="${esc(t.repeatTitle)}">${[1, 3, 5, 10, 0].map(n => `<option value="${n}"${(rep === n || (rep === Infinity && n === 0)) ? ' selected' : ''}>${n ? '×' + n : '∞'}</option>`).join('')}</select></label>
+      <button class="btn ${state.continuous ? 'on' : ''}" id="rAuto" aria-pressed="${state.continuous}">⟳ ${esc(t.auto)}</button>
     </div></div>
-    <div class="mushaf" id="mushaf">${basmala}${words}</div>
-    <div class="rd-detail" id="rDetail"></div>`;
+    <div class="rd-body" id="rdBody">
+      <section class="focus" id="focus" aria-live="polite"></section>
+      <details class="fulltext" open><summary>${esc(t.fullSura)}</summary><div class="mushaf" id="mushaf">${basmala}${words}</div></details>
+    </div>`;
   $('#rPrev').onclick = () => step(-1);
   $('#rNext').onclick = () => step(1);
-  $('#rPlay').onclick = () => state.playing ? stopAudio(true) : play(state.reader.cur);
-  $('#rRestart').onclick = () => play(state.reader.cur);
-  $('#mushaf').querySelectorAll('.vplay').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); play(+b.dataset.play); });
-  try { localStorage.setItem('mishkat.lastSura', String(sura)); } catch (e) { /* ignore */ }
-  $('#rAuto').onclick = () => { state.continuous = !state.continuous; $('#rAuto').classList.toggle('on', state.continuous); };
+  $('#rPlay').onclick = () => state.playing ? stopAudio(true) : play(state.reader.cur, true);
+  $('#rRestart').onclick = () => play(state.reader.cur, true);
+  $('#rRep').onchange = (ev) => { const n = +ev.target.value; state.repeat = n || Infinity; state.repeatLeft = state.repeat; };
+  $('#mushaf').querySelectorAll('.vplay').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); play(+b.dataset.play, true); });
+  try { localStorage.setItem('mishkat.lastSura', String(sura)); } catch (e2) { /* ignore */ }
+  $('#rAuto').onclick = () => { state.continuous = !state.continuous; $('#rAuto').classList.toggle('on', state.continuous); $('#rAuto').setAttribute('aria-pressed', state.continuous); };
   $('#rSel').onchange = (ev) => selectVerse(+ev.target.value, true);
   $('#mushaf').querySelectorAll('.v').forEach(el => el.onclick = () => selectVerse(+el.dataset.i, true));
   selectVerse(cur, scrollToCur, true);
+}
+
+// words of one verse as numbered spans (the basmala Tanzil prefixes to verse 1 is shown apart)
+function verseWordsHtml(i) {
+  const { skip, toks } = verseTokens(i);
+  let w = 0, html = '';
+  toks.forEach((tok, k) => {
+    if (k < skip) return;
+    if (HAS_LETTER.test(tok)) { w++; html += `<span class="w" data-w="${w}">${esc(tok)}</span> `; } else html += `${esc(tok)} `;
+  });
+  return html;
 }
 
 function selectVerse(i, scroll, initial = false) {
@@ -423,10 +434,11 @@ function selectVerse(i, scroll, initial = false) {
   document.querySelectorAll('#mushaf .v').forEach(el => el.classList.toggle('cur', +el.dataset.i === i));
   const sel = $('#rSel'); if (sel) sel.value = i;
   const el = $(`#mushaf .v[data-i="${i}"]`);
-  if (el && scroll) el.scrollIntoView({ behavior: initial ? 'auto' : 'smooth', block: 'center' });
-  focusVerse(i, { dist: 90 });
-  renderDetail(i);
-  if (wasPlaying) play(i);
+  if (el && scroll && !initial) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  focusVerse(i, { dist: 70 });
+  renderFocus(i);
+  if (scroll) { const b = $('#rdBody'); if (b) b.scrollTo({ top: 0, behavior: initial ? 'auto' : 'smooth' }); }
+  if (wasPlaying) play(i, true);
 }
 function step(d) {
   const i = state.reader.cur + d, S = state.core.suras[state.reader.sura - 1];
@@ -434,21 +446,35 @@ function step(d) {
   selectVerse(i, true);
 }
 
-async function renderDetail(i) {
-  const t = T(), e = state.engine, box = $('#rDetail');
-  const s = e.suraOf[i], a = e.ayaOf[i];
-  const tabs = state.lang === 'ar' ? ['muyassar_ar', 'mukhtasar_ar', 'saadi_ar'] : [TAFSIR_FOR[state.lang], 'muyassar_ar', 'saadi_ar'];
-  let tab = tabs.includes(state.reader.srcTab) ? state.reader.srcTab : tabs[0];
-  const tr = e.translation(state.lang, i).replace(/\[\d+\]/g, '');
-  const trSrc = TRANSLATION_FOR[state.lang] ? e.sources[TRANSLATION_FOR[state.lang]] : null;
-  const head = `${tr ? `<h4><span>${esc(t.translation)}</span><small>${esc(trSrc ? trSrc.title : '')}</small></h4><div class="tafsir">${esc(tr)}</div>` : ''}
-    <h4><span>${esc(t.tafsirTitle)} · ${esc(refLabel(i))}</span><span class="srcTabs">${tabs.map(id => `<button data-src="${id}" class="${id === tab ? 'on' : ''}">${esc(t.srcNames[id] || id)}</button>`).join('')}</span></h4>`;
-  box.innerHTML = head + `<div class="tafsir" id="tafBody">${esc(t.loadingTafsir)}</div>` +
-    `<div class="rd-links"><button class="btn" id="rCopy">${esc(t.copy)}</button><a class="btn" href="https://quran.com/${s}/${a}" target="_blank" rel="noopener">${esc(t.verifyExt)}</a>` +
-    `<a class="btn" href="${REPORT_URL}?title=${encodeURIComponent('Report ' + s + ':' + a)}" target="_blank" rel="noopener">${esc(t.report)}</a></div>`;
-  box.querySelectorAll('[data-src]').forEach(b => b.onclick = () => { state.reader.srcTab = b.dataset.src; renderDetail(i); });
-  $('#rCopy').onclick = async () => { try { await navigator.clipboard.writeText(`${e.verses[i]} [${refLabel(i, 'ar')}]`); $('#rCopy').textContent = t.copied; } catch (err) { /* blocked */ } };
-  let text = '', dir = 'rtl', srcLine = '';
+// The current verse in the middle of the reader: Arabic, word-by-word transliteration,
+// translation, then the tafsir — large, with a button to listen to it.
+async function renderFocus(i) {
+  const t = T(), e = state.engine, box = $('#focus');
+  if (!box) return;
+  stopSpeech();
+  const s = e.suraOf[i], a = e.ayaOf[i], lang = state.lang;
+  const tabs = lang === 'ar' ? ['muyassar_ar', 'mukhtasar_ar', 'saadi_ar'] : [TAFSIR_FOR[lang], 'muyassar_ar', 'saadi_ar'];
+  const tab = tabs.includes(state.reader.srcTab) ? state.reader.srcTab : tabs[0];
+  const tr = e.translation(lang, i).replace(/\[\d+\]/g, '');
+  const trSrc = TRANSLATION_FOR[lang] ? e.sources[TRANSLATION_FOR[lang]] : null;
+  box.innerHTML = `<div class="f-head"><span class="f-ref">${esc(refLabel(i))}</span>
+      <span class="f-tools"><button class="mini" id="fCopy">${esc(t.copy)}</button><a class="mini" href="https://quran.com/${s}/${a}" target="_blank" rel="noopener">${esc(t.verifyExt)}</a></span></div>
+    <div class="f-ayah ayah" id="fAyah">${verseWordsHtml(i)}<span class="end">﴿${arNum(a)}﴾</span></div>
+    <div class="f-translit" id="fTranslit" dir="ltr" ${state.showTranslit === false ? 'hidden' : ''}></div>
+    ${tr ? `<div class="f-trans" dir="ltr">${esc(tr)}<small>${esc(trSrc ? trSrc.title : '')}</small></div>` : ''}
+    <div class="f-taf">
+      <div class="f-taf-head"><span class="srcTabs" role="tablist">${tabs.map(id => `<button role="tab" aria-selected="${id === tab}" data-src="${id}" class="${id === tab ? 'on' : ''}">${esc(t.srcNames[id] || id)}</button>`).join('')}</span>
+        <button class="btn tts" id="fTts" aria-pressed="false">🔊 ${esc(t.readTafsir)}</button></div>
+      <div class="f-taf-body" id="tafBody">${esc(t.loadingTafsir)}</div>
+    </div>`;
+  box.querySelectorAll('[data-src]').forEach(b => b.onclick = () => { state.reader.srcTab = b.dataset.src; renderFocus(i); });
+  $('#fCopy').onclick = async () => { try { await navigator.clipboard.writeText(`${e.verses[i]} [${refLabel(i, 'ar')}]`); $('#fCopy').textContent = t.copied; } catch (err) { /* blocked */ } };
+  suraFile('translit', s).then(f => {
+    const ws = (f.words[a - 1] || []);
+    const el = $('#fTranslit');
+    if (el && state.reader.cur === i) el.innerHTML = ws.map((w, k) => `<span class="w" data-w="${k + 1}">${esc(w)}</span>`).join(' ');
+  }).catch(() => { /* optional */ });
+  let text = '', dir = 'rtl', srcLine = '', ttsLang = 'ar';
   if (tab === 'saadi_ar') {
     const f = await suraFile('saadi', s);
     let k = a - 1;
@@ -460,29 +486,68 @@ async function renderDetail(i) {
     const src = e.sources[tab];
     text = (src.text[i] || '').replace(/^\d+\.\s*/, '');
     dir = tab.endsWith('_ar') ? 'rtl' : 'ltr';
+    ttsLang = tab.slice(-2);
     srcLine = `${src.title} · QuranEnc.com`;
   }
   if (state.reader.cur !== i) return;
   const body = $('#tafBody');
   body.dir = dir;
-  body.innerHTML = `${esc(text)}<div class="src">${esc(srcLine)}</div>`;
+  body.innerHTML = `<p>${esc(text)}</p><div class="src">${esc(srcLine)}</div>`;
+  $('#fTts').onclick = () => toggleSpeech(text, ttsLang, $('#fTts'));
+}
+
+// ------------------------------------------------ listening to the tafsir (browser speech synthesis)
+const TTS_LANG = { ar: 'ar', en: 'en', fr: 'fr' };
+function toggleSpeech(text, lang, btn) {
+  const ss = window.speechSynthesis;
+  if (!ss) { alertNote(T().ttsUnavailable); return; }
+  if (ss.speaking) { stopSpeech(); return; }
+  const voices = ss.getVoices();
+  const voice = voices.find(v => v.lang && v.lang.toLowerCase().startsWith(TTS_LANG[lang]));
+  if (!voice && voices.length) { alertNote(T().ttsNoVoice); return; }
+  stopAudio(true);
+  const u = new SpeechSynthesisUtterance(text);
+  if (voice) u.voice = voice;
+  u.lang = voice ? voice.lang : ({ ar: 'ar-SA', en: 'en-US', fr: 'fr-FR' })[lang];
+  u.rate = lang === 'ar' ? 0.9 : 1;
+  u.onend = u.onerror = () => { btn.classList.remove('on'); btn.setAttribute('aria-pressed', 'false'); };
+  btn.classList.add('on'); btn.setAttribute('aria-pressed', 'true');
+  ss.speak(u);
+}
+function stopSpeech() {
+  if (window.speechSynthesis && window.speechSynthesis.speaking) window.speechSynthesis.cancel();
+  const b = $('#fTts'); if (b) { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); }
+}
+function alertNote(msg) {
+  $('#status').textContent = msg; $('#status').classList.add('on');
+  setTimeout(() => $('#status').classList.remove('on'), 3500);
 }
 
 // ------------------------------------------------ synchronised recitation
-function showLampWord(w) {
-  document.querySelectorAll('.lamp-host svg, #rdLamp svg').forEach(svg => setLampWord(svg, w));
+function showLampWord(w, ref) {
+  document.querySelectorAll('#stage svg, #rdLamp svg').forEach(svg => setLampWord(svg, w));
+  const big = $('#stageWord');
+  if (big) {
+    big.textContent = w || '';
+    big.classList.remove('pop'); void big.offsetWidth; if (w) big.classList.add('pop');
+  }
+  if (ref !== undefined) { const r = $('#stageRef'); if (r) r.textContent = ref; }
 }
 
-async function play(i) {
+// play(i, fromUser): fromUser resets the repetition counter
+async function play(i, fromUser = false) {
   stopAudio();
+  stopSpeech();
+  if (fromUser || state.repeatLeft == null) state.repeatLeft = state.repeat || 1;
   const e = state.engine, s = e.suraOf[i], a = e.ayaOf[i];
   const tim = (await suraFile('timing', s))[a - 1];
-  if (state.reader.cur !== i) selectVerse(i, true);
+  if (state.reader.cur !== i) selectVerse(i, false);
   const au = new Audio(AUDIO_BASE + tim.u);
   state.audio = au; state.playing = true;
   const btn = $('#rPlay'); if (btn) btn.textContent = T().pause;
-  const words = [...document.querySelectorAll(`#mushaf .v[data-i="${i}"] .w`)];
+  const groups = () => [...document.querySelectorAll(`#mushaf .v[data-i="${i}"], #fAyah, #fTranslit`)];
   const [w0] = state.galaxy.wordsOfVerse(i);
+  showLampWord('', refLabel(i));
   let last = -1;
   const tick = () => {
     if (state.audio !== au) return;
@@ -491,10 +556,13 @@ async function play(i) {
       let k = -1;
       for (let j = 0; j < tim.t.length / 2; j++) if (ms >= tim.t[2 * j] && ms <= tim.t[2 * j + 1] + 120) { k = j; break; }
       if (k !== last) {
-        if (last >= 0 && words[last]) words[last].classList.remove('now');
-        if (k >= 0 && words[k]) words[k].classList.add('now');
-        showLampWord(k >= 0 && words[k] ? words[k].textContent : '');
-        state.galaxy.setActiveWord(k >= 0 ? w0 + k : null);
+        for (const g of groups()) {
+          g.querySelectorAll('.w.now').forEach(x => x.classList.remove('now'));
+          if (k >= 0) { const x = g.querySelector(`.w[data-w="${k + 1}"]`); if (x) x.classList.add('now'); }
+        }
+        const arWord = k >= 0 ? (($('#fAyah') && $('#fAyah').querySelector(`.w[data-w="${k + 1}"]`)) || {}).textContent : '';
+        showLampWord(arWord || '');
+        if (k >= 0) { state.galaxy.setActiveWord(w0 + k); state.galaxy.lookAtWord(w0 + k); } else state.galaxy.setActiveWord(null);
         last = k;
       }
     }
@@ -505,16 +573,18 @@ async function play(i) {
     if (state.audio !== au) return;
     const S = state.core.suras[s - 1];
     stopAudio(true);
-    if (state.continuous && i + 1 < S.first + S.ayas) { selectVerse(i + 1, true); play(i + 1); }
+    if (state.repeatLeft > 1) { state.repeatLeft--; play(i); return; }       // تكرار
+    state.repeatLeft = state.repeat || 1;
+    if (state.continuous && i + 1 < S.first + S.ayas) { selectVerse(i + 1, false); play(i + 1); }
   };
-  au.play().catch(() => stopAudio(true));
+  au.play().catch(() => { stopAudio(true); alertNote(T().audioError); });
 }
 function stopAudio(updateBtn) {
   cancelAnimationFrame(state.raf);
   if (state.audio) { state.audio.onended = null; state.audio.pause(); }
   state.audio = null; state.playing = false;
   document.body.classList.remove('reciting'); showLampWord('');
-  document.querySelectorAll('#mushaf .w.now').forEach(w => w.classList.remove('now'));
+  document.querySelectorAll('.w.now').forEach(w => w.classList.remove('now'));
   if (state.galaxy) state.galaxy.setActiveWord(null);
   if (updateBtn) { const b = $('#rPlay'); if (b) b.textContent = T().play; }
 }

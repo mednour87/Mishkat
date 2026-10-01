@@ -316,6 +316,17 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick }) {
 
   return {
     flyToVerse, highlightVerses, setLayout, addLayout, home, showLabels,
+    // keep the recited word in the middle of the view, gliding from word to word
+    lookAtWord(i) {
+      if (i == null || i < 0 || i >= N) return;
+      const P = layouts[layout];
+      const p = new THREE.Vector3(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]);
+      const off = camera.position.clone().sub(controls.target);
+      if (off.length() > 150) off.setLength(150);
+      if (off.length() < 40) off.setLength(60);
+      animateTo(p.clone().add(off), p, 650);
+      ring.position.copy(p); ring.visible = true;
+    },
     get count() { return N; },
     setCardVisible(v) { cardOn = v; if (!v) labelBox.style.opacity = 0; },
     setActiveWord(i) {

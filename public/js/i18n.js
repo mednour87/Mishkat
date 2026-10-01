@@ -38,6 +38,7 @@ export const UI = {
     viewNote: (o) => `كلمة «قرآن» مكوَّنة من كلمات القرآن كلها: لكل سورة جزءٌ من الحروف بقدر عدد كلماتها، تلتفّ كلماتها حلزونيًّا داخل الحرف، وبين كل سورتين فاصل صغير. يسير الترتيب من اليمين إلى اليسار: ${o}. (اضغط V للتبديل)`,
     restartA: 'من بداية الآية', playAya: (a) => `استمع إلى الآية ${a}`,
     wTitle: 'أهلًا بك في مِشكاة', wLead: 'دليلك إلى القرآن الكريم: تفسيرٌ موثَّق، وتلاوةٌ متزامنة، وبحثٌ يجيبك من القرآن نفسه. اختر ما تريد — يمكنك اختيار أكثر من أمر:', wSkip: 'استكشف المجرّة',
+    repeat: 'تكرار', repeatTitle: 'كرّر الآية للحفظ', fullSura: 'نص السورة كاملًا', readTafsir: 'استمع إلى التفسير', ttsUnavailable: 'القراءة الصوتية غير متاحة في هذا المتصفح.', ttsNoVoice: 'لا يوجد صوت عربي مثبت في المتصفح لقراءة التفسير.', audioError: 'تعذّر تشغيل التلاوة؛ تحقّق من الاتصال بالإنترنت.',
     hoverAya: (s, a) => `سورة ${s} · الآية ${a}`,
   },
   en: {
@@ -78,6 +79,7 @@ export const UI = {
     viewNote: (o) => `The word “قرآن” is built from all the words of the Quran: each surah fills a part of the letters proportional to its number of words, its words coiling like a snail inside the letter, with a small gap between surahs. Order, right to left: ${o}. (Press V to switch)`,
     restartA: 'From the start of the verse', playAya: (a) => `Listen to verse ${a}`,
     wTitle: 'Welcome to Mishkat', wLead: 'Your guide to the Quran: vetted tafsir, synchronised recitation, and answers drawn from the Quran itself. Choose what you want — you can pick several:', wSkip: 'Explore the galaxy',
+    repeat: 'Repeat', repeatTitle: 'Repeat the verse to memorise it', fullSura: 'Full text of the surah', readTafsir: 'Listen to the tafsir', ttsUnavailable: 'Speech is not available in this browser.', ttsNoVoice: 'No voice for this language is installed in the browser.', audioError: 'The recitation could not start; check your internet connection.',
     hoverAya: (s, a) => `Surah ${s} · verse ${a}`,
   },
   fr: {
@@ -118,6 +120,7 @@ export const UI = {
     viewNote: (o) => `Le mot « قرآن » est formé de tous les mots du Coran : chaque sourate remplit une partie des lettres proportionnelle à son nombre de mots, ses mots s’enroulant en spirale dans la lettre, avec un petit vide entre les sourates. Ordre, de droite à gauche : ${o}. (Touche V pour changer)`,
     restartA: 'Depuis le début du verset', playAya: (a) => `Écouter le verset ${a}`,
     wTitle: 'Bienvenue dans Mishkat', wLead: 'Votre guide du Coran : tafsir vérifié, récitation synchronisée, et des réponses tirées du Coran lui-même. Choisissez ce que vous voulez — plusieurs choix possibles :', wSkip: 'Explorer la galaxie',
+    repeat: 'Répéter', repeatTitle: 'Répéter le verset pour l’apprendre', fullSura: 'Texte complet de la sourate', readTafsir: 'Écouter le tafsir', ttsUnavailable: 'La lecture vocale n’est pas disponible dans ce navigateur.', ttsNoVoice: 'Aucune voix pour cette langue n’est installée dans le navigateur.', audioError: 'La récitation n’a pas pu démarrer ; vérifiez la connexion Internet.',
     hoverAya: (s, a) => `Sourate ${s} · verset ${a}`,
   },
 };

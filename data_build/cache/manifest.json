@@ -76,5 +76,11 @@
   "sha256": "d736500e85e23a9d26a2002f43f77e755c74830d8c31d60cfc35a96dcb48a33d",
   "bytes": 1506611,
   "fetched": "2026-09-29T06:25:30.673092+00:00"
+ },
+ "qurancom_translit_words.json": {
+  "url": "https://api.quran.com/api/v4/verses/by_chapter/<1..114>?words=true&word_fields=transliteration",
+  "sha256": "67077ad59bbe09279f757c197581efffb48708d66b3625e24c9f2a4e7c7f9d40",
+  "bytes": 973785,
+  "fetched": "2026-10-01T14:40:52.560561+00:00"
  }
 }

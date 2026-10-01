@@ -14,11 +14,12 @@ REPO = os.path.dirname(HERE)
 OUT = os.path.join(os.path.dirname(REPO), 'MISHKAT_PC')
 APP = os.path.join(OUT, 'app')
 
-if os.path.exists(APP):
-    shutil.rmtree(APP)
 os.makedirs(APP, exist_ok=True)
 for d in ('public', 'functions'):
-    shutil.copytree(os.path.join(REPO, d), os.path.join(APP, d))
+    dst = os.path.join(APP, d)
+    if os.path.exists(dst):
+        shutil.rmtree(dst, ignore_errors=True)  # the app folder itself may be open in a terminal: refresh its content only
+    shutil.copytree(os.path.join(REPO, d), dst, dirs_exist_ok=True)
 for f in ('server.mjs', 'package.json', '.dev.vars'):
     src = os.path.join(REPO, f)
     if os.path.exists(src):
