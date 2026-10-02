@@ -211,7 +211,7 @@ text(s, f"0 references outside the 6,236 verses · 0 non-verbatim tafsir sentenc
 qq_path = os.path.join(ROOT, 'eval', 'qqa23', 'scores_test.json')
 if os.path.exists(qq_path):
     qq = json.load(open(qq_path, encoding='utf-8'))
-    s = slide("Public benchmark — Qur'an QA 2023, passage retrieval (52 test questions)", 'معيار علمي عام')
+    s = slide("Public benchmark — Qur'an QA 2023 (52 test questions)", 'معيار علمي عام')
     names = {'Mishkat_lex': 'Engine without AI', 'Mishkat_dense': 'Meaning vectors alone (bge-m3)', 'Mishkat_ai': '+ AI (closed-list selection)', 'Mishkat_aidense': 'Mishkat — AI + meaning + words (deployed)'}
     rows = [f"{names.get(k, k)}:  MAP@10 {v['map10']:.3f} · MRR@10 {v['mrr10']:.3f}" for k, v in sorted(qq['runs'].items(), key=lambda kv: kv[1]['mrr10'])]
     pb = qq['published_best']
