@@ -1509,15 +1509,19 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const pack = packFor(q);
     const sensitive = !!pack || isSensitive(q);
     const direct = softPrefix || WHY || sp.kinds.has('story') ? null : indexTopicOf(cq, L);
-    let expansion = null;
+    let expansion = null, rulingAfter = false;
     const nWords = q.trim().split(/\s+/).length;   // a bare topic word flagged «ruling» stays a topic
+    // semantic neighbours (bge-m3 vectors of «verse — tafsir», computed by the server), started now so
+    // they arrive with the expansion; used only as CANDIDATES and to confirm AI-proposed references
+    const denseP = (llm && llm.dense && !direct) ? withTimeout(llm.dense({ query: q, lang: L }), llmTimeoutMs).catch(() => null) : null;
     if (llm && llm.expand && !(direct && tokens(cq, L).length <= 3)) {
       try {
         expansion = verifyExpansion(await withTimeout(llm.expand({ query: q, lang }), llmTimeoutMs));
         base.meta.llm = { used: true, stage: 'expand', intent: expansion.intent };
         // a bare topic word ("الخمر", "usury") is a topic, not a fatwa request
         if (expansion.intent === 'ruling' && nWords < 3) expansion.intent = 'topic';
-        if (expansion.intent === 'ruling') return rulingAnswer(q, lang, uiLang, base);
+        // a fatwa request: no ruling, but the AI still selects the verses on the subject (shown as «not a fatwa»)
+        if (expansion.intent === 'ruling') rulingAfter = true;
         // the LLM recognised a question (not a pasted quote): answer it as a topic
         if (softPrefix && expansion.intent !== 'other') { softPrefix = null; base.meta.route = 'topic'; }
         // not a question about the Quran at all (weather, prices, a microphone test…)
@@ -1552,11 +1556,17 @@ export function createEngine({ core, searchAr, sources = {} }) {
       // (verse, tafsir or translation) contains a word of the query or of its keywords —, the lexical
       // ranking, the keyword ranking and the subject-index topics named by the keywords
       const qset = new Set(qtoks);
+      const dense = denseP ? await denseP : null;
+      const dn = (dense && Array.isArray(dense.ids) ? dense.ids : []).map(r0 => { const [a, b] = String(r0).split(':').map(Number); return idxOf(a, b); }).filter(i => i >= 0);
+      const dnTop = new Set(dn.slice(0, 40));
+      base.meta.dense = dn.length;
+      // an AI-proposed reference is kept if it exists AND either shares a word with the question
+      // or is among the 40 nearest verses by meaning (two independent checks)
       const proposed = (expansion ? expansion.refs : []).map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); })
-        .filter(i => i >= 0 && FIELDS[L].some(([name]) => {
+        .filter(i => i >= 0 && (dnTop.has(i) || FIELDS[L].some(([name]) => {
           const txt = name === 'quran' ? searchAr[i] : (src[name] && src[name].text[i]);
           return txt && tokens(txt, L).some(t => qset.has(t));
-        }));
+        })));
       base.meta.proposedKept = proposed.length;
       const tixK = softPrefix ? null : topicIndexFor(cq, L, kwAr, 12);
       // English question: the AI's Arabic keywords also search the Arabic text and tafsir
@@ -1565,8 +1575,9 @@ export function createEngine({ core, searchAr, sources = {} }) {
       const lex = ranked.map(x => x.idx), kw = (ts.kwTop || []).concat(arK.filter(i => !(ts.kwTop || []).includes(i))), ix = tixK ? tixK.ids : [];
       const seen = new Set(), candIdx = [];
       for (const i of proposed) if (!seen.has(i)) { seen.add(i); candIdx.push(i); }
-      for (let k = 0; candIdx.length < MAX_CANDIDATES && (k < lex.length || k < kw.length || k < ix.length); k++) {
-        for (const i of [lex[k], kw[k], ix[k]]) if (i != null && !seen.has(i) && candIdx.length < MAX_CANDIDATES) { seen.add(i); candIdx.push(i); }
+      // round robin (reciprocal-rank style fusion): words, meaning, AI keywords, subject index
+      for (let k = 0; candIdx.length < MAX_CANDIDATES && (k < lex.length || k < dn.length || k < kw.length || k < ix.length); k++) {
+        for (const i of [lex[k], dn[k], kw[k], ix[k]]) if (i != null && !seen.has(i) && candIdx.length < MAX_CANDIDATES) { seen.add(i); candIdx.push(i); }
       }
       const cands = candIdx.map(i => ({ id: ref(i), text: snippet(L, i) }));
       if (cands.length) {
@@ -1575,7 +1586,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
           const v = verifyLLM(out, cands);
           base.meta.llm = { ...base.meta.llm, used: true, model: out && out.model, rejected: v.rejected, intent: v.intent, candidates: cands.length };
           if (v.intent === 'ruling' && nWords < 3) v.intent = 'topic';
-          if (v.intent === 'ruling') return rulingAnswer(q, lang, uiLang, base);
+          if (v.intent === 'ruling') rulingAfter = true;
           if (v.intent === 'personal' || (expansion && expansion.intent === 'personal')) personalNote = true;
           if (v.ids.length) {
             // only the verses the AI confirmed: those that answer directly (score 2) first, in its
@@ -1590,6 +1601,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
         } catch (e) { base.meta.llm = { ...base.meta.llm, error: String(e && e.message || e) }; }
       }
     }
+    if (rulingAfter) return rulingAnswer(q, lang, uiLang, base, order);
     let evid = null;
     if (tixUse) {
       // the subject index (human-curated) gives the verses; the tafsir explains them. Verses whose own
@@ -1648,12 +1660,14 @@ export function createEngine({ core, searchAr, sources = {} }) {
   }
 
   // Fatwa requests: no ruling, but related verses (labelled "not a fatwa") and links to official sources.
-  function rulingAnswer(q, lang, uiLang, base) {
+  function rulingAnswer(q, lang, uiLang, base, aiIdx = []) {
     const M = MSG[lang];
     const stripped0 = q.replace(RULING_WORDS, ' ').replace(/\s+/g, ' ').trim();
     const stripped = (cleanSpoken(stripped0, lang).text || stripped0).trim();
     const ts = stripped ? topicSearchAuto(stripped, lang, uiLang, 8) : { ranked: [] };
-    const related = (ts.ranked || []).filter(x => x.full).slice(0, 6).map(x => verseResult(x.idx, { relatedOnly: true }));
+    // verses confirmed by the AI's closed-list selection first, then the full keyword matches
+    const ids = [...new Set([...aiIdx.slice(0, 6), ...(ts.ranked || []).filter(x => x.full).map(x => x.idx)])].slice(0, 8);
+    const related = ids.map(i => verseResult(i, { relatedOnly: true }));
     base.meta.route = base.meta.route || 'guard';
     return { ...base, type: 'abstain', reason: 'ruling', answer: [{ kind: 'text', text: M.ruling }], verses: related,
       focus: related.length ? related[0].idx : null, links: fatwaLinks(stripped || q) };

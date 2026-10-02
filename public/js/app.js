@@ -199,8 +199,21 @@ async function boot() {
     if (!j || j.ok === false) { aiDownUntil = Date.now() + 5 * 60 * 1000; throw new Error(path + ' unavailable'); }
     return j;
   };
-  cache.pick = cache.pick || {};
-  if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select'), pick: call('pick', 'api/pick') };
+  // side services (semantic neighbours, relevance filter of hadiths): each has its own breaker,
+  // so their failure never switches off the main AI search
+  const side = (path) => {
+    let downUntil = 0;
+    return async (payload) => {
+      if (!live || Date.now() < downUntil) throw new Error(path + ' unavailable');
+      try {
+        const r = await fetch(path, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+        const j = r.ok ? await r.json() : null;
+        if (!j || !j.ok) throw new Error(path + ' failed');
+        return j;
+      } catch (e) { downUntil = Date.now() + 5 * 60 * 1000; throw e; }
+    };
+  };
+  if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select'), pick: side('api/pick'), dense: side('api/dense') };
   $('#aiBadge').textContent = T().ai(state.llmModel);
   await gateDone;
   $('#lampSlot').innerHTML = lampSVG({ size: 132, word: true, title: 'Mishkat' });

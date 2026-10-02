@@ -19,7 +19,7 @@ export function foreignOrigin(origin, host) {
   try { return new URL(origin).host !== host; } catch (e) { return true; }
 }
 
-export const LIMITS = { expand: 40, select: 40, transcribe: 12, hadith: 30, fatwa: 30, pick: 40, tafsir: 60, tts: 40, maxJsonBytes: 64 * 1024, maxAudioBytes: 4 * 1024 * 1024 };
+export const LIMITS = { expand: 40, select: 40, transcribe: 12, hadith: 30, fatwa: 30, pick: 40, dense: 40, tafsir: 60, tts: 40, maxJsonBytes: 64 * 1024, maxAudioBytes: 4 * 1024 * 1024 };
 
 export function deny(status, error) {
   return new Response(JSON.stringify({ ok: false, error }), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });

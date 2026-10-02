@@ -42,7 +42,7 @@ const relay = (kind) => (payload) => new Promise((resolve, reject) => {
 const KW = new Map();
 const LLM = {
   expand: (p) => relay('expand')(p).then(out => { KW.set(String(p.query), out && out.keywords); if (KW.size > 50) KW.delete(KW.keys().next().value); return out; }),
-  select: relay('select'), pick: relay('pick'),
+  select: relay('select'), pick: relay('pick'), dense: relay('dense'),
 };
 
 // ------------------------------------------------ Sunnah section (HadeethEnc)

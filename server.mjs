@@ -11,6 +11,7 @@ import { select, expand, health, transcribe } from './functions/_lib/selector.js
 import { hadithSearch, tafsirPages } from './functions/_lib/sources.js';
 import { fatwaSearch } from './functions/_lib/fatwa.js';
 import { pick } from './functions/api/pick.js';
+import { denseSearch, setVectors } from './functions/_lib/dense.js';
 import { speak } from './functions/_lib/tts.js';
 import { rateLimited, foreignOrigin, LIMITS } from './functions/_lib/guard.js';
 import { SECURITY_HEADERS } from './functions/_lib/csp.js';
@@ -22,6 +23,8 @@ const dv = fileURLToPath(new URL('./.dev.vars', import.meta.url));
 if (existsSync(dv)) for (const line of readFileSync(dv, 'utf8').split(/\r?\n/)) {
   const m = line.match(/^\s*([A-Z_]+)\s*=\s*"?(.*?)"?\s*$/); if (m) env[m[1]] = m[2];
 }
+// static files for functions that read them (Cloudflare's env.ASSETS)
+env.ASSETS = { fetch: async (req) => { const f = ROOT + decodeURIComponent(new URL(req.url).pathname).replace(/^\/+/, ''); return existsSync(f) ? new Response(readFileSync(f)) : new Response('', { status: 404 }); } };
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8', '.bin': 'application/octet-stream', '.svg': 'image/svg+xml', '.png': 'image/png',
   '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8' };
@@ -35,7 +38,7 @@ createServer(async (req, res) => {
       if (foreignOrigin(req.headers.origin, req.headers.host)) return send(res, 403, '{"ok":false,"error":"forbidden origin"}', '.json');
       if (url.pathname === '/api/health') return send(res, 200, JSON.stringify(health(env)), '.json');
       const name = url.pathname.slice(5);
-      if (req.method !== 'POST' || !['select', 'expand', 'transcribe', 'hadith', 'fatwa', 'pick', 'tafsir', 'tts'].includes(name)) return send(res, 404, '{"ok":false}', '.json');
+      if (req.method !== 'POST' || !['select', 'expand', 'transcribe', 'hadith', 'fatwa', 'pick', 'dense', 'tafsir', 'tts'].includes(name)) return send(res, 404, '{"ok":false}', '.json');
       if (rateLimited(ip, name, LIMITS[name])) return send(res, 429, '{"ok":false,"error":"too many requests"}', '.json');
       const chunks = []; let size = 0;
       const max = name === 'transcribe' ? LIMITS.maxAudioBytes : name === 'tts' ? 4096 : LIMITS.maxJsonBytes;
@@ -63,7 +66,7 @@ createServer(async (req, res) => {
       const key = name + body.toString('utf8');
       if (cache.has(key)) return send(res, 200, cache.get(key), '.json');
       try {
-        const fn = { select, expand, hadith: hadithSearch, fatwa: fatwaSearch, pick, tafsir: tafsirPages }[name];
+        const fn = { select, expand, hadith: hadithSearch, fatwa: fatwaSearch, pick, dense: denseSearch, tafsir: tafsirPages }[name];
         const out = JSON.stringify(await fn(JSON.parse(body.toString('utf8')), env));
         if (JSON.parse(out).ok) cache.set(key, out);
         return send(res, 200, out, '.json');

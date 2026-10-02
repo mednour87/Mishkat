@@ -3,6 +3,7 @@
 | Component | Version | Role | Licence |
 |---|---|---|---|
 | **OpenRouter API** (paid, pay per token, prepaid credits) — `openai/gpt-oss-120b` (primary), `openai/gpt-oss-20b`; fastest hosts first (e.g. Cerebras), JSON mode required, `data_collection: deny` | ≈ $0.04 in / $0.18 out per million tokens | same role as below: intent, retrieval keywords, closed-list selection only — the AI never writes religious text | OpenRouter terms; open-weight models (Apache-2.0) |
+| **Cloudflare Workers AI — `@cf/baai/bge-m3`** | free daily allocation (10,000 neurons) | meaning vectors of the verses (once) and of each question (live) for the semantic candidates | Workers AI terms; model MIT |
 | **Groq API** — `openai/gpt-oss-120b` (primary), `qwen/qwen3.8-27b`, `openai/gpt-oss-20b` (fallbacks) | free tier — backup LLM, speech-to-text (Whisper), tafsir voice (Orpheus) | intent classification, retrieval keywords, closed-list selection of verse ids and tafsir-sentence ids | Groq terms; open-weight models (Apache-2.0 / model licences) |
 | ALLaM-2-7B (SDAIA) | free tier on Groq | benchmarked; rejected for the selection step (context too short for the payload) — see `eval/results/bench_llm.json` | model licence |
 | three.js | 0.160.0 (vendored in `public/vendor/three/`) | WebGL galaxy | MIT |
