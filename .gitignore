@@ -17,3 +17,5 @@ eval/qqa23/*
 !eval/qqa23/get_data.sh
 !eval/qqa23/runs/
 !eval/qqa23/RESULTS.md
+!eval/qqa23/score_all.py
+!eval/qqa23/scores_test.json

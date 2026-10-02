@@ -157,8 +157,9 @@ for t1, t2 in steps:
     y += cm(1.55)
 
 # 6 — AI & model choice
-s = slide('The AI: free open models, narrow jobs, verified output', 'دور الذكاء الاصطناعي')
-lines = ['Groq free tier · primary openai/gpt-oss-120b → fallbacks qwen/qwen3.8-27b, openai/gpt-oss-20b → deterministic engine',
+s = slide('The AI: open models, narrow jobs, verified output', 'دور الذكاء الاصطناعي')
+lines = ['OpenRouter (pay per token, ≈ $0.002 per question) · openai/gpt-oss-120b → Groq free tier as backup → deterministic engine',
+         'bge-m3 semantic neighbours (Cloudflare Workers AI) as extra candidates · the AI only returns ids from closed lists (verses, fatwa titles, hadiths)',
          'Temperature 0, JSON mode, edge cache (identical queries = identical answers, no quota spent)', '']
 for m, r in bench.items():
     lines.append(f"{m}: topic hit@10 {r['topicHit10']} · critical abstention {r['criticalAbstain']} · ids rejected by verifier {r['rejectedByVerifier']} · avg {r['avgLatencyMs']} ms")
@@ -206,9 +207,21 @@ m = S['mishkat']
 text(s, f"0 references outside the 6,236 verses · 0 non-verbatim tafsir sentences · stability {res['stability']['identical']}/{res['n']} identical over 3 runs · p95 latency {m['p95']:.0f} ms (deterministic core)",
      cm(1.7), cm(15.3), cm(30), cm(1.5), 13, GOLD2)
 
+# 8b — public benchmark (numbers read from eval/qqa23/scores_test.json, official scorer)
+qq_path = os.path.join(ROOT, 'eval', 'qqa23', 'scores_test.json')
+if os.path.exists(qq_path):
+    qq = json.load(open(qq_path, encoding='utf-8'))
+    s = slide("Public benchmark — Qur'an QA 2023, passage retrieval (52 test questions)", 'معيار علمي عام')
+    names = {'Mishkat_lex': 'Engine without AI', 'Mishkat_dense': 'Meaning vectors alone (bge-m3)', 'Mishkat_ai': '+ AI (closed-list selection)', 'Mishkat_aidense': 'Mishkat — AI + meaning + words (deployed)'}
+    rows = [f"{names.get(k, k)}:  MAP@10 {v['map10']:.3f} · MRR@10 {v['mrr10']:.3f}" for k, v in sorted(qq['runs'].items(), key=lambda kv: kv[1]['mrr10'])]
+    pb = qq['published_best']
+    rows += ['', f"Best published fine-tuned systems: MAP@10 {pb['map10']:.3f} · MRR@10 {pb['mrr10']:.3f} ({pb['source']})",
+             'Mishkat: no training on this data, every verse from the verified text, chosen from a closed list; few verses shown on purpose (lower MAP).']
+    text(s, rows, cm(1.7), cm(4.4), cm(30), cm(11), 15)
+
 # 9 — value & originality
 s = slide('Added value & originality', 'القيمة المضافة')
-boxed(s, 'vs keyword search', ['Understands questions in 3 languages, tolerant to spelling, finds meaning through tafsir, verifies quotes, abstains.'], cm(1.7), cm(4.4), cm(9.6), cm(5.5))
+boxed(s, 'vs keyword search', ['Understands questions in Arabic and English, tolerant to spelling, finds meaning through tafsir, verifies quotes, abstains.'], cm(1.7), cm(4.4), cm(9.6), cm(5.5))
 boxed(s, 'vs general chatbots', ['Cannot invent: text only from Tanzil and vetted tafsir, every sentence cited, closed-list selection, abstention by design.'], cm(11.8), cm(4.4), cm(9.6), cm(5.5))
 boxed(s, 'vs Quran apps', ['Explains AND locates: paragraph + ranked surahs + reader + synced recitation + a 3D map showing where a theme lives across the Quran.'], cm(21.9), cm(4.4), cm(9.6), cm(5.5))
 text(s, 'Original: “grounded-by-architecture” answers · merged-verse detection · a galaxy of 77,433 words where the recited word lights up.',

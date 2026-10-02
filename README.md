@@ -11,7 +11,7 @@ Type **an idea, a question, a surah name, a verse number or part of a verse**:
 
 | You type | Mishkat answers |
 |---|---|
-| `الصبر` · `how to deal with sadness` · `la patience` | An **explanatory paragraph made only of verbatim tafsir sentences** (Al-Muyassar in Arabic, Al-Mukhtasar in English/French), each tagged with its verse; then **surahs ranked by relevance**, each with **📖 Read surah** and **▶ Listen** |
+| `الصبر` · `how to deal with sadness` | An **explanatory paragraph made only of verbatim tafsir sentences** (Al-Muyassar in Arabic, Al-Mukhtasar in English), each tagged with its verse; then **surahs ranked by relevance**, each with **📖 Read surah** and **▶ Listen** |
 | `2:255`, `البقرة 255`, `sourate 18 verset 10`, `Ayat al-Kursi` | The verse, its translation and three tafsirs (Muyassar, Mukhtasar, As-Sa‘di) |
 | `Al-Kahf`, `سورة يس` | The whole surah in the reader |
 | `إن الله مع الصابرين` / a pasted Uthmani verse | Exact verification: every place it appears |
@@ -25,17 +25,17 @@ The **reader** shows the surah in Uthmani script, navigates verse by verse, and 
 |---|---|---|
 | Quran text | `core.json` = byte-exact Tanzil text (SHA-256 checked in tests) | the model never writes a verse |
 | Explanation | sentences **sliced verbatim** from Al-Muyassar / Al-Mukhtasar | test: every quote is a substring of its source |
-| Glue text | hand-written templates (3 languages) | no free text |
+| Glue text | hand-written templates (Arabic, English) | no free text |
 | Everything else | — | abstain & refer |
 
-The LLM (open models on Groq’s free tier) has three narrow jobs, all returning JSON that is **verified twice** (server + browser):
+The LLM (open models: `gpt-oss-120b` through OpenRouter, pay per token, with Groq’s free tier as backup) has narrow jobs, all returning JSON that is **verified twice** (server + browser):
 1. `expand` — classify intent (ruling → abstain) and propose **search keywords** (used only for retrieval, never displayed);
 2. `select` — pick **verse ids** from a closed candidate list and **sentence ids** from a closed numbered list of tafsir sentences;
 3. nothing else. Out-of-list ids are dropped; a failure, timeout or quota error falls back to the deterministic engine, which always works.
 
 **Verified AI recall.** `expand` may also propose verse references it considers central (e.g. 17:23 for *kindness to parents*). A proposed verse enters the candidate list only if it exists **and** its real text (verse, tafsir or translation) contains a word of the query; hallucinated or off-topic references are silently discarded (tested). When the LLM selects ≥ 3 verses, only its selection is shown (precision first).
 
-**Pre-computed answers.** `eval/precompute_cache.mjs` stores the LLM outputs for ~140 frequent questions (all interface examples, 3 languages) in `public/data/llm_cache.json`. The browser uses them first — they are re-verified by the engine exactly like live outputs — so the demo stays fully AI-augmented even when the free API quota is exhausted.
+**Pre-computed answers.** `eval/precompute_cache.mjs` stores the LLM outputs for ~140 frequent questions (all interface examples) in `public/data/llm_cache.json`. The browser uses them first — they are re-verified by the engine exactly like live outputs — so the demo stays fully AI-augmented even when the free API quota is exhausted.
 
 ```
 query ─► famous names / references / surah names (deterministic)
@@ -53,11 +53,19 @@ query ─► famous names / references / surah names (deterministic)
 - **New 3D view «قرآن»** — the word «قرآن» built from all 77,433 words: each surah fills a share of the letters proportional to its length, words coiling like a snail inside the letter, a gap between surahs; order switchable (Mushaf · revelation · length · Meccan→Medinan; key **V**).
 - **Answers**: one card per verse with its *complete* tafsir (no fragments), explanation only when the AI confirmed relevance, verified context packs for trap/sensitive questions, «السياق» (verses before/after), fatwa questions → official sources (binbaz.org.sa, alifta.gov.sa) + related verses labelled *not a fatwa*; takfir/violence requests refused.
 - **Reader**: ▶ before every verse, restart-verse, previous/next, continuous recitation; reader tab always available.
-- **Light / dark mode**, voice search (3 languages), mobile-first layout.
+- **Light / dark mode**, voice search (Arabic, English), mobile-first layout.
 - **Security**: strict CSP (one hashed inline script, no remote scripts, no eval), `frame-ancestors 'none'`, Permissions-Policy (microphone=self only), same-origin API with per-IP rate limits and size limits, self-hosted fonts (OFL), secrets server-side only — covered by `tests/security.test.mjs`.
 
+## New on 2 Oct 2026 (declared baseline)
+- **No more freezes**: the search engine and its indexes run in a Web Worker (`public/js/search-worker.js`); the galaxy lowers its resolution by itself on slow GPUs.
+- **Hybrid search**: bge-m3 meaning vectors of «verse — Al-Mukhtasar» (Cloudflare Workers AI) add candidates to the AI's closed list and confirm the verses the AI proposes (`functions/_lib/dense.js`).
+- **Published fatwas (level D)**: for a fatwa request, fatwas of Sheikh Ibn Baz from his official site, verbatim with his recorded answer and the link — Mishkat itself never rules (`functions/_lib/fatwa.js`).
+- **From the Sunnah**: authentic hadiths of HadeethEnc (3,572 ar / 2,328 en) under topic answers, verbatim with attribution, grade and explanation, chosen from a closed list.
+- **Public benchmark**: Qur'an QA 2023 Task A, official scorer — Mishkat **MRR@10 0.609** (best published fine-tuned systems 0.576), MAP@10 0.266 — see [`eval/qqa23/RESULTS.md`](eval/qqa23/RESULTS.md).
+- **Private preview** until submission (password + noindex, `functions/_middleware.js`).
+
 ## Results (synthetic benchmark, `eval/`)
-See [`eval/results/REPORT.md`](eval/results/REPORT.md) — 338 seeded synthetic questions across 16 categories (references, surah names, exact/misquoted/merged verses, sayings wrongly attributed to the Quran, fatwa/personal/dream questions, 30 topics × 3 languages), compared with a “Ctrl+F” baseline, plus the AI-augmented mode and a model comparison (`eval/results/bench_llm.json`).
+See [`eval/results/REPORT.md`](eval/results/REPORT.md) — 338 seeded synthetic questions across 16 categories (references, surah names, exact/misquoted/merged verses, sayings wrongly attributed to the Quran, fatwa/personal/dream questions, 30 topics × 2 languages; French items are no longer evaluated since French was removed), compared with a “Ctrl+F” baseline, plus the AI-augmented mode and a model comparison (`eval/results/bench_llm.json`).
 
 ## Run it
 ```bash

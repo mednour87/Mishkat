@@ -9,7 +9,9 @@ import { normLatin } from '../public/js/engine.js';
 import { select, expand, providers } from '../functions/_lib/selector.js';
 
 const { engine: E, core, sources } = loadEngine();
-const gold = readFileSync(new URL('./golden.jsonl', import.meta.url), 'utf8').trim().split('\n').map(l => JSON.parse(l));
+// French was removed from the product on 1 Oct 2026: French items are no longer evaluated
+const isFrench = (g) => /_fr-|^topic_fr/.test(g.id) || g.lang === 'fr' || (/[àâçéèêëîïôûùüÿœ]|\b(le|la|les|du|des|une?|est-ce)\b/i.test(g.q) && !/[؀-ۿ]/.test(g.q) && /\b(la|le|les|des|du)\b/i.test(g.q));
+const gold = readFileSync(new URL('./golden.jsonl', import.meta.url), 'utf8').trim().split('\n').map(l => JSON.parse(l)).filter(g => !isFrench(g));
 const env = { ...process.env };
 const dv = new URL('../.dev.vars', import.meta.url);
 if (existsSync(dv)) for (const line of readFileSync(dv, 'utf8').split(/\r?\n/)) { const m = line.match(/^\s*([A-Z_]+)\s*=\s*"?(.*?)"?\s*$/); if (m) env[m[1]] = m[2]; }

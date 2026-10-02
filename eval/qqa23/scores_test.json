@@ -1,0 +1,31 @@
+{
+ "split": "test",
+ "questions": 52,
+ "runs": {
+  "Mishkat_ai": {
+   "map10": 0.261577,
+   "mrr10": 0.597059,
+   "abstain": 9
+  },
+  "Mishkat_aidense": {
+   "map10": 0.266449,
+   "mrr10": 0.609314,
+   "abstain": 4
+  },
+  "Mishkat_dense": {
+   "map10": 0.119247,
+   "mrr10": 0.304925,
+   "abstain": 0
+  },
+  "Mishkat_lex": {
+   "map10": 0.166667,
+   "mrr10": 0.176471,
+   "abstain": 47
+  }
+ },
+ "published_best": {
+  "map10": 0.3128,
+  "mrr10": 0.5763,
+  "source": "arXiv 2412.11431"
+ }
+}
