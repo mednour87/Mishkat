@@ -113,7 +113,11 @@ async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, f
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const body = { model, messages, temperature: 0, max_tokens: 900, response_format: { type: 'json_object' } };
-    if (/gpt-oss/.test(model)) body.reasoning_effort = 'low';
+    if (/openrouter\.ai/.test(url)) {
+      // OpenRouter: its own reasoning field, the fastest hosts first, only hosts that honour JSON mode
+      if (/gpt-oss/.test(model)) body.reasoning = { effort: 'low', exclude: true };
+      body.provider = { sort: 'throughput', require_parameters: true, data_collection: 'deny' };
+    } else if (/gpt-oss/.test(model)) body.reasoning_effort = 'low';
     const send = () => fetchImpl(url, {
       method: 'POST', signal: ctrl.signal,
       headers: { 'content-type': 'application/json', authorization: `Bearer ${key}` },
@@ -132,8 +136,9 @@ async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, f
 }
 
 // Providers, in order of preference (all OpenAI-compatible):
-//   PRIMARY_URL / PRIMARY_KEY / PRIMARY_MODELS  — e.g. the Chutes subscription
-//     (PRIMARY_URL=https://llm.chutes.ai/v1/chat/completions)
+//   PRIMARY_URL / PRIMARY_KEY / PRIMARY_MODELS  — the paid provider: OpenRouter, pay per token
+//     (PRIMARY_URL=https://openrouter.ai/api/v1/chat/completions,
+//      PRIMARY_MODELS=openai/gpt-oss-120b,openai/gpt-oss-20b — the models benchmarked on Groq)
 //   GROQ_API_KEY / GROQ_MODELS                   — Groq free tier (backup)
 //   FALLBACK_URL / FALLBACK_KEY / FALLBACK_MODEL — any other endpoint
 export function providers(env) {
