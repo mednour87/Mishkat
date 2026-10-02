@@ -230,6 +230,27 @@ async function run(kind, body, env, fetchImpl) {
 }
 
 export const select = (body, env, fetchImpl = fetch) => run('select', body, env, fetchImpl);
+
+// Closed-list relevance check for published documents (fatwas, hadiths): the model only returns
+// the numbers of the items, among those given, that address the user's question. Nothing it
+// writes is shown; unknown numbers are dropped. Without a model: null (the caller keeps its order).
+export async function pickRelevant(question, items, env, { max = 4, what = 'fatwa', fetchImpl = fetch } = {}) {
+  const list = items.slice(0, 12).map((x, i) => `[${i + 1}] ${String(x).replace(/\s+/g, ' ').slice(0, 260)}`).join(String.fromCharCode(10));
+  const messages = [
+    { role: 'system', content: `You check relevance only. Given a user's question and numbered ${what} titles/summaries, return JSON {"keep":[numbers]} with the numbers (at most ${max}, best first) of the items that answer the SAME question or its direct subject. Return {"keep":[]} if none does. Never write anything else.` },
+    { role: 'user', content: `Question: ${String(question).slice(0, 300)}` + String.fromCharCode(10, 10) + list },
+  ];
+  for (const pr of providers(env)) {
+    if ((coolDown.get(pr.model) || 0) > Date.now()) continue;
+    try {
+      const raw = await callOpenAICompat({ ...pr, messages, fetchImpl, timeoutMs: 7000 });
+      const j = JSON.parse(String(raw).replace(/^[^{]*/, '').replace(/[^}]*$/, ''));
+      const keep = (Array.isArray(j.keep) ? j.keep : []).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= Math.min(12, items.length));
+      return [...new Set(keep)].slice(0, max).map(n => n - 1);
+    } catch (e) { if (e.quota) coolDown.set(pr.model, Date.now() + 120000); }
+  }
+  return null;
+}
 export const expand = (body, env, fetchImpl = fetch) => run('expand', body, env, fetchImpl);
 
 export function health(env) {

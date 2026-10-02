@@ -450,6 +450,8 @@ function renderResults() {
   if (res.links && res.links.length) {
     h += `<div class="links">${res.links.map(l => `<a class="btn gold" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(t.links[l.id] || l.id)}</a>`).join('')}</div>`;
   }
+  // published fatwas of a recognised scholar on the same question (verbatim, linked) — never a ruling by Mishkat
+  if (res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '')) h += `<section class="hbox fbox" id="fatwaBox" aria-live="polite"></section>`;
   for (const a of notes) h += `<p class="note" dir="${dir}">${esc(a.text)}</p>`;
   if (res.alt && res.alt.mode === 'topic') h += `<p><button class="btn alt" id="altBtn">${esc(t.asTopic(res.alt.query))}</button></p>`;
   if (res.alt && res.alt.mode === 'sura') h += `<p><button class="btn alt" id="altBtn">${esc(t.asSura(res.alt.name))}</button></p>`;
@@ -493,6 +495,7 @@ function renderResults() {
   const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, { autoplay: 'all', pane: 'r' });
   v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx));
   v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
+  if (res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '')) loadFatwas(res.query);
   if (res.type === 'hadith' || res.hadithCheck) loadHadith(res.type === 'hadith' ? res.hadith.q : res.hadithCheck, res.type !== 'hadith');
   markCurrentInResults();
 }
@@ -539,6 +542,39 @@ async function loadHadith(q, isCheck) {
     <div class="h-meta">${row(t.hadithRawi, x.rawi)}${row(t.hadithMuh, x.muhaddith)}${row(t.hadithSrc, x.source)}${row(t.hadithPage, x.page)}</div>
     ${x.grade ? `<div class="h-grade"><small>${esc(t.hadithGrade)}:</small> <b>${esc(x.grade)}</b></div>` : ''}</li>`).join('')}</ol>
     <p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.hadithOpen)}</a> · <small>${esc(j.source)}</small></p>`;
+}
+// Published fatwas (binbaz.org.sa, official site of Sheikh Ibn Baz): titles chosen among the site's own
+// search results (the AI may only filter that closed list), each opened in full on demand, verbatim.
+async function loadFatwas(q) {
+  const box = $('#fatwaBox'), t = T();
+  if (!box) return;
+  const head = `<h3 class="sec">${esc(t.fatwaTitle)}</h3><p class="note">${esc(t.fatwaNote)}</p>`;
+  box.innerHTML = head + `<p class="note">${esc(t.fatwaLoading)}</p>`;
+  let j = null;
+  try {
+    const r = await fetch('api/fatwa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q }) });
+    j = r.ok ? await r.json() : null;
+  } catch (e) { j = null; }
+  if (box !== $('#fatwaBox')) return;
+  const more = `https://binbaz.org.sa/search?q=${encodeURIComponent(q)}`;
+  if (!j || !j.ok || !j.items.length) { box.innerHTML = head + `<p class="lead">${esc(j && j.ok ? t.fatwaNone : t.fatwaFail)}</p><p><a class="mini" href="${esc(j && j.url || more)}" target="_blank" rel="noopener">${esc(t.fatwaOpen)}</a></p>`; return; }
+  box.innerHTML = head + `<ol class="flist">${j.items.map(x => `<li><b dir="rtl">${esc(x.title)}</b>${x.snippet ? `<div class="f-snip" dir="rtl">${esc(x.snippet)}…</div>` : ''}
+      <div class="f-act"><button class="mini" data-fatwa="${+x.id}">${esc(t.fatwaRead)}</button> <a class="mini" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(t.fatwaSite)}</a></div><div class="f-full"></div></li>`).join('')}</ol>
+    <p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fatwaOpen)}</a> · <small>${esc(j.source)}${j.by === 'ai' ? ' · ' + esc(t.fatwaByAi) : ''}</small></p>`;
+  box.querySelectorAll('[data-fatwa]').forEach(b => b.onclick = async () => {
+    const out = b.closest('li').querySelector('.f-full');
+    if (out.dataset.done) { out.hidden = !out.hidden; return; }
+    b.disabled = true; out.innerHTML = `<p class="note">${esc(t.fatwaLoading)}</p>`;
+    let f = null;
+    try { const r = await fetch('api/fatwa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: +b.dataset.fatwa }) }); f = r.ok ? await r.json() : null; } catch (e) { f = null; }
+    b.disabled = false;
+    if (!f || !f.ok) { out.innerHTML = `<p class="note">${esc(t.fatwaFail)}</p>`; return; }
+    out.dataset.done = '1';
+    out.innerHTML = `<div class="fatwa-doc" dir="rtl">${f.question ? `<p class="f-q"><small>${esc(t.fatwaQ)}</small> ${esc(f.question)}</p>` : ''}
+      <div class="f-a"><small>${esc(t.fatwaA)}</small>${f.answer.map(p => `<p>${esc(p)}</p>`).join('')}</div>
+      ${f.audio ? `<audio controls preload="none" src="${esc(f.audio)}"></audio>` : ''}
+      <p class="f-src"><small>${esc(f.mufti)} — <a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.source)}</a></small></p></div>`;
+  });
 }
 // Quranpedia surah information (Arabic): introduction, topics, purposes
 async function suraInfo(n) {

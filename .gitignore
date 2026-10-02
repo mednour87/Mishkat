@@ -8,3 +8,4 @@ docs/logo.png
 eval/results/run.log
 data_build/cache/quranpedia/
 eval/cache/
+data_build/cache/hadeethenc/
