@@ -122,11 +122,15 @@ async function boot() {
     suraLabel: (n) => suraName(n),
   });
   state.wordsP = getJSON('data/words.json').then(w => { state.words = w; return w; });
-  setLoad(2);
-  await ensureSources(state.lang);
   setLoad(3);
   $('#loader').classList.add('done');
-  (window.requestIdleCallback || setTimeout)(() => { LANGS.forEach(l => ensureSources(l)); state.engine.wordLookup('مشكاة'); });
+  // the tafsir files (several MB) are not needed to show the galaxy: they load after the
+  // first paint, only for the interface language; a search waits for them if needed and
+  // another language loads only when chosen
+  (window.requestIdleCallback || setTimeout)(() => { ensureSources(state.lang).then(() => {
+    state.engine.wordLookup('مشكاة');
+    if (state.reader.sura) { renderReader(); state.taf.idx = null; selectVerse(state.reader.cur, { fly: false, scroll: false, keepAudio: true }); }
+  }); });
   // AI layer: 1) pre-computed answers for frequent questions (verified again by
   // the engine like any live answer), 2) live API, 3) deterministic fallback.
   const [cache, health] = await Promise.all([
