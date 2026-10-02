@@ -10,6 +10,7 @@ import { gzipSync } from 'node:zlib';
 import { select, expand, health, transcribe } from './functions/_lib/selector.js';
 import { hadithSearch, tafsirPages } from './functions/_lib/sources.js';
 import { fatwaSearch } from './functions/_lib/fatwa.js';
+import { pick } from './functions/api/pick.js';
 import { speak } from './functions/_lib/tts.js';
 import { rateLimited, foreignOrigin, LIMITS } from './functions/_lib/guard.js';
 import { SECURITY_HEADERS } from './functions/_lib/csp.js';
@@ -34,7 +35,7 @@ createServer(async (req, res) => {
       if (foreignOrigin(req.headers.origin, req.headers.host)) return send(res, 403, '{"ok":false,"error":"forbidden origin"}', '.json');
       if (url.pathname === '/api/health') return send(res, 200, JSON.stringify(health(env)), '.json');
       const name = url.pathname.slice(5);
-      if (req.method !== 'POST' || !['select', 'expand', 'transcribe', 'hadith', 'fatwa', 'tafsir', 'tts'].includes(name)) return send(res, 404, '{"ok":false}', '.json');
+      if (req.method !== 'POST' || !['select', 'expand', 'transcribe', 'hadith', 'fatwa', 'pick', 'tafsir', 'tts'].includes(name)) return send(res, 404, '{"ok":false}', '.json');
       if (rateLimited(ip, name, LIMITS[name])) return send(res, 429, '{"ok":false,"error":"too many requests"}', '.json');
       const chunks = []; let size = 0;
       const max = name === 'transcribe' ? LIMITS.maxAudioBytes : name === 'tts' ? 4096 : LIMITS.maxJsonBytes;
@@ -62,7 +63,7 @@ createServer(async (req, res) => {
       const key = name + body.toString('utf8');
       if (cache.has(key)) return send(res, 200, cache.get(key), '.json');
       try {
-        const fn = { select, expand, hadith: hadithSearch, fatwa: fatwaSearch, tafsir: tafsirPages }[name];
+        const fn = { select, expand, hadith: hadithSearch, fatwa: fatwaSearch, pick, tafsir: tafsirPages }[name];
         const out = JSON.stringify(await fn(JSON.parse(body.toString('utf8')), env));
         if (JSON.parse(out).ok) cache.set(key, out);
         return send(res, 200, out, '.json');

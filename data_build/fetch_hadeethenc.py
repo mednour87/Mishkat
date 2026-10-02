@@ -8,14 +8,14 @@ Polite: one request at a time, a pause between requests, resumable cache.
 Output: public/data/hadeeth_ar.json, public/data/hadeeth_en.json
         data_build/cache/hadeethenc/  (raw responses, git-ignored)
 """
-import json, os, sys, time, urllib.request, urllib.parse, hashlib
+import json, os, sys, time, urllib.request, urllib.error, urllib.parse, hashlib
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE = os.path.join(ROOT, 'data_build', 'cache', 'hadeethenc')
 OUT = os.path.join(ROOT, 'public', 'data')
 API = 'https://hadeethenc.com/api/v1'
 UA = 'Mishkat/1.0 (Quran study site; contact via GitHub mednour87)'
-PAUSE = 0.12
+PAUSE = 0.05
 os.makedirs(CACHE, exist_ok=True)
 
 
@@ -35,6 +35,13 @@ def get(path, **params):
                 json.dump(data, fh, ensure_ascii=False)
             time.sleep(PAUSE)
             return data
+        except urllib.error.HTTPError as e:
+            if e.code == 404:  # no such hadith in this language: remember it, do not retry
+                with open(f, 'w', encoding='utf-8') as fh:
+                    json.dump({}, fh)
+                return {}
+            print('retry', attempt, url, e, file=sys.stderr)
+            time.sleep(2 + 3 * attempt)
         except Exception as e:  # network hiccup: back off and retry
             print('retry', attempt, url, e, file=sys.stderr)
             time.sleep(2 + 3 * attempt)

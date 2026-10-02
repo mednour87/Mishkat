@@ -199,7 +199,8 @@ async function boot() {
     if (!j || j.ok === false) { aiDownUntil = Date.now() + 5 * 60 * 1000; throw new Error(path + ' unavailable'); }
     return j;
   };
-  if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select') };
+  cache.pick = cache.pick || {};
+  if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select'), pick: call('pick', 'api/pick') };
   $('#aiBadge').textContent = T().ai(state.llmModel);
   await gateDone;
   $('#lampSlot').innerHTML = lampSVG({ size: 132, word: true, title: 'Mishkat' });
@@ -427,6 +428,7 @@ function renderResults() {
   for (const a of texts) h += `<p class="lead" dir="${dir}">${esc(a.text)}</p>`;
   if (res.term) h += termCard(res.term);
   if (res.type === 'hadith' || res.hadithCheck) h += `<section class="hbox" id="hadithBox" aria-live="polite"></section>`;
+  if (res.type === 'topic' || res.type === 'term') h += `<section class="hbox sbox" id="sunnahBox" aria-live="polite" hidden></section>`;
   if (res.verdict === 'near' && res.diffWords && res.diffWords.length) {
     const diff = new Set(res.diffWords);
     const words = (res.checked || res.query).split(/\s+/).map(w => diff.has(normAr(w)) ? `<mark class="diff">${esc(w)}</mark>` : esc(w)).join(' ');
@@ -495,6 +497,7 @@ function renderResults() {
   const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, { autoplay: 'all', pane: 'r' });
   v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx));
   v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
+  if ((res.type === 'topic' || res.type === 'term') && state.worker) loadSunnah(res);
   if (res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '')) loadFatwas(res.query);
   if (res.type === 'hadith' || res.hadithCheck) loadHadith(res.type === 'hadith' ? res.hadith.q : res.hadithCheck, res.type !== 'hadith');
   markCurrentInResults();
@@ -542,6 +545,35 @@ async function loadHadith(q, isCheck) {
     <div class="h-meta">${row(t.hadithRawi, x.rawi)}${row(t.hadithMuh, x.muhaddith)}${row(t.hadithSrc, x.source)}${row(t.hadithPage, x.page)}</div>
     ${x.grade ? `<div class="h-grade"><small>${esc(t.hadithGrade)}:</small> <b>${esc(x.grade)}</b></div>` : ''}</li>`).join('')}</ol>
     <p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.hadithOpen)}</a> · <small>${esc(j.source)}</small></p>`;
+}
+// From the Sunnah: hadiths of HadeethEnc chosen by the search worker (AI filter on a closed list),
+// shown verbatim with attribution, grade, the encyclopedia's explanation and the link. Asked after
+// the answer is displayed, so it never delays it.
+const hadChunks = new Map();
+async function loadSunnah(res) {
+  const box = $('#sunnahBox'), t = T();
+  if (!box) return;
+  let s = null;
+  try { s = await workerCall({ op: 'sunnah', res: { type: res.type, lang: res.lang, query: res.query, meta: res.meta }, opts: { ai: !!state.llm } }); } catch (e) { s = null; }
+  if (!s || !s.ids || !s.ids.length || box !== $('#sunnahBox')) return;
+  const items = [];
+  for (const p of s.pos) {
+    if (p < 0) continue;
+    const k = Math.floor(p / s.chunk), key = s.lang + k;
+    if (!hadChunks.has(key)) hadChunks.set(key, getJSON(`data/hadeeth/${s.lang}/${k}.json`).catch(() => []));
+    const part = await hadChunks.get(key);
+    if (part[p % s.chunk]) items.push(part[p % s.chunk]);
+  }
+  if (!items.length || box !== $('#sunnahBox')) return;
+  const dir = s.lang === 'ar' ? 'rtl' : 'ltr';
+  const link = (id) => `https://hadeethenc.com/${s.lang}/browse/hadith/${id}`;
+  box.innerHTML = `<h3 class="sec">${esc(t.sunnahTitle)}</h3><p class="note">${esc(s.by === 'ai' ? t.sunnahNoteAi : t.sunnahNote)}</p>
+    <ol class="hlist">${items.map(x => `<li dir="${dir}"><div class="h-text">${esc(x.text)}</div>
+      <div class="h-meta">${x.by ? `<span>${esc(x.by)}</span>` : ''}${x.grade ? `<span class="h-grade"><small>${esc(t.sunnahGrade)}:</small> <b>${esc(x.grade)}</b></span>` : ''}</div>
+      ${x.expl ? `<details><summary>${esc(t.sunnahExpl)}</summary><p>${esc(x.expl)}</p>${x.hints && x.hints.length ? `<ul>${x.hints.map(hn => `<li>${esc(hn)}</li>`).join('')}</ul>` : ''}${x.ref ? `<p class="f-src"><small>${esc(x.ref)}</small></p>` : ''}</details>` : ''}
+      <a class="mini" href="${esc(link(x.id))}" target="_blank" rel="noopener">${esc(t.sunnahOpen)}</a></li>`).join('')}</ol>
+    <p><small><a href="https://hadeethenc.com" target="_blank" rel="noopener">HadeethEnc.com</a> — ${esc(t.sunnahSrc)}</small></p>`;
+  box.hidden = false;
 }
 // Published fatwas (binbaz.org.sa, official site of Sheikh Ibn Baz): titles chosen among the site's own
 // search results (the AI may only filter that closed list), each opened in full on demand, verbatim.

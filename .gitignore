@@ -9,3 +9,7 @@ eval/results/run.log
 data_build/cache/quranpedia/
 eval/cache/
 data_build/cache/hadeethenc/
+data_build/hadeeth_raw/
+
+public/data/hadeeth_ar.json
+public/data/hadeeth_en.json
