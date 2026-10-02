@@ -692,3 +692,9 @@ html[data-theme=light] .suggest-box { background: #eef6fd; }
 .fbox .f-q small, .fbox .f-a small { color: var(--gold, #e8bd55); font-weight: 700; margin-inline-end: 4px; }
 .fbox audio { width: 100%; margin: 6px 0; }
 html[data-theme=light] .fbox .flist li { background: #fffdf7; }
+
+/* the short answer, first: verbatim tafsir sentences with their verse */
+.brief { border: 1px solid var(--gold2, #b8862a); border-radius: 14px; padding: 10px 14px; margin: 8px 0 14px; background: linear-gradient(180deg, rgba(255, 214, 107, .08), rgba(255, 214, 107, .02)); }
+.brief .brief-p { font-size: 18px; line-height: 2; margin: 4px 0; }
+.brief .cite { background: none; border: 0; color: var(--gold, #e8bd55); cursor: pointer; padding: 0 2px; font-size: 14px; }
+html[data-theme=light] .brief { background: #fffaf0; }

@@ -427,7 +427,18 @@ function renderResults() {
   if (res.suggest && res.suggest.length) {
     h += `<div class="suggest-box"><span>${esc(res.suggestFor ? t.notQuranWord(res.suggestFor) : t.maybeAlso)}</span> ${res.suggest.map(x => `<button class="sugg" data-sq="${esc(x.q || x.word)}"><b>${esc(x.word)}</b> <small>${esc(t.inVerses(x.count))}</small></button>`).join('')}</div>`;
   }
-  // a rare word of the Quran: the verses where it occurs, first
+  // 1 — the short answer: glossary definition and/or 2–3 sentences copied from the vetted tafsir
+  //     of the verses that answer (each with its verse), never generated
+  if (res.term || (res.brief && res.brief.items.length)) {
+    h += `<section class="brief" dir="${dir}"><h3 class="sec">${esc(t.briefTitle)}</h3>`;
+    if (res.term) h += termCard(res.term);
+    if (res.brief && res.brief.items.length) {
+      h += `<p class="brief-p">${res.brief.items.map(x => `${esc(x.text)} <button class="cite" data-idx="${x.idx}">(${esc(refLabel(x.idx))})</button>`).join(' ')}</p>
+        <p class="note">${esc(t.briefNote(res.brief.sourceTitle || ''))}</p>`;
+    }
+    h += `</section>`;
+  }
+  // 2 — the Quran: a rare word's verses, the key verses with their tafsir, the other verses
   const shownIdx = new Set();
   if (res.wordHits && res.wordHits.length) {
     const terms = new Set(res.wordTerms || []);
@@ -439,9 +450,6 @@ function renderResults() {
     }).join('') + '</ul>';
   }
   for (const a of texts) h += `<p class="lead" dir="${dir}">${esc(a.text)}</p>`;
-  if (res.term) h += termCard(res.term);
-  if (res.type === 'hadith' || res.hadithCheck) h += `<section class="hbox" id="hadithBox" aria-live="polite"></section>`;
-  if (res.type === 'topic' || res.type === 'term') h += `<section class="hbox sbox" id="sunnahBox" aria-live="polite" hidden></section>`;
   if (res.verdict === 'near' && res.diffWords && res.diffWords.length) {
     const diff = new Set(res.diffWords);
     const words = (res.checked || res.query).split(/\s+/).map(w => diff.has(normAr(w)) ? `<mark class="diff">${esc(w)}</mark>` : esc(w)).join(' ');
@@ -461,12 +469,6 @@ function renderResults() {
       (res.paragraphBy && t.paraBy[res.paragraphBy] ? ` · <span class="ai-tag">${esc(t.paraBy[res.paragraphBy])}</span>` : '') + '</div>';
   }
   if (res.topicIndex) h += topicIndexBox(res.topicIndex);
-  // fatwa requests: official sources
-  if (res.links && res.links.length) {
-    h += `<div class="links">${res.links.map(l => `<a class="btn gold" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(t.links[l.id] || l.id)}</a>`).join('')}</div>`;
-  }
-  // published fatwas of a recognised scholar on the same question (verbatim, linked) — never a ruling by Mishkat
-  if (res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '')) h += `<section class="hbox fbox" id="fatwaBox" aria-live="polite"></section>`;
   for (const a of notes) h += `<p class="note" dir="${dir}">${esc(a.text)}</p>`;
   if (res.alt && res.alt.mode === 'topic') h += `<p><button class="btn alt" id="altBtn">${esc(t.asTopic(res.alt.query))}</button></p>`;
   if (res.alt && res.alt.mode === 'sura') h += `<p><button class="btn alt" id="altBtn">${esc(t.asSura(res.alt.name))}</button></p>`;
@@ -486,6 +488,15 @@ function renderResults() {
       }).join('') + '</ul>';
   }
   if (res.type === 'sura') h += `<p><button class="btn gold" id="openSura">${esc(t.readSura)}</button> <button class="btn play" id="playSura">${esc(t.listen)}</button></p>`;
+  // 3 — after the Quran: the Sunnah, then (fatwa requests) the official references and published fatwas
+  if (res.type === 'topic' || res.type === 'term') h += `<section class="hbox sbox" id="sunnahBox" aria-live="polite" hidden></section>`;
+  if (res.type === 'hadith' || res.hadithCheck) h += `<section class="hbox" id="hadithBox" aria-live="polite"></section>`;
+  // fatwa requests: official sources
+  if (res.links && res.links.length) {
+    h += `<div class="links">${res.links.map(l => `<a class="btn gold" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(t.links[l.id] || l.id)}</a>`).join('')}</div>`;
+  }
+  // published fatwas of a recognised scholar on the same question (verbatim, linked) — never a ruling by Mishkat
+  if (res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '')) h += `<section class="hbox fbox" id="fatwaBox" aria-live="polite"></section>`;
   if (res.bayenat && res.bayenat.length) h += `<section class="bay"><h3 class="sec">${esc(t.bayTitle)}</h3><ul>${res.bayenat.map(b => `<li><a href="${esc(b.url)}" target="_blank" rel="noopener" dir="rtl">${esc(b.q)}</a> <small>${esc(b.cat || '')}</small></li>`).join('')}</ul><p class="note">${esc(t.bayNote)}</p></section>`;
   if (res.type !== 'empty') h += `<p class="disclose">${esc(t.disclosure)}</p>`;
   const v = $('#viewRes');

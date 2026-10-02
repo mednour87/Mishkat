@@ -1304,8 +1304,42 @@ export function createEngine({ core, searchAr, sources = {} }) {
     if (res.type === 'verify' && (res.verdict === 'notfound' || res.verdict === 'notverse') && res.checked) res.hadithCheck = res.checked;
     // an Arabic saying (not a question) that is not in the Quran: is it a hadith? (Dorar, looked up by the app)
     else if (res.type === 'notfound' && AR_RANGE.test(q) && !/^(ما|ماذا|من|متى|اين|كيف|لماذا|لم|كم|هل)\s/.test(normAr(q)) && normAr(q).split(' ').length >= 2) res.hadithCheck = q;
+    res.brief = briefOf(res);
     res.level = levelOf(res);
     return res;
+  }
+
+  // «الجواب باختصار»: 2–3 sentences copied word for word from the vetted tafsir (Al-Muyassar in Arabic,
+  // Al-Mukhtasar in English) of the verses that ANSWER the question — only when someone vouches for
+  // those verses (the AI's closed-list selection, the curated subject index or the reviewed context
+  // pack). Each sentence keeps its verse and source; a sentence must contain a word of the question
+  // (or of the AI's search keywords), except the first one of the first verse. Nothing is generated.
+  function briefOf(res) {
+    if (!['topic', 'term'].includes(res.type) || !['ai', 'index', 'context'].includes(res.confirmedBy)) return null;
+    const lang = res.lang === 'en' ? 'en' : 'ar';
+    let keyIdx = res.answer.filter(a => a.kind === 'quote' && a.role !== 'context' && a.idx != null).map(a => a.idx).slice(0, 3);
+    // no explained verse (e.g. the subject index lists the verses): the first listed verses, and then
+    // every sentence must contain a word of the question
+    const strict = !keyIdx.length;
+    if (strict) keyIdx = (res.verses || []).filter(v => !v.closestOnly && !v.relatedOnly).map(v => v.idx).slice(0, 8);
+    if (!keyIdx.length) return null;
+    const pool = sentencePool(lang, keyIdx, 4);
+    if (!pool.length) return null;
+    const kw = lang === 'ar' ? ((res.meta && res.meta.kwAr) || []) : [];
+    const qt = [...new Set([...tokens(res.query || '', lang), ...kw.flatMap(w => tokens(String(w).replace(/_/g, ' '), lang))])];
+    const qset = new Set(qt);
+    const hit = (p) => tokens(p.text, lang).some(t => qset.has(t));
+    const out = [];
+    for (const i of keyIdx) {
+      const mine = pool.filter(p => p.idx === i);
+      const best = mine.find(hit) || (out.length === 0 && !strict ? mine[0] : null);
+      if (best && best.text.length >= 12) out.push(best);
+      if (out.length >= 3) break;
+    }
+    if (!out.length) return null;
+    const S = src[PARAGRAPH_FOR[lang]] || src[TAFSIR_FOR[lang]] || {};
+    return { lang, by: res.confirmedBy, source: S.id, sourceTitle: S.title,
+      items: out.map(p => { let t = p.text; if (t.length > 320) { const c = t.lastIndexOf(' ', 300); t = t.slice(0, c > 120 ? c : 300) + ' …'; } return { text: t, ref: ref(p.idx), idx: p.idx }; }) };
   }
 
   // ------------------------------------------------ spoken-query helpers
