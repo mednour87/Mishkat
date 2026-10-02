@@ -102,7 +102,8 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   }
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
-  const px = Math.min(window.devicePixelRatio || 1, 2);
+  // adaptive resolution: start at up to 1.5× and drop to 1× if frames are slow (weak GPUs)
+  let px = Math.min(window.devicePixelRatio || 1, 1.5);
   renderer.setPixelRatio(px);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, 1, 1, 8000);
@@ -452,7 +453,8 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   }
   canvas.addEventListener('pointermove', (ev) => {
     const now = performance.now();
-    if (morph || now - lastMove < 70) return;
+    // no picking while dragging the galaxy (a ray against ~77k points costs several ms)
+    if (ev.buttons || morph || now - lastMove < 90) return;
     lastMove = now;
     onHover && onHover(pick(ev));
   });
@@ -468,10 +470,16 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   const clock = new THREE.Clock();
   let last = performance.now();
   const FOLLOW_DIST = 34;
+  let slow = 0;
   function loop() {
     requestAnimationFrame(loop);
-    const now = performance.now(), dt = Math.min(0.1, (now - last) / 1000);
+    const now = performance.now(), raw = now - last, dt = Math.min(0.1, raw / 1000);
     last = now;
+    // slow frames for ~2 s while the page is visible → render at 1× (never back up during a visit)
+    if (px > 1 && raw < 250) {
+      slow = raw > 26 ? slow + 1 : Math.max(0, slow - 1);
+      if (slow > 90) { px = 1; renderer.setPixelRatio(1); uniforms.uPx.value = 1; resize(); slow = 0; }
+    }
     uniforms.uTime.value = clock.getElapsedTime();
     const dimGoal = reciting ? Math.max(dimTarget, 0.7) : dimTarget;
     uniforms.uDim.value += (dimGoal - uniforms.uDim.value) * (1 - Math.exp(-dt * 4));

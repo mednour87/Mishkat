@@ -98,6 +98,51 @@ async function suraFile(kind, n) {
   return m.get(n);
 }
 
+// ------------------------------------------------------------ search worker
+// The engine's indexes and every query run in a Web Worker (js/search-worker.js), so the
+// page never freezes. If workers are unavailable, the same engine runs here as before.
+const pending = new Map();
+let wseq = 0;
+function startSearchWorker() {
+  try {
+    const w = new Worker(new URL('./search-worker.js', import.meta.url), { type: 'module' });
+    w.onmessage = async (ev) => {
+      const m = ev.data || {};
+      if (m.op === 'llm') {   // the worker asks the AI layer (cache, live API, circuit breaker)
+        try { const f = state.llm && state.llm[m.kind]; if (!f) throw new Error('no AI'); w.postMessage({ op: 'llm-reply', id: m.id, ok: true, value: await f(m.payload) }); }
+        catch (e) { w.postMessage({ op: 'llm-reply', id: m.id, ok: false, error: String(e && e.message || e) }); }
+        return;
+      }
+      const p = pending.get(m.id);
+      if (!p) return;
+      pending.delete(m.id);
+      if (m.ok) p.resolve(m.value); else p.reject(new Error(m.error));
+    };
+    w.onerror = () => { state.worker = null; for (const p of pending.values()) p.reject(new Error('worker failed')); pending.clear(); };
+    state.worker = w;
+  } catch (e) { state.worker = null; }
+}
+function workerCall(msg) {
+  if (!state.worker) return Promise.reject(new Error('no worker'));
+  const id = ++wseq;
+  return new Promise((resolve, reject) => { pending.set(id, { resolve, reject }); state.worker.postMessage({ ...msg, id }); });
+}
+async function askEngine(query, opts) {
+  if (state.worker) {
+    try { return await workerCall({ op: 'ask', query, opts: { ...opts, ai: !!state.llm } }); }
+    catch (e) { if (state.worker) throw e; }   // a real error is reported; a dead worker falls back below
+  }
+  // fallback: same engine on the page
+  const e = state.engine, qLang = detectLang(query, state.lang);
+  if (!state.refReady) state.refReady = Promise.all([
+    getJSON('data/qp_topics.json').then(d => e.addTopicIndex(d)).catch(() => {}),
+    getJSON('data/bayenat_index.json').then(d => e.addBayenat(d)).catch(() => {}),
+  ]);
+  if (qLang !== 'ar' && !state.latinP) state.latinP = getJSON('data/latin_index.json').then(d => e.addLatinIndex(d)).catch(() => {});
+  await Promise.all([state.refReady, state.latinP, ensureSources(qLang), qLang !== 'ar' && ensureSources('ar')]);
+  return e.ask(query, { ...opts, llm: state.llm });
+}
+
 function setLoad(i) { $('#loadMsg').textContent = T().loading[i]; }
 
 async function boot() {
@@ -105,12 +150,8 @@ async function boot() {
   setLoad(0);
   const [core, searchAr] = await Promise.all([getJSON('data/core.json'), getJSON('data/search_ar.json')]);
   state.core = core;
-  state.engine = createEngine({ core, searchAr });
-  // reference-pack data: Quranpedia subject index, Bayyinat question index (optional)
-  state.refReady = Promise.all([
-    getJSON('data/qp_topics.json').then(d => state.engine.addTopicIndex(d)).catch(() => {}),
-    getJSON('data/bayenat_index.json').then(d => state.engine.addBayenat(d)).catch(() => {}),
-  ]);
+  state.engine = createEngine({ core, searchAr });   // display copy; searching runs in a Web Worker
+  startSearchWorker();
   applyLang(state.lang);
   const gateDone = gate();
   setLoad(1);
@@ -127,8 +168,7 @@ async function boot() {
   // the tafsir files (several MB) are not needed to show the galaxy: they load after the
   // first paint, only for the interface language; a search waits for them if needed and
   // another language loads only when chosen
-  (window.requestIdleCallback || setTimeout)(() => { ensureSources(state.lang).then(() => {
-    state.engine.wordLookup('مشكاة');
+  (window.requestIdleCallback || setTimeout)(() => { workerCall({ op: 'warm', lang: state.lang }).catch(() => {}); ensureSources(state.lang).then(() => {
     if (state.reader.sura) { renderReader(); state.taf.idx = null; selectVerse(state.reader.cur, { fly: false, scroll: false, keepAudio: true }); }
   }); });
   // AI layer: 1) pre-computed answers for frequent questions (verified again by
@@ -281,12 +321,10 @@ async function run(query, mode = 'auto') {
   const t = T();
   $('#status').textContent = t.thinking; $('#status').classList.add('on');
   const qLang = detectLang(query, state.lang);
-  if (qLang !== 'ar' && !state.latinP) state.latinP = getJSON('data/latin_index.json').then(d => state.engine.addLatinIndex(d)).catch(() => {});
-  if (state.latinP) await state.latinP;
-  await ensureSources(qLang);
-  if (qLang !== 'ar') await ensureSources('ar'); // glossary terms and the subject index are explained from the Arabic tafsir
+  // the texts to display load here while the worker searches
+  const shownP = ensureSources(qLang).then(() => qLang !== 'ar' && ensureSources('ar'));
   let res;
-  try { await state.refReady; res = await state.engine.ask(query, { uiLang: state.lang, llm: state.llm, mode: mode === 'raw' ? 'auto' : mode, noCorrect: mode === 'raw' }); }
+  try { res = await askEngine(query, { uiLang: state.lang, mode: mode === 'raw' ? 'auto' : mode, noCorrect: mode === 'raw' }); await shownP; }
   finally { $('#status').classList.remove('on'); }
   state.result = res;
   const url = new URL(location.href); url.searchParams.set('q', query); url.searchParams.delete('s'); url.searchParams.delete('a'); history.replaceState(null, '', url);

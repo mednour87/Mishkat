@@ -586,18 +586,25 @@ export function createEngine({ core, searchAr, sources = {} }) {
 
   // Two normalised scripts: imla'i (how people type) and Uthmani (how people
   // paste from a Mushaf app). A quote matches if it matches either.
-  const scripts = [searchAr.map(normAr), verses.map(normAr)];
-  const vtokS = scripts.map(sc => sc.map(v => v.split(' ')));
-  const tokPost = new Map();
-  vtokS.forEach(vt => vt.forEach((ts, i) => {
-    for (const t of new Set(ts)) { let p = tokPost.get(t); if (!p) tokPost.set(t, (p = new Set())); p.add(i); }
-  }));
-  const suraTextS = scripts.map(sc => suras.map(s => {
-    let txt = '';
-    const starts = [];
-    for (let a = 0; a < s.ayas; a++) { starts.push(txt.length); txt += sc[s.first + a] + ' '; }
-    return { txt, starts };
-  }));
+  // Built on first use only (verification of quotes): keeps createEngine() cheap where it
+  // only serves display (the main thread when search runs in a Web Worker).
+  let VX = null;
+  function vx() {
+    if (VX) return VX;
+    const scripts = [searchAr.map(normAr), verses.map(normAr)];
+    const vtokS = scripts.map(sc => sc.map(v => v.split(' ')));
+    const tokPost = new Map();
+    vtokS.forEach(vt => vt.forEach((ts, i) => {
+      for (const t of new Set(ts)) { let p = tokPost.get(t); if (!p) tokPost.set(t, (p = new Set())); p.add(i); }
+    }));
+    const suraTextS = scripts.map(sc => suras.map(s => {
+      let txt = '';
+      const starts = [];
+      for (let a = 0; a < s.ayas; a++) { starts.push(txt.length); txt += sc[s.first + a] + ' '; }
+      return { txt, starts };
+    }));
+    return (VX = { vtokS, tokPost, suraTextS });
+  }
 
   // ------------------------------------------------------------ sura names
   // alias -> sura; kind: 'ar' (Arabic name), 'tr' (transliteration), 'meaning' (en)
@@ -700,7 +707,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   function exactFragment(qn) {
     const hits = [], seen = new Set();
     if (qn.length < 6) return hits;
-    for (const suraText of suraTextS) suras.forEach((s, si) => {
+    for (const suraText of vx().suraTextS) suras.forEach((s, si) => {
       const { txt, starts } = suraText[si];
       let from = 0, pos;
       while ((pos = txt.indexOf(qn, from)) !== -1) {
@@ -735,7 +742,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   }
   function align(qt, i) {
     let best = null;
-    for (const vtok of vtokS) {
+    for (const vtok of vx().vtokS) {
       const r = align1(qt, vtok[i].concat(i + 1 < NV && suraOf[i + 1] === suraOf[i] ? vtok[i + 1] : []));
       if (!best || r.sim > best.sim) best = r;
     }
@@ -743,7 +750,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   }
   function nearMatch(qt) {
     const count = new Map();
-    for (const t of new Set(qt)) for (const i of tokPost.get(t) || []) count.set(i, (count.get(i) || 0) + 1);
+    for (const t of new Set(qt)) for (const i of vx().tokPost.get(t) || []) count.set(i, (count.get(i) || 0) + 1);
     const cands = [...count.entries()].sort((a, b) => b[1] - a[1] || a[0] - b[0]).slice(0, 40).map(e => e[0]);
     let best = null;
     for (const i of cands) {
@@ -1671,6 +1678,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
 
   return {
     ask, ref, idxOf, suraOf, ayaOf, suras, verses, sources: src, wordLookup, suggestWords, addLatinIndex, wordPositions,
+    warm() { vx(); wordIndex(); for (const n of ['quran', ...Object.keys(src)]) field(n); },
     addTopicIndex, addBayenat, topicIndexFor, bayenatFor, hasTopics: () => !!TOPICS, hasBayenat: () => !!BAY,
     addSource(id, payload) { src[id] = payload; fields.delete(id); },
     hasSource: (id) => !!src[id],
