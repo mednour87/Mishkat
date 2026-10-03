@@ -10,7 +10,9 @@ import { fatwaSearch } from '../functions/_lib/fatwa.js';
 import { buildClosedList, applyAnswer, questionTypeOf, forModels } from '../public/js/rag.js';
 
 export const env = {};
+// FREE_ONLY=1 (set below after reading .dev.vars): the paid provider is removed — only Groq's free tier is called
 for (const line of readFileSync(new URL('../.dev.vars', import.meta.url), 'utf8').split(/\r?\n/)) { const m = line.match(/^\s*([A-Z_]+)\s*=\s*"?(.*?)"?\s*$/); if (m) env[m[1]] = m[2]; }
+if (process.env.FREE_ONLY === '1') for (const k of ['PRIMARY_URL', 'PRIMARY_KEY', 'PRIMARY_MODELS']) delete env[k];
 const { engine: E, core } = loadEngine();
 E.addTopicIndex(JSON.parse(readFileSync(new URL('../public/data/qp_topics.json', import.meta.url), 'utf8')));
 E.addLatinIndex(JSON.parse(readFileSync(new URL('../public/data/latin_index.json', import.meta.url), 'utf8')));
