@@ -1,0 +1,11 @@
+{
+ "model": "@cf/baai/bge-m3",
+ "n": 6236,
+ "dim": 256,
+ "from_dim": 1024,
+ "dtype": "int8",
+ "scale": 127,
+ "projection": "uncentred SVD of L2-normalised verse vectors; query q -> q @ P (P is 1024 x D, float32, row-major)",
+ "top40_overlap_with_full": 0.919,
+ "built": "2026-10-03"
+}

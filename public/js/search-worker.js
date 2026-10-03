@@ -5,6 +5,7 @@
 // Messages out: {id, ok, value|error} · {op:'llm', id, kind, payload} (the page calls the AI API,
 // with its cache and circuit breaker, and replies).
 import { createEngine, detectLang, SOURCES_NEEDED, tokens, expandTokens } from './engine.js';
+import { loadVectors, topK, VEC_DIM } from './dense-rank.js';
 
 const getJSON = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); };
 let engineP = null, latinP = null;
@@ -42,7 +43,15 @@ const relay = (kind) => (payload) => new Promise((resolve, reject) => {
 const KW = new Map();
 const LLM = {
   expand: (p) => relay('expand')(p).then(out => { KW.set(String(p.query), out && out.keywords); if (KW.size > 50) KW.delete(KW.keys().next().value); return out; }),
-  select: relay('select'), pick: relay('pick'), dense: relay('dense'),
+  select: relay('select'), pick: relay('pick'),
+  // semantic neighbours: the server returns only the question's projected vector; the verses are
+  // ranked here (audit I1: the free plan's 10 ms CPU limit), with the same answer shape as before
+  dense: async (p) => {
+    const [j, vec, e] = await Promise.all([relay('dense')(p), loadVectors(), engine()]);
+    if (!j || !Array.isArray(j.qv) || j.qv.length !== VEC_DIM) throw new Error('dense unavailable');
+    const top = topK(vec, j.qv, VEC_DIM, 60);
+    return { ok: true, model: j.model, ids: top.map(x => e.ref(x.i)), scores: top.map(x => Math.round(x.s * 1000) / 1000) };
+  },
 };
 
 // ------------------------------------------------ Sunnah section (HadeethEnc)
@@ -128,6 +137,7 @@ self.onmessage = async (ev) => {
       if (latinP) await latinP;
       await ensureSources(e, qLang);
       if (qLang !== 'ar') await ensureSources(e, 'ar');
+      if (opts.ai) loadVectors().catch(() => {});
       const value = await e.ask(m.query, { ...opts, llm: opts.ai ? LLM : null });
       self.postMessage({ id: m.id, ok: true, value });
       return;

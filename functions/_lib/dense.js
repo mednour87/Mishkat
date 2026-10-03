@@ -3,10 +3,17 @@
 // read once per worker isolate from the static file. The question is embedded with the same model
 // (Workers AI binding `AI`, or the REST API with CF_ACCOUNT + CF_AI_TOKEN for local runs).
 // Only verse REFERENCES and scores are returned — candidates for the closed-list AI selection.
+//
+// Production (audit I1, 2026-10-03): ranking 6,236 × 1024 vectors costs 26–63 ms of CPU, above the
+// 10 ms of the free plan. /api/dense therefore calls embedQuery(): the question's bge-m3 vector is
+// projected on 256 principal axes (1024 × 256 multiply-adds, < 1 ms) and returned; the browser's
+// Web Worker ranks the projected verse vectors (public/js/dense-rank.js). denseSearch() (full 1024-d
+// ranking on the server) stays for the offline evaluations (eval/run_qqa23.mjs) and the local server.
 const MODEL = '@cf/baai/bge-m3';
 const DIM = 1024;
 const VEC_PATH = '/data/vec/bge_m3_int8.bin';
-let VEC = null, REFS = null;
+const PROJ_PATH = '/data/vec/bge_m3_p256_proj.bin', PDIM = 256;
+let VEC = null, REFS = null, PROJ = null;
 
 export function setVectors(int8, refs) { VEC = int8; REFS = refs; }   // tests / local server
 
@@ -33,6 +40,30 @@ async function embed(text, env, fetchImpl) {
     return j.result.data[0];
   }
   throw new Error('no embedding model configured');
+}
+
+async function projection(env) {
+  if (PROJ) return PROJ;
+  if (!env.ASSETS) throw new Error('projection unavailable');
+  const r = await env.ASSETS.fetch(new Request('https://assets.local' + PROJ_PATH));
+  if (!r.ok) throw new Error('projection HTTP ' + r.status);
+  PROJ = new Float32Array(await r.arrayBuffer());
+  return PROJ;
+}
+export function setProjection(f32) { PROJ = f32; }   // tests
+
+// q (1024) → q · P (P is 1024 × 256, row-major), rounded to 4 decimals for a small response
+export function project(qv, P, dim = PDIM) {
+  const out = new Float32Array(dim);
+  for (let j = 0; j < DIM; j++) { const x = qv[j]; if (!x) continue; const o = j * dim; for (let k = 0; k < dim; k++) out[k] += x * P[o + k]; }
+  return Array.from(out, x => Math.round(x * 1e4) / 1e4);
+}
+
+export async function embedQuery(body, env, fetchImpl = fetch) {
+  const q = String(body && body.query || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+  if (q.length < 2) return { ok: false, error: 'query too short' };
+  const [P, qv] = await Promise.all([projection(env), embed(q, env, fetchImpl)]);
+  return { ok: true, model: MODEL, dim: PDIM, qv: project(qv, P) };
 }
 
 // refs: verse index → "s:a" (built from core.json's surah table by the caller once)

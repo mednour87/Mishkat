@@ -1,5 +1,5 @@
-// Cloudflare Pages Function: POST /api/dense  {query, lang} → nearest verses by meaning (references only)
-import { denseSearch } from '../_lib/dense.js';
+// Cloudflare Pages Function: POST /api/dense  {query} → the question's bge-m3 vector projected on 256 axes (the browser ranks the verses)
+import { embedQuery } from '../_lib/dense.js';
 import { makeHandler } from '../_lib/handler.js';
 
-export const onRequestPost = makeHandler(denseSearch, 'dense');
+export const onRequestPost = makeHandler(embedQuery, 'dense');
