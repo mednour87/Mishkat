@@ -134,7 +134,7 @@ export async function callOpenAICompat({ url, key, model, messages, timeoutMs = 
       const ra = parseFloat(r.headers && r.headers.get ? r.headers.get('retry-after') : '');
       if (!(ra > 2)) { await new Promise(res => setTimeout(res, (ra || 1) * 1000)); r = await send(); }
     }
-    if (r.status === 429) { const e = new Error(`${model} HTTP 429`); e.quota = true; throw e; }
+    if (r.status === 429) { const e = new Error(`${model} HTTP 429`); e.quota = true; const ra2 = parseFloat(r.headers && r.headers.get ? r.headers.get('retry-after') : ''); if (ra2 > 0) e.retryAfter = ra2; throw e; }
     // 401/402: bad key or credit exhausted — that provider is skipped for a long time (E7)
     if (r.status === 401 || r.status === 402) { const e = new Error(`${model} HTTP ${r.status}`); e.billing = true; throw e; }
     if (!r.ok) throw new Error(`${model} HTTP ${r.status}`);
@@ -149,7 +149,22 @@ export async function callOpenAICompat({ url, key, model, messages, timeoutMs = 
 //      PRIMARY_MODELS=openai/gpt-oss-120b,openai/gpt-oss-20b — the models benchmarked on Groq)
 //   GROQ_API_KEY / GROQ_MODELS                   — Groq free tier (backup)
 //   FALLBACK_URL / FALLBACK_KEY / FALLBACK_MODEL — any other endpoint
-export function providers(env) {
+// FREE FIRST (budget decision of 2026-10-03: $6.99 left on OpenRouter). Groq's free tier serves the same
+// gpt-oss-120b; each Groq model has its own per-minute token quota (8,000), so light tasks go to another
+// free model first. The paid provider (OpenRouter) is used only when the free one is cooling down (429),
+// fails or is unavailable. PREFER_PAID=1 restores the paid-first order.
+const LIGHT = { expand: 1, pick: 1 };
+export function providers(env, task = 'select') {
+  const all = providersAll(env);
+  if (env.PREFER_PAID === '1') return all;
+  const groq = all.filter(p => p.name === 'groq'), paid = all.filter(p => p.name !== 'groq');
+  const big = (p) => /120b/.test(p.model);
+  const order = LIGHT[task]
+    ? [...groq.filter(p => /(?<![0-9])20b/.test(p.model)), ...groq.filter(big), ...paid.filter(big), ...paid.filter(p => !big(p)), ...groq.filter(p => !big(p) && !/(?<![0-9])20b/.test(p.model))]
+    : [...groq.filter(big), ...paid.filter(big), ...paid.filter(p => !big(p)), ...groq.filter(p => !big(p))];
+  return [...new Set(order)];
+}
+export function providersAll(env) {
   const out = [];
   const list = (v, d) => (v || d).split(',').map(x => x.trim()).filter(Boolean);
   if (env.PRIMARY_URL && env.PRIMARY_KEY && env.PRIMARY_MODELS) {
@@ -224,7 +239,7 @@ const ckey = (pr) => `${pr.name}:${pr.model}`;
 export const cooling = (pr) => (coolDown.get(ckey(pr)) || 0) > Date.now();
 export function trip(pr, e) {
   if (e && e.billing) coolDown.set(ckey(pr), Date.now() + 30 * 60000);
-  else if (e && e.quota) coolDown.set(ckey(pr), Date.now() + 120000);
+  else if (e && e.quota) coolDown.set(ckey(pr), Date.now() + Math.min(120000, Math.max(5000, (e.retryAfter || 120) * 1000)));
 }
 // one request has 7.5 s in all (the page waits 9 s): each provider gets at most 4.5 s, then the next
 // one is tried with what is left, so the free backup is really reached when the paid host is slow
@@ -235,14 +250,14 @@ async function run(kind, body, env, fetchImpl) {
   const messages = buildMessages(p, kind);
   const errors = [];
   const t0 = Date.now();
-  for (const pr of providers(env)) {
+  for (const pr of providers(env, kind)) {
     if ((coolDown.get(ckey(pr)) || 0) > Date.now()) { errors.push(`${ckey(pr)} cooling down`); continue; }
     const left = BUDGET_MS - (Date.now() - t0);
     if (left < MIN_TRY_MS) { errors.push('time budget spent'); break; }
     try {
       const raw = await callOpenAICompat({ ...pr, messages, fetchImpl, timeoutMs: Math.min(PER_PROVIDER_MS, left) });
       const v = kind === 'expand' ? validateExpansion(raw) : validateOutput(raw, p.candidates, p.sentences);
-      return { ok: true, model: pr.model, ...v };
+      return { ok: true, model: pr.model, via: pr.name, ...v };
     } catch (e) {
       errors.push(String(e.message || e));
       trip(pr, e);
@@ -264,7 +279,7 @@ export async function pickRelevant(question, items, env, { max = 4, what = 'fatw
     { role: 'system', content: `You check relevance only. Given a user's question and numbered ${what} titles/summaries, return JSON {"keep":[numbers]} with the numbers (at most ${max}, best first) of the items whose MEANING answers the same question or directly addresses its subject (guidance, ruling, virtue, warning, comfort). Exclude items where the word only appears incidentally (another meaning, a name, a place, a different topic). Return {"keep":[]} if none does. Never write anything else.` },
     { role: 'user', content: `Question: ${String(question).slice(0, 300)}` + String.fromCharCode(10, 10) + list },
   ];
-  for (const pr of providers(env)) {
+  for (const pr of providers(env, 'pick')) {
     if ((coolDown.get(ckey(pr)) || 0) > Date.now()) continue;
     try {
       const raw = await callOpenAICompat({ ...pr, messages, fetchImpl, timeoutMs: 7000 });
@@ -279,7 +294,7 @@ export const expand = (body, env, fetchImpl = fetch) => run('expand', body, env,
 
 export function health(env) {
   const p = providers(env);
-  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null, stt: !!(env.STT_KEY || env.GROQ_API_KEY), tts: ttsReady(env),
+  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null, free: p.length ? p[0].name === 'groq' : null, stt: !!(env.STT_KEY || env.GROQ_API_KEY), tts: ttsReady(env),
     // semantic neighbours need an embedding model (Workers AI binding, or the REST API for local runs)
     dense: !!((env.AI && env.AI.run) || (env.CF_ACCOUNT && env.CF_AI_TOKEN)) };
 }

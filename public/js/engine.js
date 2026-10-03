@@ -290,6 +290,7 @@ export const MSG = {
     noTopic: 'لم أجد مرجعًا كافيًا لهذا السؤال في الآيات والتفاسير المعتمدة لديّ، فأمتنع عن الإجابة حتى لا أنسب إلى القرآن ما ليس فيه. جرّب كلمة مفتاحية أوضح (مثل: الصبر، الوالدين، موسى).',
     ruling: 'هذا سؤال عن حكم شرعي، والفتوى لأهل العلم؛ فلا تُصدر «مشكاة» أحكامًا. تجد أدناه روابط مصادر الفتوى الرسمية، وآيات ذات صلة بالموضوع للاطلاع (وليست فتوى).',
     crisis: 'إن كنت تفكّر في إنهاء حياتك أو إيذاء نفسك فلست وحدك، وحياتك غالية عند الله. تحدّث الآن إلى شخص تثق به، أو اتصل بخدمة الطوارئ في بلدك أو بخط للمساندة النفسية (تجد خطوط المساعدة المجانية والسرية في كل بلد على موقع findahelpline.com). وهذه آيات من كتاب الله تذكّر برحمته، مع تفسيرها كاملًا:',
+    comfort: 'آيات من كتاب الله فيها السكينة والطمأنينة، مع تفسيرها كاملًا (اختيار مراجَع يُعرض حين يتعذّر تأكيد الآيات الخاصة بسؤالك):',
     blood: 'هذه مسألة تتعلّق بالدماء والأنفس؛ وتطبيق أحكامها من شأن القضاء الشرعي وولي الأمر، والفتوى فيها لأهل العلم، فلا تعرض «مشكاة» مقتطفات فتاوى فيها. وهذه آيات في حرمة النفس مع تفسيرها كاملًا، والروابط أعلاه إلى جهات الإفتاء الرسمية.',
     personal: 'هذه مسألة شخصية تحتاج إلى عالم أو مختص يسمع تفاصيلها. لا تقدّم «مشكاة» نصائح أو أحكامًا في الحالات الخاصة. يمكنك البحث عن موضوع عام (مثل: الصبر، بر الوالدين).',
     dream: 'تعبير الرؤى لا يدخل في عمل «مشكاة»، ولا يُبنى على آلة. يمكنك البحث عن ذكر الرؤيا في القرآن بكلمة «الرؤيا».',
@@ -330,6 +331,7 @@ export const MSG = {
     noTopic: 'I could not find sufficient evidence for this in the vetted verses and tafsir I hold, so I abstain rather than attribute to the Quran what is not in it. Try a clearer keyword (e.g. patience, parents, Moses).',
     ruling: 'This asks for a religious ruling, which belongs to qualified scholars; Mishkat does not issue rulings. Below are links to official fatwa sources, and related verses for reading (not a fatwa).',
     crisis: 'If you are thinking of ending your life or harming yourself, you are not alone, and your life is precious to Allah. Please speak now to someone you trust, or call the emergency services of your country or a support line (findahelpline.com lists free, confidential lines in every country). Here are verses of the Book of Allah reminding of His mercy, with their full tafsir:',
+    comfort: 'Verses of tranquillity from the Book of Allah, with their full tafsir (a reviewed selection, shown when the verses for your exact question could not be confirmed):',
     blood: 'This question concerns life and blood. Such rulings are applied only by the courts and those in authority, and fatwas on them belong to scholars: Mishkat shows no extract of a fatwa here. Below are the verses on the sanctity of life, with their full tafsir; the links above lead to the official fatwa authorities.',
     personal: 'This is a personal matter that needs a scholar or specialist who can hear the details. Mishkat gives no advice or rulings on individual cases. You can search a general topic instead (e.g. patience, parents).',
     dream: 'Dream interpretation is outside Mishkat’s scope and should not be done by a machine. You can search for dreams mentioned in the Quran with the word “dream”.',
@@ -438,6 +440,8 @@ const GUARD = [
 // + spoken dialect forms (tested on normAr text): «وش حكم…», «حرام ولا حلال», «وش اسوي», «حلمت…»
 const GUARD_EXTRA = [
   ['ruling', /^هل\s+.{1,60}\s(حرام|حلال|مكروه|مكروهة|جايز|جايزة|بدعة|مباح|مباحة|واجب|واجبة|فرض|شرك)\s*$/],
+  // «حكم المرتد», «حكم قتل غير المسلم», «حكم الحجاب»: «حكم» + a subject is a ruling question
+  ['ruling', /^حكم\s+(ال)?\S+(\s+\S+){0,4}\s*$/],
   // E2: a status word without «هل» («الموسيقى حرام؟», «التدخين حلال ولا حرام», «الاحتفال بالمولد بدعة»)
   ['ruling', /^(\S+\s+){1,3}(حرام|حلال|مكروه|مكروهة|جايز|جايزة|جائز|جائزة|مباح|مباحة|بدعة)(\s+(ولا|والا|او|ام)\s+(حرام|حلال))?\s*[؟?]?$/],
   ['ruling', /(^|\s)(ايش|وش|شو|شنو|ايه|اش)\s+(حكم|الحكم)(\s|$)|(حرام|حلال)\s+(ولا|والا|او|ام|وله)\s+(حلال|حرام)|(^|\s)(يجوز|يحل|يحرم)\s+(لي|اني|نسوي|اسوي)(\s|$)/],
@@ -451,6 +455,13 @@ const GUARD_EXTRA = [
 const CRISIS = /(انتحر|انتحار|الانتحار|اقتل\s+نفسي|أقتل\s+نفسي|نقتل\s+روحي|انهي\s+حياتي|أنهي\s+حياتي|انهاء\s+حياتي|إنهاء\s+حياتي|اريد\s+ان\s+اموت|أريد\s+أن\s+أموت|ابي\s+اموت|ابغى\s+اموت|ودي\s+اموت|نفسي\s+اموت|ما\s+ابي\s+اعيش|لا\s+اريد\s+ان\s+اعيش|لا\s+أريد\s+أن\s+أعيش|اؤذي\s+نفسي|أؤذي\s+نفسي|ايذاء\s+نفسي|إيذاء\s+نفسي)|\b(suicid\w*|kill(ing)? (myself|my self)|end (my life|it all)|take my (own )?life|want(ed)? to die|wish i (was|were) dead|don ?t want to (live|be alive)|no reason to live|self[- ]?harm|hurt(ing)? myself|cut(ting)? myself)\b/i;
 export function isCrisis(q) { return CRISIS.test(q) || CRISIS.test(normLatin(q)) || CRISIS.test(normAr(q)); }
 export const CRISIS_REFS = ['4:29', '39:53', '12:87', '94:5', '94:6', '2:286', '13:28'];
+// a distressed visitor (sadness, anxiety, fear, grief…) when no AI confirms the verses: these verses of
+// tranquillity with their full tafsir, instead of a keyword list (which gave the terror of the Last Day
+// to «anxiety»)
+const COMFORT = /(^|\s)(و|ف|ب|ل)?(ال)?(حزن|حزين|حزينه|حزينة|قلق|خوف|خايف|خايفه|اكتئاب|ضيق|غم|كرب|هموم|ياس|يأس|وحده|وحيد|مصيبه|مصيبة|ابتلاء|بلاء|فراق|تطمن|تطمئن|تريح)(ي|ه|ها|نا)?(\s|$)|ضاق(ت)?\s+(صدري|فيني|علي)|(^|\s)(و|ف|ب)?الهم(\s|$)|\b(sad|sadness|grief|grieving|anxious|anxiety|depress\w*|afraid|lonely|hopeless|worried|worry|stress\w*)\b/i;
+const GOD_FEAR = /(خوف|الخوف|خشيه|خشية)\s+(من\s+)?(الله|عذاب|النار)|\bfear(ing)? (of )?(allah|god|hell)\b/i;
+export function isComfortQ(q) { return (COMFORT.test(q) || COMFORT.test(normAr(q)) || COMFORT.test(normLatin(q))) && !GOD_FEAR.test(q) && !GOD_FEAR.test(normAr(q)); }
+export const COMFORT_REFS = ['13:28', '94:5', '94:6', '2:153', '2:286', '39:53', '65:2', '65:3'];
 // rulings about blood (killing, apostasy, fighting, attacks): no extract of a fatwa is shown; the verses
 // on the sanctity of life with their full tafsir, and a referral to scholars and the courts
 const BLOOD = /(قتل|اقتل|يقتل|نقتل|القتل|دم|دماء|الدماء|اغتيال|تفجير|ارهاب|إرهاب|جهاد|الجهاد|مرتد|المرتد|الردة|ردة|حرابة|الحرابة|القصاص|قصاص|اعدام|إعدام)|\b(kill\w*|murder\w*|blood|assassinat\w*|bomb\w*|terror\w*|jihad|apostat\w*|execut\w*|death penalty)\b/i;
@@ -458,6 +469,7 @@ export function isBloodRuling(q) { return BLOOD.test(q) || BLOOD.test(normLatin(
 export const BLOOD_REFS = ['6:151', '17:33', '5:32', '4:93'];
 
 export function guardCheck(q) {
+  if (/\bhalal\s*(\/|and|&)\s*haram\b|حلال\s*(\/|و)\s*حرام|الحلال\s+والحرام/i.test(q) && /^(why|what|how|لماذا|ما|كيف)\b/i.test(String(q).trim())) return null;
   const t = q + ' \n ' + normLatin(q);
   for (const [kind, re] of GUARD) if (re.test(t)) return kind;
   const na = normAr(q);
@@ -494,7 +506,9 @@ export function packFor(q) {
 }
 // E9: penalties and family-law subjects (level C), whatever the wording («ما عقوبة الزنا» like «حد السرقة»)
 const SENSITIVE = /(الحدود|حد\s+(السرقة|الزنا|القذف|الردة|الحرابة)|قطع\s+اليد|الرجم|الجلد|القصاص|الزنا|الزاني|القذف|عقوبة|عقوبات|تعدد\s+الزوجات|ضرب\s+الزوجة|ضرب\s+النساء|الميراث|stoning|amputation|flogging|lashes|adultery|fornication|punishment for|penalt(y|ies)|polygamy|beat(ing)? (his |the |their )?wi(fe|ves)|wife beating|inheritance)/i;
-export function isSensitiveText(q) { return SENSITIVE.test(q) || SENSITIVE.test(normLatin(q)); }
+// «حدّ الزّنى», «حد الحرابة»: any «حد + subject» (a legal penalty), whatever the spelling (ى/ا, diacritics)
+const HADD = /(^|\s)(حد|حدود)\s+(ال)?\S+|الزني|الزنى/;
+export function isSensitiveText(q) { return SENSITIVE.test(q) || SENSITIVE.test(normLatin(q)) || SENSITIVE.test(normAr(q)) || HADD.test(normAr(q)); }
 export function isSensitive(q) { return isSensitiveText(q) || !!packFor(q); }
 // E11: verses about fighting, often quoted cut from their context — wherever they appear in an answer,
 // it is flagged sensitive (level C) and the reader opens the surrounding verses
@@ -1294,7 +1308,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
       if (wl.verses.length <= 12) { res.wordHits = wl.verses; res.wordQuery = wl.toks.join(' '); res.wordTerms = wl.isAr ? [...new Set(wl.toks.flatMap(t => [...baseForms(t)]))] : []; }
       // a rare word next to a much more common one: maybe a typo («اليتم» / «اليتيم»)
       // E12: not for a word the vetted tafsirs use often («الحجاب», «الغضب», «الجار», «الأمانة»)
-      if (wl.toks.length === 1 && wl.verses.length <= 3 && !(wl.isAr && [normAr(wl.toks[0]), normAr(wl.toks[0]).replace(/^(وال|فال|بال|لل|ال)/, "")].reduce((a, f) => a + (vocab().get(f) || 0), 0) >= 5)) { const sg = suggestWords(wl.toks[0], { min: Math.max(6, wl.verses.length * 4) }); if (sg.length) res.suggest = sg.slice(0, 2); }
+      if (wl.isAr && wl.toks.length === 1 && wl.verses.length <= 3 && !res.topicIndex && (res.verses || []).length <= wl.verses.length && !(wl.isAr && [normAr(wl.toks[0]), normAr(wl.toks[0]).replace(/^(وال|فال|بال|لل|ال)/, "")].reduce((a, f) => a + (vocab().get(f) || 0), 0) >= 5)) { const sg = suggestWords(wl.toks[0], { min: Math.max(6, wl.verses.length * 4) }); if (sg.length) res.suggest = sg.slice(0, 2); }
       return res;
     }
     // every word exists but never in the same verse: nothing to correct
@@ -1305,10 +1319,14 @@ export function createEngine({ core, searchAr, sources = {} }) {
       const V = vocab(), m = normAr(wl.missing);
       // E13: a rare spelling next to a frequent Quran word one letter away («الزكات» → «الزكاة»):
       // corrected, even though «زكاة» is among its base forms
-      const own = V.get(m) || 0;
-      if (own < 3) { const sg0 = suggestWords(wl.missing); if (sg0.length && sg0[0].sure && sg0[0].count >= 5 * Math.max(1, own)) { res.suggest = sg0; res.suggestFor = wl.missing; return res; } }
+      // how often the word or its base forms («التوكل» → «توكل») occur in the Quran and the tafsirs — but not
+      // the ت→ة variant, which is exactly the misspelling to correct («الزكات» → «الزكاة»)
+      const own = (V.get(m) || 0) + [...baseForms(m)].filter(f => f !== m && f.length >= 3 && !(f.endsWith('ة') && !m.endsWith('ة'))).reduce((n, f) => n + (V.get(f) || 0), 0);
+      if (own < 3 && wl.toks.length === 1 && !res.crisis && !['abstain', 'term', 'khilaf', 'hadith'].includes(res.type)) { const sg0 = suggestWords(wl.missing); if (sg0.length && sg0[0].sure && sg0[0].count >= 5 * Math.max(1, own)) { res.suggest = sg0; res.suggestFor = wl.missing; return res; } }
       if (V.has(m) || [...baseForms(m)].some(f => f.length >= 3 && V.has(f))) return res;
     }
+    // a question that already has an answer gets no «did you mean» (map W4: «أفكر في الانتحار» → «افك»)
+    if ((res.verses && res.verses.length) || res.crisis || ['abstain', 'term', 'khilaf', 'hadith'].includes(res.type)) return res;
     const sg = suggestWords(wl.missing);
     if (sg.length) { res.suggest = sg; res.suggestFor = wl.missing; }
     return res;
@@ -1622,7 +1640,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     // the context pack comes first for a trap question, or when the pack's subject IS the question
     // («الجهاد», "slavery") — not when it is only mentioned («قصة امرأة فرعون»)
     const usePack = !!pack && (polemic || packRest(cq, L, pack).length === 0);
-    sensitive = sensitive || usePack;
+    sensitive = sensitive || usePack || !!(pack && ['violence', 'religions', 'freedom', 'slavery'].includes(pack.id));
     const kwAr = expansion && expansion.keywords ? (expansion.keywords.ar || []) : [];
     // kept for the post-processing only (never serialised: LLM keywords are not content)
     Object.defineProperty(base.meta, 'kwAr', { value: kwAr, enumerable: false });
@@ -1700,9 +1718,18 @@ export function createEngine({ core, searchAr, sources = {} }) {
       // text or tafsir also contains the words of the question come first, and only they get an
       // explanation card; an index entry with no such verse gives way to the keyword match (if any).
       const fs = ts.fullSet || new Set();
-      const withE = tix.ids.filter(i => fs.has(i)), without = tix.ids.filter(i => !fs.has(i));
+      const lexRank = new Map(ranked.map((x, k) => [x.idx, k]));
+      const byRank = (a, b) => (lexRank.has(a) ? lexRank.get(a) : 1e6) - (lexRank.has(b) ? lexRank.get(b) : 1e6);
+      const withE = tix.ids.filter(i => fs.has(i)).sort(byRank), without = tix.ids.filter(i => !fs.has(i));
       if (!withE.length && ranked.some(x => x.full) && !llmOk) { tixUse = false; tix = null; }
       else { order = withE.concat(without); evid = new Set(withE); confirmed = false; }
+    }
+    if (!llmOk && !softPrefix && isComfortQ(q)) {
+      base.meta.route = 'comfort';
+      const ids = COMFORT_REFS.map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); }).filter(i => i >= 0);
+      const cards = ids.slice(0, 5).map(i => cardOf(L, i, 'context')).filter(Boolean);
+      return { ...base, type: 'topic', pack: 'comfort', answer: [{ kind: 'text', text: ML.comfort }, ...cards], verses: ids.map(i => verseResult(i)), focus: ids[0],
+        suras: groupBySura(ids), sensitive: false, polemic: false, aiConfirmed: false, confirmedBy: 'context', paragraphBy: 'context', terms: qtoks };
     }
     if (tixUse) { /* order set above */ } else if (!llmOk && !aiNone) {
       // no AI confirmation: only verses that cover the whole question, no explanation

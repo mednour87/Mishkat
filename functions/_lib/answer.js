@@ -94,21 +94,21 @@ export async function answer(body, env, fetchImpl = fetch) {
   let p;
   try { p = sanitizeAnswer(body); } catch (e) { return { ok: false, error: String(e.message) }; }
   if (!p.sentences.length) return { ok: false, error: 'no evidence' };
-  const pv = providers(env).filter(pr => !cooling(pr));
+  const pv = providers(env, 'answer').filter(pr => !cooling(pr));
   if (!pv.length) return { ok: false, error: 'no model' };
   const nl = String.fromCharCode(10);
   const numbered = p.sentences.map(s => `[${s.sid}]${s.tag ? ' (reviewed context)' : ''} ${s.text}`).join(nl);
   const sensitive = p.sentences.some(s => s.tag);
 
   // 1. composer: the first provider that answers (large model first)
-  let comp = null, model = null;
+  let comp = null, model = null, via = null;
   const t0 = Date.now();
   for (const pr of pv) {
     const left = 7000 - (Date.now() - t0);
     if (left < 1500) break;
     try {
       comp = validateCompose(await callJSON(pr, [{ role: 'system', content: SYS_COMPOSE }, { role: 'user', content: `Question (${p.lang}): ${p.query}${nl}Question type: ${p.qtype} — ${HOW[p.qtype]}${sensitive ? ' This is a sensitive subject: the FIRST point must use passages marked (reviewed context), which state the general principle; other passages may follow only if they answer the question too.' : ''}${nl}${nl}Passages:${nl}${numbered}` }], Math.min(4500, left), fetchImpl), p.sentences);
-      model = pr.model; break;
+      model = pr.model; via = pr.name; break;
     } catch (e) { trip(pr, e); }
   }
   if (!comp) return { ok: false, error: 'compose failed' };
@@ -137,5 +137,5 @@ export async function answer(body, env, fetchImpl = fetch) {
   const covered = new Set(points.map(x => x.concept));
   const uncovered = comp.concepts.filter(c => !covered.has(c));
   const answerable = !points.length ? 'no' : uncovered.length ? 'partial' : 'yes';
-  return { ok: true, answerable, concepts: comp.concepts, points, uncovered, model, judge };
+  return { ok: true, answerable, concepts: comp.concepts, points, uncovered, model, judge, via };
 }

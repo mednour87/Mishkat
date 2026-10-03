@@ -84,7 +84,7 @@ test('E7: a 429 or 402 on the paid provider does not block the same model on the
     return { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: '{"intent":"topic","ids":["2:1"]}' } }] }) };
   };
   const env = { PRIMARY_URL: 'https://openrouter.ai/api/v1/chat/completions', PRIMARY_KEY: 'k', PRIMARY_MODELS: 'openai/gpt-oss-120b',
-    GROQ_API_KEY: 'g', GROQ_MODELS: 'openai/gpt-oss-120b' };
+    GROQ_API_KEY: 'g', GROQ_MODELS: 'openai/gpt-oss-120b', PREFER_PAID: '1' };   // paid-first order (optional mode)
   const body = { query: 'x', candidates: [{ id: '2:1', text: 'a' }] };
   for (const status of [429, 402]) {
     resetCoolDown(); calls.length = 0;
@@ -116,4 +116,44 @@ test('E12/E13: no absurd suggestion on valid words; a sure misspelling is correc
   assert.equal(r.correctedFrom, 'الزكات');
   assert.ok(r.verses.length > 0);
   assert.ok(!(await ask('الجهاد')).correctedFrom);
+});
+
+test('free first: Groq answers when it can; the paid provider only when Groq is cooling down; light tasks on another free model', async () => {
+  const { select, expand, resetCoolDown, providers } = await import('../functions/_lib/selector.js');
+  resetCoolDown();
+  const env = { PRIMARY_URL: 'https://openrouter.ai/api/v1/chat/completions', PRIMARY_KEY: 'k', PRIMARY_MODELS: 'openai/gpt-oss-120b',
+    GROQ_API_KEY: 'g', GROQ_MODELS: 'openai/gpt-oss-120b,openai/gpt-oss-20b' };
+  assert.deepEqual(providers(env, 'select').map(p => p.name + ':' + p.model), ['groq:openai/gpt-oss-120b', 'primary:openai/gpt-oss-120b', 'groq:openai/gpt-oss-20b']);
+  assert.deepEqual(providers(env, 'expand').map(p => p.name + ':' + p.model), ['groq:openai/gpt-oss-20b', 'groq:openai/gpt-oss-120b', 'primary:openai/gpt-oss-120b']);
+  const calls = [];
+  let groqDown = false;
+  const fake = async (url, init) => {
+    calls.push((/groq/.test(url) ? 'groq:' : 'paid:') + JSON.parse(init.body).model);
+    if (/groq/.test(url) && groqDown) return { ok: false, status: 429, headers: { get: () => '30' } };
+    return { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: '{"intent":"topic","ids":["2:1"],"keywords":{"ar":["x"]}}' } }] }) };
+  };
+  const body = { query: 'x', candidates: [{ id: '2:1', text: 'a' }] };
+  const r1 = await select(body, env, fake);
+  assert.equal(r1.via, 'groq');
+  groqDown = true;
+  const r2 = await select(body, env, fake);
+  assert.equal(r2.via, 'primary');                                   // Groq 429 → paid backup, same model
+  calls.length = 0;
+  await select(body, env, fake);
+  assert.deepEqual(calls, ['paid:openai/gpt-oss-120b']);             // Groq cooling down: not even tried
+  resetCoolDown();
+  const health = (await import('../functions/_lib/selector.js')).health(env);
+  assert.equal(health.free, true);
+});
+
+test('map 1000: no «did you mean» on valid words or answered questions; «حكم X» is a ruling; distress without AI gets the reviewed verses of tranquillity', async () => {
+  for (const q of ['fasting', 'wine', 'أفكر في الانتحار', 'التوكل على الله']) assert.ok(!(await ask(q)).suggest, q);
+  assert.equal((await ask('الزكات')).correctedFrom, 'الزكات');
+  const r = await ask('حكم المرتد'); assert.equal(r.type, 'abstain'); assert.equal(r.reason, 'ruling'); assert.equal(r.blood, true);
+  assert.notEqual((await ask('Why is halal/haram important to Muslims?')).type, 'abstain');
+  for (const q of ['how to deal with anxiety', 'ماذا أفعل إذا شعرت بالحزن', 'ضاق صدري']) { const c = await ask(q); assert.equal(c.pack, 'comfort', q); assert.equal(c.verses[0].ref, '13:28', q); assert.ok(c.answer.some(a => a.kind === 'quote'), q); }
+  assert.notEqual((await ask('الخوف من الله')).pack, 'comfort');
+  // with an AI selection, the AI's verses are kept
+  const ai = await ask('how to deal with anxiety', { llm: { select: async ({ candidates }) => ({ intent: 'topic', confidence: 'high', ids: [candidates[0].id] }) } });
+  assert.notEqual(ai.pack, 'comfort');
 });
