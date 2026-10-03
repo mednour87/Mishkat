@@ -54,6 +54,8 @@ const LLM = {
   },
 };
 
+const LLM_NO_DENSE = { ...LLM, dense: undefined };   // the server has no embedding model
+
 // ------------------------------------------------ Sunnah section (HadeethEnc)
 // BM25 over each hadith's title, text and the start of its explanation; the 10 best go to the AI,
 // which may only keep numbers from that closed list. Without AI, a hadith is proposed only when
@@ -137,8 +139,8 @@ self.onmessage = async (ev) => {
       if (latinP) await latinP;
       await ensureSources(e, qLang);
       if (qLang !== 'ar') await ensureSources(e, 'ar');
-      if (opts.ai) loadVectors().catch(() => {});
-      const value = await e.ask(m.query, { ...opts, llm: opts.ai ? LLM : null });
+      if (opts.ai && opts.dense) loadVectors().catch(() => {});
+      const value = await e.ask(m.query, { ...opts, llm: opts.ai ? (opts.dense ? LLM : LLM_NO_DENSE) : null });
       self.postMessage({ id: m.id, ok: true, value });
       return;
     }

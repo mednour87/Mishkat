@@ -23,7 +23,7 @@ intent: "ruling" if the user asks whether something is halal/haram/permissible/o
 const SYS_EXPAND = `${RULES}
 Task: understand the query and propose search keywords and central verses.
 keywords.ar: up to 6 words written exactly as they appear in the Quran or in the classical tafsirs At-Tafsir Al-Muyassar / Al-Mukhtasar — the root-bearing noun or verb (e.g. «الصبر», «الصابرين», «يغتب», «الغيبة», «الربا», «اليتيم»), without diacritics. Never dialect words, never words meaning "verse", "Quran", "what", "tell", "story".
-keywords.en: up to 5 words as used in the English translation (Saheeh International) or Al-Mukhtasar in English (e.g. "patient", "backbite", "orphan", "Pharaoh").
+keywords.en: up to 5 words as used in the English translation shown by the site (Noor International) or Al-Mukhtasar in English (e.g. "patient", "backbite", "orphan", "Pharaoh").
 refs: up to 8 references "sura:aya" of the well-known verses that most directly state the answer or tell the asked story (they are checked against the real text; wrong ones are discarded).
 Return {"intent":"...","keywords":{"ar":[...],"en":[...]},"refs":["17:23",...]}.
 Keywords must be single words or 2-word phrases, no sentences.`;
@@ -37,6 +37,7 @@ Task:
    score 1 = only related (mentions the subject in passing, or a neighbouring idea). Do not list unrelated verses (score 0).
    - Judge by the meaning of the tafsir, not by shared words. Reject homonyms (e.g. «شفا حفرة» = brink, not «شفاء» = cure; «الجاريات» = ships, not «الجار» = neighbour; "interest" = benefit, not usury) and verses about the opposite or another subject.
    - Prefer verses that state the answer itself; skip verses that only mention the word in passing.
+   - If the query joins several subjects («الصبر والشكر», "fear and hope"), list first the verses that mention them together (if any), then verses for EACH subject separately, so that every subject is covered. A verse about only one of the subjects is still relevant.
    - For a story, choose the verses that narrate its main events, in the order of the story.
    - For hostile or trap questions, prefer the verses that state the general principle and its conditions.
    - If no candidate answers the query, return "items": [].
@@ -269,5 +270,7 @@ export const expand = (body, env, fetchImpl = fetch) => run('expand', body, env,
 
 export function health(env) {
   const p = providers(env);
-  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null, stt: !!(env.STT_KEY || env.GROQ_API_KEY), tts: ttsReady(env) };
+  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null, stt: !!(env.STT_KEY || env.GROQ_API_KEY), tts: ttsReady(env),
+    // semantic neighbours need an embedding model (Workers AI binding, or the REST API for local runs)
+    dense: !!((env.AI && env.AI.run) || (env.CF_ACCOUNT && env.CF_AI_TOKEN)) };
 }

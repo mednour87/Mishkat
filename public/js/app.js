@@ -129,7 +129,7 @@ function workerCall(msg) {
 }
 async function askEngine(query, opts) {
   if (state.worker) {
-    try { return await workerCall({ op: 'ask', query, opts: { ...opts, ai: !!state.llm } }); }
+    try { return await workerCall({ op: 'ask', query, opts: { ...opts, ai: !!state.llm, dense: !!(state.llm && state.llm.dense) } }); }
     catch (e) { if (state.worker) throw e; }   // a real error is reported; a dead worker falls back below
   }
   // fallback: same engine on the page
@@ -215,7 +215,7 @@ async function boot() {
       } catch (e) { downUntil = Date.now() + 2 * 60 * 1000; throw e; }
     };
   };
-  if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select'), pick: side('api/pick'), dense: side('api/dense') };
+  if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select'), pick: side('api/pick'), ...(health && health.dense ? { dense: side('api/dense') } : {}) };
   $('#aiBadge').textContent = T().ai(state.llmModel);
   await gateDone;
   $('#lampSlot').innerHTML = lampSVG({ size: 132, word: true, title: 'Mishkat' });
