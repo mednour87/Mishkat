@@ -6,6 +6,8 @@ import { lampSVG, setLampWord } from './lamp.js';
 import { listen, stopListening, cancelListening, voiceSupported } from './voice.js';
 import { createSpeaker } from './speech.js';
 import { PALETTE } from './galaxy.js';
+import { createPanels } from './panels.js';
+import { S as TOOL_S } from './toolpanels.js';
 
 // Three moments, one current verse (body[data-mode]):
 //   home    — the galaxy alone, with a suggestion card in the middle (can be closed);
@@ -37,6 +39,7 @@ const state = {
   qs: +store.get('qs', '1') || 1, ts: +store.get('ts', '1') || 1,
   showTranslit: store.get('tl', '1') === '1', showTr: store.get('tr', '1') === '1',
   pane: 'r', tts: false, mode: 'home', playMode: 'one', suggestClosed: false, colorOf: new Map(),
+  panels: null, tools: null,
 };
 
 // ------------------------------------------------------------------ i18n
@@ -69,6 +72,8 @@ function applyLang(lang) {
   $('#legendBox').innerHTML = t.legendItems.map(([c, x]) => `<div><i style="background:${c};color:${c}"></i>${esc(x)}</div>`).join('');
   $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice()));
   $('#aiBadge').textContent = t.ai(state.llmModel);
+  labelDock();
+  if (state.panels) state.panels.refresh();
   if (!$('#welcome').hidden && state.core) openWelcome();
   if (state.engine) {
     renderSide();
@@ -163,6 +168,7 @@ async function boot() {
     suraLabel: (n) => suraName(n),
   });
   state.wordsP = getJSON('data/words.json').then(w => { state.words = w; return w; });
+  setupTools();
   setLoad(3);
   $('#loader').classList.add('done');
   // the tafsir files (several MB) are not needed to show the galaxy: they load after the
@@ -335,6 +341,7 @@ function openVoice() {
 // ------------------------------------------------------------ search
 async function run(query, mode = 'auto') {
   const t = T();
+  if (state.panels) state.panels.close();          // the answers take the place of the open tool panel
   $('#status').textContent = t.thinking; $('#status').classList.add('on');
   const qLang = detectLang(query, state.lang);
   // the texts to display load here while the worker searches
@@ -1224,6 +1231,35 @@ function hover(p) {
   tt.style.top = Math.min(innerHeight - 90, p.y + 14) + 'px';
 }
 
+// ------------------------------------------------------------- tools: dock + exclusive panels
+// A dock of icon buttons under the search bar opens the tool panels (js/panels.js): one panel at a time,
+// a second click or Escape closes it, the galaxy stays visible. Contents: js/toolpanels.js (ar + en).
+const DOCK = ['khatma', 'hijri', 'links', 'settings'];
+const DOCK_ICON = {
+  khatma: 'M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z',
+  hijri: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+  links: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
+  settings: 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',
+};
+const TS = () => TOOL_S[state.lang] || TOOL_S.ar;
+function setupTools() {
+  const renderers = {};
+  const ids = DOCK.filter(id => renderers[id]);
+  $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
+  $('#dock').hidden = !ids.length;
+  state.panels = createPanels({
+    dock: $('#dock'), tray: $('#tray'), renderers,
+    titles: Object.fromEntries(DOCK.map(id => [id, () => TS()[id]])), closeLabel: () => TS().close,
+    onOpen: (id) => { document.body.dataset.panel = id; },
+    onClose: () => { delete document.body.dataset.panel; },
+  });
+  labelDock();
+}
+function labelDock() {
+  $('#dock').setAttribute('aria-label', TS().dock);
+  document.querySelectorAll('#dock [data-panel]').forEach(b => { const s = TS()[b.dataset.panel]; b.setAttribute('aria-label', s); b.title = s; });
+}
+
 // ------------------------------------------------------------- galaxy toolbar
 // Two keys for the 3D view: the SHAPE (galaxy, «قرآن», rose, dome, petals) and the
 // ORDER in which the surahs are laid along it (Mushaf, revelation, place, length,
@@ -1297,6 +1333,9 @@ $('#themeBtn').onclick = () => setTheme(document.documentElement.dataset.theme =
 document.addEventListener('keydown', (ev) => {
   if (ev.target.closest && ev.target.closest('input,select,textarea,[contenteditable]')) return;
   if (!$('#gate').hidden || !$('#welcome').hidden || !$('#voice').hidden || $('#about').open) return;
+  // inside a tool panel, keys belong to the panel; Escape closes the panel only (js/panels.js), not the reader
+  if (ev.target.closest && ev.target.closest('#tray')) return;
+  if (ev.key === 'Escape' && state.panels && state.panels.current) return;
   if (ev.key === '/') { ev.preventDefault(); $('#q').focus(); return; }
   if (ev.key === 'v' || ev.key === 'V') { setView(cycle(SHAPES, view.shape, ev.shiftKey ? -1 : 1), view.order); return; }
   if (ev.key === 'o' || ev.key === 'O') { setView(view.shape, cycle(ORDERS, view.order, ev.shiftKey ? -1 : 1)); return; }

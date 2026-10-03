@@ -450,5 +450,8 @@ Plans and drafts written before the window. Draft code in `05_EXECUTION/code_dra
 | `05_EXECUTION/REGLES.md` | 2,972 | `6b1d1804f73a2f20…` |
 | `05_EXECUTION/TACHES.md` | 4,773 | `53384ff624fd2ecd…` |
 
+### 2.4 Addendum — commits after the tag but before the window (evening of 3 October 2026, declared)
+After the tag was placed, the author asked for more preparation on the evening of 3 October, before the window opens. These commits come **after** the tag `baseline-2026-10-03` but are dated 3 October 2026, before 4 October 09:00 Riyadh time: they are **declared baseline, not challenge work**, despite the sentence at the top of this file. Their messages start with the task number and say «pre-window, declared»; they are listed in `CHANGELOG.md` under «Preparation after the baseline tag». Challenge work is only what is committed from 4 October 2026 09:00 Riyadh time (`git log --since="2026-10-04T09:00:00+03:00"`).
+
 ## 3. Work during 4–6 October 2026 (evaluated)
-Recorded in `CHANGELOG.md` and in dated git commits after the tag `baseline-2026-10-03` (`git log baseline-2026-10-03..HEAD`).
+Recorded in `CHANGELOG.md` and in dated git commits from 4 October 2026 09:00 Riyadh time (`git log --since="2026-10-04T09:00:00+03:00"`); commits after the tag dated 3 October are declared preparation (§2.4).
