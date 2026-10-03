@@ -1282,10 +1282,13 @@ function setupTools() {
     openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); },
     readerVerse: () => (state.mode === 'study' && state.reader.sura ? state.reader.cur : null),
     onReadChange: () => applyHighlight(),
+    // hadiths of the remarkable days, by HadeethEnc id, verbatim from the local files (search worker)
+    hadiths: (ids, lang) => workerCall({ op: 'hadiths', ids, lang }),
     status: alertNote,
   });
   const renderers = {
     khatma: (body, args) => state.tools.khatma(body, args),
+    hijri: (body, args) => state.tools.hijri(body, args),
     settings: (body) => state.tools.settings(body),
   };
   const ids = DOCK.filter(id => renderers[id]);
