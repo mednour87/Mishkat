@@ -1,4 +1,5 @@
-import { createEngine, detectLang, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens } from './engine.js';
+import { createEngine, detectLang, guardCheck, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens } from './engine.js';
+import { routeTool } from './tools.js';
 import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
 import { SHAPES, ORDERS, buildLayout } from './layouts.js';
 import { isBasmala } from './basmala.js';
@@ -343,6 +344,10 @@ function openVoice() {
 // ------------------------------------------------------------ search
 async function run(query, mode = 'auto') {
   const t = T();
+  // a practical request («متى رمضان», «خطة لختم القرآن في شهر», "hijri date") opens its tool, never the AI;
+  // the guard runs first, so «ما حكم صيام يوم عرفة» stays a question (js/tools.js)
+  const tool = mode === 'auto' && state.panels ? routeTool(query, { available: state.toolIds, guard: guardCheck }) : null;
+  if (tool) { state.panels.open(tool.tool, tool.args); return; }
   if (state.panels) state.panels.close();          // the answers take the place of the open tool panel
   $('#status').textContent = t.thinking; $('#status').classList.add('on');
   const qLang = detectLang(query, state.lang);
@@ -1292,7 +1297,7 @@ function setupTools() {
     links: (body) => state.tools.links(body),
     settings: (body) => state.tools.settings(body),
   };
-  const ids = DOCK.filter(id => renderers[id]);
+  const ids = state.toolIds = DOCK.filter(id => renderers[id]);     // also what the search bar may open (T032)
   $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
   $('#dock').hidden = !ids.length;
   state.panels = createPanels({

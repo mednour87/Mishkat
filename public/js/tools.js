@@ -6,7 +6,8 @@
 //
 // returns null or { tool, args }
 
-const N = (s) => String(s || '').normalize('NFKC').replace(/[ً-ٰٟـ]/g, '').replace(/[أإآٱ]/g, 'ا')
+// Arabic-Indic digits become ASCII first: they lie inside the range of the diacritics removed next (U+0660–0669)
+const N = (s) => String(s || '').normalize('NFKC').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[ً-ٰٟـ]/g, '').replace(/[أإآٱ]/g, 'ا')
   .replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/[؟?!.,،]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
 
 export const TOOLS = ['khatma', 'hijri', 'links', 'settings', 'prayer', 'qibla', 'mosques', 'athkar'];
@@ -49,6 +50,13 @@ const RULES = [
   ['qibla', [/(اتجاه|جهه|وين|اين)\s+(ال)?قبله/, /\bqiblah?\b/], () => ({})],
   ['mosques', [/(اقرب|قريب)\s+(ال)?(مسجد|مساجد|جامع)/, /\b(nearest|nearby|closest) (mosque|masjid)s?\b/], () => ({})],
 ];
+
+// The search bar's router: the guard of the engine speaks first (a ruling, a personal case, a dream… is never
+// a tool: «ما حكم صيام يوم عرفة» stays a question), then the tool patterns; null = an ordinary Quran search.
+export function routeTool(query, { available = TOOLS, guard = () => null } = {}) {
+  if (guard(query)) return null;
+  return toolIntent(query, available);
+}
 
 export function toolIntent(query, available = TOOLS) {
   const q = N(query);
