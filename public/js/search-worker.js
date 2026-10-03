@@ -6,6 +6,7 @@
 // with its cache and circuit breaker, and replies).
 import { createEngine, detectLang, SOURCES_NEEDED, tokens, expandTokens } from './engine.js';
 import { loadVectors, topK, VEC_DIM } from './dense-rank.js';
+import { buildClosedList, applyAnswer } from './rag.js';
 
 const getJSON = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); };
 let engineP = null, latinP = null;
@@ -43,7 +44,7 @@ const relay = (kind) => (payload) => new Promise((resolve, reject) => {
 const KW = new Map();
 const LLM = {
   expand: (p) => relay('expand')(p).then(out => { KW.set(String(p.query), out && out.keywords); if (KW.size > 50) KW.delete(KW.keys().next().value); return out; }),
-  select: relay('select'), pick: relay('pick'),
+  select: relay('select'), pick: relay('pick'), answer: relay('answer'),
   // semantic neighbours: the server returns only the question's projected vector; the verses are
   // ranked here (audit I1: the free plan's 10 ms CPU limit), with the same answer shape as before
   dense: async (p) => {
@@ -114,6 +115,41 @@ async function sunnahFor(res, opts) {
   return strict.length ? { by: 'search', lang, ids: strict.map(r => H.ids[r.d]), chunk: H.chunk, all: H.ids.length } : null;
 }
 function idPos(lang, id) { return HAD[lang].then(H => H.ids.indexOf(id)); }
+// full HadeethEnc records by id (verbatim text, grade, attribution, explanation)
+const HCH = new Map();
+async function hadithsById(lang, ids) {
+  const H = await hadIndex(lang), out = [];
+  for (const id of ids) {
+    const p = H.ids.indexOf(+id);
+    if (p < 0) continue;
+    const k = Math.floor(p / H.chunk), key = lang + k;
+    if (!HCH.has(key)) HCH.set(key, getJSON(`../data/hadeeth/${lang}/${k}.json`).catch(() => []));
+    const rec = (await HCH.get(key))[p % H.chunk];
+    if (rec && rec.id === +id) out.push({ ...rec, lang });
+  }
+  return out;
+}
+
+// «الجواب باختصار» v5: closed list of sentences (tafsir of the verses the AI selected + text and
+// explanation of the hadiths it kept) → /api/answer (composer + judge) → only IDs → verbatim sentences.
+// Only for answers whose verses were confirmed by the AI; graded hadiths only.
+const GOOD = /صحيح|حسن|sahih|hasan|authentic|good/i, WEAK = /ضعيف|موضوع|منكر|weak|fabricated/i;
+async function ragFor(e, res, hadIds = []) {
+  if (!res || !['topic', 'term'].includes(res.type) || res.confirmedBy !== 'ai') return null;
+  const lang = res.lang === 'en' ? 'en' : 'ar';
+  await ensureSources(e, lang);
+  const vs = (res.verses || []).filter(v => v.ai);
+  const ordered = vs.filter(v => !v.aiRelated).concat(vs.filter(v => v.aiRelated));
+  const verses = ordered.map(v => { const c = e.cardOf(lang, v.idx, 'answer'); return c && { idx: v.idx, ref: e.ref(v.idx), text: c.text, source: c.source, sourceTitle: c.sourceTitle }; }).filter(Boolean);
+  let hadiths = [];
+  if (hadIds.length) { try { hadiths = (await hadithsById(lang, hadIds)).filter(h => GOOD.test(h.grade || '') && !WEAK.test(h.grade || '')); } catch (err) { hadiths = []; } }
+  const list = buildClosedList({ verses, hadiths });
+  if (!list.length) return null;
+  const out = await LLM.answer({ query: res.query, lang, sentences: list.map(s => ({ sid: s.sid, text: s.text })) });
+  const brief = applyAnswer(list, out, res.query);
+  if (brief) brief.lang = lang;
+  return brief;
+}
 
 self.onmessage = async (ev) => {
   const m = ev.data || {};
@@ -148,6 +184,14 @@ self.onmessage = async (ev) => {
       const s = await sunnahFor(m.res, m.opts || {});
       if (s) s.pos = await Promise.all(s.ids.map(id => idPos(s.lang, id)));
       self.postMessage({ id: m.id, ok: true, value: s });
+      return;
+    }
+    if (m.op === 'rag') {        // asked by the page after the verses (and the Sunnah) are shown
+      self.postMessage({ id: m.id, ok: true, value: await ragFor(e, m.res, m.hadIds || []) });
+      return;
+    }
+    if (m.op === 'hadiths') {    // hadiths by id (calendar panel)
+      self.postMessage({ id: m.id, ok: true, value: await hadithsById(m.lang === 'en' ? 'en' : 'ar', (m.ids || []).slice(0, 10)) });
       return;
     }
     throw new Error('unknown op ' + m.op);

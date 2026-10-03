@@ -1758,7 +1758,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   }
 
   return {
-    ask, ref, idxOf, suraOf, ayaOf, suras, verses, sources: src, wordLookup, suggestWords, addLatinIndex, wordPositions,
+    ask, ref, idxOf, suraOf, ayaOf, suras, verses, sources: src, cardOf, wordLookup, suggestWords, addLatinIndex, wordPositions,
     warm() { vx(); wordIndex(); for (const n of ['quran', ...Object.keys(src)]) field(n); },
     addTopicIndex, addBayenat, topicIndexFor, bayenatFor, hasTopics: () => !!TOPICS, hasBayenat: () => !!BAY,
     addSource(id, payload) { src[id] = payload; fields.delete(id); },

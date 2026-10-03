@@ -706,3 +706,13 @@ html[data-theme=light] .brief { background: #fffaf0; }
   .viewpick select { max-width: 112px; }
   #legendBox { bottom: 84px; }
 }
+
+/* «الجواب باختصار» v5: points by concept, each sentence verbatim with its citation */
+.rag-points { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.rag-points li { line-height: 1.9; }
+.rag-c { color: var(--gold); margin-inline-end: 4px; }
+.rag-h { font-style: normal; border-inline-start: 2px solid rgba(94, 230, 160, .5); padding-inline-start: 6px; }
+.rag-gap { border-inline-start: 3px solid rgba(255, 180, 90, .7); padding-inline-start: 8px; }
+.rag-wait { animation: ragPulse 1.4s ease-in-out infinite; }
+@keyframes ragPulse { 50% { opacity: .45; } }
+@media (prefers-reduced-motion: reduce) { .rag-wait { animation: none; } }

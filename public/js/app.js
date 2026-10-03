@@ -215,7 +215,7 @@ async function boot() {
       } catch (e) { downUntil = Date.now() + 2 * 60 * 1000; throw e; }
     };
   };
-  if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select'), pick: side('api/pick'), ...(health && health.dense ? { dense: side('api/dense') } : {}) };
+  if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select'), pick: side('api/pick'), answer: side('api/answer'), ...(health && health.dense ? { dense: side('api/dense') } : {}) };
   $('#aiBadge').textContent = T().ai(state.llmModel);
   await gateDone;
   $('#lampSlot').innerHTML = lampSVG({ size: 132, word: true, title: 'Mishkat' });
@@ -438,10 +438,12 @@ function renderResults() {
   }
   // 1 — the short answer: glossary definition and/or 2–3 sentences copied from the vetted tafsir
   //     of the verses that answer (each with its verse), never generated
-  if (res.term || (res.brief && res.brief.items.length)) {
-    h += `<section class="brief" dir="${dir}"><h3 class="sec">${esc(t.briefTitle)}</h3>`;
+  const ragOn = ragWanted(res);
+  if (res.term || ragOn || (res.brief && res.brief.items.length)) {
+    h += `<section class="brief" id="briefBox" dir="${dir}"><h3 class="sec">${esc(t.briefTitle)}</h3>`;
     if (res.term) h += termCard(res.term);
-    if (res.brief && res.brief.items.length) {
+    if (ragOn) h += `<div id="ragBox" aria-live="polite"><p class="note rag-wait">${esc(t.ragLoading)}</p></div>`;
+    else if (res.brief && res.brief.items.length) {
       h += `<p class="brief-p">${res.brief.items.map(x => `${esc(x.text)} <button class="cite" data-idx="${x.idx}">(${esc(refLabel(x.idx))})</button>`).join(' ')}</p>
         <p class="note">${esc(t.briefNote(res.brief.sourceTitle || ''))}</p>`;
     }
@@ -530,7 +532,7 @@ function renderResults() {
   const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, { autoplay: 'all', pane: 'r' });
   v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx));
   v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
-  if ((res.type === 'topic' || res.type === 'term') && state.worker) loadSunnah(res);
+  if ((res.type === 'topic' || res.type === 'term') && state.worker) loadSunnah(res).finally(() => loadRag(res));
   if (res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '')) loadFatwas(res.query);
   if (res.type === 'hadith' || res.hadithCheck) loadHadith(res.type === 'hadith' ? res.hadith.q : res.hadithCheck, res.type !== 'hadith');
   markCurrentInResults();
@@ -588,6 +590,7 @@ async function loadSunnah(res) {
   if (!box) return;
   let s = null;
   try { s = await workerCall({ op: 'sunnah', res: { type: res.type, lang: res.lang, query: res.query, meta: res.meta }, opts: { ai: !!state.llm } }); } catch (e) { s = null; }
+  res._sunnah = s && s.by === 'ai' ? s.ids.slice(0, 3) : [];
   if (!s || !s.ids || !s.ids.length || box !== $('#sunnahBox')) return;
   const items = [];
   for (const p of s.pos) {
@@ -607,6 +610,40 @@ async function loadSunnah(res) {
       <a class="mini" href="${esc(link(x.id))}" target="_blank" rel="noopener">${esc(t.sunnahOpen)}</a></li>`).join('')}</ol>
     <p><small><a href="https://hadeethenc.com" target="_blank" rel="noopener">HadeethEnc.com</a> — ${esc(t.sunnahSrc)}</small></p>`;
   box.hidden = false;
+}
+// «الجواب باختصار» v5 (extractive, evidence-bound): the worker builds a closed list of sentences
+// (tafsir of the verses the AI selected + the hadiths it kept), the server's composer and judge return
+// sentence IDs only, and the sentences are shown verbatim, by concept, each with its verse or hadith.
+// A concept of the question with no evidence is said so. If the service fails: the previous short answer.
+// a story («قصة يوسف») is answered by its verses in order, not by two sentences
+const STORY_Q = /^(قصة|قصه)\s|\bstory of\b/i;
+function ragWanted(res) { return !!(state.llm && state.llm.answer && state.worker && ['topic', 'term'].includes(res.type) && res.confirmedBy === 'ai' && !STORY_Q.test(res.query || '')); }
+async function loadRag(res) {
+  const box = $('#ragBox'), t = T();
+  if (!box || !ragWanted(res)) return;
+  let b = null;
+  try {
+    b = await workerCall({ op: 'rag', res: { type: res.type, lang: res.lang, query: res.query, confirmedBy: res.confirmedBy,
+      verses: res.verses.map(v => ({ idx: v.idx, ai: !!v.ai, aiRelated: !!v.aiRelated })) }, hadIds: res._sunnah || [] });
+  } catch (e) { b = null; }
+  if (box !== $('#ragBox')) return;          // another question meanwhile
+  res.rag = b;
+  const dir = (b && b.lang || res.lang) === 'ar' ? 'rtl' : 'ltr';
+  if (!b) {                                  // service unavailable: the previous short answer, if any
+    box.innerHTML = res.brief && res.brief.items.length
+      ? `<p class="brief-p">${res.brief.items.map(x => `${esc(x.text)} <button class="cite" data-idx="${x.idx}">(${esc(refLabel(x.idx))})</button>`).join(' ')}</p><p class="note">${esc(t.briefNote(res.brief.sourceTitle || ''))}</p>`
+      : `<p class="note">${esc(t.ragUnavailable)}</p>`;
+  } else if (!b.points.length) {
+    box.innerHTML = `<p class="note">${esc(t.ragNone)}</p>`;
+  } else {
+    const srcs = [...new Set(b.points.flatMap(p => p.items.map(x => x.kind === 'verse' ? x.sourceTitle : t.ragHadithSrc)))].filter(Boolean);
+    box.innerHTML = `<ul class="rag-points" dir="${dir}">${b.points.map(p => `<li>${p.shown && b.points.length > 1 ? `<b class="rag-c">«${esc(p.concept)}»</b> ` : ''}${p.items.map(x => x.kind === 'verse'
+        ? `<span class="rag-s">${esc(x.text)}</span> <button class="cite" data-idx="${x.idx}">(${esc(refLabel(x.idx))})</button>`
+        : `<span class="rag-s rag-h">${esc(x.text)}</span> <a class="cite" href="https://hadeethenc.com/${esc(x.lang || res.lang)}/browse/hadith/${esc(x.id)}" target="_blank" rel="noopener">(${esc(x.part === 'expl' ? t.ragExpl : t.ragHadith)} · ${esc(x.grade)})</a>`).join(' ')}</li>`).join('')}</ul>
+      ${b.uncovered.length ? `<p class="note rag-gap">${esc(b.uncovered.some(u => u.shown) ? t.ragGap(b.uncovered.filter(u => u.shown).map(u => u.concept)) : t.ragGapPart)}</p>` : ''}
+      <p class="note">${esc(t.ragNote(srcs.join(' · ')))}</p>`;
+  }
+  box.querySelectorAll('button.cite').forEach(el => el.onclick = (ev) => { ev.stopPropagation(); goVerse(+el.dataset.idx, { pane: 'r' }); });
 }
 // Published fatwas (binbaz.org.sa, official site of Sheikh Ibn Baz): titles chosen among the site's own
 // search results (the AI may only filter that closed list), each opened in full on demand, verbatim.

@@ -109,7 +109,7 @@ export function validateExpansion(raw) {
   return { intent: INTENTS.includes(obj.intent) ? obj.intent : 'topic', keywords: { ar: clean(kw.ar), en: clean(kw.en) }, refs };
 }
 
-async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, fetchImpl = fetch }) {
+export async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, fetchImpl = fetch }) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
@@ -213,7 +213,8 @@ export async function transcribe(audioBlob, lang, env, fetchImpl = fetch) {
 const coolDown = new Map();
 export function resetCoolDown() { coolDown.clear(); }
 const ckey = (pr) => `${pr.name}:${pr.model}`;
-function trip(pr, e) {
+export const cooling = (pr) => (coolDown.get(ckey(pr)) || 0) > Date.now();
+export function trip(pr, e) {
   if (e && e.billing) coolDown.set(ckey(pr), Date.now() + 30 * 60000);
   else if (e && e.quota) coolDown.set(ckey(pr), Date.now() + 120000);
 }

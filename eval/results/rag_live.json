@@ -1,0 +1,456 @@
+{
+ "date": "2026-10-03T11:35:09.664Z",
+ "rows": [
+  {
+   "q": "الصبر والشكر",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "2:153",
+    "31:12",
+    "54:35"
+   ],
+   "ms": 879,
+   "listSize": 6,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "الصبر",
+     "shown": true,
+     "refs": [
+      "2:153"
+     ],
+     "texts": [
+      "يا أيها المؤمنون اطلبوا العون من الله في كل أموركم: بالصبر على النوائب والمصائب، وبالصبر على ترك المعاصي والذنوب، والصبر على الطاعات والقربات، وبالصلاة التي تطمئن بها النفس، وتنهى عن الفحشاء والمنكر."
+     ]
+    },
+    {
+     "concept": "الشكر",
+     "shown": true,
+     "refs": [
+      "31:12"
+     ],
+     "texts": [
+      "ولقد أعطينا عبدًا صالحًا من عبادنا (وهو لقمان) الحكمة، وهي الفقه في الدين وسلامة العقل والإصابة في القول، وقلنا له: اشكر لله نِعَمَه عليك، ومَن يشكر لربه فإنما يعود نَفْع ذلك عليه، ومن جحد نِعَمَه فإن الله غني عن شكره، غير محتاج إليه، له الحمد والثناء على كل حال."
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": [
+    "2:153",
+    "31:12"
+   ]
+  },
+  {
+   "q": "الحجاب",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "33:55",
+    "33:59",
+    "24:31",
+    "7:46",
+    "42:51",
+    "18:101"
+   ],
+   "ms": 981,
+   "listSize": 17,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "الحجاب",
+     "shown": true,
+     "refs": [
+      "33:59"
+     ],
+     "texts": [
+      "يا أيها النبي قل لأزواجك وبناتك ونساء المؤمنين يرخين على رؤوسهن ووجوههن من أرديتهن وملاحفهن؛"
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": [
+    "33:55"
+   ]
+  },
+  {
+   "q": "how to deal with anxiety",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "2:45",
+    "2:153",
+    "2:155",
+    "10:25",
+    "70:5",
+    "28:21"
+   ],
+   "ms": 798,
+   "listSize": 24,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "patience",
+     "shown": false,
+     "refs": [
+      "70:5"
+     ],
+     "texts": [
+      "a patience free of worry and complaint."
+     ]
+    },
+    {
+     "concept": "prayer",
+     "shown": false,
+     "refs": [
+      "2:45"
+     ],
+     "texts": [
+      "Ask for help in sacred and worldly affairs, with patience and prayer, which bring you close to Allah and allow you to reach Him, so that He will help you, protect you and take away your difficulties."
+     ]
+    },
+    {
+     "concept": "seeking help",
+     "shown": false,
+     "refs": [
+      "2:153"
+     ],
+     "texts": [
+      "O you who have faith in Allah and follow His Messenger, ask for help from Allah in everything, through the beauty of patience and by establishing the prayer in the way Allah has instructed."
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": []
+  },
+  {
+   "q": "ماذا أفعل إذا شعرت بالحزن",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "13:28",
+    "16:127",
+    "2:153",
+    "2:155",
+    "58:10",
+    "39:45"
+   ],
+   "ms": 695,
+   "listSize": 21,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "الصبر",
+     "shown": false,
+     "refs": [
+      "16:127",
+      "2:153"
+     ],
+     "texts": [
+      "واصبر -أيها الرسول- على ما أصابك مِن أذى في الله حتى يأتيك الفرج، وما صبرك إلا بالله، فهو الذي يعينك عليه ويثبتك، ولا تحزن على مَن خالفك ولم يستجب لدعوتك، ولا تغتم مِن مكرهم وكيدهم;",
+      "يا أيها المؤمنون اطلبوا العون من الله في كل أموركم: بالصبر على النوائب والمصائب، وبالصبر على ترك المعاصي والذنوب، والصبر على الطاعات والقربات، وبالصلاة التي تطمئن بها النفس، وتنهى عن الفحشاء والمنكر."
+     ]
+    },
+    {
+     "concept": "الذكر",
+     "shown": false,
+     "refs": [
+      "13:28"
+     ],
+     "texts": [
+      "ويهدي الذين تسكن قلوبهم بتوحيد الله وذكره فتطمئن، ألا بطاعة الله وذكره وثوابه تسكن القلوب وتستأنس."
+     ]
+    },
+    {
+     "concept": "الطمأنينة",
+     "shown": false,
+     "refs": [
+      "48:4"
+     ],
+     "texts": [
+      "هو الله الذي أنزل الطمأنينة في قلوب المؤمنين بالله ورسوله يوم «الحديبية» فسكنت، ورسخ اليقين فيها؛"
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": [
+    "13:28"
+   ]
+  },
+  {
+   "q": "ما عقوبة الزنا",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "24:2",
+    "17:32",
+    "24:33"
+   ],
+   "ms": 932,
+   "listSize": 9,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "العقوبة",
+     "shown": true,
+     "refs": [
+      "24:2"
+     ],
+     "texts": [
+      "الزانية والزاني اللذان لم يسبق لهما الزواج، عقوبةُ كل منهما مائة جلدة بالسوط، وثبت في السنة مع هذا الجلد التغريب لمدة عام."
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": [
+    "24:2"
+   ]
+  },
+  {
+   "q": "بر الوالدين",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "17:23",
+    "4:36",
+    "6:151",
+    "29:8"
+   ],
+   "ms": 1689,
+   "listSize": 9,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "بر الوالدين",
+     "shown": true,
+     "refs": [
+      "17:23",
+      "4:36"
+     ],
+     "texts": [
+      "وأَمَر ربك -أيها الإنسان- وألزم وأوجب أن يفرد سبحانه وتعالى وحده بالعبادة، وأمر بالإحسان إلى الأب والأم، وبخاصة حالةُ الشيخوخة، فلا تضجر ولا تستثقل شيئًا تراه من أحدهما أو منهما، ولا تسمعهما قولا سيئًا، حتى ولا التأفيف الذي هو أدنى مراتب القول السيئ، ولا يصدر منك إليهما فعل قبيح، ولكن ارفق بهما، وقل لهما -دائما- قولا لينًا لطيفًا.",
+      "واعبدوا الله وانقادوا له وحده، ولا تجعلوا له شريكًا في الربوبية والعبادة، وأحسنوا إلى الوالدين، وأدُّوا حقوقهما، وحقوق الأقربين، والأولاد الذين مات آباؤهم وهم دون سن البلوغ، والمحتاجين الذين لا يملكون ما يكفيهم ويسد حاجتهم، والجار القريب منكم والبعيد، والرفيق في السفر وفي الحضر، والمسافر المحتاج، والمماليك من فتيانكم وفتياتكم."
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": [
+    "4:36",
+    "6:151"
+   ]
+  },
+  {
+   "q": "patience and gratitude",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "2:153",
+    "14:7",
+    "70:5",
+    "2:45",
+    "90:17",
+    "2:155"
+   ],
+   "ms": 713,
+   "listSize": 14,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "patience",
+     "shown": true,
+     "refs": [
+      "2:153"
+     ],
+     "texts": [
+      "Allah is truly with those who are patient, giving them success and helping them."
+     ]
+    },
+    {
+     "concept": "gratitude",
+     "shown": true,
+     "refs": [
+      "14:7"
+     ],
+     "texts": [
+      "Moses said to them: Remember when your Lord clearly announced to you: If you are grateful to Allah for the above-mentioned favours that He has blessed you with, then He will give you more from His favour and grace."
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": [
+    "2:153",
+    "14:7",
+    "70:5"
+   ]
+  },
+  {
+   "q": "what does the quran say about orphans",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "4:2",
+    "4:6",
+    "4:8",
+    "6:152",
+    "17:34",
+    "89:17"
+   ],
+   "ms": 1468,
+   "listSize": 23,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "orphans",
+     "shown": true,
+     "refs": [
+      "4:2",
+      "4:2"
+     ],
+     "texts": [
+      "Guardians, give orphans (whose fathers have died and who have not yet reached maturity) their wealth in full when they come of age and have sound judgement.",
+      "Do not exchange what is permitted for what is prohibited: taking what is good and valuable from the property of the orphans and replacing it with something bad and of little worth from your own property."
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": [
+    "4:2",
+    "4:6",
+    "4:8"
+   ]
+  },
+  {
+   "q": "فضل الصدقة",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "2:261",
+    "2:264",
+    "2:263",
+    "2:276",
+    "2:271",
+    "2:265"
+   ],
+   "ms": 1029,
+   "listSize": 18,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "فضل الصدقة",
+     "shown": true,
+     "refs": [
+      "2:261"
+     ],
+     "texts": [
+      "ومِن أعظم ما ينتفع به المؤمنون الإنفاقُ في سبيل الله."
+     ]
+    },
+    {
+     "concept": "فضل الصدقة",
+     "shown": true,
+     "refs": [
+      "2:271"
+     ],
+     "texts": [
+      "لأنه أبعد عن الرياء، وفي الصدقة -مع الإخلاص- محو لذنوبكم."
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": [
+    "2:263"
+   ]
+  },
+  {
+   "q": "التوبة",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "42:25",
+    "2:160",
+    "9:104",
+    "3:89",
+    "4:18",
+    "3:135"
+   ],
+   "ms": 771,
+   "listSize": 11,
+   "answerable": "yes",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [
+    {
+     "concept": "التوبة",
+     "shown": true,
+     "refs": [
+      "2:160"
+     ],
+     "texts": [
+      "إلا الذين رجعوا مستغفرين الله من خطاياهم، وأصلحوا ما أفسدوه، وبَيَّنوا ما كتموه، فأولئك أقبل توبتهم وأجازيهم بالمغفرة، وأنا التواب على من تاب من عبادي، الرحيم بهم;"
+     ]
+    }
+   ],
+   "uncovered": [],
+   "old": [
+    "42:25",
+    "2:160",
+    "9:104"
+   ]
+  },
+  {
+   "q": "الجار",
+   "type": "topic",
+   "verses": [
+    "4:36"
+   ]
+  },
+  {
+   "q": "قصة يوسف",
+   "type": "topic",
+   "confirmedBy": "ai",
+   "verses": [
+    "12:4",
+    "12:10",
+    "12:17",
+    "12:19",
+    "12:21",
+    "12:36"
+   ],
+   "ms": 856,
+   "listSize": 12,
+   "answerable": "no",
+   "model": "openai/gpt-oss-120b",
+   "judge": "openai/gpt-oss-20b",
+   "points": [],
+   "uncovered": [
+    {
+     "concept": "يوسف",
+     "shown": true
+    }
+   ],
+   "old": [
+    "12:4",
+    "12:10",
+    "12:17"
+   ]
+  }
+ ]
+}
