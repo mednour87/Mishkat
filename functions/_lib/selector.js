@@ -24,8 +24,9 @@ const SYS_EXPAND = `${RULES}
 Task: understand the query and propose search keywords and central verses.
 keywords.ar: up to 6 words written exactly as they appear in the Quran or in the classical tafsirs At-Tafsir Al-Muyassar / Al-Mukhtasar — the root-bearing noun or verb (e.g. «الصبر», «الصابرين», «يغتب», «الغيبة», «الربا», «اليتيم»), without diacritics. Never dialect words, never words meaning "verse", "Quran", "what", "tell", "story".
 keywords.en: up to 5 words as used in the English translation shown by the site (Noor International) or Al-Mukhtasar in English (e.g. "patient", "backbite", "orphan", "Pharaoh").
+keywords.fatwa: 1 to 3 Arabic words naming the SUBJECT of the question as a fatwa site in Arabic titles it (fiqh vocabulary, not Quran wording), e.g. "is smoking haram" → ["التدخين"], "can I celebrate Christmas" → ["أعياد الكفار", "الكريسماس"] (NOT «عيد الميلاد», which also means a birthday), "is music haram" → ["الأغاني", "الموسيقى"], "interest on a bank account" → ["فوائد البنوك", "الربا"]. Arabic letters only.
 refs: up to 8 references "sura:aya" of the well-known verses that most directly state the answer or tell the asked story (they are checked against the real text; wrong ones are discarded).
-Return {"intent":"...","keywords":{"ar":[...],"en":[...]},"refs":["17:23",...]}.
+Return {"intent":"...","keywords":{"ar":[...],"en":[...],"fatwa":[...]},"refs":["17:23",...]}.
 Keywords must be single words or 2-word phrases, no sentences.`;
 
 const SYS_SELECT = `${RULES}
@@ -106,7 +107,8 @@ export function validateExpansion(raw) {
   const kw = obj.keywords && typeof obj.keywords === 'object' ? obj.keywords : {};
   const clean = (a) => (Array.isArray(a) ? a : []).map(x => String(x).trim().slice(0, 30)).filter(x => x && x.split(/\s+/).length <= 3).slice(0, 6);
   const refs = (Array.isArray(obj.refs) ? obj.refs : []).map(x => String(x).trim()).filter(x => ID_RE.test(x)).slice(0, 8);
-  return { intent: INTENTS.includes(obj.intent) ? obj.intent : 'topic', keywords: { ar: clean(kw.ar), en: clean(kw.en) }, refs };
+  const arOnly = (a) => clean(a).filter(x => /^[؀-ۿ\s]+$/.test(x)).slice(0, 3);
+  return { intent: INTENTS.includes(obj.intent) ? obj.intent : 'topic', keywords: { ar: clean(kw.ar), en: clean(kw.en), fatwa: arOnly(kw.fatwa) }, refs };
 }
 
 export async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, fetchImpl = fetch, maxPrice = null }) {

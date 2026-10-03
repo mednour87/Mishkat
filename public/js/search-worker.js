@@ -6,7 +6,7 @@
 // with its cache and circuit breaker, and replies).
 import { createEngine, detectLang, SOURCES_NEEDED, tokens, expandTokens } from './engine.js';
 import { loadVectors, topK, VEC_DIM } from './dense-rank.js';
-import { buildClosedList, applyAnswer, questionTypeOf } from './rag.js';
+import { buildClosedList, applyAnswer, questionTypeOf, forModels } from './rag.js';
 
 const getJSON = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); };
 let engineP = null, latinP = null;
@@ -144,19 +144,21 @@ async function ragFor(e, res, hadIds = [], fatwas = []) {
     // أحكام: only fatwas published by Sheikh Ibn Baz (fetched in full by the page), never a tafsir sentence
     if (!fatwas.length) return null;
   } else {
-    if (!['topic', 'term'].includes(res.type) || res.confirmedBy !== 'ai') return null;
+    if (!['topic', 'term'].includes(res.type) || !(res.confirmedBy === 'ai' || (res.pack && res.pack !== 'crisis'))) return null;
     await ensureSources(e, lang);
     const vs = (res.verses || []).filter(v => v.ai);
     const ordered = vs.filter(v => !v.aiRelated).concat(vs.filter(v => v.aiRelated));
-    verses = ordered.map(v => { const c = e.cardOf(lang, v.idx, 'answer'); return c && { idx: v.idx, ref: e.ref(v.idx), direct: !v.aiRelated, verseText: e.verses[v.idx], text: c.text, source: c.source, sourceTitle: c.sourceTitle }; }).filter(Boolean);
+    // the reviewed context pack (trap questions, sensitive subjects) is evidence too, placed first
+    const ctx = (res.verses || []).filter(v => v.ctx && !v.ai);
+    verses = ctx.concat(ordered).map(v => { const c = e.cardOf(lang, v.idx, 'answer'); return c && { idx: v.idx, ref: e.ref(v.idx), direct: !v.aiRelated, ctx: !!v.ctx, verseText: e.verses[v.idx], text: c.text, source: c.source, sourceTitle: c.sourceTitle }; }).filter(Boolean);
     if (hadIds.length) { try { hadiths = (await hadithsById(lang, hadIds)).filter(h => GOOD.test(h.grade || '') && !WEAK.test(h.grade || '')); } catch (err) { hadiths = []; } }
   }
   const list = buildClosedList({ verses, hadiths, fatwas, qtype });
   if (!list.length) return null;
   const key = lang + '|' + res.query + '|' + list.map(x => x.sid).join(',');
   if (RAG_CACHE.has(key)) return RAG_CACHE.get(key);
-  const out = await LLM.answer({ query: res.query, lang, qtype, sentences: list.map(x => ({ sid: x.sid, text: x.text })) });
-  const brief = applyAnswer(list, out, res.query, qtype);
+  const out = await LLM.answer({ query: res.query, lang, qtype, sentences: forModels(list) });
+  const brief = applyAnswer(list, out, res.query, qtype, { violence: !!(res.polemic || res.pack === 'violence'), balanced: list.some(x => x.ctx) });
   if (brief) { brief.lang = lang; RAG_CACHE.set(key, brief); if (RAG_CACHE.size > 60) RAG_CACHE.delete(RAG_CACHE.keys().next().value); }
   return brief;
 }
@@ -199,6 +201,13 @@ self.onmessage = async (ev) => {
     }
     if (m.op === 'rag') {        // asked by the page after the verses (and the Sunnah) are shown
       self.postMessage({ id: m.id, ok: true, value: await ragFor(e, m.res, m.hadIds || [], (m.fatwas || []).slice(0, 3)) });
+      return;
+    }
+    if (m.op === 'kw') {         // Arabic search keywords for the fatwa search of a non-Arabic question
+      let k = KW.get(String(m.query));
+      if (!k || !Array.isArray(k.fatwa) || !k.fatwa.length) { try { k = (await LLM.expand({ query: String(m.query), lang: m.lang === 'en' ? 'en' : 'ar' })).keywords; } catch (err) { k = null; } }
+      const ar = (k && Array.isArray(k.fatwa) && k.fatwa.length ? k.fatwa : k && Array.isArray(k.ar) ? k.ar : []).map(String).filter(w => /^[؀-ۿ\s_]+$/.test(w)).map(w => w.replace(/_/g, ' ')).slice(0, 4);
+      self.postMessage({ id: m.id, ok: true, value: ar });
       return;
     }
     if (m.op === 'hadiths') {    // hadiths by id (calendar panel)

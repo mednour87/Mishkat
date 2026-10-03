@@ -721,3 +721,6 @@ html[data-theme=light] .brief { background: #fffaf0; }
 .rag-fatwa { margin: 0 0 10px; padding: 10px 12px; border-inline-start: 3px solid rgba(143, 211, 255, .6); background: rgba(143, 211, 255, .06); border-radius: 8px; line-height: 1.9; }
 .rag-fatwa .rag-fq { display: block; margin-bottom: 6px; opacity: .9; }
 .rag-fatwa .rag-f { display: block; margin-bottom: 4px; }
+
+.crisis-help { margin: 8px 0; padding: 10px 12px; border-radius: 10px; background: rgba(94, 230, 160, .1); border: 1px solid rgba(94, 230, 160, .45); font-weight: 600; }
+.crisis-help a { color: #5EE6A0; }

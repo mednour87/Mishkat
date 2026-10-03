@@ -51,7 +51,7 @@ test('pipeline: a hostile composer cannot inject text; the judge removes an off-
   assert.deepEqual(out.uncovered, ['الشكر']);
   assert.equal(out.answerable, 'partial');
   assert.ok(!JSON.stringify(out).includes('INVENTED'));
-  assert.deepEqual(calls, ['openai/gpt-oss-120b', 'openai/gpt-oss-20b']);   // composer large, judge small
+  assert.deepEqual(calls, ['openai/gpt-oss-120b', 'openai/gpt-oss-120b']);   // composer and judge: the large model (JUDGE_MODEL), two independent prompts
 });
 
 test('pipeline: judge unreachable → nothing unjudged is shown; ruling → no answer', async () => {

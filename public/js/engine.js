@@ -289,6 +289,8 @@ export const MSG = {
     topic: (n, q, s = 1) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ذات صلة بـ«${q}» في ${arCount(s, 'سورة واحدة', 'سورتين', 'سور', 'سورة')}. وهذا بيان أبرزها من التفسير المعتمد، ثم السور التي وردت فيها:`,
     noTopic: 'لم أجد مرجعًا كافيًا لهذا السؤال في الآيات والتفاسير المعتمدة لديّ، فأمتنع عن الإجابة حتى لا أنسب إلى القرآن ما ليس فيه. جرّب كلمة مفتاحية أوضح (مثل: الصبر، الوالدين، موسى).',
     ruling: 'هذا سؤال عن حكم شرعي، والفتوى لأهل العلم؛ فلا تُصدر «مشكاة» أحكامًا. تجد أدناه روابط مصادر الفتوى الرسمية، وآيات ذات صلة بالموضوع للاطلاع (وليست فتوى).',
+    crisis: 'إن كنت تفكّر في إنهاء حياتك أو إيذاء نفسك فلست وحدك، وحياتك غالية عند الله. تحدّث الآن إلى شخص تثق به، أو اتصل بخدمة الطوارئ في بلدك أو بخط للمساندة النفسية (تجد خطوط المساعدة المجانية والسرية في كل بلد على موقع findahelpline.com). وهذه آيات من كتاب الله تذكّر برحمته، مع تفسيرها كاملًا:',
+    blood: 'هذه مسألة تتعلّق بالدماء والأنفس؛ وتطبيق أحكامها من شأن القضاء الشرعي وولي الأمر، والفتوى فيها لأهل العلم، فلا تعرض «مشكاة» مقتطفات فتاوى فيها. وهذه آيات في حرمة النفس مع تفسيرها كاملًا، والروابط أعلاه إلى جهات الإفتاء الرسمية.',
     personal: 'هذه مسألة شخصية تحتاج إلى عالم أو مختص يسمع تفاصيلها. لا تقدّم «مشكاة» نصائح أو أحكامًا في الحالات الخاصة. يمكنك البحث عن موضوع عام (مثل: الصبر، بر الوالدين).',
     dream: 'تعبير الرؤى لا يدخل في عمل «مشكاة»، ولا يُبنى على آلة. يمكنك البحث عن ذكر الرؤيا في القرآن بكلمة «الرؤيا».',
     invalidRef: (s, n) => `سورة ${s} عدد آياتها ${n} فقط؛ هذا الرقم غير موجود.`,
@@ -327,6 +329,8 @@ export const MSG = {
     topic: (n, q, s = 1) => `I found ${n} verse${n === 1 ? '' : 's'} related to “${q}” in ${s} surah${s === 1 ? '' : 's'}. Here is the explanation of the main ones from vetted tafsir, then the surahs where they occur:`,
     noTopic: 'I could not find sufficient evidence for this in the vetted verses and tafsir I hold, so I abstain rather than attribute to the Quran what is not in it. Try a clearer keyword (e.g. patience, parents, Moses).',
     ruling: 'This asks for a religious ruling, which belongs to qualified scholars; Mishkat does not issue rulings. Below are links to official fatwa sources, and related verses for reading (not a fatwa).',
+    crisis: 'If you are thinking of ending your life or harming yourself, you are not alone, and your life is precious to Allah. Please speak now to someone you trust, or call the emergency services of your country or a support line (findahelpline.com lists free, confidential lines in every country). Here are verses of the Book of Allah reminding of His mercy, with their full tafsir:',
+    blood: 'This question concerns life and blood. Such rulings are applied only by the courts and those in authority, and fatwas on them belong to scholars: Mishkat shows no extract of a fatwa here. Below are the verses on the sanctity of life, with their full tafsir; the links above lead to the official fatwa authorities.',
     personal: 'This is a personal matter that needs a scholar or specialist who can hear the details. Mishkat gives no advice or rulings on individual cases. You can search a general topic instead (e.g. patience, parents).',
     dream: 'Dream interpretation is outside Mishkat’s scope and should not be done by a machine. You can search for dreams mentioned in the Quran with the word “dream”.',
     invalidRef: (s, n) => `Surah ${s} has only ${n} verses; this verse number does not exist.`,
@@ -441,6 +445,18 @@ const GUARD_EXTRA = [
   ['personal', /(^|\s)(وش|ايش|شو|شنو|ماذا)\s+(اسوي|افعل|اعمل|ندير|نعمل|بعمل|نسوي|اتصرف)\s+(مع|في|ب)\s*(زوجي|زوجتي|جوزي|مراتي|ابوي|ابويا|ابي|امي|اخوي|اختي|ولدي|بنتي|ابني|ابنتي|مديري|اهلي)(\s|$)|(^|\s)(زوجي|زوجتي|جوزي|مراتي|ابوي|ابويا|امي|اخوي|اختي|ولدي|بنتي|مديري)\s+(ما|مش|مو|لا)\s+\S+|(^|\s)(يضربني|تضربني|يهددني|تهددني|يظلمني|تظلمني|طلقني|خانني|خانتني)(\s|$)/],
   ['takfir', /^هل\s+(اللي|الذي|من|الي)\s+(ما|لا|مش)\s+\S+\s+(كافر|كفار|مرتد|مشرك)\s*$/],
 ];
+// A person who speaks of ending their life or harming themselves gets, before anything else, a fixed
+// message of support with where to find help now, and verses of hope with their full tafsir — never a
+// verse list chosen by keywords (which gave 17:33, on killing others, to «I want to kill myself»).
+const CRISIS = /(انتحر|انتحار|الانتحار|اقتل\s+نفسي|أقتل\s+نفسي|نقتل\s+روحي|انهي\s+حياتي|أنهي\s+حياتي|انهاء\s+حياتي|إنهاء\s+حياتي|اريد\s+ان\s+اموت|أريد\s+أن\s+أموت|ابي\s+اموت|ابغى\s+اموت|ودي\s+اموت|نفسي\s+اموت|ما\s+ابي\s+اعيش|لا\s+اريد\s+ان\s+اعيش|لا\s+أريد\s+أن\s+أعيش|اؤذي\s+نفسي|أؤذي\s+نفسي|ايذاء\s+نفسي|إيذاء\s+نفسي)|\b(suicid\w*|kill(ing)? (myself|my self)|end (my life|it all)|take my (own )?life|want(ed)? to die|wish i (was|were) dead|don ?t want to (live|be alive)|no reason to live|self[- ]?harm|hurt(ing)? myself|cut(ting)? myself)\b/i;
+export function isCrisis(q) { return CRISIS.test(q) || CRISIS.test(normLatin(q)) || CRISIS.test(normAr(q)); }
+export const CRISIS_REFS = ['4:29', '39:53', '12:87', '94:5', '94:6', '2:286', '13:28'];
+// rulings about blood (killing, apostasy, fighting, attacks): no extract of a fatwa is shown; the verses
+// on the sanctity of life with their full tafsir, and a referral to scholars and the courts
+const BLOOD = /(قتل|اقتل|يقتل|نقتل|القتل|دم|دماء|الدماء|اغتيال|تفجير|ارهاب|إرهاب|جهاد|الجهاد|مرتد|المرتد|الردة|ردة|حرابة|الحرابة|القصاص|قصاص|اعدام|إعدام)|\b(kill\w*|murder\w*|blood|assassinat\w*|bomb\w*|terror\w*|jihad|apostat\w*|execut\w*|death penalty)\b/i;
+export function isBloodRuling(q) { return BLOOD.test(q) || BLOOD.test(normLatin(q)); }
+export const BLOOD_REFS = ['6:151', '17:33', '5:32', '4:93'];
+
 export function guardCheck(q) {
   const t = q + ' \n ' + normLatin(q);
   for (const [kind, re] of GUARD) if (re.test(t)) return kind;
@@ -1310,7 +1326,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     if (res.type === 'empty') return res;
     const q = res.query || '';
     const g = termFor(q);
-    if (g && !res.term && (isBareTerm(q, g) || TERM_CUE.test(q))) res.term = g;
+    if (g && !res.term && (isBareTerm(q, g) || (TERM_CUE.test(q) && termIsSubject(q, g)))) res.term = g;
     // objections encyclopedia: for questions and objections, not for a plain topic («قصة يوسف»)
     const asks = /[؟?]/.test(q) || /^(لماذا|لم|هل|كيف|ما|ماذا|من|اليس|الم|اين|متي|كم)\s/.test(normAr(q)) || res.polemic || res.sensitive || res.type === 'khilaf';
     if (asks && ['topic', 'notfound', 'verify', 'term', 'khilaf', 'abstain'].includes(res.type) && res.reason !== 'violence' && res.reason !== 'dream') {
@@ -1497,7 +1513,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
 
     // 1b. what a core term means / how to translate it (glossary of the reference pack)
     const term = mode === 'topic' ? null : termFor(q);
-    if (term && TERM_CUE.test(q)) {
+    if (term && TERM_CUE.test(q) && termIsSubject(q, term)) {
       base.meta.route = 'term';
       const tix = topicIndexFor(term.ar, 'ar', [], 12);
       // no topic with verses in the index: the verses where the word itself occurs
@@ -1516,6 +1532,15 @@ export function createEngine({ core, searchAr, sources = {} }) {
     if (hr) {
       base.meta.route = 'hadith';
       return { ...base, type: 'hadith', hadith: hr, answer: [{ kind: 'text', text: hr.q ? M.hadithIntro : M.hadithLatin }], verses: [], focus: null };
+    }
+
+    // 1e. a person in crisis (suicide, self-harm): support first, before any other route
+    if (isCrisis(q)) {
+      base.meta.route = 'crisis';
+      const ids = CRISIS_REFS.map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); }).filter(i => i >= 0);
+      const cards = ids.map(i => cardOf(lang, i, 'context')).filter(Boolean);
+      return { ...base, type: 'topic', crisis: true, sensitive: true, pack: 'crisis', answer: [{ kind: 'text', text: M.crisis }, ...cards],
+        verses: ids.map(i => verseResult(i)), focus: ids[0], suras: groupBySura(ids), aiConfirmed: false, confirmedBy: 'context', paragraphBy: 'context', terms: [] };
     }
 
     // 2. guard (rulings, personal cases, dreams)
@@ -1718,6 +1743,18 @@ export function createEngine({ core, searchAr, sources = {} }) {
       paragraphBy: tixUse ? 'index' : confirmed ? 'llm' : (packIdx.length ? 'context' : 'none') };
   }
 
+  // the glossary term is what is asked about — not a word that only frames another question
+  // («what is the punishment for theft in Islam», «ما حكم … في الإسلام», "according to Islam")
+  const RX_ESC = /[.*+?^${}()|[\]\\]/g;
+  function termIsSubject(q, term) {
+    const lat = (term.latin || []).map(x => normLatin(x)).filter(Boolean).map(x => x.replace(RX_ESC, '\\$&'));
+    const nl = normLatin(q), na = normAr(q);
+    if (lat.length && new RegExp('\\b(in|according to|under|by|for|of)\\s+(the\\s+)?(' + lat.join('|') + ')\\b').test(nl)) return false;
+    const ar = normAr(term.ar || '').replace(/^ال/, '');
+    if (ar && new RegExp('(^|\\s)(في|حسب|عند|بحسب|وفق)\\s+(ال)?' + ar + '(\\s|$)').test(na)) return false;
+    return true;
+  }
+
   // Full tafsir unit of one verse (never a fragment).
   function cardOf(lang, i, role) {
     const s = src[PARAGRAPH_FOR[lang]] || src[TAFSIR_FOR[lang]];
@@ -1734,8 +1771,15 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const ts = stripped ? topicSearchAuto(stripped, lang, uiLang, 8) : { ranked: [] };
     // verses confirmed by the AI's closed-list selection first, then the full keyword matches
     const ids = [...new Set([...aiIdx.slice(0, 6), ...(ts.ranked || []).filter(x => x.full).map(x => x.idx)])].slice(0, 8);
-    const related = ids.map(i => verseResult(i, { relatedOnly: true }));
     base.meta.route = base.meta.route || 'guard';
+    if (isBloodRuling(q)) {
+      const life = BLOOD_REFS.map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); }).filter(i => i >= 0);
+      const cards = life.map(i => cardOf(lang, i, 'context')).filter(Boolean);
+      const vs = life.concat(ids.filter(i => !life.includes(i))).slice(0, 8).map(i => verseResult(i, { relatedOnly: !life.includes(i) }));
+      return { ...base, type: 'abstain', reason: 'ruling', blood: true, sensitive: true, answer: [{ kind: 'text', text: M.ruling }, { kind: 'text', text: M.blood }, ...cards],
+        verses: vs, focus: vs.length ? vs[0].idx : null, links: fatwaLinks(stripped || q) };
+    }
+    const related = ids.map(i => verseResult(i, { relatedOnly: true }));
     return { ...base, type: 'abstain', reason: 'ruling', answer: [{ kind: 'text', text: M.ruling }], verses: related,
       focus: related.length ? related[0].idx : null, links: fatwaLinks(stripped || q) };
   }

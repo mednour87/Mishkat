@@ -21,18 +21,18 @@ const MAX = 48, TEXT_MAX = 650;
 export const QTYPES = ['ruling', 'comfort', 'virtue', 'howto', 'why', 'definition', 'story', 'topic'];
 // what a good answer looks like for each kind of question (passed to both models)
 const HOW = {
-  ruling: 'The visitor asks for a RULING. Only F items (a fatwa published by Sheikh Ibn Baz) may be used, and only a fatwa whose question is about the SAME act in the SAME situation; select its question (F:id#q) and the answer paragraph(s) that state the ruling and its evidence. Never use a fatwa on a different act or a different case. If no fatwa addresses the same matter: answerable "no".',
+  ruling: 'The visitor asks for a RULING. Only F items (a fatwa published by Sheikh Ibn Baz) may be used. A fatwa answers the question when its own question (F:id#q) asks for the ruling of the SAME act or thing — it may describe the asker\'s personal situation, that is fine. Reject a fatwa about a different act or thing, or about a special case that changes the ruling (accidental vs deliberate killing; a birthday vs Christmas, since «عيد الميلاد» means both; «الفوائد» as benefits vs bank interest). Select the fatwa question F:id#q and the 1–2 answer paragraphs that state the ruling. If no fatwa is about the same act: answerable "no".',
   comfort: 'The visitor is distressed. Choose passages of hope, mercy, patience, remembrance of Allah, relief after hardship and practical guidance; never passages about punishment, Hell or the fate of disbelievers.',
   virtue: 'The visitor asks about a virtue or reward: choose passages that state the reward or merit itself.',
   howto: 'The visitor asks how to do something: choose passages that state what to do (guidance, steps, words to say).',
   why: 'The visitor asks why: choose passages that state the reason or wisdom, not merely the fact.',
   definition: 'The visitor asks what something is or who someone is: choose passages that define or describe it.',
   story: 'The visitor asks for a story: choose the passages that narrate its main events.',
-  topic: 'The visitor asks what the sources say about a subject: choose passages that state the teaching on that subject.',
+  topic: 'The visitor asks what the sources say about a subject: choose passages that state the teaching on that subject. If the subject is a legal term (a penalty such as «الرجم», «الجلد», «القصاص», or a status), passages where the same word only describes an event (e.g. the threat «لأرجمنك») do not answer it.',
 };
 
 const SYS_COMPOSE = `You select evidence for a Quran and Sunnah search engine. You NEVER write explanations, rulings, translations or any religious text. Output JSON only.
-Input: a question, its type, and a numbered list of passages taken word for word from the sources of truth: the Quran itself "V:sura:aya", the vetted tafsir of a verse "Q:sura:aya#n", an authentic hadith "H:id#t1" and its explanation "H:id#e1", a fatwa published by Sheikh Ibn Baz "F:id#q" (its question) and "F:id#a1" (its answer paragraphs).
+Input: a question, its type, and a numbered list of passages (a hadith passage is preceded by its subject «[hadith on: …]», given by its publisher, to tell you what the hadith is about) taken word for word from the sources of truth: the Quran itself "V:sura:aya", the vetted tafsir of a verse "Q:sura:aya#n", an authentic hadith "H:id#t1" and its explanation "H:id#e1", a fatwa published by Sheikh Ibn Baz "F:id#q" (its question) and "F:id#a1" (its answer paragraphs).
 Passages are listed with the most relevant verses first. When you select a verse text (V:s:a), ALSO select in the same point the tafsir sentence of that same verse (Q:s:a#n) that explains it, so that the verse is never shown without its vetted explanation.
 1. concepts: the 1 to 3 distinct things the question asks about, as short nouns in the language of the question (e.g. «الصبر», «الشكر»; "patience", "gratitude").
 2. answerable: "yes" if sentences of the list directly answer the question, "partial" if they answer only some of the concepts, "no" otherwise.
@@ -40,11 +40,12 @@ Passages are listed with the most relevant verses first. When you select a verse
    - Judge by meaning, not by shared words. Reject homonyms and other senses of a word (e.g. «حجاب» meaning the barrier between Paradise and Hell is NOT the covering of women; «الجاريات» = ships, not neighbours).
    - Match the register of the question: a person asking for comfort (sadness, anxiety, grief) needs sentences of hope, mercy and remedy, not of punishment.
    - Prefer the sentence that states the answer itself over one that only mentions the subject.
+   - A passage where people merely USE the word (an accusation such as «إن هذا إلا سحر مبين», an insult, a threat, a story event) does not teach about the subject: never select it as the answer.
    - Follow the instruction for the question type given with the question.
    - Use ONLY ids from the list. Never invent an id. If nothing answers, answerable "no" and points [].
 Return {"concepts":[...],"answerable":"yes|partial|no","points":[{"concept":"...","ids":["Q:2:153#1"]}]}`;
 
-const SYS_JUDGE = `You check relevance only, for a Quran search engine. Given a question, its type and numbered passages, keep a passage only if it DIRECTLY answers the question, with the words in the SAME sense as in the question (not a homonym, not a different subject, not merely sharing a word) and in a fitting register (comfort for someone distressed, never threats). For a ruling question, keep a fatwa passage only if the fatwa is about the SAME act in the SAME situation as the question (a fatwa on a neighbouring matter must be removed). A verse text may be kept if it states the answer. Output JSON {"keep":[numbers]} only, possibly empty.`;
+const SYS_JUDGE = `You check relevance only, for a Quran search engine. Given a question, its type and numbered passages, keep a passage only if it DIRECTLY answers the question, with the words in the SAME sense as in the question (not a homonym, not a different subject, not merely sharing a word) and in a fitting register (comfort for someone distressed, never threats). A passage where people merely use the word (an accusation like «this is nothing but magic», an insult, a threat) does not answer a question about that subject. Shared words are not enough: a passage about another matter in which the same words appear must be removed (e.g. a man's testimony about a woman's miscarriage does not answer «شهادة المرأة», the testimony of women; the threat of stoning a prophet does not answer «الرجم», the legal penalty). For a ruling question, keep a fatwa passage if the fatwa rules on the SAME act or thing as the question (the asker\'s personal details may differ); remove it if it rules on a different act or on a special case that changes the ruling (beware of homonyms such as «عيد الميلاد» = birthday or Christmas). A verse text may be kept if it states the answer. Output JSON {"keep":[numbers]} only, possibly empty.`;
 
 export function sanitizeAnswer(body) {
   if (!body || typeof body !== 'object') throw new Error('bad body');
@@ -58,7 +59,7 @@ export function sanitizeAnswer(body) {
     if (!SID.test(sid) || !text || seen.has(sid)) continue;
     // R3 on the server too: a ruling question gets fatwa passages only, any other question none
     if ((qtype === 'ruling') !== sid.startsWith('F:')) continue;
-    seen.add(sid); sentences.push({ sid, text });
+    seen.add(sid); sentences.push({ sid, text, ...(s.tag === 'context' ? { tag: 'context' } : {}) });
     if (sentences.length >= MAX) break;
   }
   return { query, lang, qtype, sentences };
@@ -96,7 +97,8 @@ export async function answer(body, env, fetchImpl = fetch) {
   const pv = providers(env).filter(pr => !cooling(pr));
   if (!pv.length) return { ok: false, error: 'no model' };
   const nl = String.fromCharCode(10);
-  const numbered = p.sentences.map(s => `[${s.sid}] ${s.text}`).join(nl);
+  const numbered = p.sentences.map(s => `[${s.sid}]${s.tag ? ' (reviewed context)' : ''} ${s.text}`).join(nl);
+  const sensitive = p.sentences.some(s => s.tag);
 
   // 1. composer: the first provider that answers (large model first)
   let comp = null, model = null;
@@ -105,7 +107,7 @@ export async function answer(body, env, fetchImpl = fetch) {
     const left = 7000 - (Date.now() - t0);
     if (left < 1500) break;
     try {
-      comp = validateCompose(await callJSON(pr, [{ role: 'system', content: SYS_COMPOSE }, { role: 'user', content: `Question (${p.lang}): ${p.query}${nl}Question type: ${p.qtype} — ${HOW[p.qtype]}${nl}${nl}Passages:${nl}${numbered}` }], Math.min(4500, left), fetchImpl), p.sentences);
+      comp = validateCompose(await callJSON(pr, [{ role: 'system', content: SYS_COMPOSE }, { role: 'user', content: `Question (${p.lang}): ${p.query}${nl}Question type: ${p.qtype} — ${HOW[p.qtype]}${sensitive ? ' This is a sensitive subject: the FIRST point must use passages marked (reviewed context), which state the general principle; other passages may follow only if they answer the question too.' : ''}${nl}${nl}Passages:${nl}${numbered}` }], Math.min(4500, left), fetchImpl), p.sentences);
       model = pr.model; break;
     } catch (e) { trip(pr, e); }
   }
@@ -115,8 +117,10 @@ export async function answer(body, env, fetchImpl = fetch) {
   // 2. judge: a smaller model when there is one, independent prompt, sentences renumbered 1..n
   const flat = comp.points.flatMap(x => x.sids);
   const byId = new Map(p.sentences.map(s => [s.sid, s.text]));
-  const SMALL = /(?<![0-9])(20|8|9)b|mini|small/i;   // «gpt-oss-20b», not «gpt-oss-120b»
-  const judges = pv.filter(pr => SMALL.test(pr.model)).concat(pv.filter(pr => !SMALL.test(pr.model)));
+  // the judge: JUDGE_MODEL (default: the large model — the small one let homonyms through on 2026-10-03,
+  // e.g. a hadith on a miscarriage case kept for «شهادة المرأة»); its prompt and task are independent
+  const JM = env.JUDGE_MODEL || 'openai/gpt-oss-120b';
+  const judges = pv.filter(pr => pr.model === JM).concat(pv.filter(pr => pr.model !== JM));
   let keep = null, judge = null;
   for (const pr of judges) {
     try {

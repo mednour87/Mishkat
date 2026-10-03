@@ -64,7 +64,11 @@ export async function fatwaSearch(body, env, fetchImpl = fetch) {
   }
   // search
   const q0 = String(body && body.q || '').slice(0, 300);
-  const q = fatwaQuery(q0);
+  // a question in English: the official site is in Arabic; the page sends the AI's Arabic search keywords
+  // (2–4 words, Arabic letters only). They are search terms, never displayed; the fatwas found are shown
+  // in Arabic, verbatim, and the AI filter below still reads the visitor's own question.
+  const kw = Array.isArray(body && body.kw) ? body.kw.map(w => String(w).replace(/[^؀-ۿ\s]/g, ' ').replace(/\s+/g, ' ').trim()).filter(w => w && w.length <= 30).slice(0, 4) : [];
+  const q = /[؀-ۿ]/.test(q0) ? fatwaQuery(q0) : fatwaQuery(kw.join(' '));
   if (q.replace(/\s/g, '').length < 3) return { ok: false, error: 'query too short' };
   let res = await searchBinbaz(q, 'AND_ONLY', fetchImpl);
   if (res.items.length < 3 && q.includes(' ')) {

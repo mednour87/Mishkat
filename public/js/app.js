@@ -428,6 +428,8 @@ function renderResults() {
   if (!res) return;
   const dir = res.lang === 'ar' ? 'rtl' : 'ltr';
   let h = `<p class="qline" dir="auto">«${esc(res.query)}»</p>` + levelBadge(res) + badgeFor(res);
+  // a person in crisis: where to find help, first, before anything else
+  if (res.crisis) h += `<p class="crisis-help"><a href="https://findahelpline.com" target="_blank" rel="noopener">findahelpline.com</a> — ${esc(t.crisisLink)}</p>`;
   const texts = res.answer.filter(a => a.kind === 'text');
   const quotes = res.answer.filter(a => a.kind === 'quote');
   const notes = res.answer.filter(a => a.kind === 'note');
@@ -507,7 +509,7 @@ function renderResults() {
     h += `<div class="links">${res.links.map(l => `<a class="btn gold" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(t.links[l.id] || l.id)}</a>`).join('')}</div>`;
   }
   // published fatwas of a recognised scholar on the same question (verbatim, linked) — never a ruling by Mishkat
-  if (res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '')) h += `<section class="hbox fbox" id="fatwaBox" aria-live="polite"></section>`;
+  if (res.reason === 'ruling' && !res.blood && (/[؀-ۿ]/.test(res.query || '') || state.llm)) h += `<section class="hbox fbox" id="fatwaBox" aria-live="polite"></section>`;
   if (res.bayenat && res.bayenat.length) h += `<section class="bay"><h3 class="sec">${esc(t.bayTitle)}</h3><ul>${res.bayenat.map(b => `<li><a href="${esc(b.url)}" target="_blank" rel="noopener" dir="rtl">${esc(b.q)}</a> <small>${esc(b.cat || '')}</small></li>`).join('')}</ul><p class="note">${esc(t.bayNote)}</p></section>`;
   if (res.type !== 'empty') h += `<p class="disclose">${esc(t.disclosure)}</p>`;
   const v = $('#viewRes');
@@ -533,7 +535,8 @@ function renderResults() {
   v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx));
   v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
   if ((res.type === 'topic' || res.type === 'term') && state.worker) loadSunnah(res).finally(() => loadRag(res));
-  if (res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '')) loadFatwas(res.query);
+  if (res.reason === 'ruling' && !res.blood && /[؀-ۿ]/.test(res.query || '')) loadFatwas(res.query);
+  else if (res.reason === 'ruling' && !res.blood && state.llm && state.worker) workerCall({ op: 'kw', query: res.query, lang: res.lang }).catch(() => []).then(kw => loadFatwas(res.query, kw || []));
   if (res.type === 'hadith' || res.hadithCheck) loadHadith(res.type === 'hadith' ? res.hadith.q : res.hadithCheck, res.type !== 'hadith');
   markCurrentInResults();
 }
@@ -618,11 +621,12 @@ async function loadSunnah(res) {
 // A concept of the question with no evidence is said so. If the service fails: the previous short answer.
 // a story («قصة يوسف») is answered by its verses in order, not by two sentences
 const STORY_Q = /^(قصة|قصه)\s|\bstory of\b/i;
-const isRulingRes = (res) => res.type === 'abstain' && res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '');
+const isRulingRes = (res) => res.type === 'abstain' && res.reason === 'ruling';
 function ragWanted(res) {
   if (!(state.llm && state.llm.answer && state.worker)) return false;
+  if (res.crisis || res.blood) return false;          // fixed support message / no fatwa extract on blood
   if (isRulingRes(res)) return true;
-  return ['topic', 'term'].includes(res.type) && res.confirmedBy === 'ai' && !STORY_Q.test(res.query || '');
+  return ['topic', 'term'].includes(res.type) && (res.confirmedBy === 'ai' || !!res.pack) && !STORY_Q.test(res.query || '');
 }
 function ragItem(x, res, t) {
   if (x.kind === 'quran') return `<span class="rag-s rag-q" dir="rtl">﴿${esc(x.text)}﴾</span> <button class="cite" data-idx="${x.idx}">(${esc(refLabel(x.idx))})</button>`;
@@ -633,10 +637,12 @@ function ragItem(x, res, t) {
 async function loadRag(res, fatwas = []) {
   const box = $('#ragBox'), t = T();
   if (!box || !ragWanted(res)) return;
+  const ctxIdx = new Set((res.answer || []).filter(a => a.kind === 'quote' && a.role === 'context').map(a => a.idx));
   let b = null;
   try {
     b = await workerCall({ op: 'rag', res: { type: res.type, reason: res.reason, lang: res.lang, query: res.query, confirmedBy: res.confirmedBy,
-      verses: (res.verses || []).map(v => ({ idx: v.idx, ai: !!v.ai, aiRelated: !!v.aiRelated })) }, hadIds: res._sunnah || [], fatwas });
+      polemic: !!res.polemic, pack: res.pack || null,
+      verses: (res.verses || []).map(v => ({ idx: v.idx, ai: !!v.ai, aiRelated: !!v.aiRelated, ctx: ctxIdx.has(v.idx) })) }, hadIds: res._sunnah || [], fatwas });
   } catch (e) { b = null; }
   if (box !== $('#ragBox')) return;          // another question meanwhile
   res.rag = b;
@@ -652,7 +658,7 @@ async function loadRag(res, fatwas = []) {
     box.innerHTML = b.points.map(p => { const f = p.items[0];
       return `<blockquote class="rag-fatwa" dir="rtl">${p.items.map(x => ragItem(x, res, t)).join(' ')}
         <footer><small>${esc(f.mufti || '')} — <a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.title || f.source || 'binbaz.org.sa')}</a></small></footer></blockquote>`; }).join('')
-      + `<p class="note rag-gap">${esc(t.ragFatwaNote)}</p>`;
+      + `<p class="note rag-gap">${esc(t.ragFatwaNote)}${res.lang === 'en' ? ' ' + esc(t.ragFatwaArabicOnly) : ''}</p>`;
   } else {
     const srcs = [...new Set(b.points.flatMap(p => p.items.map(x => x.kind === 'tafsir' ? x.sourceTitle : x.kind === 'quran' ? t.ragQuranSrc : t.ragHadithSrc)))].filter(Boolean);
     box.innerHTML = `<ul class="rag-points" dir="${dir}">${b.points.map(p => `<li>${p.shown && b.points.length > 1 ? `<b class="rag-c">«${esc(p.concept)}»</b> ` : ''}${p.items.map(x => ragItem(x, res, t)).join(' ')}</li>`).join('')}</ul>
@@ -663,14 +669,14 @@ async function loadRag(res, fatwas = []) {
 }
 // Published fatwas (binbaz.org.sa, official site of Sheikh Ibn Baz): titles chosen among the site's own
 // search results (the AI may only filter that closed list), each opened in full on demand, verbatim.
-async function loadFatwas(q) {
+async function loadFatwas(q, kw = []) {
   const box = $('#fatwaBox'), t = T();
   if (!box) return;
   const head = `<h3 class="sec">${esc(t.fatwaTitle)}</h3><p class="note">${esc(t.fatwaNote)}</p>`;
   box.innerHTML = head + `<p class="note">${esc(t.fatwaLoading)}</p>`;
   let j = null;
   try {
-    const r = await fetch('api/fatwa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q }) });
+    const r = await fetch('api/fatwa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(kw.length ? { q, kw } : { q }) });
     j = r.ok ? await r.json() : null;
   } catch (e) { j = null; }
   if (box !== $('#fatwaBox')) return;

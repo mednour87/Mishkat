@@ -17,11 +17,18 @@
 //      Hell or torment unless the question itself mentions it
 //  R6  caps: 3 points, 2 passages per point (3 for one fatwa), 1,200 characters (1,600 for a fatwa)
 //  R7  concept labels written by the model are shown only when they are words of the question
+//  R10 a trap or polemic question about violence: verses about fighting are never quoted alone in the short
+//      answer (they stay in the verse list with their context); the reviewed context passages come first
+//  R11 a sensitive subject with a reviewed context pack: the short answer starts with a reviewed context
+//      passage; without one, no short answer (the verse cards with their context remain)
+//  R12 sense lock for known homonyms of fatwa titles: a question about Christmas keeps only a fatwa that
+//      speaks of Christians / non-Muslim feasts (not a birthday fatwa: «عيد الميلاد» means both); a question
+//      about bank interest keeps only a fatwa on riba / bank interest (not «فوائد» = benefits)
 //  R8  a passage is a whole sentence (short fragments are joined to their sentence), cut only at sentence
 //      ends; a long fatwa paragraph is shown in sentence groups, never cut inside a sentence
 import { normAr, normLatin, tokens } from './engine.js';
 
-export const LIMITS = { verses: 8, quranTexts: 4, perVerse: 4, hadiths: 4, fatwas: 3, fatwaUnits: 4, unitChars: 600,
+export const LIMITS = { verses: 8, quranTexts: 4, verseChars: 400, perVerse: 4, hadiths: 4, fatwas: 3, fatwaUnits: 8, unitChars: 600,
   points: 3, perPoint: 2, perFatwaPoint: 3, chars: 1200, fatwaChars: 1600 };
 
 // ---------------------------------------------------------------- question type (deterministic)
@@ -65,7 +72,8 @@ export function units(text, max = LIMITS.unitChars) {
     if (b - a < 2 || /^\d+\.?$/.test(t.slice(a, b))) continue;
     const s = t.slice(a, b);
     const prev = spans[spans.length - 1];
-    if (prev && (s.length < 30 || /^[a-z(,]/.test(s) || prev.b - prev.a < 30) && b - prev.a <= max) prev.b = b;
+    if (prev && (s.length < 30 || /^[a-z(,،;:»"”)\]\-–]/.test(s) || prev.b - prev.a < 30) && b - prev.a <= max) prev.b = b;
+    else if (/^[،,;:»"”)\]\-–]/.test(s)) continue;             // a dangling continuation that cannot be joined: not a passage
     else spans.push({ a, b });
   }
   return spans.map(({ a, b }) => t.slice(a, b).replace(/^\d+\.\s*/, '')).filter(s => s.length >= 12 && s.length <= max);
@@ -74,25 +82,35 @@ export function units(text, max = LIMITS.unitChars) {
 // ---------------------------------------------------------------- closed list
 // verses: [{ idx, ref, direct, verseText (Tanzil), text (tafsir unit), source, sourceTitle }] — AI-selected, best first
 // hadiths: [{ id, text, expl, grade, by, lang }]   fatwas: [{ id, title, question, answer:[paragraphs], url, mufti, source }]
+// verses of the reviewed context pack carry ctx:true (placed first, treated as direct)
+export const WAR_VERSES = new Set(['2:190', '2:191', '2:192', '2:193', '2:216', '2:244', '3:13', '4:74', '4:76', '4:84', '4:89', '4:91', '4:104', '8:12', '8:15', '8:16', '8:39', '8:57', '8:60', '8:65', '9:5', '9:12', '9:14', '9:29', '9:36', '9:41', '9:73', '9:111', '9:123', '47:4', '48:16', '61:4', '66:9']);
 export function buildClosedList({ verses = [], hadiths = [], fatwas = [], qtype = 'topic' }) {
   const list = [];
   if (qtype === 'ruling') {
     for (const f of fatwas.slice(0, LIMITS.fatwas)) {
       const base = { kind: 'fatwa', id: String(f.id), url: f.url, title: f.title || '', mufti: f.mufti || '', source: f.source || '', question: f.question || '' };
       if (f.question) list.push({ ...base, sid: `F:${f.id}#q`, part: 'question', text: String(f.question).slice(0, LIMITS.unitChars) });
-      const paras = (f.answer || []).flatMap(p => String(p).length <= LIMITS.unitChars ? [String(p)] : units(p));
+      // paragraphs as published; a long one in whole sentences; short consecutive ones (a list, a line) joined
+      const paras = [];
+      // the radio host's lines («المقدم: جزاكم الله خيرًا») are not the Sheikh's answer: never quoted as such
+      const own = (f.answer || []).map(p => String(p).replace(/\s*المقدم\s*:.*$/s, '').trim()).filter(p => p && !/^(المقدم|السائل|الشيخ)\s*:/.test(p));
+      for (const p of own.flatMap(p => p.length <= LIMITS.unitChars ? [p] : units(p))) {
+        const last = paras[paras.length - 1];
+        if (last && (last.length < 80 || p.length < 40) && last.length + p.length < LIMITS.unitChars) paras[paras.length - 1] = last + ' ' + p; else paras.push(p);
+      }
       paras.filter(p => p.trim().length >= 20).slice(0, LIMITS.fatwaUnits).forEach((p, k) => list.push({ ...base, sid: `F:${f.id}#a${k + 1}`, part: 'answer', n: k + 1, text: p.trim() }));
     }
     return list;
   }
-  for (const v of verses.slice(0, LIMITS.verses)) {
-    const base = { idx: v.idx, ref: v.ref, direct: !!v.direct };
-    if (v.direct && v.verseText && list.filter(x => x.kind === 'quran').length < LIMITS.quranTexts)
+  const ordered = verses.filter(v => v.ctx).concat(verses.filter(v => !v.ctx));
+  for (const v of ordered.slice(0, LIMITS.verses + verses.filter(x => x.ctx).length)) {
+    const base = { idx: v.idx, ref: v.ref, direct: !!(v.direct || v.ctx), ctx: !!v.ctx };
+    if (v.direct && v.verseText && v.verseText.length <= LIMITS.verseChars && list.filter(x => x.kind === 'quran').length < LIMITS.quranTexts)
       list.push({ ...base, sid: `V:${v.ref}`, kind: 'quran', text: v.verseText, source: 'tanzil', sourceTitle: v.quranTitle || 'Tanzil' });
     units(v.text).slice(0, LIMITS.perVerse).forEach((s, k) => list.push({ ...base, sid: `Q:${v.ref}#${k + 1}`, kind: 'tafsir', text: s, source: v.source, sourceTitle: v.sourceTitle }));
   }
   for (const h of hadiths.slice(0, LIMITS.hadiths)) {
-    const base = { kind: 'hadith', id: String(h.id), grade: h.grade || '', by: h.by || '', lang: h.lang };
+    const base = { kind: 'hadith', id: String(h.id), grade: h.grade || '', by: h.by || '', lang: h.lang, about: String(h.title || '').slice(0, 160) };
     units(h.text).slice(0, 2).forEach((s, k) => list.push({ ...base, sid: `H:${h.id}#t${k + 1}`, part: 'text', text: s }));
     units(h.expl).slice(0, 2).forEach((s, k) => list.push({ ...base, sid: `H:${h.id}#e${k + 1}`, part: 'expl', text: s }));
   }
@@ -107,9 +125,20 @@ export function inQuery(concept, query) {          // R7
   return c.length > 0 && c.every(w => q.has(w));
 }
 const PUNISH = /(عذاب|العذاب|جهنم|النار|سعير|الجحيم|عقاب|العقاب|عقوبه|نكال|الهلاك|اهلك|اهلكنا|ويل|لعن|غضب\s+الله)|\b(hell|hellfire|punish\w*|torment\w*|chastise\w*|curse\w*|wrath|destroy\w*|doom)\b/;
+export const SENSE_LOCKS = [
+  { q: /\b(christmas|xmas|x-mas)\b|الكريسماس|كريسماس|عيد\s+الميلاد\s+المجيد|ميلاد\s+المسيح|اعياد\s+النصاري|أعياد\s+النصارى/i, must: /(النصار|المسيح|الكفار|الكريسماس|غير\s+المسلمين|المشركين|اليهود|اعياد\s+الكفار|أعياد\s+الكفار)/ },
+  { q: /\b(bank )?interest\b|فوائد\s+البنوك|فوائد\s+بنكيه|فوائد\s+بنكية|الفوائد\s+البنكيه|الفوائد\s+البنكية/i, must: /(الربا|ربا|البنك|البنوك|المصارف|فوائد\s+البنوك|الفوائد\s+الربويه|الفوائد\s+الربوية)/ },
+];
 const dupKey = (s) => qnorm(s).replace(/[^ء-يa-z0-9]/g, '');
 
-export function applyAnswer(list, out, query = '', qtype0 = null) {
+// what the models read for each passage: the passage itself, and for a hadith the subject given by its
+// publisher (HadeethEnc title), so that a hadith on another matter sharing a word is recognised. Only the
+// passage text is ever displayed.
+export function forModels(list) {
+  return list.map(x => ({ sid: x.sid, text: x.kind === 'hadith' && x.about ? `[hadith on: ${x.about}] ${x.text}` : x.text, ...(x.ctx ? { tag: 'context' } : {}) }));
+}
+
+export function applyAnswer(list, out, query = '', qtype0 = null, opts = {}) {
   if (!out || out.ok === false) return null;
   const nothing = !(Array.isArray(out.points) && out.points.length);
   if (!out.judge && !nothing) return null;                                   // R2: passages need the judge
@@ -119,12 +148,22 @@ export function applyAnswer(list, out, query = '', qtype0 = null) {
   const lang = /[؀-ۿ]/.test(query) ? 'ar' : 'en';
   const qtok = new Set(tokens(query, lang));
   const S = new Map(list.map(s => [s.sid, s]));
+  // R12: fatwas whose text does not carry the sense the question needs
+  const locks = SENSE_LOCKS.filter(l => l.q.test(query) || l.q.test(qn));
+  const lockedOut = new Set();
+  if (locks.length) {
+    const byId = new Map();
+    for (const x of list) if (x.kind === 'fatwa') byId.set(x.id, (byId.get(x.id) || '') + ' ' + x.text + ' ' + (x.title || ''));
+    for (const [id, txt] of byId) if (locks.some(l => !l.must.test(txt))) lockedOut.add(id);
+  }
   const used = new Set(), seen = new Set(), points = [], dropped = [];
   let chars = 0;
   const ok = (s) => {
     if (qtype === 'ruling' ? s.kind !== 'fatwa' : s.kind === 'fatwa') return 'R3';
+    if (s.kind === 'fatwa' && lockedOut.has(s.id)) return 'R12';
     if (s.kind === 'tafsir' && !s.direct && !tokens(s.text, lang).some(t => qtok.has(t))) return 'R4';
     if (distress && PUNISH.test(qnorm(s.text))) return 'R5';
+    if (opts.violence && s.ref && WAR_VERSES.has(s.ref) && !s.ctx) return 'R10';
     const k = dupKey(s.text);
     if (seen.has(k) || [...seen].some(x => x.length > 40 && (x.includes(k) || k.includes(x)))) return 'R1';
     return null;
@@ -151,7 +190,9 @@ export function applyAnswer(list, out, query = '', qtype0 = null) {
       if (items.some(x => x.kind === 'tafsir' && x.ref === v.ref)) continue;
       const q = list.find(x => x.kind === 'tafsir' && x.ref === v.ref && !used.has(x.sid));
       if (q && !(distress && PUNISH.test(qnorm(q.text))) && chars + q.text.length <= LIMITS.chars) { used.add(q.sid); chars += q.text.length; items.splice(items.indexOf(v) + 1, 0, { ...q, auto: true }); }
+      else { items.splice(items.indexOf(v), 1); chars -= v.text.length; dropped.push({ sid: v.sid, rule: 'R9' }); }
     }
+    if (!items.length) continue;
     if (items[0].kind === 'fatwa' && !items.some(x => x.part === 'question')) {
       const fq = list.find(x => x.kind === 'fatwa' && x.id === items[0].id && x.part === 'question');
       if (fq && !used.has(fq.sid)) { used.add(fq.sid); items.unshift(fq); }
@@ -162,6 +203,14 @@ export function applyAnswer(list, out, query = '', qtype0 = null) {
     if (same) same.items.push(...items.slice(0, LIMITS.perPoint + 1 - same.items.length));
     else points.push({ concept: c, shown: inQuery(c, query), items });
     if (points.length >= LIMITS.points) break;
+  }
+  // R9 again after merging points: a verse never stays without the tafsir of the same verse
+  for (const p of points) p.items = p.items.filter(x => x.kind !== 'quran' || p.items.some(y => y.kind === 'tafsir' && y.ref === x.ref) || (dropped.push({ sid: x.sid, rule: 'R9' }), false));
+  for (let k = points.length - 1; k >= 0; k--) if (!points[k].items.length) points.splice(k, 1);
+  if (opts.balanced && points.length) {                                     // R11
+    const k = points.findIndex(p => p.items.some(x => x.ctx));
+    if (k < 0) return { by: 'rag', qtype, answerable: 'no', points: [], uncovered: [], concepts: [], dropped: dropped.concat(points.flatMap(p => p.items.map(x => ({ sid: x.sid, rule: 'R11' })))), model: String(out.model || ''), judge: String(out.judge) };
+    if (k > 0) points.unshift(points.splice(k, 1)[0]);
   }
   const concepts = (Array.isArray(out.concepts) ? out.concepts : []).map(c => String(c).slice(0, 40)).slice(0, 3);
   const covered = new Set(points.map(p => p.concept));
