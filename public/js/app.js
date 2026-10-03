@@ -338,7 +338,8 @@ function openVoice() {
   $('#vMain').onclick = () => { const st = box.dataset.st; if (st === 'rec') stopListening(); else if (st === 'done') search(); else start(); };
   $('#vAlt').onclick = () => { if (box.dataset.st === 'done') start(); else close(); };
   $('#vText').onkeydown = (ev) => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); search(); } };
-  box.onkeydown = (ev) => { if (ev.key === 'Escape') close(); };
+  // Escape closes this dialog only (not also the open tool panel behind it)
+  box.onkeydown = (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); close(); } };
   box.onclick = (ev) => { if (ev.target === box) close(); };
   box.hidden = false;
   start();
@@ -1530,7 +1531,7 @@ function openWelcome() {
     closeWelcome(); renderSide();
   };
   $('#wClose').onclick = () => { closeWelcome(); renderSide(); };
-  w.onkeydown = (ev) => { if (ev.key === 'Escape') { closeWelcome(); renderSide(); } };
+  w.onkeydown = (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); closeWelcome(); renderSide(); } };
   setTimeout(() => { const first = w.querySelector('.wtile'); if (first) first.focus(); }, 50);
 }
 function closeWelcome() { $('#welcome').hidden = true; store.set('welcomed', '1'); }

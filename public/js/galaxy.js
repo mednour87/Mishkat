@@ -28,6 +28,7 @@ const VERT = /* glsl */`
   varying vec3 vColor;
   varying float vHl;
   varying float vNear;
+  varying float vFar;
   void main() {
     vec3 p = mix(position, position2, uMix);
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
@@ -36,10 +37,13 @@ const VERT = /* glsl */`
     // verses of the answer are a little larger, but not when the camera is very close
     float grow = mix(1.0, 1.75, clamp(-mv.z / 320.0, 0.0, 1.0));
     float pulse = strong > 0.5 ? 1.0 + 0.18 * sin(uTime * 2.4 + p.x * 0.05) : 1.0;
-    // stars never become large blurred discs in front of the camera: a size ceiling, and the
-    // stars that almost touch the camera fade out
-    gl_PointSize = min((strong > 0.5 ? 15.0 : 10.0) * uPx, size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (380.0 / -mv.z));
+    // stars never become large blurred discs in front of the camera (a size ceiling, and the stars that
+    // almost touch the camera fade out), nor dissolve far away (a floor of 1.6 px, so the core stays sharp)
+    float px = size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (520.0 / -mv.z);
+    gl_PointSize = clamp(px, 1.6 * uPx, (strong > 0.5 ? 15.0 : 10.0) * uPx);
     vNear = smoothstep(8.0, 40.0, -mv.z);
+    // depth: the far side of the galaxy is a little dimmer than the near side
+    vFar = 1.0 - 0.45 * smoothstep(700.0, 2400.0, -mv.z);
     gl_Position = projectionMatrix * mv;
     int k = int(clamp(mod(hl - 1.0, 8.0), 0.0, 7.0) + 0.5);
     vec3 pal = uPal[0];
@@ -52,15 +56,18 @@ const FRAG = /* glsl */`
   varying vec3 vColor;
   varying float vHl;
   varying float vNear;
+  varying float vFar;
   void main() {
-    vec2 c = gl_PointCoord - 0.5;
-    float d = length(c);
-    if (d > 0.5) discard;
-    float core = smoothstep(0.5, 0.0, d);
-    float a = pow(core, 1.6);
+    // a star: a crisp bright core (a little whiter) inside a narrow halo — no more soft blurred discs
+    float d = length(gl_PointCoord - 0.5) * 2.0;
+    if (d > 1.0) discard;
+    float core = 1.0 - smoothstep(0.30, 0.52, d);
+    float halo = exp(-d * d * 5.0) * 0.42;
+    float a = clamp(core + halo, 0.0, 1.0);
     // strong = verse of the answer, soft = rest of its surah, the rest of the sky stays visible
     vec3 col = vHl > 0.75 ? vColor * 1.5 : vHl > 0.25 ? vColor : vColor * mix(1.05, 0.55, uDim);
-    gl_FragColor = vec4(col, a * vNear * (vHl > 0.75 ? 1.0 : vHl > 0.25 ? 0.9 : mix(0.9, 0.6, uDim)));
+    col = mix(col, vec3(1.0), core * 0.25);
+    gl_FragColor = vec4(col, a * vNear * vFar * (vHl > 0.75 ? 1.0 : vHl > 0.25 ? 0.9 : mix(0.9, 0.6, uDim)));
   }`;
 
 export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onLabelVerse, wordText = () => '', suraLabel = (n) => String(n) }) {
@@ -102,12 +109,15 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   }
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
-  // adaptive resolution: start at up to 1.5× and drop to 1× if frames are slow (weak GPUs)
-  let px = Math.min(window.devicePixelRatio || 1, 1.5);
+  // adaptive resolution: start at up to 2× (sharp stars on high-density screens) and drop to 1× if frames are slow
+  let px = Math.min(window.devicePixelRatio || 1, 2);
   renderer.setPixelRatio(px);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, 1, 1, 8000);
-  const HOME = { pos: new THREE.Vector3(0, -900, 780), target: new THREE.Vector3(0, 0, 0) };
+  // the whole disc (radius ≈ 600) framed from closer than before: stars read as stars, not as dust
+  const HOME = { pos: new THREE.Vector3(0, -760, 660), target: new THREE.Vector3(0, 0, 0) };
+  // the words of a verse (and the recited word) are written on their stars only once the camera is this close
+  const WORDS_DIST = 130;
   camera.position.copy(HOME.pos);
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true; controls.dampingFactor = 0.08;
@@ -219,7 +229,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     const d = camera.position.distanceTo(controls.target);
     // 1. the recited word (glides smoothly from one star to the next)
     let pillOn = false;
-    if (ok && activeI != null) {
+    if (ok && activeI != null && d < WORDS_DIST) {      // zoomed out, the word is in the lamp only
       const p = screen(active.position, w, h);
       if (p) {
         const k = pillPos.on ? 1 - Math.exp(-dt * 10) : 1;
@@ -247,8 +257,8 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
         put(g.el, Math.min(w - bw / 2 - 4, Math.max(bw / 2 + 4, p.x)), Math.min(h - bh / 2 - 4, Math.max(bh / 2 + 4, y)));
       }
       // 3. the words of the focused verse, beside their stars (close views)
-      if (focusV != null && vStart[focusV] >= 0 && d < 420) {
-        const fs = Math.max(12, Math.min(20, 2200 / Math.max(60, d)));
+      if (focusV != null && vStart[focusV] >= 0 && d < WORDS_DIST) {
+        const fs = Math.max(13, Math.min(20, 1800 / Math.max(60, d)));
         const items = [];
         for (let i = vStart[focusV]; i < vEnd[focusV]; i++) {
           const p = screen(wpos(i, tmpV), w, h);
