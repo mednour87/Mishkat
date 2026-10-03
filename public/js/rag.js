@@ -38,6 +38,11 @@ const qnorm = (q) => /[؀-ۿ]/.test(q) ? normAr(q).replace(/ة/g, 'ه') : normLa
 // «الخوف من الله», "fear of Allah": a virtue to study, not distress (its verses of warning stay)
 const GOD_FEAR = /(خوف|الخوف|خشيه|الخشيه)\s+(من\s+)?(الله|عذاب|النار|ربي|الرب)|\bfear(ing)? (of )?(allah|god|the lord|hell|punishment)\b/;
 const MY_WORRY = /(^|\s)(عندي|بي|في\s+قلبي)\s+(هم|غم|حزن|ضيق|قلق)(\s|$)/;
+// the engine's own routing comes first: an answer routed to the fatwa referral is a ruling question
+export function questionTypeOf(res) {
+  if (res && res.type === 'abstain' && res.reason === 'ruling') return 'ruling';
+  return questionType(res && res.query);
+}
 export function questionType(q) {
   const n = qnorm(String(q || ''));
   for (const [t, re] of QT) {
@@ -104,10 +109,12 @@ export function inQuery(concept, query) {          // R7
 const PUNISH = /(عذاب|العذاب|جهنم|النار|سعير|الجحيم|عقاب|العقاب|عقوبه|نكال|الهلاك|اهلك|اهلكنا|ويل|لعن|غضب\s+الله)|\b(hell|hellfire|punish\w*|torment\w*|chastise\w*|curse\w*|wrath|destroy\w*|doom)\b/;
 const dupKey = (s) => qnorm(s).replace(/[^ء-يa-z0-9]/g, '');
 
-export function applyAnswer(list, out, query = '') {
+export function applyAnswer(list, out, query = '', qtype0 = null) {
   if (!out || out.ok === false) return null;
-  if (!out.judge) return null;                                               // R2
-  const qtype = questionType(query), qn = qnorm(query);
+  const nothing = !(Array.isArray(out.points) && out.points.length);
+  if (!out.judge && !nothing) return null;                                   // R2: passages need the judge
+  if (nothing) return { by: 'rag', qtype: qtype0 || questionType(query), answerable: 'no', points: [], uncovered: [], concepts: [], dropped: [], model: String(out.model || ''), judge: null };
+  const qtype = qtype0 || questionType(query), qn = qnorm(query);
   const distress = qtype === 'comfort' && !PUNISH.test(qn);
   const lang = /[؀-ۿ]/.test(query) ? 'ar' : 'en';
   const qtok = new Set(tokens(query, lang));
@@ -138,6 +145,18 @@ export function applyAnswer(list, out, query = '') {
       if (items.length >= (s.kind === 'fatwa' ? LIMITS.perFatwaPoint : LIMITS.perPoint)) break;
     }
     if (!items.length) continue;
+    // R9: a verse is never shown without its vetted explanation — the first tafsir passage of the same verse
+    // joins it (same rules R5/R6) when the composer did not take one
+    for (const v of items.filter(x => x.kind === 'quran')) {
+      if (items.some(x => x.kind === 'tafsir' && x.ref === v.ref)) continue;
+      const q = list.find(x => x.kind === 'tafsir' && x.ref === v.ref && !used.has(x.sid));
+      if (q && !(distress && PUNISH.test(qnorm(q.text))) && chars + q.text.length <= LIMITS.chars) { used.add(q.sid); chars += q.text.length; items.splice(items.indexOf(v) + 1, 0, { ...q, auto: true }); }
+    }
+    if (items[0].kind === 'fatwa' && !items.some(x => x.part === 'question')) {
+      const fq = list.find(x => x.kind === 'fatwa' && x.id === items[0].id && x.part === 'question');
+      if (fq && !used.has(fq.sid)) { used.add(fq.sid); items.unshift(fq); }
+      items.splice(LIMITS.perFatwaPoint);                                   // the question + at most 2 paragraphs
+    }
     if (items[0].kind === 'fatwa') items.sort((a, b) => (a.part === 'question' ? -1 : b.part === 'question' ? 1 : (a.n || 0) - (b.n || 0)));
     const same = points.find(x => x.concept === c && x.items[0].kind !== 'fatwa' && items[0].kind !== 'fatwa');
     if (same) same.items.push(...items.slice(0, LIMITS.perPoint + 1 - same.items.length));
@@ -146,7 +165,8 @@ export function applyAnswer(list, out, query = '') {
   }
   const concepts = (Array.isArray(out.concepts) ? out.concepts : []).map(c => String(c).slice(0, 40)).slice(0, 3);
   const covered = new Set(points.map(p => p.concept));
-  const uncovered = concepts.filter(c => !covered.has(c)).map(c => ({ concept: c, shown: inQuery(c, query) }));
+  // only a concept that is in the question itself can be reported as unanswered (the model may add its own)
+  const uncovered = concepts.filter(c => !covered.has(c) && inQuery(c, query)).map(c => ({ concept: c, shown: true }));
   return { by: 'rag', qtype, answerable: points.length ? (uncovered.length ? 'partial' : 'yes') : 'no', points, uncovered, concepts, dropped,
     model: String(out.model || ''), judge: String(out.judge) };
 }

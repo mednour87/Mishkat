@@ -6,7 +6,7 @@
 // with its cache and circuit breaker, and replies).
 import { createEngine, detectLang, SOURCES_NEEDED, tokens, expandTokens } from './engine.js';
 import { loadVectors, topK, VEC_DIM } from './dense-rank.js';
-import { buildClosedList, applyAnswer, questionType } from './rag.js';
+import { buildClosedList, applyAnswer, questionTypeOf } from './rag.js';
 
 const getJSON = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); };
 let engineP = null, latinP = null;
@@ -138,7 +138,7 @@ const RAG_CACHE = new Map();   // same question, same evidence → same answer, 
 async function ragFor(e, res, hadIds = [], fatwas = []) {
   if (!res) return null;
   const lang = res.lang === 'en' ? 'en' : 'ar';
-  const qtype = questionType(res.query);
+  const qtype = questionTypeOf(res);
   let verses = [], hadiths = [];
   if (qtype === 'ruling') {
     // أحكام: only fatwas published by Sheikh Ibn Baz (fetched in full by the page), never a tafsir sentence
@@ -156,7 +156,7 @@ async function ragFor(e, res, hadIds = [], fatwas = []) {
   const key = lang + '|' + res.query + '|' + list.map(x => x.sid).join(',');
   if (RAG_CACHE.has(key)) return RAG_CACHE.get(key);
   const out = await LLM.answer({ query: res.query, lang, qtype, sentences: list.map(x => ({ sid: x.sid, text: x.text })) });
-  const brief = applyAnswer(list, out, res.query);
+  const brief = applyAnswer(list, out, res.query, qtype);
   if (brief) { brief.lang = lang; RAG_CACHE.set(key, brief); if (RAG_CACHE.size > 60) RAG_CACHE.delete(RAG_CACHE.keys().next().value); }
   return brief;
 }

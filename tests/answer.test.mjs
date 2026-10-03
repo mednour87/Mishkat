@@ -79,8 +79,8 @@ test('display: only sentences of the local list, verbatim; AI concept labels sho
   assert.equal(out.points[0].items[0].text, a.text);
   assert.equal(out.points[0].items.length, 1);
   assert.ok(out.points.every(p => p.shown));
-  assert.deepEqual(out.uncovered, [{ concept: 'التوكل على الله', shown: false }]);
-  assert.equal(out.answerable, 'partial');
+  assert.deepEqual(out.uncovered, []);
+  assert.equal(out.answerable, 'yes');
   assert.equal(applyAnswer(list, { ok: false }), null);
   assert.ok(inQuery('anxiety', 'how to deal with anxiety'));
   assert.ok(!inQuery('القلق', 'ماذا أفعل إذا شعرت بالحزن'));
