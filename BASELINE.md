@@ -2,7 +2,7 @@
 
 The challenge rules allow pre-existing work if its baseline is disclosed before 4 October 2026; only work done during the challenge (4 October 09:00 – 6 October 23:59, Riyadh time) is evaluated. This file documents, honestly and with fingerprints, **everything** that existed before the window.
 
-**Last commit before this disclosure: `8734d36`**; the git tag `baseline-2026-10-03` is placed on the commit that adds this file. Every commit after that tag is challenge work.
+**Last commit before this disclosure: `689d01f`**; the git tag `baseline-2026-10-03` is placed on the commit that adds this file. Every commit after that tag is challenge work.
 
 ## 1. Pre-existing project: “Quran Cartography” (author’s own, July–August 2026)
 - A letter- and word-level database of the Quran (`quran.db`: 6,236 verses, 77,433 words, 326,159 letters) built from the Tanzil text, with a semantic colour layer (names of Allah, prophets, angels, Satan).
@@ -14,9 +14,9 @@ The challenge rules allow pre-existing work if its baseline is disclosed before 
 For full transparency: this repository was written and deployed (private preview) **before** the window, while preparing the application and after its acceptance. All of it is part of the declared baseline and is not presented as challenge work:
 - 28–29 Sep: engine (routing, BM25, guard, closed-list AI selection, quote verifier), WebGL galaxy, reader with synchronised recitation, tests, evaluation, documentation (v2).
 - 1–2 Oct: v3–v8 interface (three moments, Mushaf + tafsir study, logo), spoken queries, reference-pack integration (answer levels A–D, Quranpedia subject index, glossary), Web Worker search, published fatwas (binbaz.org.sa), Sunnah section (HadeethEnc), hybrid semantic search (bge-m3), Qur'an QA 2023 benchmark, deck, OpenRouter provider, private deployment on Cloudflare Pages.
-- 3 Oct: audit of errors (`01_PLAN/CARTOGRAPHIE_ERREURS_ET_AMELIORATIONS.md`), plan v5, execution files and code drafts (`05_EXECUTION/`), and the first corrections of that audit (tasks T010–T020: AI selection always runs, status questions without «هل», over-refusal bench, short answer only when AI-confirmed, circuit breakers, semantic ranking moved to the browser, sensitivity levels, spelling suggestions, Origin check, single confidence badge); later the same day, at the author's request: the **extractive evidence-bound short answer (RAG)** — closed list of passages from the sources of truth (verse text, tafsir, graded hadiths, and for ruling questions only fatwas published by Sheikh Ibn Baz), `/api/answer` composer + judge, question types, fixed rules R1–R9 after the models, cost caps (OpenRouter max price, daily ceiling), verbatim display, a crisis route for suicide/self-harm, blood rulings without fatwa extracts, English rulings via Arabic search terms, a live battery of 44 sensitive questions; tool modules not yet wired into the page (Hijri calendar, khatma plan with .ics, panels, local preferences); bootstrap confidence intervals of the public benchmark; the benefit-measurement kit (blind rating sheet vs a general chatbot, automatic check of chatbot quotations, user-test protocol with SUS).
+- 3 Oct: audit of errors (`01_PLAN/CARTOGRAPHIE_ERREURS_ET_AMELIORATIONS.md`), plan v5, execution files and code drafts (`05_EXECUTION/`), and the first corrections of that audit (tasks T010–T020: AI selection always runs, status questions without «هل», over-refusal bench, short answer only when AI-confirmed, circuit breakers, semantic ranking moved to the browser, sensitivity levels, spelling suggestions, Origin check, single confidence badge); later the same day, at the author's request: the **extractive evidence-bound short answer (RAG)** — closed list of passages from the sources of truth (verse text, tafsir, graded hadiths, and for ruling questions only fatwas published by Sheikh Ibn Baz), `/api/answer` composer + judge, question types, fixed rules R1–R9 after the models, cost caps (OpenRouter max price, daily ceiling), verbatim display, a crisis route for suicide/self-harm, blood rulings without fatwa extracts, English rulings via Arabic search terms, a live battery of 44 sensitive questions, free-first AI routing (Groq free tier, paid provider only as backup), a map of 1,000 questions with its fixes; tool modules not yet wired into the page (Hijri calendar, khatma plan with .ics, panels, local preferences); bootstrap confidence intervals of the public benchmark; the benefit-measurement kit (blind rating sheet vs a general chatbot, automatic check of chatbot quotations, user-test protocol with SUS).
 
-### 2.1 Dated commits before the window (49)
+### 2.1 Dated commits before the window (53)
 | Commit | Date | Message |
 |---|---|---|
 | `f0b1b80` | 2026-09-29 | Mishkat v2 — declared baseline before the challenge window (29 Sep 2026) |
@@ -68,12 +68,16 @@ For full transparency: this repository was written and deployed (private preview
 | `07c78fa` | 2026-10-03 | RAG v5.1 (pre-window, declared): engine routing decides the ruling path, a fatwa always with its published question, a verse always with its tafsir (R9), honest «no fatwa on this matter», only concepts of the question reported a… |
 | `8646961` | 2026-10-03 | Baseline disclosure regenerated (everything up to the evening of 3 October 2026, RAG v5.1 included) |
 | `8734d36` | 2026-10-03 | Sensitive subjects (pre-window, declared): crisis route (suicide/self-harm) with help first and verses of hope; blood rulings without fatwa extracts; English rulings via Arabic fiqh search terms; glossary route only when the ter… |
+| `f124970` | 2026-10-03 | Baseline disclosure regenerated (everything up to 3 October 2026 evening, sensitive-subject work included) |
+| `2815398` | 2026-10-03 | Free first and 1,000-question map: Groq free tier first for every AI task (light tasks on a second free model), OpenRouter paid only as backup (429/failure), cool-down = Groq's retry-after; map of 1,000 questions without AI (tre… |
+| `ef8eb69` | 2026-10-03 | Evaluations: FREE_ONLY=1 removes the paid provider (zero-cost runs) |
+| `689d01f` | 2026-10-03 | Map 1,000: AI sample on the free tier (cost 0) — weak points of the engine-only map are mostly answered with AI; sura names with a doubled consonant («kahff»); map excludes French and counts quote checks correctly (628/671 expec… |
 
-### 2.2 Repository files at the baseline commit (345 files, snapshot 2026-10-03)
+### 2.2 Repository files at the baseline commit (352 files, snapshot 2026-10-03)
 | File | Bytes | SHA-256 (prefix) |
 |---|---|---|
-| `CHANGELOG.md` | 5,172 | `073ad7c002366278…` |
-| `data_build/baseline_snapshot.py` | 6,349 | `151a196295b8dd52…` |
+| `CHANGELOG.md` | 5,901 | `5dfa1ddd7072a4f7…` |
+| `data_build/baseline_snapshot.py` | 6,460 | `7154f0458b7eed1f…` |
 | `data_build/build_data.py` | 11,923 | `beccc50f574d6b7a…` |
 | `data_build/build_hadeeth.py` | 2,650 | `fc7cade2b0475cf3…` |
 | `data_build/build_latin_index.py` | 2,143 | `87955a6ffbbced35…` |
@@ -107,6 +111,12 @@ For full transparency: this repository was written and deployed (private preview
 | `eval/human/rating_key.json` | 3,293 | `06e7652512f5bc9c…` |
 | `eval/human/score_sheet.mjs` | 3,979 | `36acc6b6a5b1393e…` |
 | `eval/make_golden.mjs` | 12,178 | `267f88cf94388981…` |
+| `eval/map1000/ai_sample.json` | 24,220 | `82406cb60445696d…` |
+| `eval/map1000/AI_SAMPLE.md` | 10,520 | `6b793b0a4a0942d3…` |
+| `eval/map1000/map.json` | 598,577 | `8282150113f3e9bc…` |
+| `eval/map1000/MAP_REPORT.md` | 19,249 | `f62786f47bf9d67d…` |
+| `eval/map1000/run_ai_sample.mjs` | 2,772 | `87225fc4fad66d07…` |
+| `eval/map1000/run_map.mjs` | 9,580 | `76c3bc19607ebf13…` |
 | `eval/overrefusal.json` | 2,005 | `46db1567cf6945a9…` |
 | `eval/precompute_cache.mjs` | 4,061 | `33b6ba0710adbd58…` |
 | `eval/qqa23/bootstrap_ci.py` | 3,247 | `64f8bf3720ee3000…` |
@@ -117,7 +127,7 @@ For full transparency: this repository was written and deployed (private preview
 | `eval/qqa23/RESULTS.md` | 4,317 | `dd06c9ad7380f744…` |
 | `eval/qqa23/score_all.py` | 1,180 | `e1ff7ff72260ebe0…` |
 | `eval/qqa23/scores_test.json` | 518 | `14129407cdefee9e…` |
-| `eval/rag_pipeline.mjs` | 5,787 | `33abd99da24f7181…` |
+| `eval/rag_pipeline.mjs` | 6,020 | `66e2a22c0ea4543c…` |
 | `eval/report.mjs` | 4,678 | `ecf41dc74d79b0b7…` |
 | `eval/results/audit2.txt` | 28,568 | `84849fa8660739f4…` |
 | `eval/results/audit3.txt` | 17,736 | `608c938e0b6ac3b5…` |
@@ -146,16 +156,17 @@ For full transparency: this repository was written and deployed (private preview
 | `eval/run_eval.mjs` | 8,736 | `986c162707f3b316…` |
 | `eval/run_qqa23.mjs` | 4,843 | `44b73b6642e1058a…` |
 | `eval/run_rag.mjs` | 5,844 | `967127ee8856b0e2…` |
-| `eval/run_sensitive.mjs` | 3,811 | `a09a98fc59dd967b…` |
+| `eval/run_sensitive.mjs` | 2,358 | `9e414a9cc3ace8b2…` |
 | `eval/run_spoken.mjs` | 18,436 | `9786c02f4f28cd35…` |
+| `eval/sensitive_questions.mjs` | 1,698 | `6f8206aacfa53233…` |
 | `eval/spoken_queries.json` | 50,624 | `ebcbf470c8ff5f0a…` |
-| `functions/_lib/answer.js` | 13,092 | `2192d49346346000…` |
+| `functions/_lib/answer.js` | 13,134 | `a27065511abe0156…` |
 | `functions/_lib/csp.js` | 822 | `8d9602741d640913…` |
 | `functions/_lib/dense.js` | 4,823 | `a07026ac462ece51…` |
 | `functions/_lib/fatwa.js` | 6,099 | `0f0b0f69a8676d76…` |
 | `functions/_lib/guard.js` | 2,150 | `a5f91a37c7269881…` |
 | `functions/_lib/handler.js` | 1,997 | `733f029f94f4b92d…` |
-| `functions/_lib/selector.js` | 20,538 | `7813668dbaa09d12…` |
+| `functions/_lib/selector.js` | 21,849 | `9dd5fcc6c416ede6…` |
 | `functions/_lib/sources.js` | 8,836 | `33421f11d4ac5c92…` |
 | `functions/_lib/tts.js` | 4,192 | `4ede1359af5eb8b8…` |
 | `functions/_middleware.js` | 1,681 | `e300158e5db0a41c…` |
@@ -376,7 +387,7 @@ For full transparency: this repository was written and deployed (private preview
 | `public/js/app.js` | 94,900 | `74e441025cf3f209…` |
 | `public/js/basmala.js` | 2,055 | `1327d1d9a44d52c4…` |
 | `public/js/dense-rank.js` | 1,948 | `a0b7e7a6b2089141…` |
-| `public/js/engine.js` | 130,340 | `8bb25b83af236999…` |
+| `public/js/engine.js` | 134,442 | `ef6f71d357fa6282…` |
 | `public/js/galaxy.js` | 26,490 | `1308fe28ebe65ffe…` |
 | `public/js/glossary.js` | 5,807 | `af51eb753255844e…` |
 | `public/js/hijri.js` | 6,120 | `975f37524c491841…` |
@@ -403,7 +414,7 @@ For full transparency: this repository was written and deployed (private preview
 | `tests/basmala.test.mjs` | 1,682 | `ec860ab122113b12…` |
 | `tests/dense_client.test.mjs` | 2,986 | `9296b113fac6915e…` |
 | `tests/engine.test.mjs` | 18,815 | `b72497f6d9dcead6…` |
-| `tests/fixes_v5.test.mjs` | 6,795 | `d1ed8ca0d4d57730…` |
+| `tests/fixes_v5.test.mjs` | 9,962 | `65a4a351df87af53…` |
 | `tests/layouts.test.mjs` | 8,205 | `62f6920a7c826f68…` |
 | `tests/load.mjs` | 687 | `e6ba9bf27ba35a62…` |
 | `tests/middleware.test.mjs` | 1,381 | `ed21e805e271962e…` |
@@ -435,7 +446,7 @@ Plans and drafts written before the window. Draft code in `05_EXECUTION/code_dra
 | `05_EXECUTION/code_drafts/rag_answer.js` | 9,636 | `6a07789f81e21c25…` |
 | `05_EXECUTION/code_drafts/tools_router.js` | 4,924 | `05547f5fbc087819…` |
 | `05_EXECUTION/MEMOIRE_PROJET.md` | 2,637 | `a25597c99559be23…` |
-| `05_EXECUTION/PROGRESSION.md` | 5,467 | `9b2adbd86d41d9af…` |
+| `05_EXECUTION/PROGRESSION.md` | 6,078 | `fa5e306e60ebe6e9…` |
 | `05_EXECUTION/REGLES.md` | 2,972 | `6b1d1804f73a2f20…` |
 | `05_EXECUTION/TACHES.md` | 4,773 | `53384ff624fd2ecd…` |
 
