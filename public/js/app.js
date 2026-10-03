@@ -403,6 +403,15 @@ function badgeFor(res) {
   if (res.type === 'notfound') { key = 'notfoundTopic'; cls = 'stop'; }
   if (res.type === 'invalid_ref') cls = 'warn';
   if (res.type === 'empty') return '';
+  // X1: ONE confidence badge for a topic answer, from who vouches for the verses
+  if (res.type === 'topic') {
+    const word = res.meta && res.meta.route === 'word';
+    if (res.confirmedBy === 'ai') key = 'topic';
+    else if (res.confirmedBy === 'index') { key = 'topicIndex'; cls = 'warn'; }
+    else if (res.confirmedBy === 'context') key = 'topicContext';
+    else if (word) key = 'topicWord';
+    else if (res.verses.length) { key = 'topicLexical'; cls = 'warn'; }
+  }
   return `<span class="badge ${cls}">${esc(B[key] || key)}</span>`;
 }
 
@@ -419,8 +428,6 @@ function renderResults() {
   if (!res) return;
   const dir = res.lang === 'ar' ? 'rtl' : 'ltr';
   let h = `<p class="qline" dir="auto">«${esc(res.query)}»</p>` + levelBadge(res) + badgeFor(res);
-  // nobody vouches for these verses (no AI selection, no subject index, not the exact word): say so
-  if (res.type === 'topic' && !res.confirmedBy && !(res.meta && res.meta.route === 'word') && res.verses.length) h += `<span class="badge warn">${esc(t.noAiBadge)}</span>`;
   const texts = res.answer.filter(a => a.kind === 'text');
   const quotes = res.answer.filter(a => a.kind === 'quote');
   const notes = res.answer.filter(a => a.kind === 'note');
