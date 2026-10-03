@@ -35,7 +35,7 @@ createServer(async (req, res) => {
     const url = new URL(req.url, 'http://x');
     const ip = req.socket.remoteAddress;
     if (url.pathname.startsWith('/api/')) {
-      if (foreignOrigin(req.headers.origin, req.headers.host)) return send(res, 403, '{"ok":false,"error":"forbidden origin"}', '.json');
+      if (foreignOrigin(req.headers.origin, req.headers.host, req.method)) return send(res, 403, '{"ok":false,"error":"forbidden origin"}', '.json');
       if (url.pathname === '/api/health') return send(res, 200, JSON.stringify(health(env)), '.json');
       const name = url.pathname.slice(5);
       if (req.method !== 'POST' || !['select', 'expand', 'transcribe', 'hadith', 'fatwa', 'pick', 'dense', 'tafsir', 'tts'].includes(name)) return send(res, 404, '{"ok":false}', '.json');

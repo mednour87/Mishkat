@@ -13,9 +13,11 @@ export function rateLimited(ip, key, max, windowMs = 60000) {
   return b.n > max;
 }
 
-// origin: value of the Origin header (may be absent for same-origin GET); host: request host
-export function foreignOrigin(origin, host) {
-  if (!origin) return false;
+// origin: value of the Origin header; host: request host. Browsers always send Origin on a POST
+// (fetch from our pages), so a POST without it is a script spending the AI credit: refused (I2).
+// A same-origin GET may come without it.
+export function foreignOrigin(origin, host, method = 'POST') {
+  if (!origin) return String(method).toUpperCase() !== 'GET';
   try { return new URL(origin).host !== host; } catch (e) { return true; }
 }
 

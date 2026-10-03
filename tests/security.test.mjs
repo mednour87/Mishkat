@@ -15,7 +15,9 @@ test('rate limiter blocks after the limit within the window', () => {
 test('foreign origins are rejected, same origin accepted', () => {
   assert.equal(foreignOrigin('https://evil.example', 'mishkat.pages.dev'), true);
   assert.equal(foreignOrigin('https://mishkat.pages.dev', 'mishkat.pages.dev'), false);
-  assert.equal(foreignOrigin(undefined, 'mishkat.pages.dev'), false);
+  assert.equal(foreignOrigin(undefined, 'mishkat.pages.dev', 'GET'), false);
+  assert.equal(foreignOrigin(undefined, 'mishkat.pages.dev'), true);          // I2: a POST without Origin is a script
+  assert.equal(foreignOrigin(undefined, 'mishkat.pages.dev', 'POST'), true);
   assert.equal(foreignOrigin('null', 'mishkat.pages.dev'), true);
 });
 
