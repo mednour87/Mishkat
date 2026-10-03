@@ -73,3 +73,28 @@ test('E5: the short answer never contains a sentence without a word of the quest
   const r = await ask('الصبر', { llm });
   if (r.brief) for (const it of r.brief.items) assert.ok(/صبر|الصبر|يصبر|اصبر|صابر/.test(it.text), it.text.slice(0, 80));
 });
+
+test('E7: a 429 or 402 on the paid provider does not block the same model on the free backup', async () => {
+  const { select, resetCoolDown } = await import('../functions/_lib/selector.js');
+  resetCoolDown();
+  const calls = [];
+  const fake = (status) => async (url) => {
+    calls.push(url);
+    if (/openrouter/.test(url)) return { ok: false, status, headers: { get: () => '9' } };
+    return { ok: true, status: 200, json: async () => ({ choices: [{ message: { content: '{"intent":"topic","ids":["2:1"]}' } }] }) };
+  };
+  const env = { PRIMARY_URL: 'https://openrouter.ai/api/v1/chat/completions', PRIMARY_KEY: 'k', PRIMARY_MODELS: 'openai/gpt-oss-120b',
+    GROQ_API_KEY: 'g', GROQ_MODELS: 'openai/gpt-oss-120b' };
+  const body = { query: 'x', candidates: [{ id: '2:1', text: 'a' }] };
+  for (const status of [429, 402]) {
+    resetCoolDown(); calls.length = 0;
+    const r1 = await select(body, env, fake(status));
+    assert.equal(r1.ok, true, `status ${status}`);
+    // second request: the paid host is cooling down, the backup (same model name) is still used
+    const r2 = await select(body, env, fake(status));
+    assert.equal(r2.ok, true);
+    assert.equal(calls.filter(u => /openrouter/.test(u)).length, 1, `paid provider skipped after ${status}`);
+    assert.equal(calls.filter(u => /groq/.test(u)).length, 2);
+  }
+  resetCoolDown();
+});

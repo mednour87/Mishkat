@@ -183,20 +183,22 @@ async function boot() {
   setupMic();
   state.llmModel = live ? health.model : (Object.keys(cache.select).length ? 'cache' : null);
   const key = (p) => `${p.lang}|${String(p.query).trim().toLowerCase()}`;
-  // circuit breaker: after a failure (quota…), skip the live API for 5 minutes
-  let aiDownUntil = 0;
+  // circuit breaker (E7): only after 3 failures in a row, and for 1 minute — a single slow answer no
+  // longer switches the AI off for 5 minutes (the server already falls back to its backup provider)
+  let aiDownUntil = 0, aiFails = 0;
   const call = (kind, path) => async (payload) => {
     const hit = cache[kind][key(payload)];
     if (hit) return hit;
     if (!live || Date.now() < aiDownUntil) throw new Error('live AI unavailable');
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 7000);
+    const timer = setTimeout(() => ctrl.abort(), 9000);
     let j = null;
     try {
       const r = await fetch(path, { method: 'POST', signal: ctrl.signal, headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
       j = r.ok ? await r.json() : null;
     } catch (e) { j = null; } finally { clearTimeout(timer); }
-    if (!j || j.ok === false) { aiDownUntil = Date.now() + 5 * 60 * 1000; throw new Error(path + ' unavailable'); }
+    if (!j || j.ok === false) { if (++aiFails >= 3) { aiDownUntil = Date.now() + 60 * 1000; aiFails = 0; } throw new Error(path + ' unavailable'); }
+    aiFails = 0;
     return j;
   };
   // side services (semantic neighbours, relevance filter of hadiths): each has its own breaker,
@@ -210,7 +212,7 @@ async function boot() {
         const j = r.ok ? await r.json() : null;
         if (!j || !j.ok) throw new Error(path + ' failed');
         return j;
-      } catch (e) { downUntil = Date.now() + 5 * 60 * 1000; throw e; }
+      } catch (e) { downUntil = Date.now() + 2 * 60 * 1000; throw e; }
     };
   };
   if (state.llmModel) state.llm = { expand: call('expand', 'api/expand'), select: call('select', 'api/select'), pick: side('api/pick'), dense: side('api/dense') };

@@ -1420,7 +1420,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     return tokens(text, L).filter(t => !pt.has(t) && !GENERIC[L].has(t));
   }
 
-  async function ask0(query, { uiLang = 'ar', llm = null, limit = 30, llmTimeoutMs = 8000, mode = 'auto' } = {}) {
+  async function ask0(query, { uiLang = 'ar', llm = null, limit = 30, llmTimeoutMs = 9500, mode = 'auto' } = {}) {
     const q = (query || '').trim().slice(0, 500);
     const lang = q ? detectLang(q, uiLang) : uiLang;
     const M = MSG[lang];

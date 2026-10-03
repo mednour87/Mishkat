@@ -129,6 +129,8 @@ async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, f
       if (!(ra > 2)) { await new Promise(res => setTimeout(res, (ra || 1) * 1000)); r = await send(); }
     }
     if (r.status === 429) { const e = new Error(`${model} HTTP 429`); e.quota = true; throw e; }
+    // 401/402: bad key or credit exhausted — that provider is skipped for a long time (E7)
+    if (r.status === 401 || r.status === 402) { const e = new Error(`${model} HTTP ${r.status}`); e.billing = true; throw e; }
     if (!r.ok) throw new Error(`${model} HTTP ${r.status}`);
     const j = await r.json();
     return j.choices[0].message.content;
@@ -205,23 +207,35 @@ export async function transcribe(audioBlob, lang, env, fetchImpl = fetch) {
   return out.ok ? { ok: true, text: out.text } : out;
 }
 
-// per-model circuit breaker: a model that returned 429 is skipped for 2 minutes
+// circuit breaker per PROVIDER AND model (E7: a 429 from OpenRouter must not block the same model on
+// Groq): 429 → skipped 2 minutes, 401/402 (key or credit) → 30 minutes
 const coolDown = new Map();
 export function resetCoolDown() { coolDown.clear(); }
+const ckey = (pr) => `${pr.name}:${pr.model}`;
+function trip(pr, e) {
+  if (e && e.billing) coolDown.set(ckey(pr), Date.now() + 30 * 60000);
+  else if (e && e.quota) coolDown.set(ckey(pr), Date.now() + 120000);
+}
+// one request has 7.5 s in all (the page waits 9 s): each provider gets at most 4.5 s, then the next
+// one is tried with what is left, so the free backup is really reached when the paid host is slow
+const BUDGET_MS = 7500, PER_PROVIDER_MS = 4500, MIN_TRY_MS = 1500;
 
 async function run(kind, body, env, fetchImpl) {
   const p = sanitizePayload(body, kind);
   const messages = buildMessages(p, kind);
   const errors = [];
+  const t0 = Date.now();
   for (const pr of providers(env)) {
-    if ((coolDown.get(pr.model) || 0) > Date.now()) { errors.push(`${pr.model} cooling down`); continue; }
+    if ((coolDown.get(ckey(pr)) || 0) > Date.now()) { errors.push(`${ckey(pr)} cooling down`); continue; }
+    const left = BUDGET_MS - (Date.now() - t0);
+    if (left < MIN_TRY_MS) { errors.push('time budget spent'); break; }
     try {
-      const raw = await callOpenAICompat({ ...pr, messages, fetchImpl });
+      const raw = await callOpenAICompat({ ...pr, messages, fetchImpl, timeoutMs: Math.min(PER_PROVIDER_MS, left) });
       const v = kind === 'expand' ? validateExpansion(raw) : validateOutput(raw, p.candidates, p.sentences);
       return { ok: true, model: pr.model, ...v };
     } catch (e) {
       errors.push(String(e.message || e));
-      if (e.quota) coolDown.set(pr.model, Date.now() + 120000);
+      trip(pr, e);
     }
   }
   return kind === 'expand'
@@ -241,13 +255,13 @@ export async function pickRelevant(question, items, env, { max = 4, what = 'fatw
     { role: 'user', content: `Question: ${String(question).slice(0, 300)}` + String.fromCharCode(10, 10) + list },
   ];
   for (const pr of providers(env)) {
-    if ((coolDown.get(pr.model) || 0) > Date.now()) continue;
+    if ((coolDown.get(ckey(pr)) || 0) > Date.now()) continue;
     try {
       const raw = await callOpenAICompat({ ...pr, messages, fetchImpl, timeoutMs: 7000 });
       const j = JSON.parse(String(raw).replace(/^[^{]*/, '').replace(/[^}]*$/, ''));
       const keep = (Array.isArray(j.keep) ? j.keep : []).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= Math.min(12, items.length));
       return [...new Set(keep)].slice(0, max).map(n => n - 1);
-    } catch (e) { if (e.quota) coolDown.set(pr.model, Date.now() + 120000); }
+    } catch (e) { trip(pr, e); }
   }
   return null;
 }
