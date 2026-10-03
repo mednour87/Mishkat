@@ -565,5 +565,8 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     setAutoRotate(v) { controls.autoRotate = v; },
     wordsOfVerse: (v) => [vStart[v], vEnd[v]],
     wordVerse,
+    // long press on a touch screen (hover-dwell): the word under a point, and no click when the finger lifts
+    pickAt: (x, y) => pick({ clientX: x, clientY: y }),
+    cancelPick() { downAt = null; },
   };
 }

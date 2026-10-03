@@ -1,5 +1,6 @@
 import { createEngine, detectLang, guardCheck, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens } from './engine.js';
 import { routeTool } from './tools.js';
+import { wordFacts } from './dwell.js';
 import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
 import { SHAPES, ORDERS, buildLayout } from './layouts.js';
 import { isBasmala } from './basmala.js';
@@ -43,6 +44,7 @@ const state = {
   showTranslit: store.get('tl', '1') === '1', showTr: store.get('tr', '1') === '1',
   pane: 'r', tts: false, mode: 'home', playMode: 'one', suggestClosed: false, colorOf: new Map(),
   panels: null, tools: null, prefs: loadPrefs(),     // prefs + khatma: this browser only (js/prefs.js)
+  dwell: null,                                        // hover-dwell on a word of the galaxy (D1)
 };
 
 // ------------------------------------------------------------------ i18n
@@ -172,6 +174,7 @@ async function boot() {
   });
   state.wordsP = getJSON('data/words.json').then(w => { state.words = w; return w; });
   setupTools();
+  setupLongPress();
   setLoad(3);
   $('#loader').classList.add('done');
   // the tafsir files (several MB) are not needed to show the galaxy: they load after the
@@ -1190,6 +1193,7 @@ function showLampWord(w, ref) {
 
 // play(i, fromUser): fromUser resets the repetition counter
 async function play(i, fromUser = false) {
+  endDwell();                                       // the recited verse takes the light back
   stopAudio();
   stopSpeech();
   if (fromUser || state.repeatLeft == null) state.repeatLeft = state.repeat || 1;
@@ -1251,8 +1255,18 @@ function stopAudio(updateBtn) {
   if (updateBtn) playButtons();
 }
 
-// ------------------------------------------------------------- hover
+// ------------------------------------------------------------- hover (+ dwell, D1)
+// The cursor resting 3 s on the same word (or a 600 ms long press on a touch screen): its verse shines
+// strongly, its surah softly, and the word goes into the lamp with its verse, its rank and how often its
+// form occurs. The highlight of the answer (or of the khatma) comes back when the cursor leaves. Not
+// during a recitation: the recited verse keeps the light.
+const DWELL_MS = 3000, LONG_PRESS_MS = 600;
+let dwellT = 0, dwellWord = null;
 function hover(p) {
+  showTip(p);
+  armDwell(p);
+}
+function showTip(p) {
   const tt = $('#tooltip');
   if (!p || !state.words) { tt.style.display = 'none'; return; }
   const e = state.engine;
@@ -1260,6 +1274,53 @@ function hover(p) {
   tt.style.display = 'block';
   tt.style.left = Math.min(innerWidth - 270, p.x + 14) + 'px';
   tt.style.top = Math.min(innerHeight - 90, p.y + 14) + 'px';
+}
+function armDwell(p) {
+  const w = p ? p.word : null;
+  if (w === dwellWord) return;                  // still on the same word: the clock keeps running
+  clearTimeout(dwellT);
+  dwellWord = w;
+  endDwell();
+  if (p) dwellT = setTimeout(() => startDwell(p), DWELL_MS);
+}
+function startDwell(p) {
+  if (state.playing || !state.words || (state.dwell && state.dwell.word === p.word)) return;
+  const e = state.engine, v = p.verse, sn = e.suraOf[v], S = state.core.suras[sn - 1];
+  const f = wordFacts(state.words, p.word, state.galaxy.wordsOfVerse(v), state.galaxy.wordsOfVerse(S.first)[0]);
+  const text = T().dwellInfo(refLabel(v), f.inVerse, f.verseWords, f.inSura, f.occurrences);
+  state.dwell = { word: p.word, before: $('#lampRef').textContent, text };
+  state.galaxy.highlightVerses([v], () => state.colorOf.get(sn) || 1);     // verse strong, its surah soft
+  showLampWord(f.word, text);
+  $('#lampRef').classList.add('dwell');
+}
+function endDwell() {
+  const d = state.dwell;
+  if (!d) return;
+  state.dwell = null;
+  $('#lampRef').classList.remove('dwell');
+  applyHighlight();
+  if (!state.playing) {
+    showLampWord('');
+    if ($('#lampRef').textContent === d.text) $('#lampRef').textContent = d.before;   // unless a verse was opened meanwhile
+  }
+}
+// touch screens: a long press is the dwell; the next touch ends it
+function setupLongPress() {
+  const cv = $('#galaxy');
+  let t = 0, at = null;
+  cv.addEventListener('pointerdown', (ev) => {
+    if (ev.pointerType === 'mouse') return;
+    clearTimeout(t); showTip(null); endDwell();
+    at = { x: ev.clientX, y: ev.clientY };
+    t = setTimeout(() => {
+      const p = at && state.galaxy.pickAt(at.x, at.y);
+      if (!p) return;
+      state.galaxy.cancelPick();                 // lifting the finger must not open the verse
+      showTip(p); startDwell(p);
+    }, LONG_PRESS_MS);
+  });
+  const stop = (ev) => { if (ev.type === 'pointermove' && at && Math.hypot(ev.clientX - at.x, ev.clientY - at.y) < 8) return; clearTimeout(t); at = null; };
+  ['pointermove', 'pointerup', 'pointercancel'].forEach(k => cv.addEventListener(k, stop));
 }
 
 // ------------------------------------------------------------- tools: dock + exclusive panels
