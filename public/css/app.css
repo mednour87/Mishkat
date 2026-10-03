@@ -716,3 +716,8 @@ html[data-theme=light] .brief { background: #fffaf0; }
 .rag-wait { animation: ragPulse 1.4s ease-in-out infinite; }
 @keyframes ragPulse { 50% { opacity: .45; } }
 @media (prefers-reduced-motion: reduce) { .rag-wait { animation: none; } }
+
+.rag-q { font-family: var(--quran, inherit); font-size: 1.12em; color: var(--gold); }
+.rag-fatwa { margin: 0 0 10px; padding: 10px 12px; border-inline-start: 3px solid rgba(143, 211, 255, .6); background: rgba(143, 211, 255, .06); border-radius: 8px; line-height: 1.9; }
+.rag-fatwa .rag-fq { display: block; margin-bottom: 6px; opacity: .9; }
+.rag-fatwa .rag-f { display: block; margin-bottom: 4px; }

@@ -440,7 +440,7 @@ function renderResults() {
   //     of the verses that answer (each with its verse), never generated
   const ragOn = ragWanted(res);
   if (res.term || ragOn || (res.brief && res.brief.items.length)) {
-    h += `<section class="brief" id="briefBox" dir="${dir}"><h3 class="sec">${esc(t.briefTitle)}</h3>`;
+    h += `<section class="brief" id="briefBox" dir="${dir}"><h3 class="sec">${esc(isRulingRes(res) ? t.ragFatwaTitle : t.briefTitle)}</h3>`;
     if (res.term) h += termCard(res.term);
     if (ragOn) h += `<div id="ragBox" aria-live="polite"><p class="note rag-wait">${esc(t.ragLoading)}</p></div>`;
     else if (res.brief && res.brief.items.length) {
@@ -611,20 +611,32 @@ async function loadSunnah(res) {
     <p><small><a href="https://hadeethenc.com" target="_blank" rel="noopener">HadeethEnc.com</a> — ${esc(t.sunnahSrc)}</small></p>`;
   box.hidden = false;
 }
-// «الجواب باختصار» v5 (extractive, evidence-bound): the worker builds a closed list of sentences
-// (tafsir of the verses the AI selected + the hadiths it kept), the server's composer and judge return
-// sentence IDs only, and the sentences are shown verbatim, by concept, each with its verse or hadith.
+// «الجواب باختصار» v5 (extractive, evidence-bound, public/js/rag.js): the worker builds a closed list of
+// passages from the sources of truth — verse text (Tanzil), tafsir, authentic hadiths, and for a ruling
+// question only the fatwas published by Sheikh Ibn Baz —, the server's composer and independent judge return
+// passage IDs only, fixed rules check them again, and the passages are shown verbatim with their source.
 // A concept of the question with no evidence is said so. If the service fails: the previous short answer.
 // a story («قصة يوسف») is answered by its verses in order, not by two sentences
 const STORY_Q = /^(قصة|قصه)\s|\bstory of\b/i;
-function ragWanted(res) { return !!(state.llm && state.llm.answer && state.worker && ['topic', 'term'].includes(res.type) && res.confirmedBy === 'ai' && !STORY_Q.test(res.query || '')); }
-async function loadRag(res) {
+const isRulingRes = (res) => res.type === 'abstain' && res.reason === 'ruling' && /[؀-ۿ]/.test(res.query || '');
+function ragWanted(res) {
+  if (!(state.llm && state.llm.answer && state.worker)) return false;
+  if (isRulingRes(res)) return true;
+  return ['topic', 'term'].includes(res.type) && res.confirmedBy === 'ai' && !STORY_Q.test(res.query || '');
+}
+function ragItem(x, res, t) {
+  if (x.kind === 'quran') return `<span class="rag-s rag-q" dir="rtl">﴿${esc(x.text)}﴾</span> <button class="cite" data-idx="${x.idx}">(${esc(refLabel(x.idx))})</button>`;
+  if (x.kind === 'tafsir') return `<span class="rag-s">${esc(x.text)}</span> <button class="cite" data-idx="${x.idx}">(${esc(refLabel(x.idx))})</button>`;
+  if (x.kind === 'hadith') return `<span class="rag-s rag-h">${esc(x.text)}</span> <a class="cite" href="https://hadeethenc.com/${esc(x.lang || res.lang)}/browse/hadith/${esc(x.id)}" target="_blank" rel="noopener">(${esc(x.part === 'expl' ? t.ragExpl : t.ragHadith)} · ${esc(x.grade)})</a>`;
+  return x.part === 'question' ? `<span class="rag-fq"><small>${esc(t.fatwaQ)}</small> ${esc(x.text)}</span>` : `<span class="rag-s rag-f">${esc(x.text)}</span>`;
+}
+async function loadRag(res, fatwas = []) {
   const box = $('#ragBox'), t = T();
   if (!box || !ragWanted(res)) return;
   let b = null;
   try {
-    b = await workerCall({ op: 'rag', res: { type: res.type, lang: res.lang, query: res.query, confirmedBy: res.confirmedBy,
-      verses: res.verses.map(v => ({ idx: v.idx, ai: !!v.ai, aiRelated: !!v.aiRelated })) }, hadIds: res._sunnah || [] });
+    b = await workerCall({ op: 'rag', res: { type: res.type, reason: res.reason, lang: res.lang, query: res.query, confirmedBy: res.confirmedBy,
+      verses: (res.verses || []).map(v => ({ idx: v.idx, ai: !!v.ai, aiRelated: !!v.aiRelated })) }, hadIds: res._sunnah || [], fatwas });
   } catch (e) { b = null; }
   if (box !== $('#ragBox')) return;          // another question meanwhile
   res.rag = b;
@@ -632,14 +644,18 @@ async function loadRag(res) {
   if (!b) {                                  // service unavailable: the previous short answer, if any
     box.innerHTML = res.brief && res.brief.items.length
       ? `<p class="brief-p">${res.brief.items.map(x => `${esc(x.text)} <button class="cite" data-idx="${x.idx}">(${esc(refLabel(x.idx))})</button>`).join(' ')}</p><p class="note">${esc(t.briefNote(res.brief.sourceTitle || ''))}</p>`
-      : `<p class="note">${esc(t.ragUnavailable)}</p>`;
+      : `<p class="note">${esc(isRulingRes(res) ? t.ragNoFatwa : t.ragUnavailable)}</p>`;
   } else if (!b.points.length) {
-    box.innerHTML = `<p class="note">${esc(t.ragNone)}</p>`;
+    box.innerHTML = `<p class="note">${esc(isRulingRes(res) ? t.ragNoFatwa : t.ragNone)}</p>`;
+  } else if (b.qtype === 'ruling') {
+    // a published fatwa: its question, then the paragraphs that state the answer, verbatim, with the link
+    box.innerHTML = b.points.map(p => { const f = p.items[0];
+      return `<blockquote class="rag-fatwa" dir="rtl">${p.items.map(x => ragItem(x, res, t)).join(' ')}
+        <footer><small>${esc(f.mufti || '')} — <a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.title || f.source || 'binbaz.org.sa')}</a></small></footer></blockquote>`; }).join('')
+      + `<p class="note rag-gap">${esc(t.ragFatwaNote)}</p>`;
   } else {
-    const srcs = [...new Set(b.points.flatMap(p => p.items.map(x => x.kind === 'verse' ? x.sourceTitle : t.ragHadithSrc)))].filter(Boolean);
-    box.innerHTML = `<ul class="rag-points" dir="${dir}">${b.points.map(p => `<li>${p.shown && b.points.length > 1 ? `<b class="rag-c">«${esc(p.concept)}»</b> ` : ''}${p.items.map(x => x.kind === 'verse'
-        ? `<span class="rag-s">${esc(x.text)}</span> <button class="cite" data-idx="${x.idx}">(${esc(refLabel(x.idx))})</button>`
-        : `<span class="rag-s rag-h">${esc(x.text)}</span> <a class="cite" href="https://hadeethenc.com/${esc(x.lang || res.lang)}/browse/hadith/${esc(x.id)}" target="_blank" rel="noopener">(${esc(x.part === 'expl' ? t.ragExpl : t.ragHadith)} · ${esc(x.grade)})</a>`).join(' ')}</li>`).join('')}</ul>
+    const srcs = [...new Set(b.points.flatMap(p => p.items.map(x => x.kind === 'tafsir' ? x.sourceTitle : x.kind === 'quran' ? t.ragQuranSrc : t.ragHadithSrc)))].filter(Boolean);
+    box.innerHTML = `<ul class="rag-points" dir="${dir}">${b.points.map(p => `<li>${p.shown && b.points.length > 1 ? `<b class="rag-c">«${esc(p.concept)}»</b> ` : ''}${p.items.map(x => ragItem(x, res, t)).join(' ')}</li>`).join('')}</ul>
       ${b.uncovered.length ? `<p class="note rag-gap">${esc(b.uncovered.some(u => u.shown) ? t.ragGap(b.uncovered.filter(u => u.shown).map(u => u.concept)) : t.ragGapPart)}</p>` : ''}
       <p class="note">${esc(t.ragNote(srcs.join(' · ')))}</p>`;
   }
@@ -659,10 +675,16 @@ async function loadFatwas(q) {
   } catch (e) { j = null; }
   if (box !== $('#fatwaBox')) return;
   const more = `https://binbaz.org.sa/search?q=${encodeURIComponent(q)}`;
-  if (!j || !j.ok || !j.items.length) { box.innerHTML = head + `<p class="lead">${esc(j && j.ok ? t.fatwaNone : t.fatwaFail)}</p><p><a class="mini" href="${esc(j && j.url || more)}" target="_blank" rel="noopener">${esc(t.fatwaOpen)}</a></p>`; return; }
+  if (!j || !j.ok || !j.items.length) { const rb = $('#ragBox'); if (rb) rb.innerHTML = '<p class="note">' + esc(t.ragNoFatwa) + '</p>'; box.innerHTML = head + `<p class="lead">${esc(j && j.ok ? t.fatwaNone : t.fatwaFail)}</p><p><a class="mini" href="${esc(j && j.url || more)}" target="_blank" rel="noopener">${esc(t.fatwaOpen)}</a></p>`; return; }
   box.innerHTML = head + `<ol class="flist">${j.items.map(x => `<li><b dir="rtl">${esc(x.title)}</b>${x.snippet ? `<div class="f-snip" dir="rtl">${esc(x.snippet)}…</div>` : ''}
       <div class="f-act"><button class="mini" data-fatwa="${+x.id}">${esc(t.fatwaRead)}</button> <a class="mini" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(t.fatwaSite)}</a></div><div class="f-full"></div></li>`).join('')}</ol>
     <p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fatwaOpen)}</a> · <small>${esc(j.source)}${j.by === 'ai' ? ' · ' + esc(t.fatwaByAi) : ''}</small></p>`;
+  if (state.result && isRulingRes(state.result) && ragWanted(state.result)) {
+    const res0 = state.result;
+    Promise.all(j.items.slice(0, 3).map(x => fetch('api/fatwa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: +x.id }) })
+      .then(r => r.ok ? r.json() : null).catch(() => null)))
+      .then(fs => loadRag(res0, fs.filter(f => f && f.ok).map(f => ({ id: f.id, title: f.title, question: f.question, answer: f.answer, url: f.url, mufti: f.mufti, source: f.source }))));
+  }
   box.querySelectorAll('[data-fatwa]').forEach(b => b.onclick = async () => {
     const out = b.closest('li').querySelector('.f-full');
     if (out.dataset.done) { out.hidden = !out.hidden; return; }

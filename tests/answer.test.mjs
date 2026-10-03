@@ -10,7 +10,7 @@ import { loadEngine } from './load.mjs';
 const { engine: E, sources } = loadEngine();
 const env = { PRIMARY_URL: 'https://openrouter.ai/api/v1/chat/completions', PRIMARY_KEY: 'k', PRIMARY_MODELS: 'openai/gpt-oss-120b,openai/gpt-oss-20b' };
 const reply = (obj) => ({ ok: true, status: 200, json: async () => ({ choices: [{ message: { content: JSON.stringify(obj) } }] }) });
-const verse = (s, a) => { const i = E.idxOf(s, a); const c = E.cardOf('ar', i, 'answer'); return { idx: i, ref: `${s}:${a}`, text: c.text, source: c.source, sourceTitle: c.sourceTitle }; };
+const verse = (s, a) => { const i = E.idxOf(s, a); const c = E.cardOf('ar', i, 'answer'); return { idx: i, ref: `${s}:${a}`, direct: true, text: c.text, source: c.source, sourceTitle: c.sourceTitle }; };
 
 test('closed list: every sentence is an exact substring of the vetted tafsir, ids are well formed', () => {
   const list = buildClosedList({ verses: [verse(2, 153), verse(14, 7)], hadiths: [{ id: 4196, text: 'من صام رمضان إيمانا واحتسابا غفر له ما تقدم من ذنبه.', expl: 'في الحديث فضل صيام رمضان. وفيه الحث على الإخلاص.', grade: 'صحيح', by: 'متفق عليه' }] });
@@ -74,7 +74,7 @@ test('pipeline: judge unreachable → nothing unjudged is shown; ruling → no a
 test('display: only sentences of the local list, verbatim; AI concept labels shown only when they are words of the question', () => {
   const list = buildClosedList({ verses: [verse(2, 153), verse(14, 7)] });
   const a = list.find(s => s.ref === '2:153'), b = list.find(s => s.ref === '14:7');
-  const out = applyAnswer(list, { ok: true, concepts: ['الصبر', 'الشكر', 'التوكل على الله'], points: [{ concept: 'الصبر', sids: [a.sid, 'Q:9:9#9'] }, { concept: 'الشكر', sids: [b.sid] }] }, 'الصبر والشكر');
+  const out = applyAnswer(list, { ok: true, judge: 'openai/gpt-oss-20b', concepts: ['الصبر', 'الشكر', 'التوكل على الله'], points: [{ concept: 'الصبر', sids: [a.sid, 'Q:9:9#9'] }, { concept: 'الشكر', sids: [b.sid] }] }, 'الصبر والشكر');
   assert.equal(out.points.length, 2);
   assert.equal(out.points[0].items[0].text, a.text);
   assert.equal(out.points[0].items.length, 1);

@@ -109,7 +109,7 @@ export function validateExpansion(raw) {
   return { intent: INTENTS.includes(obj.intent) ? obj.intent : 'topic', keywords: { ar: clean(kw.ar), en: clean(kw.en) }, refs };
 }
 
-export async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, fetchImpl = fetch }) {
+export async function callOpenAICompat({ url, key, model, messages, timeoutMs = 6000, fetchImpl = fetch, maxPrice = null }) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
@@ -118,6 +118,9 @@ export async function callOpenAICompat({ url, key, model, messages, timeoutMs = 
       // OpenRouter: its own reasoning field, the fastest hosts first, only hosts that honour JSON mode
       if (/gpt-oss/.test(model)) body.reasoning = { effort: 'low', exclude: true };
       body.provider = { sort: 'throughput', require_parameters: true, data_collection: 'deny' };
+      // cost cap: hosts above this price ($ per million tokens) are never used (the fastest one cost 10× the
+      // cheapest on 2026-10-03: measured $0.0028 per question with it, eval/cost_per_question.mjs)
+      if (maxPrice) body.provider.max_price = { prompt: maxPrice[0], completion: maxPrice[1] };
     } else if (/gpt-oss/.test(model)) body.reasoning_effort = 'low';
     const send = () => fetchImpl(url, {
       method: 'POST', signal: ctrl.signal,
@@ -148,7 +151,10 @@ export function providers(env) {
   const out = [];
   const list = (v, d) => (v || d).split(',').map(x => x.trim()).filter(Boolean);
   if (env.PRIMARY_URL && env.PRIMARY_KEY && env.PRIMARY_MODELS) {
-    for (const m of list(env.PRIMARY_MODELS)) out.push({ name: 'primary', url: env.PRIMARY_URL, key: env.PRIMARY_KEY, model: m });
+    // PRIMARY_MAX_PRICE="in,out" in $ per million tokens; default 0.2,0.8 (Groq/DeepInfra/Novita yes, Cerebras no); "off" = no cap
+    const mp = String(env.PRIMARY_MAX_PRICE || '0.2,0.8');
+    const maxPrice = mp === 'off' ? null : mp.split(',').map(Number);
+    for (const m of list(env.PRIMARY_MODELS)) out.push({ name: 'primary', url: env.PRIMARY_URL, key: env.PRIMARY_KEY, model: m, maxPrice: maxPrice && maxPrice.length === 2 && maxPrice.every(x => x > 0) ? maxPrice : null });
   }
   if (env.GROQ_API_KEY) {
     for (const m of list(env.GROQ_MODELS, DEFAULT_MODELS.join(','))) out.push({ name: 'groq', url: 'https://api.groq.com/openai/v1/chat/completions', key: env.GROQ_API_KEY, model: m });

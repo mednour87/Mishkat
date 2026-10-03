@@ -1,7 +1,7 @@
 // Shared Cloudflare Pages Function handler: JSON in, JSON out, edge cache for
 // identical requests (saves free-tier quota and makes answers stable),
 // same-origin check, per-IP rate limit and size limit.
-import { rateLimited, foreignOrigin, LIMITS, deny } from './guard.js';
+import { rateLimited, foreignOrigin, LIMITS, deny, dailyCapReached } from './guard.js';
 
 const HEADERS = { 'content-type': 'application/json; charset=utf-8' };
 
@@ -10,6 +10,7 @@ export function makeHandler(fn, name) {
     const url = new URL(request.url);
     if (foreignOrigin(request.headers.get('origin'), url.host)) return deny(403, 'forbidden origin');
     if (rateLimited(request.headers.get('cf-connecting-ip'), name, LIMITS[name] || 30)) return deny(429, 'too many requests');
+    if (dailyCapReached(name, env)) return deny(429, 'daily AI budget reached');
     const len = +(request.headers.get('content-length') || 0);
     if (len > LIMITS.maxJsonBytes) return deny(413, 'payload too large');
     let body;

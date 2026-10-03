@@ -6,7 +6,7 @@
 // with its cache and circuit breaker, and replies).
 import { createEngine, detectLang, SOURCES_NEEDED, tokens, expandTokens } from './engine.js';
 import { loadVectors, topK, VEC_DIM } from './dense-rank.js';
-import { buildClosedList, applyAnswer } from './rag.js';
+import { buildClosedList, applyAnswer, questionType } from './rag.js';
 
 const getJSON = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); };
 let engineP = null, latinP = null;
@@ -134,22 +134,33 @@ async function hadithsById(lang, ids) {
 // explanation of the hadiths it kept) → /api/answer (composer + judge) → only IDs → verbatim sentences.
 // Only for answers whose verses were confirmed by the AI; graded hadiths only.
 const GOOD = /صحيح|حسن|sahih|hasan|authentic|good/i, WEAK = /ضعيف|موضوع|منكر|weak|fabricated/i;
-async function ragFor(e, res, hadIds = []) {
-  if (!res || !['topic', 'term'].includes(res.type) || res.confirmedBy !== 'ai') return null;
+const RAG_CACHE = new Map();   // same question, same evidence → same answer, no second AI call
+async function ragFor(e, res, hadIds = [], fatwas = []) {
+  if (!res) return null;
   const lang = res.lang === 'en' ? 'en' : 'ar';
-  await ensureSources(e, lang);
-  const vs = (res.verses || []).filter(v => v.ai);
-  const ordered = vs.filter(v => !v.aiRelated).concat(vs.filter(v => v.aiRelated));
-  const verses = ordered.map(v => { const c = e.cardOf(lang, v.idx, 'answer'); return c && { idx: v.idx, ref: e.ref(v.idx), text: c.text, source: c.source, sourceTitle: c.sourceTitle }; }).filter(Boolean);
-  let hadiths = [];
-  if (hadIds.length) { try { hadiths = (await hadithsById(lang, hadIds)).filter(h => GOOD.test(h.grade || '') && !WEAK.test(h.grade || '')); } catch (err) { hadiths = []; } }
-  const list = buildClosedList({ verses, hadiths });
+  const qtype = questionType(res.query);
+  let verses = [], hadiths = [];
+  if (qtype === 'ruling') {
+    // أحكام: only fatwas published by Sheikh Ibn Baz (fetched in full by the page), never a tafsir sentence
+    if (!fatwas.length) return null;
+  } else {
+    if (!['topic', 'term'].includes(res.type) || res.confirmedBy !== 'ai') return null;
+    await ensureSources(e, lang);
+    const vs = (res.verses || []).filter(v => v.ai);
+    const ordered = vs.filter(v => !v.aiRelated).concat(vs.filter(v => v.aiRelated));
+    verses = ordered.map(v => { const c = e.cardOf(lang, v.idx, 'answer'); return c && { idx: v.idx, ref: e.ref(v.idx), direct: !v.aiRelated, verseText: e.verses[v.idx], text: c.text, source: c.source, sourceTitle: c.sourceTitle }; }).filter(Boolean);
+    if (hadIds.length) { try { hadiths = (await hadithsById(lang, hadIds)).filter(h => GOOD.test(h.grade || '') && !WEAK.test(h.grade || '')); } catch (err) { hadiths = []; } }
+  }
+  const list = buildClosedList({ verses, hadiths, fatwas, qtype });
   if (!list.length) return null;
-  const out = await LLM.answer({ query: res.query, lang, sentences: list.map(s => ({ sid: s.sid, text: s.text })) });
+  const key = lang + '|' + res.query + '|' + list.map(x => x.sid).join(',');
+  if (RAG_CACHE.has(key)) return RAG_CACHE.get(key);
+  const out = await LLM.answer({ query: res.query, lang, qtype, sentences: list.map(x => ({ sid: x.sid, text: x.text })) });
   const brief = applyAnswer(list, out, res.query);
-  if (brief) brief.lang = lang;
+  if (brief) { brief.lang = lang; RAG_CACHE.set(key, brief); if (RAG_CACHE.size > 60) RAG_CACHE.delete(RAG_CACHE.keys().next().value); }
   return brief;
 }
+
 
 self.onmessage = async (ev) => {
   const m = ev.data || {};
@@ -187,7 +198,7 @@ self.onmessage = async (ev) => {
       return;
     }
     if (m.op === 'rag') {        // asked by the page after the verses (and the Sunnah) are shown
-      self.postMessage({ id: m.id, ok: true, value: await ragFor(e, m.res, m.hadIds || []) });
+      self.postMessage({ id: m.id, ok: true, value: await ragFor(e, m.res, m.hadIds || [], (m.fatwas || []).slice(0, 3)) });
       return;
     }
     if (m.op === 'hadiths') {    // hadiths by id (calendar panel)

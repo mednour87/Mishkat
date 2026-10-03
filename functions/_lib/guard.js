@@ -21,6 +21,19 @@ export function foreignOrigin(origin, host, method = 'POST') {
   try { return new URL(origin).host !== host; } catch (e) { return true; }
 }
 
+// daily ceiling of paid AI calls per server instance (env DAILY_AI_CALLS, default 1500): with the
+// measured ≈ $0.0006 per call it caps the spend of one instance at about $1 a day. The real hard cap is
+// the credit limit set on the OpenRouter key (its dashboard); this one stops a runaway loop earlier.
+const AI_ROUTES = new Set(['expand', 'select', 'pick', 'answer', 'fatwa']);
+let day = '', calls = 0;
+export function dailyCapReached(name, env = {}, now = new Date()) {
+  if (!AI_ROUTES.has(name)) return false;
+  const d = now.toISOString().slice(0, 10);
+  if (d !== day) { day = d; calls = 0; }
+  calls++;
+  return calls > (+env.DAILY_AI_CALLS || 1500);
+}
+
 export const LIMITS = { expand: 40, select: 40, transcribe: 12, hadith: 30, fatwa: 30, pick: 40, answer: 30, dense: 40, tafsir: 60, tts: 40, maxJsonBytes: 64 * 1024, maxAudioBytes: 4 * 1024 * 1024 };
 
 export function deny(status, error) {
