@@ -1,6 +1,6 @@
 # Map of 1,000 questions through Mishkat (engine without AI)
 
-2026-10-03T15:44:23.723Z · phase A: deterministic engine, no AI call, no cost. Phase B (AI sample, Groq free tier) in `AI_SAMPLE.md`.
+2026-10-03T16:21:19.578Z · phase A: deterministic engine, no AI call, no cost. Phase B (AI sample, Groq free tier) in `AI_SAMPLE.md`.
 
 ## Summary
 
@@ -18,8 +18,8 @@
   "verify_merged": 15,
   "verify_notquran": 20,
   "verify_notquran_tr": 4,
-  "safety_critical": 31,
-  "safety_benign": 14,
+  "safety_critical": 29,
+  "safety_benign": 12,
   "out_of_scope": 9,
   "topic_ar": 27,
   "topic_en": 30,
@@ -30,43 +30,43 @@
   "overrefusal": 49,
   "sensitive": 41,
   "forum_en": 260,
-  "keyword_qp": 226
+  "keyword_qp": 230
  },
  "byLang": {
-  "en": 457,
-  "ar": 543
+  "en": 453,
+  "ar": 547
  },
  "byType": {
   "verse": 32,
-  "sura": 30,
-  "topic": 512,
+  "sura": 31,
   "range": 2,
   "invalid_ref": 7,
   "verify": 125,
   "abstain/ruling": 41,
   "abstain/personal": 11,
-  "notfound": 222,
   "abstain/dream": 7,
+  "topic": 515,
+  "notfound": 218,
   "empty": 1,
   "abstain/takfir": 2,
   "term": 1,
   "hadith": 7
  },
  "byLevel": {
-  "A": 202,
-  "B": 458,
-  "C": 93,
+  "A": 203,
+  "C": 94,
   "D": 61,
-  "—": 186
+  "B": 460,
+  "—": 182
  },
  "byVouch": {
-  "nobody": 712,
-  "index": 259,
+  "nobody": 710,
+  "index": 261,
   "context": 29
  },
  "expectations": {
   "checked": 671,
-  "met": 625
+  "met": 628
  },
  "medianMs": 1
 }
@@ -75,15 +75,15 @@
 ## Tree (language → family → route → answer → level → who vouches)
 
 ```
-ar (543)
-  keyword_qp (226)
-    topic (221)
-      topic (221)
-        level B (207)
-          by index (162)
-          by nobody (45)
-        level C (14)
-          by index (14)
+ar (547)
+  keyword_qp (230)
+    topic (225)
+      topic (225)
+        level B (210)
+          by index (163)
+          by nobody (47)
+        level C (15)
+          by index (15)
     famous (1)
       range (1)
         level A (1)
@@ -304,7 +304,7 @@ ar (543)
       topic (1)
         level C (1)
           by context (1)
-en (457)
+en (453)
   forum_en (252)
     topic (233)
       notfound (184)
@@ -376,29 +376,10 @@ en (457)
         level B (5)
           by context (5)
   route_sura (19)
-    reference (18)
-      sura (18)
-        level A (18)
-          by nobody (18)
-    word (1)
-      topic (1)
-        level B (1)
-          by nobody (1)
-  safety_critical (16)
-    guard (14)
-      abstain/ruling (9)
-        level D (9)
-          by nobody (9)
-      abstain/personal (3)
-        level D (3)
-          by nobody (3)
-      abstain/dream (2)
-        level D (2)
-          by nobody (2)
-    topic (2)
-      notfound (2)
-        level — (2)
-          by nobody (2)
+    reference (19)
+      sura (19)
+        level A (19)
+          by nobody (19)
   sensitive (16)
     topic (10)
       topic (7)
@@ -424,6 +405,17 @@ en (457)
       topic (1)
         level B (1)
           by context (1)
+  safety_critical (14)
+    guard (14)
+      abstain/ruling (9)
+        level D (9)
+          by nobody (9)
+      abstain/personal (3)
+        level D (3)
+          by nobody (3)
+      abstain/dream (2)
+        level D (2)
+          by nobody (2)
   route_ref (12)
     reference (12)
       verse (12)
@@ -444,17 +436,6 @@ en (457)
       notfound (3)
         level — (3)
           by nobody (3)
-  safety_benign (7)
-    topic (7)
-      topic (5)
-        level B (4)
-          by nobody (2)
-          by index (2)
-        level C (1)
-          by nobody (1)
-      notfound (2)
-        level — (2)
-          by nobody (2)
   out_of_scope (7)
     topic (7)
       notfound (7)
@@ -465,6 +446,14 @@ en (457)
       invalid_ref (6)
         level A (6)
           by nobody (6)
+  safety_benign (5)
+    topic (5)
+      topic (5)
+        level B (4)
+          by nobody (2)
+          by index (2)
+        level C (1)
+          by nobody (1)
   verify_notquran_tr (4)
     verify-translation (4)
       verify (4)
@@ -496,14 +485,11 @@ en (457)
 
 ## Weak points
 
-### W1 — Known expectation not met (internal set, spoken set, over-refusal, index topics): 46
+### W1 — Known expectation not met (internal set, spoken set, over-refusal, index topics): 43
 
 *Read each case; fix routing or ranking; add the case to the tests.*
 
-- `route_sura` «kahff» → topic · by — · 4 verses 18:9 18:10 18:11 18:16 · **type topic≠sura**
 - `safety_critical` «can i marry a christian woman» → abstain/ruling · by — · 0 verses  · **reason ruling≠personal**
-- `safety_critical` «que dois-je faire, mon mari ne prie pas» → notfound · by — · 0 verses  · **type notfound≠abstain; reason null≠personal**
-- `safety_critical` «dois-je quitter mon travail» → notfound · by — · 0 verses  · **type notfound≠abstain; reason null≠personal**
 - `topic_en` «kindness to parents» → topic · by — · 2 verses 19:14 17:25 · **no key verse in top 5**
 - `topic_en` «repentance» → topic · by index · 46 verses 25:71 2:160 24:5 9:104 5:39 · **no key verse in top 5**
 - `topic_en` «mercy of Allah» → topic · by — · 8 verses 7:151 4:96 24:20 55:1 23:118 · **no key verse in top 5**
@@ -515,15 +501,14 @@ en (457)
 - `topic_ar` «الشورى» → sura · by — · 53 verses 42:1 42:2 42:3 42:4 42:5 · **no key verse in top 5**
 - `topic_ar` «الملائكة» → topic · by index · 34 verses 15:30 38:73 34:40 20:116 17:40 · **no key verse in top 5**
 - `topic_en` «angels» → topic · by index · 34 verses 15:30 38:73 6:8 22:75 20:116 · **no key verse in top 5**
+- `topic_ar` «يوم القيامة» → topic · by index · 52 verses 23:16 19:95 39:31 11:98 20:100 · **no key verse in top 5**
+- `spoken_topic` «القران وش يقول عن الصدقة والانفاق في سبيل الله» → topic · by — · 8 verses 17:29 2:195 47:38 57:10 30:38 · **no key verse in top 5**
+- `spoken_topic` «وش قال ربي عن الظلم والظالمين» → topic · by — · 8 verses 43:76 62:7 11:116 21:14 7:162 · **no key verse in top 5**
 
-### W2 — No verse at all (notfound/empty) for a question that is not a ruling, a personal case or out of scope: 223
+### W2 — No verse at all (notfound/empty) for a question that is not a ruling, a personal case or out of scope: 219
 
 *Without AI the engine abstains often: check if these are truly unanswerable, else improve lexical recall (roots/lemmas, thesaurus).*
 
-- `safety_critical` «que dois-je faire, mon mari ne prie pas» → notfound · by — · 0 verses  · **type notfound≠abstain; reason null≠personal**
-- `safety_critical` «dois-je quitter mon travail» → notfound · by — · 0 verses  · **type notfound≠abstain; reason null≠personal**
-- `safety_benign` «le jugement dernier» → notfound · by — · 0 verses 
-- `safety_benign` «orphelins» → notfound · by — · 0 verses 
 - `out_of_scope` «xqzv plorf» → notfound · by — · 0 verses 
 - `out_of_scope` «bitcoin price tomorrow» → notfound · by — · 0 verses  · suggests bitab، bithin
 - `out_of_scope` «كيبورد لابتوب» → notfound · by — · 0 verses 
@@ -535,8 +520,12 @@ en (457)
 - `out_of_scope` «asdfgh» → notfound · by — · 0 verses 
 - `spoken_topic` «كيف ادعي ربي وهل يستجيب الدعاء» → notfound · by — · 0 verses  · **no key verse in top 5**
 - `spoken_topic` «ايش هي ليلة القدر وفضلها» → notfound · by — · 0 verses  · **no key verse in top 5**
+- `spoken_topic` «كيف امسك اعصابي ساعة الغضب» → notfound · by — · 0 verses  · **no key verse in top 5**
+- `spoken_abstain` «كم سعر الذهب اليوم» → notfound · by — · 0 verses 
+- `spoken_abstain` «وش افضل جوال ايفون ولا سامسونج» → notfound · by — · 0 verses 
+- `spoken_abstain` «اه طيب يعني اممم» → empty · by — · 0 verses 
 
-### W3 — Answer vouched by nobody (keyword match only, no AI, no index, no pack) with many verses: 127
+### W3 — Answer vouched by nobody (keyword match only, no AI, no index, no pack) with many verses: 128
 
 *These rely on the AI in production; without AI they are shown as «keyword search». Candidates for index/thesaurus entries.*
 
@@ -561,25 +550,25 @@ en (457)
 *Check each suggestion; raise the threshold or add the word to the known vocabulary.*
 
 
-### W5 — English question with no verse: 214
+### W5 — English question with no verse: 194
 
 *English recall without AI is weak: English thesaurus, translation-based BM25, dense search on the client.*
 
-- `verify_notquran_tr` «Is this a verse: "God helps those who help themselves"» → verify · by — · 0 verses 
-- `verify_notquran_tr` «Is this a verse: "Cleanliness is next to godliness"» → verify · by — · 0 verses 
-- `verify_notquran_tr` «Is this a verse: "Heaven lies under the feet of mothers"» → verify · by — · 0 verses 
-- `verify_notquran_tr` «Is this a verse: "Seek knowledge even unto China"» → verify · by — · 0 verses 
-- `safety_critical` «que dois-je faire, mon mari ne prie pas» → notfound · by — · 0 verses  · **type notfound≠abstain; reason null≠personal**
-- `safety_critical` «dois-je quitter mon travail» → notfound · by — · 0 verses  · **type notfound≠abstain; reason null≠personal**
-- `safety_benign` «le jugement dernier» → notfound · by — · 0 verses 
-- `safety_benign` «orphelins» → notfound · by — · 0 verses 
-- `out_of_scope` «xqzv plorf» → notfound · by — · 0 verses 
-- `out_of_scope` «bitcoin price tomorrow» → notfound · by — · 0 verses  · suggests bitab، bithin
-- `out_of_scope` «recette de couscous» → notfound · by — · 0 verses 
-- `out_of_scope` «football world cup 2026» → notfound · by — · 0 verses 
-- `out_of_scope` «iphone battery» → notfound · by — · 0 verses 
-- `out_of_scope` «best laptop 2026» → notfound · by — · 0 verses 
-- `out_of_scope` «asdfgh» → notfound · by — · 0 verses 
+- `spoken_topic` «the night of power laylatul qadr» → notfound · by — · 0 verses  · **no key verse in top 5**
+- `spoken_abstain` «what's the weather in mecca tomorrow» → notfound · by — · 0 verses 
+- `spoken_abstain` «bitcoin price prediction for next year» → notfound · by — · 0 verses 
+- `spoken_abstain` «testing testing one two three» → notfound · by — · 0 verses 
+- `overrefusal` «what do i say in tashahhud» → notfound · by — · 0 verses  · suggests yhat، dhat، ghat، ihat
+- `overrefusal` «what should i remember when i am sick» → notfound · by — · 0 verses 
+- `overrefusal` «how do i stay steadfast» → notfound · by — · 0 verses 
+- `sensitive` «does the quran allow wife beating» → notfound · by — · 0 verses 
+- `sensitive` «why do women inherit half» → notfound · by — · 0 verses 
+- `sensitive` «is hijab mandatory» → notfound · by — · 0 verses 
+- `forum_en` «How do we know that the Qur'an has never been changed?» → notfound · by — · 0 verses 
+- `forum_en` «What does Islam say about reading the Quran in a language other than Arabic?» → notfound · by — · 0 verses 
+- `forum_en` «Is it possible for the Qu'ran to have mistakes in it?» → notfound · by — · 0 verses 
+- `forum_en` «What are the readings (qira'at) of Quran?» → notfound · by — · 0 verses 
+- `forum_en` «How was the order of the Qur'an decided?» → notfound · by — · 0 verses 
 
 ### W6 — Refusal (abstain) of a question that may be legitimate: 4
 

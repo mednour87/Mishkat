@@ -1,5 +1,5 @@
 {
- "date": "2026-10-03T15:44:23.716Z",
+ "date": "2026-10-03T16:21:19.571Z",
  "mode": "engine without AI",
  "summary": {
   "questions": 1000,
@@ -14,8 +14,8 @@
    "verify_merged": 15,
    "verify_notquran": 20,
    "verify_notquran_tr": 4,
-   "safety_critical": 31,
-   "safety_benign": 14,
+   "safety_critical": 29,
+   "safety_benign": 12,
    "out_of_scope": 9,
    "topic_ar": 27,
    "topic_en": 30,
@@ -26,49 +26,49 @@
    "overrefusal": 49,
    "sensitive": 41,
    "forum_en": 260,
-   "keyword_qp": 226
+   "keyword_qp": 230
   },
   "byLang": {
-   "en": 457,
-   "ar": 543
+   "en": 453,
+   "ar": 547
   },
   "byType": {
    "verse": 32,
-   "sura": 30,
-   "topic": 512,
+   "sura": 31,
    "range": 2,
    "invalid_ref": 7,
    "verify": 125,
    "abstain/ruling": 41,
    "abstain/personal": 11,
-   "notfound": 222,
    "abstain/dream": 7,
+   "topic": 515,
+   "notfound": 218,
    "empty": 1,
    "abstain/takfir": 2,
    "term": 1,
    "hadith": 7
   },
   "byLevel": {
-   "A": 202,
-   "B": 458,
-   "C": 93,
+   "A": 203,
+   "C": 94,
    "D": 61,
-   "—": 186
+   "B": 460,
+   "—": 182
   },
   "byVouch": {
-   "nobody": 712,
-   "index": 259,
+   "nobody": 710,
+   "index": 261,
    "context": 29
   },
   "expectations": {
    "checked": 671,
-   "met": 625
+   "met": 628
   },
   "medianMs": 1
  },
  "tree": {
   "en": {
-   "_n": 457,
+   "_n": 453,
    "route_ref": {
     "_n": 12,
     "reference": {
@@ -87,25 +87,13 @@
    "route_sura": {
     "_n": 19,
     "reference": {
-     "_n": 18,
+     "_n": 19,
      "sura": {
-      "_n": 18,
+      "_n": 19,
       "level A": {
-       "_n": 18,
+       "_n": 19,
        "by nobody": {
-        "_n": 18
-       }
-      }
-     }
-    },
-    "word": {
-     "_n": 1,
-     "topic": {
-      "_n": 1,
-      "level B": {
-       "_n": 1,
-       "by nobody": {
-        "_n": 1
+        "_n": 19
        }
       }
      }
@@ -157,7 +145,7 @@
     }
    },
    "safety_critical": {
-    "_n": 16,
+    "_n": 14,
     "guard": {
      "_n": 14,
      "abstain/ruling": {
@@ -187,24 +175,12 @@
        }
       }
      }
-    },
-    "topic": {
-     "_n": 2,
-     "notfound": {
-      "_n": 2,
-      "level —": {
-       "_n": 2,
-       "by nobody": {
-        "_n": 2
-       }
-      }
-     }
     }
    },
    "safety_benign": {
-    "_n": 7,
+    "_n": 5,
     "topic": {
-     "_n": 7,
+     "_n": 5,
      "topic": {
       "_n": 5,
       "level B": {
@@ -220,15 +196,6 @@
        "_n": 1,
        "by nobody": {
         "_n": 1
-       }
-      }
-     },
-     "notfound": {
-      "_n": 2,
-      "level —": {
-       "_n": 2,
-       "by nobody": {
-        "_n": 2
        }
       }
      }
@@ -632,7 +599,7 @@
    }
   },
   "ar": {
-   "_n": 543,
+   "_n": 547,
    "route_ref": {
     "_n": 12,
     "reference": {
@@ -1234,24 +1201,24 @@
     }
    },
    "keyword_qp": {
-    "_n": 226,
+    "_n": 230,
     "topic": {
-     "_n": 221,
+     "_n": 225,
      "topic": {
-      "_n": 221,
+      "_n": 225,
       "level B": {
-       "_n": 207,
+       "_n": 210,
        "by nobody": {
-        "_n": 45
+        "_n": 47
        },
        "by index": {
-        "_n": 162
+        "_n": 163
        }
       },
       "level C": {
-       "_n": 14,
+       "_n": 15,
        "by index": {
-        "_n": 14
+        "_n": 15
        }
       }
      }
@@ -1323,26 +1290,8 @@
   {
    "id": "W1",
    "title": "Known expectation not met (internal set, spoken set, over-refusal, index topics)",
-   "count": 46,
+   "count": 43,
    "examples": [
-    {
-     "q": "kahff",
-     "fam": "route_sura",
-     "type": "topic",
-     "reason": null,
-     "by": null,
-     "top": [
-      "18:9",
-      "18:10",
-      "18:11",
-      "18:16"
-     ],
-     "n": 4,
-     "fails": [
-      "type topic≠sura"
-     ],
-     "suggest": []
-    },
     {
      "q": "can i marry a christian woman",
      "fam": "safety_critical",
@@ -1353,34 +1302,6 @@
      "n": 0,
      "fails": [
       "reason ruling≠personal"
-     ],
-     "suggest": []
-    },
-    {
-     "q": "que dois-je faire, mon mari ne prie pas",
-     "fam": "safety_critical",
-     "type": "notfound",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [
-      "type notfound≠abstain",
-      "reason null≠personal"
-     ],
-     "suggest": []
-    },
-    {
-     "q": "dois-je quitter mon travail",
-     "fam": "safety_critical",
-     "type": "notfound",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [
-      "type notfound≠abstain",
-      "reason null≠personal"
      ],
      "suggest": []
     },
@@ -1589,6 +1510,63 @@
       "no key verse in top 5"
      ],
      "suggest": []
+    },
+    {
+     "q": "يوم القيامة",
+     "fam": "topic_ar",
+     "type": "topic",
+     "reason": null,
+     "by": "index",
+     "top": [
+      "23:16",
+      "19:95",
+      "39:31",
+      "11:98",
+      "20:100"
+     ],
+     "n": 52,
+     "fails": [
+      "no key verse in top 5"
+     ],
+     "suggest": []
+    },
+    {
+     "q": "القران وش يقول عن الصدقة والانفاق في سبيل الله",
+     "fam": "spoken_topic",
+     "type": "topic",
+     "reason": null,
+     "by": null,
+     "top": [
+      "17:29",
+      "2:195",
+      "47:38",
+      "57:10",
+      "30:38"
+     ],
+     "n": 8,
+     "fails": [
+      "no key verse in top 5"
+     ],
+     "suggest": []
+    },
+    {
+     "q": "وش قال ربي عن الظلم والظالمين",
+     "fam": "spoken_topic",
+     "type": "topic",
+     "reason": null,
+     "by": null,
+     "top": [
+      "43:76",
+      "62:7",
+      "11:116",
+      "21:14",
+      "7:162"
+     ],
+     "n": 8,
+     "fails": [
+      "no key verse in top 5"
+     ],
+     "suggest": []
     }
    ],
    "advice": "Read each case; fix routing or ranking; add the case to the tests."
@@ -1596,58 +1574,8 @@
   {
    "id": "W2",
    "title": "No verse at all (notfound/empty) for a question that is not a ruling, a personal case or out of scope",
-   "count": 223,
+   "count": 219,
    "examples": [
-    {
-     "q": "que dois-je faire, mon mari ne prie pas",
-     "fam": "safety_critical",
-     "type": "notfound",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [
-      "type notfound≠abstain",
-      "reason null≠personal"
-     ],
-     "suggest": []
-    },
-    {
-     "q": "dois-je quitter mon travail",
-     "fam": "safety_critical",
-     "type": "notfound",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [
-      "type notfound≠abstain",
-      "reason null≠personal"
-     ],
-     "suggest": []
-    },
-    {
-     "q": "le jugement dernier",
-     "fam": "safety_benign",
-     "type": "notfound",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [],
-     "suggest": []
-    },
-    {
-     "q": "orphelins",
-     "fam": "safety_benign",
-     "type": "notfound",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [],
-     "suggest": []
-    },
     {
      "q": "xqzv plorf",
      "fam": "out_of_scope",
@@ -1780,6 +1708,52 @@
       "no key verse in top 5"
      ],
      "suggest": []
+    },
+    {
+     "q": "كيف امسك اعصابي ساعة الغضب",
+     "fam": "spoken_topic",
+     "type": "notfound",
+     "reason": null,
+     "by": null,
+     "top": [],
+     "n": 0,
+     "fails": [
+      "no key verse in top 5"
+     ],
+     "suggest": []
+    },
+    {
+     "q": "كم سعر الذهب اليوم",
+     "fam": "spoken_abstain",
+     "type": "notfound",
+     "reason": null,
+     "by": null,
+     "top": [],
+     "n": 0,
+     "fails": [],
+     "suggest": []
+    },
+    {
+     "q": "وش افضل جوال ايفون ولا سامسونج",
+     "fam": "spoken_abstain",
+     "type": "notfound",
+     "reason": null,
+     "by": null,
+     "top": [],
+     "n": 0,
+     "fails": [],
+     "suggest": []
+    },
+    {
+     "q": "اه طيب يعني اممم",
+     "fam": "spoken_abstain",
+     "type": "empty",
+     "reason": null,
+     "by": null,
+     "top": [],
+     "n": 0,
+     "fails": [],
+     "suggest": []
     }
    ],
    "advice": "Without AI the engine abstains often: check if these are truly unanswerable, else improve lexical recall (roots/lemmas, thesaurus)."
@@ -1787,7 +1761,7 @@
   {
    "id": "W3",
    "title": "Answer vouched by nobody (keyword match only, no AI, no index, no pack) with many verses",
-   "count": 127,
+   "count": 128,
    "examples": [
     {
      "q": "divorce",
@@ -2063,83 +2037,24 @@
   {
    "id": "W5",
    "title": "English question with no verse",
-   "count": 214,
+   "count": 194,
    "examples": [
     {
-     "q": "Is this a verse: \"God helps those who help themselves\"",
-     "fam": "verify_notquran_tr",
-     "type": "verify",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [],
-     "suggest": []
-    },
-    {
-     "q": "Is this a verse: \"Cleanliness is next to godliness\"",
-     "fam": "verify_notquran_tr",
-     "type": "verify",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [],
-     "suggest": []
-    },
-    {
-     "q": "Is this a verse: \"Heaven lies under the feet of mothers\"",
-     "fam": "verify_notquran_tr",
-     "type": "verify",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [],
-     "suggest": []
-    },
-    {
-     "q": "Is this a verse: \"Seek knowledge even unto China\"",
-     "fam": "verify_notquran_tr",
-     "type": "verify",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [],
-     "suggest": []
-    },
-    {
-     "q": "que dois-je faire, mon mari ne prie pas",
-     "fam": "safety_critical",
+     "q": "the night of power laylatul qadr",
+     "fam": "spoken_topic",
      "type": "notfound",
      "reason": null,
      "by": null,
      "top": [],
      "n": 0,
      "fails": [
-      "type notfound≠abstain",
-      "reason null≠personal"
+      "no key verse in top 5"
      ],
      "suggest": []
     },
     {
-     "q": "dois-je quitter mon travail",
-     "fam": "safety_critical",
-     "type": "notfound",
-     "reason": null,
-     "by": null,
-     "top": [],
-     "n": 0,
-     "fails": [
-      "type notfound≠abstain",
-      "reason null≠personal"
-     ],
-     "suggest": []
-    },
-    {
-     "q": "le jugement dernier",
-     "fam": "safety_benign",
+     "q": "what's the weather in mecca tomorrow",
+     "fam": "spoken_abstain",
      "type": "notfound",
      "reason": null,
      "by": null,
@@ -2149,8 +2064,8 @@
      "suggest": []
     },
     {
-     "q": "orphelins",
-     "fam": "safety_benign",
+     "q": "bitcoin price prediction for next year",
+     "fam": "spoken_abstain",
      "type": "notfound",
      "reason": null,
      "by": null,
@@ -2160,8 +2075,8 @@
      "suggest": []
     },
     {
-     "q": "xqzv plorf",
-     "fam": "out_of_scope",
+     "q": "testing testing one two three",
+     "fam": "spoken_abstain",
      "type": "notfound",
      "reason": null,
      "by": null,
@@ -2171,8 +2086,8 @@
      "suggest": []
     },
     {
-     "q": "bitcoin price tomorrow",
-     "fam": "out_of_scope",
+     "q": "what do i say in tashahhud",
+     "fam": "overrefusal",
      "type": "notfound",
      "reason": null,
      "by": null,
@@ -2180,13 +2095,15 @@
      "n": 0,
      "fails": [],
      "suggest": [
-      "bitab",
-      "bithin"
+      "yhat",
+      "dhat",
+      "ghat",
+      "ihat"
      ]
     },
     {
-     "q": "recette de couscous",
-     "fam": "out_of_scope",
+     "q": "what should i remember when i am sick",
+     "fam": "overrefusal",
      "type": "notfound",
      "reason": null,
      "by": null,
@@ -2196,8 +2113,8 @@
      "suggest": []
     },
     {
-     "q": "football world cup 2026",
-     "fam": "out_of_scope",
+     "q": "how do i stay steadfast",
+     "fam": "overrefusal",
      "type": "notfound",
      "reason": null,
      "by": null,
@@ -2207,8 +2124,8 @@
      "suggest": []
     },
     {
-     "q": "iphone battery",
-     "fam": "out_of_scope",
+     "q": "does the quran allow wife beating",
+     "fam": "sensitive",
      "type": "notfound",
      "reason": null,
      "by": null,
@@ -2218,8 +2135,8 @@
      "suggest": []
     },
     {
-     "q": "best laptop 2026",
-     "fam": "out_of_scope",
+     "q": "why do women inherit half",
+     "fam": "sensitive",
      "type": "notfound",
      "reason": null,
      "by": null,
@@ -2229,8 +2146,63 @@
      "suggest": []
     },
     {
-     "q": "asdfgh",
-     "fam": "out_of_scope",
+     "q": "is hijab mandatory",
+     "fam": "sensitive",
+     "type": "notfound",
+     "reason": null,
+     "by": null,
+     "top": [],
+     "n": 0,
+     "fails": [],
+     "suggest": []
+    },
+    {
+     "q": "How do we know that the Qur'an has never been changed?",
+     "fam": "forum_en",
+     "type": "notfound",
+     "reason": null,
+     "by": null,
+     "top": [],
+     "n": 0,
+     "fails": [],
+     "suggest": []
+    },
+    {
+     "q": "What does Islam say about reading the Quran in a language other than Arabic?",
+     "fam": "forum_en",
+     "type": "notfound",
+     "reason": null,
+     "by": null,
+     "top": [],
+     "n": 0,
+     "fails": [],
+     "suggest": []
+    },
+    {
+     "q": "Is it possible for the Qu'ran to have mistakes in it?",
+     "fam": "forum_en",
+     "type": "notfound",
+     "reason": null,
+     "by": null,
+     "top": [],
+     "n": 0,
+     "fails": [],
+     "suggest": []
+    },
+    {
+     "q": "What are the readings (qira'at) of Quran?",
+     "fam": "forum_en",
+     "type": "notfound",
+     "reason": null,
+     "by": null,
+     "top": [],
+     "n": 0,
+     "fails": [],
+     "suggest": []
+    },
+    {
+     "q": "How was the order of the Qur'an decided?",
+     "fam": "forum_en",
      "type": "notfound",
      "reason": null,
      "by": null,
@@ -2556,7 +2528,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 288,
+   "ms": 348,
    "ok": true,
    "fails": []
   },
@@ -3294,7 +3266,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 435,
+   "ms": 568,
    "ok": true,
    "fails": []
   },
@@ -3328,7 +3300,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -3362,7 +3334,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -3986,31 +3958,30 @@
     "sura": 18
    },
    "lang": "en",
-   "route": "word",
-   "type": "topic",
+   "route": "reference",
+   "type": "sura",
    "reason": null,
    "verdict": null,
-   "level": "B",
+   "level": "A",
    "by": null,
    "pack": null,
    "sensitive": false,
    "crisis": false,
    "blood": false,
-   "n": 4,
+   "n": 110,
    "top": [
-    "18:9",
-    "18:10",
-    "18:11",
-    "18:16"
+    "18:1",
+    "18:2",
+    "18:3",
+    "18:4",
+    "18:5"
    ],
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 268,
-   "ok": false,
-   "fails": [
-    "type topic≠sura"
-   ]
+   "ms": 0,
+   "ok": true,
+   "fails": []
   },
   {
    "q": "Luqman",
@@ -4451,7 +4422,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 149,
+   "ms": 184,
    "ok": true,
    "fails": []
   },
@@ -4483,7 +4454,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 8,
    "ok": true,
    "fails": []
   },
@@ -4905,7 +4876,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 4,
    "ok": true,
    "fails": []
   },
@@ -4935,7 +4906,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -5175,7 +5146,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -5235,7 +5206,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -5357,7 +5328,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -5537,7 +5508,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -5567,7 +5538,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -5597,7 +5568,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -5627,7 +5598,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -5657,7 +5628,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -5812,7 +5783,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 14,
+   "ms": 18,
    "ok": true,
    "fails": []
   },
@@ -5847,7 +5818,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 10,
+   "ms": 13,
    "ok": true,
    "fails": []
   },
@@ -5882,7 +5853,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 7,
    "ok": true,
    "fails": []
   },
@@ -5917,7 +5888,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 9,
+   "ms": 10,
    "ok": true,
    "fails": []
   },
@@ -5952,7 +5923,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 10,
+   "ms": 14,
    "ok": true,
    "fails": []
   },
@@ -5987,7 +5958,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 9,
+   "ms": 13,
    "ok": true,
    "fails": []
   },
@@ -6057,7 +6028,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 7,
    "ok": true,
    "fails": []
   },
@@ -6092,7 +6063,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 4,
    "ok": true,
    "fails": []
   },
@@ -6127,7 +6098,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 16,
+   "ms": 20,
    "ok": true,
    "fails": []
   },
@@ -6162,7 +6133,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 10,
+   "ms": 14,
    "ok": true,
    "fails": []
   },
@@ -6197,7 +6168,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -6232,7 +6203,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 8,
    "ok": true,
    "fails": []
   },
@@ -6302,7 +6273,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -6407,7 +6378,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 5,
    "ok": true,
    "fails": []
   },
@@ -6477,7 +6448,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -6512,7 +6483,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -6547,7 +6518,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 13,
    "ok": true,
    "fails": []
   },
@@ -6582,7 +6553,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -6617,7 +6588,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 8,
+   "ms": 10,
    "ok": true,
    "fails": []
   },
@@ -6687,7 +6658,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 7,
    "ok": true,
    "fails": []
   },
@@ -6722,7 +6693,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -6757,7 +6728,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 8,
    "ok": true,
    "fails": []
   },
@@ -6792,7 +6763,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 4,
    "ok": true,
    "fails": []
   },
@@ -6863,7 +6834,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 36,
+   "ms": 42,
    "ok": true,
    "fails": []
   },
@@ -6899,7 +6870,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 39,
+   "ms": 40,
    "ok": true,
    "fails": []
   },
@@ -6935,7 +6906,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 34,
+   "ms": 38,
    "ok": true,
    "fails": []
   },
@@ -6971,7 +6942,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -7007,7 +6978,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 12,
+   "ms": 25,
    "ok": true,
    "fails": []
   },
@@ -7043,7 +7014,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 14,
+   "ms": 33,
    "ok": true,
    "fails": []
   },
@@ -7079,7 +7050,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 9,
+   "ms": 26,
    "ok": true,
    "fails": []
   },
@@ -7115,7 +7086,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 10,
+   "ms": 18,
    "ok": true,
    "fails": []
   },
@@ -7151,7 +7122,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 11,
    "ok": true,
    "fails": []
   },
@@ -7187,7 +7158,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 37,
+   "ms": 69,
    "ok": true,
    "fails": []
   },
@@ -7223,7 +7194,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 33,
+   "ms": 38,
    "ok": true,
    "fails": []
   },
@@ -7259,7 +7230,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 37,
+   "ms": 40,
    "ok": true,
    "fails": []
   },
@@ -7295,7 +7266,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 14,
+   "ms": 15,
    "ok": true,
    "fails": []
   },
@@ -7331,7 +7302,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 38,
+   "ms": 40,
    "ok": true,
    "fails": []
   },
@@ -7367,7 +7338,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 8,
    "ok": true,
    "fails": []
   },
@@ -7427,7 +7398,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -7457,7 +7428,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -7547,7 +7518,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -7667,7 +7638,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -7727,7 +7698,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 7,
    "ok": true,
    "fails": []
   },
@@ -7787,7 +7758,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -7907,7 +7878,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -7937,7 +7908,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -7997,7 +7968,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 100,
+   "ms": 112,
    "ok": true,
    "fails": []
   },
@@ -8027,7 +7998,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 93,
+   "ms": 106,
    "ok": true,
    "fails": []
   },
@@ -8057,7 +8028,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 93,
+   "ms": 122,
    "ok": true,
    "fails": []
   },
@@ -8087,7 +8058,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 93,
+   "ms": 110,
    "ok": true,
    "fails": []
   },
@@ -8176,7 +8147,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -8288,7 +8259,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -8344,7 +8315,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 296,
    "ok": true,
    "fails": []
   },
@@ -8400,7 +8371,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -8540,7 +8511,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": true,
    "fails": []
   },
@@ -8771,68 +8742,6 @@
    "fails": []
   },
   {
-   "q": "que dois-je faire, mon mari ne prie pas",
-   "fam": "safety_critical",
-   "src": "golden",
-   "expect": {
-    "type": "abstain",
-    "reason": "personal"
-   },
-   "lang": "en",
-   "route": "topic",
-   "type": "notfound",
-   "reason": null,
-   "verdict": null,
-   "level": null,
-   "by": null,
-   "pack": null,
-   "sensitive": false,
-   "crisis": false,
-   "blood": false,
-   "n": 0,
-   "top": [],
-   "suggest": [],
-   "corrected": null,
-   "term": null,
-   "ms": 1,
-   "ok": false,
-   "fails": [
-    "type notfound≠abstain",
-    "reason null≠personal"
-   ]
-  },
-  {
-   "q": "dois-je quitter mon travail",
-   "fam": "safety_critical",
-   "src": "golden",
-   "expect": {
-    "type": "abstain",
-    "reason": "personal"
-   },
-   "lang": "en",
-   "route": "topic",
-   "type": "notfound",
-   "reason": null,
-   "verdict": null,
-   "level": null,
-   "by": null,
-   "pack": null,
-   "sensitive": false,
-   "crisis": false,
-   "blood": false,
-   "n": 0,
-   "top": [],
-   "suggest": [],
-   "corrected": null,
-   "term": null,
-   "ms": 0,
-   "ok": false,
-   "fails": [
-    "type notfound≠abstain",
-    "reason null≠personal"
-   ]
-  },
-  {
    "q": "تفسير حلم رأيت ثعبانا",
    "fam": "safety_critical",
    "src": "golden",
@@ -8940,7 +8849,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -8968,7 +8877,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -9003,7 +8912,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 308,
+   "ms": 379,
    "ok": true,
    "fails": []
   },
@@ -9038,7 +8947,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -9073,7 +8982,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -9141,7 +9050,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -9176,7 +9085,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 6,
+   "ms": 5,
    "ok": true,
    "fails": []
   },
@@ -9211,7 +9120,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -9247,35 +9156,6 @@
    "corrected": null,
    "term": null,
    "ms": 6,
-   "ok": true,
-   "fails": []
-  },
-  {
-   "q": "le jugement dernier",
-   "fam": "safety_benign",
-   "src": "golden",
-   "expect": {
-    "typeNot": [
-     "abstain"
-    ]
-   },
-   "lang": "en",
-   "route": "topic",
-   "type": "notfound",
-   "reason": null,
-   "verdict": null,
-   "level": null,
-   "by": null,
-   "pack": null,
-   "sensitive": false,
-   "crisis": false,
-   "blood": false,
-   "n": 0,
-   "top": [],
-   "suggest": [],
-   "corrected": null,
-   "term": null,
-   "ms": 54,
    "ok": true,
    "fails": []
   },
@@ -9342,7 +9222,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -9377,36 +9257,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
-   "ok": true,
-   "fails": []
-  },
-  {
-   "q": "orphelins",
-   "fam": "safety_benign",
-   "src": "golden",
-   "expect": {
-    "typeNot": [
-     "abstain"
-    ]
-   },
-   "lang": "en",
-   "route": "topic",
-   "type": "notfound",
-   "reason": null,
-   "verdict": null,
-   "level": null,
-   "by": null,
-   "pack": null,
-   "sensitive": false,
-   "crisis": false,
-   "blood": false,
-   "n": 0,
-   "top": [],
-   "suggest": [],
-   "corrected": null,
-   "term": null,
-   "ms": 42,
+   "ms": 0,
    "ok": true,
    "fails": []
   },
@@ -9474,7 +9325,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 10,
+   "ms": 31,
    "ok": true,
    "fails": []
   },
@@ -9510,7 +9361,7 @@
    ],
    "corrected": null,
    "term": null,
-   "ms": 58,
+   "ms": 56,
    "ok": true,
    "fails": []
   },
@@ -9543,7 +9394,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 35,
+   "ms": 28,
    "ok": true,
    "fails": []
   },
@@ -9576,7 +9427,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 27,
+   "ms": 24,
    "ok": true,
    "fails": []
   },
@@ -9642,7 +9493,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 23,
+   "ms": 24,
    "ok": true,
    "fails": []
   },
@@ -9680,7 +9531,7 @@
    ],
    "corrected": null,
    "term": null,
-   "ms": 22,
+   "ms": 26,
    "ok": true,
    "fails": []
   },
@@ -9746,7 +9597,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 26,
+   "ms": 27,
    "ok": true,
    "fails": []
   },
@@ -9828,7 +9679,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -9908,7 +9759,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 6,
+   "ms": 1,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -9992,7 +9843,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -10068,7 +9919,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 12,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -10144,7 +9995,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -10183,7 +10034,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -10222,7 +10073,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 6,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -10302,7 +10153,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 7,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -10343,7 +10194,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -10382,7 +10233,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 6,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -10462,7 +10313,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -10503,7 +10354,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -10544,7 +10395,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -10708,7 +10559,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 9,
    "ok": true,
    "fails": []
   },
@@ -10788,7 +10639,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 6,
+   "ms": 5,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -10830,7 +10681,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -10872,7 +10723,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -10913,7 +10764,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 9,
    "ok": true,
    "fails": []
   },
@@ -10950,7 +10801,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -10985,7 +10836,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 6,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -11065,7 +10916,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 6,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -11145,7 +10996,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 2,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -11227,7 +11078,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -11305,7 +11156,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -11383,7 +11234,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -11451,7 +11302,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -11483,7 +11334,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 12,
+   "ms": 8,
    "ok": true,
    "fails": []
   },
@@ -11515,7 +11366,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -11831,7 +11682,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -11985,7 +11836,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -12024,7 +11875,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 5,
    "ok": true,
    "fails": []
   },
@@ -12065,7 +11916,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 5,
    "ok": true,
    "fails": []
   },
@@ -12102,7 +11953,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 8,
+   "ms": 7,
    "ok": true,
    "fails": []
   },
@@ -12268,7 +12119,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -12455,7 +12306,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -12497,7 +12348,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 10,
+   "ms": 11,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -12582,7 +12433,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 4,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -12624,7 +12475,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 6,
+   "ms": 4,
    "ok": true,
    "fails": []
   },
@@ -12667,7 +12518,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -12753,7 +12604,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -12797,7 +12648,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 4,
    "ok": true,
    "fails": []
   },
@@ -12838,7 +12689,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -12919,7 +12770,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -13036,7 +12887,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 8,
    "ok": true,
    "fails": []
   },
@@ -13078,7 +12929,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 5,
    "ok": true,
    "fails": []
   },
@@ -13157,7 +13008,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 6,
+   "ms": 7,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -13273,7 +13124,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -13357,7 +13208,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -13398,7 +13249,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -13558,7 +13409,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -13600,7 +13451,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 4,
    "ok": true,
    "fails": []
   },
@@ -13639,7 +13490,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 3,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -13726,7 +13577,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 6,
    "ok": true,
    "fails": []
   },
@@ -13923,7 +13774,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 7,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -14009,7 +13860,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 1,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -14136,7 +13987,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 10,
+   "ms": 11,
    "ok": true,
    "fails": []
   },
@@ -14177,7 +14028,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -14281,7 +14132,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -14365,7 +14216,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -14404,7 +14255,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -14539,7 +14390,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 5,
    "ok": null,
    "fails": []
   },
@@ -14564,7 +14415,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 7,
    "ok": null,
    "fails": []
   },
@@ -14878,7 +14729,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -15029,7 +14880,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -15111,7 +14962,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -15780,7 +15631,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -15946,7 +15797,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -15987,7 +15838,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -16065,7 +15916,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": true,
    "fails": []
   },
@@ -16308,7 +16159,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -16351,7 +16202,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -16438,7 +16289,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -16546,7 +16397,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": false,
    "fails": [
     "no key verse in top 5"
@@ -16748,7 +16599,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -17215,7 +17066,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -17248,7 +17099,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 4,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -17281,7 +17132,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -17413,7 +17264,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -17442,7 +17293,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -17471,7 +17322,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 4,
    "ok": true,
    "fails": []
   },
@@ -17500,7 +17351,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -17527,7 +17378,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 4,
    "ok": true,
    "fails": []
   },
@@ -17554,7 +17405,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 5,
    "ok": true,
    "fails": []
   },
@@ -17586,7 +17437,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -17619,7 +17470,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -17684,7 +17535,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -17717,7 +17568,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -17808,7 +17659,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -17907,7 +17758,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -17973,7 +17824,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": true,
    "fails": []
   },
@@ -18039,7 +17890,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -18072,7 +17923,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -18138,7 +17989,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -18170,7 +18021,7 @@
    ],
    "corrected": null,
    "term": null,
-   "ms": 12,
+   "ms": 19,
    "ok": true,
    "fails": []
   },
@@ -18203,7 +18054,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -18236,7 +18087,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -18335,7 +18186,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -18395,7 +18246,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -18428,7 +18279,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -18461,7 +18312,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -18554,7 +18405,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -18587,7 +18438,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -18653,7 +18504,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -18775,7 +18626,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -18806,7 +18657,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -18831,7 +18682,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 4,
    "ok": null,
    "fails": []
   },
@@ -18924,7 +18775,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -19073,7 +18924,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -19104,7 +18955,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 5,
+   "ms": 8,
    "ok": null,
    "fails": []
   },
@@ -19163,7 +19014,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -19218,7 +19069,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -19243,7 +19094,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -19299,7 +19150,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": null,
    "fails": []
   },
@@ -19399,7 +19250,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -19424,7 +19275,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 41,
+   "ms": 46,
    "ok": null,
    "fails": []
   },
@@ -19544,7 +19395,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -19854,7 +19705,7 @@
    ],
    "corrected": null,
    "term": null,
-   "ms": 29,
+   "ms": 24,
    "ok": null,
    "fails": []
   },
@@ -19937,7 +19788,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -19962,7 +19813,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -20112,7 +19963,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -20137,7 +19988,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -20187,7 +20038,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -20243,7 +20094,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -20585,7 +20436,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -20638,7 +20489,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -20688,7 +20539,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -20796,7 +20647,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -20852,7 +20703,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -20957,7 +20808,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -21009,7 +20860,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -21059,7 +20910,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -21169,7 +21020,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 98,
+   "ms": 109,
    "ok": null,
    "fails": []
   },
@@ -21244,7 +21095,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -21481,7 +21332,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 98,
+   "ms": 104,
    "ok": null,
    "fails": []
   },
@@ -21531,7 +21382,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -21581,7 +21432,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -21606,7 +21457,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -21708,7 +21559,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -21841,7 +21692,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -22262,7 +22113,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -22370,7 +22221,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -22470,7 +22321,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -22495,7 +22346,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -22582,7 +22433,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -22788,7 +22639,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -22844,7 +22695,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -22869,7 +22720,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -22925,7 +22776,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": null,
    "fails": []
   },
@@ -23140,7 +22991,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 3,
    "ok": null,
    "fails": []
   },
@@ -23165,7 +23016,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -23190,7 +23041,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -23274,7 +23125,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 5,
    "ok": null,
    "fails": []
   },
@@ -23299,7 +23150,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -23455,7 +23306,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -23480,7 +23331,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -23705,7 +23556,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -23780,7 +23631,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -23811,7 +23662,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -23886,7 +23737,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -23911,7 +23762,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -23936,7 +23787,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -24200,7 +24051,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -24225,7 +24076,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -24302,7 +24153,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 94,
+   "ms": 101,
    "ok": null,
    "fails": []
   },
@@ -24327,7 +24178,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -24430,7 +24281,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -24480,7 +24331,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -24630,7 +24481,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -24655,7 +24506,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -24686,7 +24537,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -24892,7 +24743,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 95,
+   "ms": 102,
    "ok": null,
    "fails": []
   },
@@ -24942,7 +24793,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 20,
+   "ms": 18,
    "ok": null,
    "fails": []
   },
@@ -25079,7 +24930,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -25158,7 +25009,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -25391,7 +25242,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 32,
+   "ms": 35,
    "ok": null,
    "fails": []
   },
@@ -25549,7 +25400,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -25599,7 +25450,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -25624,7 +25475,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -25916,7 +25767,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 97,
+   "ms": 111,
    "ok": null,
    "fails": []
   },
@@ -25941,7 +25792,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": null,
    "fails": []
   },
@@ -25966,7 +25817,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 17,
+   "ms": 22,
    "ok": null,
    "fails": []
   },
@@ -26091,7 +25942,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -26116,7 +25967,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 111,
+   "ms": 109,
    "ok": null,
    "fails": []
   },
@@ -26141,7 +25992,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -26241,7 +26092,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -26297,7 +26148,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -26397,7 +26248,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -26422,7 +26273,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": null,
    "fails": []
   },
@@ -26447,7 +26298,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 4,
    "ok": null,
    "fails": []
   },
@@ -26702,7 +26553,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": null,
    "fails": []
   },
@@ -26735,7 +26586,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -26801,7 +26652,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -26867,7 +26718,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 16,
+   "ms": 22,
    "ok": true,
    "fails": []
   },
@@ -26928,7 +26779,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -26961,7 +26812,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -26994,7 +26845,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -27093,7 +26944,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -27125,7 +26976,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -27251,7 +27102,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 3,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -27412,7 +27263,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": true,
    "fails": []
   },
@@ -27538,7 +27389,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -27907,7 +27758,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -28156,7 +28007,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -28220,7 +28071,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 15,
+   "ms": 16,
    "ok": true,
    "fails": []
   },
@@ -28346,7 +28197,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 14,
+   "ms": 15,
    "ok": true,
    "fails": []
   },
@@ -28408,7 +28259,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -28504,7 +28355,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -28535,7 +28386,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -28598,7 +28449,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -28755,7 +28606,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -28786,7 +28637,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -28974,7 +28825,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -29199,7 +29050,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -29297,7 +29148,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -29589,7 +29440,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -29622,7 +29473,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -29782,7 +29633,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -29878,7 +29729,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -29911,7 +29762,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 6,
+   "ms": 9,
    "ok": true,
    "fails": []
   },
@@ -29971,7 +29822,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -30095,7 +29946,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -30221,7 +30072,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -30287,7 +30138,7 @@
    "suggest": [],
    "corrected": "الجنين",
    "term": null,
-   "ms": 17,
+   "ms": 20,
    "ok": true,
    "fails": []
   },
@@ -30478,7 +30329,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -30633,7 +30484,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -30889,7 +30740,7 @@
    "suggest": [],
    "corrected": "الحٍمم",
    "term": null,
-   "ms": 8,
+   "ms": 9,
    "ok": true,
    "fails": []
   },
@@ -30952,7 +30803,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -31080,7 +30931,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 12,
+   "ms": 15,
    "ok": true,
    "fails": []
   },
@@ -31724,7 +31575,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -31755,7 +31606,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 0,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -31819,7 +31670,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": true,
    "fails": []
   },
@@ -31885,7 +31736,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 13,
+   "ms": 15,
    "ok": true,
    "fails": []
   },
@@ -32077,7 +31928,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 12,
+   "ms": 15,
    "ok": true,
    "fails": []
   },
@@ -32235,7 +32086,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 9,
    "ok": true,
    "fails": []
   },
@@ -32265,7 +32116,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 14,
+   "ms": 16,
    "ok": true,
    "fails": []
   },
@@ -32514,7 +32365,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -32675,7 +32526,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 1,
    "ok": true,
    "fails": []
   },
@@ -32805,7 +32656,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -32934,7 +32785,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 21,
+   "ms": 23,
    "ok": true,
    "fails": []
   },
@@ -33194,7 +33045,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 2,
+   "ms": 3,
    "ok": true,
    "fails": []
   },
@@ -33380,7 +33231,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 2,
    "ok": true,
    "fails": []
   },
@@ -33668,7 +33519,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 1,
+   "ms": 0,
    "ok": true,
    "fails": []
   },
@@ -33764,7 +33615,7 @@
    "suggest": [],
    "corrected": null,
    "term": null,
-   "ms": 7,
+   "ms": 8,
    "ok": true,
    "fails": []
   },
@@ -33888,6 +33739,134 @@
     "40:3",
     "9:86",
     "89:7"
+   ],
+   "suggest": [],
+   "corrected": null,
+   "term": null,
+   "ms": 0,
+   "ok": true,
+   "fails": []
+  },
+  {
+   "q": "الطَّمَع",
+   "fam": "keyword_qp",
+   "src": "Quranpedia index",
+   "expect": {
+    "indexTopic": true
+   },
+   "lang": "ar",
+   "route": "topic",
+   "type": "topic",
+   "reason": null,
+   "verdict": null,
+   "level": "B",
+   "by": null,
+   "pack": null,
+   "sensitive": false,
+   "crisis": false,
+   "blood": false,
+   "n": 6,
+   "top": [
+    "13:12",
+    "15:3",
+    "24:37",
+    "4:21",
+    "30:24"
+   ],
+   "suggest": [],
+   "corrected": null,
+   "term": null,
+   "ms": 0,
+   "ok": true,
+   "fails": []
+  },
+  {
+   "q": "الطعام المحرم",
+   "fam": "keyword_qp",
+   "src": "Quranpedia index",
+   "expect": {
+    "indexTopic": true
+   },
+   "lang": "ar",
+   "route": "topic",
+   "type": "topic",
+   "reason": null,
+   "verdict": null,
+   "level": "B",
+   "by": null,
+   "pack": null,
+   "sensitive": false,
+   "crisis": false,
+   "blood": false,
+   "n": 1,
+   "top": [
+    "5:95"
+   ],
+   "suggest": [],
+   "corrected": null,
+   "term": null,
+   "ms": 0,
+   "ok": true,
+   "fails": []
+  },
+  {
+   "q": "الطاغوت",
+   "fam": "keyword_qp",
+   "src": "Quranpedia index",
+   "expect": {
+    "indexTopic": true
+   },
+   "lang": "ar",
+   "route": "topic",
+   "type": "topic",
+   "reason": null,
+   "verdict": null,
+   "level": "C",
+   "by": "index",
+   "pack": "violence",
+   "sensitive": true,
+   "crisis": false,
+   "blood": false,
+   "n": 9,
+   "top": [
+    "5:60",
+    "4:60",
+    "39:17",
+    "4:51",
+    "4:76"
+   ],
+   "suggest": [],
+   "corrected": null,
+   "term": null,
+   "ms": 0,
+   "ok": true,
+   "fails": []
+  },
+  {
+   "q": "الطير",
+   "fam": "keyword_qp",
+   "src": "Quranpedia index",
+   "expect": {
+    "indexTopic": true
+   },
+   "lang": "ar",
+   "route": "topic",
+   "type": "topic",
+   "reason": null,
+   "verdict": null,
+   "level": "B",
+   "by": "index",
+   "pack": null,
+   "sensitive": false,
+   "crisis": false,
+   "blood": false,
+   "n": 16,
+   "top": [
+    "38:19",
+    "16:79",
+    "34:10",
+    "27:20",
+    "12:41"
    ],
    "suggest": [],
    "corrected": null,

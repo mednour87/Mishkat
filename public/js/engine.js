@@ -673,6 +673,8 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const lat = normLatin(nameStr).replace(/^(the|la|le|les|l) /, '');
     // spoken spellings: "yaseen" → yasin, "rahmaan" → rahman
     const cands = [normAr(nameStr).replace(/\s/g, ''), lat.replace(/\s/g, '').replace(/ee/g, 'i').replace(/oo/g, 'u').replace(/aa/g, 'a')];
+    // a doubled consonant typed by mistake («kahff», «baqarra»): the same name with single consonants
+    if (cands[1]) cands.push(cands[1].replace(/([bcdfghjklmnpqrstvwxyz])\1+/g, '$1'));
     for (const c of cands) {
       if (!c) continue;
       for (const k of [c, c.replace(/^ال/, ''), c.replace(/^(al|an|ar|as|ash|at|ad|az)(?=[a-z]{3})/, '')]) {

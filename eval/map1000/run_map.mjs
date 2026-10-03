@@ -14,7 +14,7 @@ E.addLatinIndex(J('public/data/latin_index.json'));
 E.addBayenat(J('public/data/bayenat_index.json'));
 
 // ------------------------------------------------------------------ the 1,000 questions
-const FR = /[àâçéèêëîïôûùüÿœ]|\b(sourate|verset|est[- ]ce|que dit|le coran|qu ?est)\b/i;
+const FR = /[àâçéèêëîïôûùüÿœ]|\b(sourate|verset|est[- ]ce|que dit|le coran|qu ?est|dois[- ]je|puis[- ]je|mon mari|ma femme|orphelins|le jugement)\b/i;   // French was removed from Mishkat
 const set = [], seen = new Set();
 const add = (q, fam, src, expect = null) => { q = String(q || '').trim(); const k = q.toLowerCase(); if (!q || seen.has(k) || set.length >= 1000) return; seen.add(k); set.push({ q, fam, src, expect }); };
 for (const g of readFileSync(R('eval/golden.jsonl'), 'utf8').split(/\r?\n/).filter(Boolean).map(JSON.parse)) if (g.cat !== 'topic_fr' && !FR.test(g.q)) add(g.q, g.cat, 'golden', g.expect);
@@ -68,7 +68,7 @@ weak('W1', 'Known expectation not met (internal set, spoken set, over-refusal, i
 weak('W2', 'No verse at all (notfound/empty) for a question that is not a ruling, a personal case or out of scope', rows.filter(r => ['notfound', 'empty'].includes(r.type)), 'Without AI the engine abstains often: check if these are truly unanswerable, else improve lexical recall (roots/lemmas, thesaurus).');
 weak('W3', 'Answer vouched by nobody (keyword match only, no AI, no index, no pack) with many verses', rows.filter(r => r.type === 'topic' && !r.by && r.n >= 6), 'These rely on the AI in production; without AI they are shown as «keyword search». Candidates for index/thesaurus entries.');
 weak('W4', 'Spelling suggestion on a question that is probably valid', rows.filter(r => r.suggest.length && r.n > 0), 'Check each suggestion; raise the threshold or add the word to the known vocabulary.');
-weak('W5', 'English question with no verse', rows.filter(r => r.lang === 'en' && r.n === 0 && !['abstain', 'hadith', 'invalid_ref'].includes(r.type)), 'English recall without AI is weak: English thesaurus, translation-based BM25, dense search on the client.');
+weak('W5', 'English question with no verse', rows.filter(r => r.lang === 'en' && r.n === 0 && !['abstain', 'hadith', 'invalid_ref', 'verify'].includes(r.type) && r.fam !== 'out_of_scope'), 'English recall without AI is weak: English thesaurus, translation-based BM25, dense search on the client.');
 weak('W6', 'Refusal (abstain) of a question that may be legitimate', rows.filter(r => r.type === 'abstain' && ['forum_en', 'keyword_qp', 'overrefusal', 'spoken_topic'].includes(r.fam)), 'Over-refusal: check the guard patterns.');
 weak('W7', 'Glossary route («term») used', rows.filter(r => r.type === 'term'), 'Check the term is really what is asked.');
 weak('W8', 'Slow (> 400 ms, engine only)', rows.filter(r => r.ms > 400), 'Profile; precompute.');

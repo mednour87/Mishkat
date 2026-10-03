@@ -1,0 +1,966 @@
+{
+ "date": "2026-10-03T16:19:26.855Z",
+ "freeOnly": true,
+ "rows": [
+  {
+   "q": "Is this a verse: \"God helps those who help themselves\"",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "verify",
+   "reason": null,
+   "level": "A",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "verify-translation",
+   "verses": [],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 123,
+   "weak": "W5"
+  },
+  {
+   "q": "Is this a verse: \"Cleanliness is next to godliness\"",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "verify",
+   "reason": null,
+   "level": "A",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "verify-translation",
+   "verses": [],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 152,
+   "weak": "W5"
+  },
+  {
+   "q": "Is this a verse: \"Heaven lies under the feet of mothers\"",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "verify",
+   "reason": null,
+   "level": "A",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "verify-translation",
+   "verses": [],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 139,
+   "weak": "W5"
+  },
+  {
+   "q": "Is this a verse: \"Seek knowledge even unto China\"",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "verify",
+   "reason": null,
+   "level": "A",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "verify-translation",
+   "verses": [],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 112,
+   "weak": "W5"
+  },
+  {
+   "q": "que dois-je faire, mon mari ne prie pas",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "9:71",
+    "2:238",
+    "4:34"
+   ],
+   "contextPack": [],
+   "notes": [
+    "These are general verses on the subject; for your own situation, please consult "
+   ],
+   "bayenat": 0,
+   "answerable": "no",
+   "judge": "openai/gpt-oss-120b",
+   "points": [],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 13769,
+   "weak": "W5"
+  },
+  {
+   "q": "dois-je quitter mon travail",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "notfound",
+   "reason": null,
+   "level": null,
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "topic",
+   "verses": [],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 5296,
+   "weak": "W5"
+  },
+  {
+   "q": "le jugement dernier",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "75:1",
+    "99:1",
+    "23:16",
+    "19:95",
+    "3:25",
+    "2:281"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "اليوم القيامة",
+     "items": [
+      {
+       "sid": "V:75:1",
+       "kind": "quran",
+       "text": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ لَآ أُقْسِمُ بِيَوْمِ ٱلْقِيَٰمَةِ"
+      },
+      {
+       "sid": "Q:75:1#1",
+       "kind": "tafsir",
+       "text": "Allah took an oath by the Day of Judgement when people stand before the Lord of the worlds."
+      }
+     ]
+    },
+    {
+     "concept": "القيامة",
+     "items": [
+      {
+       "sid": "V:23:16",
+       "kind": "quran",
+       "text": "ثُمَّ إِنَّكُمْ يَوْمَ ٱلْقِيَٰمَةِ تُبْعَثُونَ"
+      },
+      {
+       "sid": "Q:23:16#1",
+       "kind": "tafsir",
+       "text": "Then, after your death, you shall be resurrected from your graves on the Day of Judgment so that you may be held to account for whatever deeds you sent forth."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 8200,
+   "weak": "W5"
+  },
+  {
+   "q": "orphelins",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "4:2",
+    "93:9",
+    "107:2",
+    "4:10",
+    "6:152",
+    "17:34"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "اليتامى",
+     "items": [
+      {
+       "sid": "V:4:2",
+       "kind": "quran",
+       "text": "وَءَاتُوا۟ ٱلْيَتَٰمَىٰٓ أَمْوَٰلَهُمْ وَلَا تَتَبَدَّلُوا۟ ٱلْخَبِيثَ بِٱلطَّيِّبِ وَلَا تَأْكُلُوٓا۟ أَمْوَٰلَهُمْ إِلَىٰٓ أَمْوَٰلِكُمْ إِنَّهُۥ كَانَ حُوبًا كَبِيرًا"
+      },
+      {
+       "sid": "Q:4:2#1",
+       "kind": "tafsir",
+       "text": "Guardians, give orphans (whose fathers have died and who have not yet reached maturity) their wealth in full when they come of age and have sound judgement."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 7324,
+   "weak": "W5"
+  },
+  {
+   "q": "xqzv plorf",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "notfound",
+   "reason": null,
+   "level": null,
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "topic",
+   "verses": [],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 5169,
+   "weak": "W5"
+  },
+  {
+   "q": "كيبورد لابتوب",
+   "lang": "ar",
+   "qtype": "topic",
+   "type": "notfound",
+   "reason": null,
+   "level": null,
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "topic",
+   "verses": [],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 5664,
+   "weak": "W2"
+  },
+  {
+   "q": "قطع غيار سيارات",
+   "lang": "ar",
+   "qtype": "topic",
+   "type": "notfound",
+   "reason": null,
+   "level": null,
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "topic",
+   "verses": [],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 5202,
+   "weak": "W2"
+  },
+  {
+   "q": "كيف ادعي ربي وهل يستجيب الدعاء",
+   "lang": "ar",
+   "qtype": "howto",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "2:186",
+    "40:60"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "الدعاء",
+     "items": [
+      {
+       "sid": "H:5499#e1",
+       "kind": "hadith",
+       "text": "يَحُثُّ النبيُّ صلى الله عليه وسلم على رفع اليدين أثناء الدعاء، وأخبر أنَّ الله سبحانه (حَيي) كثير الحياء، ولا يترك العطاء، يفعل بالعبد ما يَسُرُّه، ويترك ما يَضرُّه، (كريم) يعطي من غير سؤال فكيف بعد السؤال!"
+      }
+     ]
+    },
+    {
+     "concept": "استجابة الدعاء",
+     "items": [
+      {
+       "sid": "V:2:186",
+       "kind": "quran",
+       "text": "وَإِذَا سَأَلَكَ عِبَادِى عَنِّى فَإِنِّى قَرِيبٌ أُجِيبُ دَعْوَةَ ٱلدَّاعِ إِذَا دَعَانِ فَلْيَسْتَجِيبُوا۟ لِى وَلْيُؤْمِنُوا۟ بِى لَعَلَّهُمْ يَرْشُدُونَ"
+      },
+      {
+       "sid": "Q:2:186#1",
+       "kind": "tafsir",
+       "text": "وإذا سألك -أيها النبي- عبادي عني فقل لهم: إني قريب منهم، أُجيب دعوة الداعي إذا دعاني، فليطيعوني فيما أمرتهم به ونهيتهم عنه، وليؤمنوا بي، لعلهم يهتدون إلى مصالح دينهم ودنياهم."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 16113,
+   "weak": "W2"
+  },
+  {
+   "q": "ايش هي ليلة القدر وفضلها",
+   "lang": "ar",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "97:3",
+    "97:1",
+    "97:2",
+    "44:3",
+    "2:185"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "ليلة القدر",
+     "items": [
+      {
+       "sid": "V:97:3",
+       "kind": "quran",
+       "text": "لَيْلَةُ ٱلْقَدْرِ خَيْرٌ مِّنْ أَلْفِ شَهْرٍ"
+      },
+      {
+       "sid": "Q:97:3#1",
+       "kind": "tafsir",
+       "text": "ليلة القدر ليلة مباركة، العمل الصالح فيها خير من عمل ألف شهر ليس فيها ليلة قدر."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 15051,
+   "weak": "W2"
+  },
+  {
+   "q": "kahff",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "word",
+   "verses": [
+    "18:9",
+    "18:10",
+    "18:11",
+    "18:16"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 4839,
+   "weak": "W1"
+  },
+  {
+   "q": "can i marry a christian woman",
+   "lang": "en",
+   "qtype": "ruling",
+   "type": "abstain",
+   "reason": "ruling",
+   "level": "D",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "guard",
+   "verses": [],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "kw": [
+    "النكاح",
+    "المسيحية"
+   ],
+   "fatwaTitles": [
+    "حكم نكاح نساء أهل الكتاب"
+   ],
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "نكاح نساء أهل الكتاب",
+     "items": [
+      {
+       "sid": "F:23341#q",
+       "kind": "fatwa",
+       "text": "ما حكم نكاح نساء أهل الكتاب؟"
+      },
+      {
+       "sid": "F:23341#a1",
+       "kind": "fatwa",
+       "text": "الجواب: حكم ذلك الحل والإباحة عند جمهور أهل العلم؛ لقول الله سبحانه: وَالْمُحْصَنَاتُ مِنَ الَّذِينَ أُوتُوا الْكِتَابَ مِنْ قَبْلِكُمْ إِذَا آتَيْتُمُوهُنَّ أُجُورَهُنَّ مُحْصِنِينَ غَيْرَ مُسَافِحِينَ وَلَا مُتَّخِذِي أَخْدَانٍ وَمَنْ يَكْفُرْ بِالْإِيمَانِ فَقَدْ حَبِطَ عَمَلُهُ وَهُوَ فِي الْآخِرَةِ مِنَ الْخَاسِرِينَ [المائدة:5]، والمحصنة هي: الحرة العفيفة، في أصح أقوال علماء التفسير."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 13159,
+   "weak": "W1"
+  },
+  {
+   "q": "kindness to parents",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "4:36",
+    "17:23",
+    "31:14",
+    "29:8",
+    "19:14"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "kindness to parents",
+     "items": [
+      {
+       "sid": "V:4:36",
+       "kind": "quran",
+       "text": "وَٱعْبُدُوا۟ ٱللَّهَ وَلَا تُشْرِكُوا۟ بِهِۦ شَيْـًٔا وَبِٱلْوَٰلِدَيْنِ إِحْسَٰنًا وَبِذِى ٱلْقُرْبَىٰ وَٱلْيَتَٰمَىٰ وَٱلْمَسَٰكِينِ وَٱلْجَارِ ذِى ٱلْقُرْبَىٰ وَٱلْجَارِ ٱلْجُنُبِ وَٱلصَّاحِبِ بِٱلْجَنۢبِ وَٱبْنِ ٱلسَّبِيلِ وَمَا مَلَكَتْ أَيْمَٰنُكُمْ إِنَّ ٱللَّهَ لَا يُحِبُّ مَن كَانَ مُخْتَالًا فَخُورًا"
+      },
+      {
+       "sid": "Q:4:36#2",
+       "kind": "tafsir",
+       "text": "Be good to your parents, honouring them and treating them with respect, and be good to relatives, orphans and the poor."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 9607,
+   "weak": "W1"
+  },
+  {
+   "q": "repentance",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "25:71",
+    "2:160",
+    "3:89",
+    "24:5",
+    "5:39",
+    "42:25"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "repentance",
+     "items": [
+      {
+       "sid": "V:25:71",
+       "kind": "quran",
+       "text": "وَمَن تَابَ وَعَمِلَ صَٰلِحًا فَإِنَّهُۥ يَتُوبُ إِلَى ٱللَّهِ مَتَابًا"
+      },
+      {
+       "sid": "Q:25:71#1",
+       "kind": "tafsir",
+       "text": "Those who repent to Allah and prove the sincerity of their repentance by doing good deeds and giving up sins, their repentance is one that is accepted."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 8758,
+   "weak": "W1"
+  },
+  {
+   "q": "mercy of Allah",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "1:1",
+    "55:1",
+    "23:118",
+    "7:151",
+    "3:159",
+    "4:96"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "رحمة الله",
+     "items": [
+      {
+       "sid": "V:1:1",
+       "kind": "quran",
+       "text": "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"
+      },
+      {
+       "sid": "Q:1:1#1",
+       "kind": "tafsir",
+       "text": "I begin by calling on Allah, Who is Ar-Raḥmān, the Merciful, and Ar-Raḥīm, the Compassionate."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [
+    {
+     "sid": "V:55:1",
+     "rule": "R9"
+    }
+   ],
+   "ms": 11151,
+   "weak": "W1"
+  },
+  {
+   "q": "Maryam",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "sura",
+   "reason": null,
+   "level": "A",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "reference",
+   "verses": [
+    "19:1",
+    "19:2",
+    "19:3",
+    "19:4",
+    "19:5",
+    "19:6"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "ms": 2,
+   "weak": "W1"
+  },
+  {
+   "q": "divorce",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "2:229",
+    "2:230",
+    "2:231",
+    "2:232",
+    "2:236",
+    "2:237"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "divorce procedure",
+     "items": [
+      {
+       "sid": "Q:2:229#1",
+       "kind": "tafsir",
+       "text": "The divorce, after which a husband may recall his wife, can only happen twice."
+      },
+      {
+       "sid": "Q:2:229#3",
+       "kind": "tafsir",
+       "text": "After two divorces he must either keep her in his marriage, living in a good way with her, or divorce her for the third time, being good to her by fulfilling her rights."
+      }
+     ]
+    },
+    {
+     "concept": "waiting period",
+     "items": [
+      {
+       "sid": "V:2:230",
+       "kind": "quran",
+       "text": "فَإِن طَلَّقَهَا فَلَا تَحِلُّ لَهُۥ مِنۢ بَعْدُ حَتَّىٰ تَنكِحَ زَوْجًا غَيْرَهُۥ فَإِن طَلَّقَهَا فَلَا جُنَاحَ عَلَيْهِمَآ أَن يَتَرَاجَعَآ إِن ظَنَّآ أَن يُقِيمَا حُدُودَ ٱللَّهِ وَتِلْكَ حُدُودُ ٱللَّهِ يُبَيِّنُهَا لِقَوْمٍ يَعْلَمُونَ"
+      },
+      {
+       "sid": "Q:2:230#1",
+       "kind": "tafsir",
+       "text": "If the husband divorces her for the third time, he may not remarry her until she gets married to another man in a valid marriage that is genuine and not merely contracted to make her lawful for the original husband, and where sexual intercourse has taken place in this later marriage."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 4066,
+   "weak": "W3"
+  },
+  {
+   "q": "inheritance",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "C",
+   "pack": null,
+   "sensitive": true,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "4:7",
+    "4:11",
+    "2:180",
+    "4:176",
+    "4:33",
+    "4:8"
+   ],
+   "contextPack": [],
+   "notes": [
+    "This subject must be read in context: open “Context” to see the verses before an"
+   ],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "الورثة",
+     "items": [
+      {
+       "sid": "V:4:7",
+       "kind": "quran",
+       "text": "لِّلرِّجَالِ نَصِيبٌ مِّمَّا تَرَكَ ٱلْوَٰلِدَانِ وَٱلْأَقْرَبُونَ وَلِلنِّسَآءِ نَصِيبٌ مِّمَّا تَرَكَ ٱلْوَٰلِدَانِ وَٱلْأَقْرَبُونَ مِمَّا قَلَّ مِنْهُ أَوْ كَثُرَ نَصِيبًا مَّفْرُوضًا"
+      },
+      {
+       "sid": "Q:4:7#1",
+       "kind": "tafsir",
+       "text": "Men are to have a share of what their parents or relatives – such as brothers and sisters or uncles and aunts – leave when they die, whether it is much or little."
+      }
+     ]
+    },
+    {
+     "concept": "المسلم غير المسلم",
+     "items": [
+      {
+       "sid": "H:64716#t1",
+       "kind": "hadith",
+       "text": "Usāmah ibn Zayd (may Allah be pleased with him) reported: The Prophet (may Allah's peace and blessings be upon him) said: \"A Muslim cannot inherit from a disbeliever nor can a disbeliever inherit from a Muslim."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 4072,
+   "weak": "W3"
+  },
+  {
+   "q": "الصيام",
+   "lang": "ar",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "2:183",
+    "2:184",
+    "2:187",
+    "2:185"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "الصيام",
+     "items": [
+      {
+       "sid": "V:2:183",
+       "kind": "quran",
+       "text": "يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ كُتِبَ عَلَيْكُمُ ٱلصِّيَامُ كَمَا كُتِبَ عَلَى ٱلَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ"
+      },
+      {
+       "sid": "Q:2:183#1",
+       "kind": "tafsir",
+       "text": "يا أيها الذين صدَّقوا الله ورسوله وعملوا بشرعه، فرض الله عليكم الصيام كما فرضه على الأمم قبلكم;"
+      },
+      {
+       "sid": "H:4196#t1",
+       "kind": "hadith",
+       "text": "عن أبي هريرة رضي الله عنه قال: قال رسول الله صلى الله عليه وسلم: «مَنْ صَامَ رَمَضَانَ إِيمَانًا وَاحْتِسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ»"
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 4714,
+   "weak": "W3"
+  },
+  {
+   "q": "fasting",
+   "lang": "en",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "2:183",
+    "2:184",
+    "2:187",
+    "2:185"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "الصوم",
+     "items": [
+      {
+       "sid": "V:2:183",
+       "kind": "quran",
+       "text": "يَٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ كُتِبَ عَلَيْكُمُ ٱلصِّيَامُ كَمَا كُتِبَ عَلَى ٱلَّذِينَ مِن قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ"
+      },
+      {
+       "sid": "Q:2:183#1",
+       "kind": "tafsir",
+       "text": "O you who have faith in Allah and follow His Prophet, Allah has ordered you to fast, as He ordered those before you, so that you may become mindful of Allah, protecting yourself from His punishment by doing good actions – fasting being one of the best of these."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 4407,
+   "weak": "W3"
+  },
+  {
+   "q": "الطلاق",
+   "lang": "ar",
+   "qtype": "topic",
+   "type": "topic",
+   "reason": null,
+   "level": "B",
+   "pack": null,
+   "sensitive": false,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "2:229",
+    "2:227",
+    "2:236",
+    "2:231",
+    "2:230",
+    "65:1"
+   ],
+   "contextPack": [],
+   "notes": [],
+   "bayenat": 0,
+   "answerable": "yes",
+   "judge": "openai/gpt-oss-120b",
+   "points": [
+    {
+     "concept": "الطلاق",
+     "items": [
+      {
+       "sid": "V:2:227",
+       "kind": "quran",
+       "text": "وَإِنْ عَزَمُوا۟ ٱلطَّلَٰقَ فَإِنَّ ٱللَّهَ سَمِيعٌ عَلِيمٌ"
+      },
+      {
+       "sid": "Q:2:227#1",
+       "kind": "tafsir",
+       "text": "وإن عقدوا عزمهم على الطلاق، باستمرارهم في اليمين، وترك الجماع، فإن الله سميع لأقوالهم، عليم بمقاصدهم، وسيجازيهم على ذلك."
+      }
+     ]
+    }
+   ],
+   "uncovered": [],
+   "dropped": [
+    {
+     "sid": "V:2:230",
+     "rule": "R9"
+    }
+   ],
+   "ms": 2714,
+   "weak": "W9"
+  },
+  {
+   "q": "ما هو جزاء من يقتل نفس بغير حق",
+   "lang": "ar",
+   "qtype": "ruling",
+   "type": "abstain",
+   "reason": "ruling",
+   "level": "D",
+   "pack": null,
+   "sensitive": true,
+   "polemic": false,
+   "confirmedBy": null,
+   "route": "topic",
+   "verses": [
+    "6:151",
+    "17:33",
+    "5:32",
+    "4:93",
+    "2:178",
+    "5:45"
+   ],
+   "contextPack": [
+    "6:151",
+    "17:33",
+    "5:32",
+    "4:93"
+   ],
+   "notes": [],
+   "bayenat": 0,
+   "blood": true,
+   "ms": 1566,
+   "weak": "W9"
+  },
+  {
+   "q": "ما معنى اقتلوهم حيث ثقفتموهم",
+   "lang": "ar",
+   "qtype": "definition",
+   "type": "topic",
+   "reason": null,
+   "level": "C",
+   "pack": "violence",
+   "sensitive": true,
+   "polemic": false,
+   "confirmedBy": "ai",
+   "route": "topic",
+   "verses": [
+    "2:191"
+   ],
+   "contextPack": [],
+   "notes": [
+    "موضوع يحتاج إلى فهمه في سياقه: افتح «السياق» لقراءة ما قبل الآية وما بعدها، ولتف"
+   ],
+   "bayenat": 0,
+   "answerable": "no",
+   "judge": "openai/gpt-oss-120b",
+   "points": [],
+   "uncovered": [],
+   "dropped": [],
+   "ms": 3667,
+   "weak": "W9"
+  }
+ ]
+}
