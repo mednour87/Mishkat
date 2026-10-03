@@ -132,14 +132,22 @@ for (const shape of SHAPES.filter((s) => s.id !== 'quran')) {
   });
 }
 
-test('galaxy + mushaf reproduces the precomputed galaxy (layout 0 of galaxy.bin)', async () => {
+// The page replaces layouts 0/1 of galaxy.bin by the browser galaxy (smooth arms, bulge): the SKELETON must stay
+// the same — every surah at the same distance from the core, in the same order — only its look changes.
+test('galaxy + mushaf keeps the skeleton of the precomputed galaxy (layout 0 of galaxy.bin), with a bulge and a thin disc', async () => {
   const scale = dv.getFloat32(8, true);
   const q = new Int16Array(ab, 12, N * 3 * nL);
   const g = await buildLayout({ shape: 'galaxy', order: 'mushaf', wordVerse, suras });
-  // same spiral skeleton; only the random verse offsets differ (σ ≤ 29)
-  let d = 0;
-  for (let i = 0; i < N; i++) d += Math.hypot(g.positions[i * 3] - q[i * 3] * scale, g.positions[i * 3 + 1] - q[i * 3 + 1] * scale);
-  assert.ok(d / N < 45, `mean distance ${(d / N).toFixed(1)}`);
+  const P = g.positions;
+  let worst = 0;
+  for (let s = 1; s <= 114; s++) {
+    let a = 0, b = 0;
+    for (let w = runs[s][0]; w < runs[s][1]; w++) { a += Math.hypot(P[w * 3], P[w * 3 + 1]); b += Math.hypot(q[w * 3], q[w * 3 + 1]) * scale; }
+    worst = Math.max(worst, Math.abs(a - b) / wordsOf[s]);
+  }
+  assert.ok(worst < 40, `mean radius of a surah moved by ${worst.toFixed(1)}`);
+  const thick = (lo, hi) => { let n = 0, z = 0; for (let w = 0; w < N; w++) { const r = Math.hypot(P[w * 3], P[w * 3 + 1]); if (r >= lo && r < hi) { n++; z += Math.abs(P[w * 3 + 2]); } } return z / n; };
+  assert.ok(thick(0, 120) > 3 * thick(450, 700), 'a bulge at the core, a thin disc at the rim');
 });
 
 test('bad input is rejected', async () => {

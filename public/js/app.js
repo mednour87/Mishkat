@@ -172,6 +172,12 @@ async function boot() {
     wordText: (i) => (state.words ? state.words[i] : ''),
     suraLabel: (n) => suraName(n),
   });
+  // the galaxy drawn in the browser (smooth arms, a bulge at the core) replaces the precomputed layouts 0 and 1
+  for (const [L, order] of [[0, 'mushaf'], [1, 'nuzul']]) {
+    const lay = await buildLayout({ shape: 'galaxy', order, wordVerse: state.galaxy.wordVerse, suras: core.suras });
+    state.galaxy.replaceLayout(L, lay.positions, lay.view);
+    layoutNote[`galaxy|${order}`] = lay.note;
+  }
   state.wordsP = getJSON('data/words.json').then(w => { state.words = w; return w; });
   setupTools();
   setupLongPress();

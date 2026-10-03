@@ -115,7 +115,8 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, 1, 1, 8000);
   // the whole disc (radius ≈ 600) framed from closer than before: stars read as stars, not as dust
-  const HOME = { pos: new THREE.Vector3(0, -760, 660), target: new THREE.Vector3(0, 0, 0) };
+  // (same view as layouts.js galaxy(): the near edge of the disc stays in the frame)
+  const HOME = { pos: new THREE.Vector3(0, -860, 640), target: new THREE.Vector3(0, -60, 0) };
   // the words of a verse (and the recited word) are written on their stars only once the camera is this close
   const WORDS_DIST = 130;
   camera.position.copy(HOME.pos);
@@ -196,12 +197,11 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   function suraCentroids() {
     if (suraMid[layout]) return suraMid[layout];
     const P = layouts[layout], out = new Float32Array(suras.length * 3);
+    // the name sits on the surah's middle word: the mean of its words falls in empty space when the surah is a
+    // ring (rose), a band (dome) or lies on both arms (galaxy) — names then piled up in the middle
     suras.forEach((S, k) => {
-      const a = vStart[S.first], b = vEnd[S.first + S.ayas - 1];
-      let x = 0, y = 0, z = 0;
-      for (let i = a; i < b; i++) { x += P[i * 3]; y += P[i * 3 + 1]; z += P[i * 3 + 2]; }
-      const n = Math.max(1, b - a);
-      out[k * 3] = x / n; out[k * 3 + 1] = y / n; out[k * 3 + 2] = z / n;
+      const m = (vStart[S.first] + vEnd[S.first + S.ayas - 1] - 1) >> 1;
+      out[k * 3] = P[m * 3]; out[k * 3 + 1] = P[m * 3 + 1]; out[k * 3 + 2] = P[m * 3 + 2];
     });
     suraMid[layout] = out;
     return out;
@@ -245,9 +245,8 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     if (ok && !reciting) {
       // 2. answer labels, one per surah, at the centre of its verses
       for (const g of groupsOn ? groups : []) {
-        tmpV.set(0, 0, 0);
-        for (const v of g.verses) tmpV.add(centroid(v));
-        tmpV.multiplyScalar(1 / g.verses.length);
+        // on the middle verse of the answer in this surah (its verses may lie on both arms: their mean is in the void)
+        tmpV.copy(centroid(g.verses[g.verses.length >> 1]));
         const p = screen(tmpV, w, h);
         if (!p) { g.el.hidden = true; continue; }
         const bw = g.el.offsetWidth || 140, bh = g.el.offsetHeight || 34;
@@ -384,13 +383,22 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   let dimTarget = 0;
 
   function drawPath() {
-    if (pathLine) { scene.remove(pathLine); pathLine.geometry.dispose(); pathLine = null; }
+    if (pathLine) { scene.remove(pathLine); pathLine.children.forEach(l => l.geometry.dispose()); pathLine = null; }
     if (highlighted.length < 2 || highlighted.length > 400) return;
     const sorted = highlighted.slice().sort((a, b) => a - b);
     const pts = sorted.map(centroid);
-    const curve = new THREE.CatmullRomCurve3(pts);
-    const g = new THREE.BufferGeometry().setFromPoints(curve.getPoints(Math.min(1200, pts.length * 14)));
-    pathLine = new THREE.Line(g, pathMat);
+    // only between neighbouring verses: consecutive verses may lie on the two opposite arms of the galaxy,
+    // and a line between them would cross the whole disc
+    const runs = [[pts[0]]];
+    for (let k = 1; k < pts.length; k++) {
+      if (pts[k].distanceTo(pts[k - 1]) < 60) runs[runs.length - 1].push(pts[k]); else runs.push([pts[k]]);
+    }
+    pathLine = new THREE.Group();
+    for (const run of runs) {
+      if (run.length < 2) continue;
+      const curve = new THREE.CatmullRomCurve3(run);
+      pathLine.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(curve.getPoints(Math.min(1200, run.length * 14))), pathMat));
+    }
     scene.add(pathLine);
   }
 
@@ -419,14 +427,29 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
 
   // extra layouts computed in the browser; each may carry its own home view
   const homes = [];
+  // a reference view (start, ⌂, change of shape), stepped back on narrow portrait screens: the field of view
+  // is fixed vertically, so without this a phone showed only the middle of the disc
+  function refView(L) {
+    const v = homes[L], target = v ? new THREE.Vector3(...v.target) : HOME.target.clone();
+    const pos = v ? new THREE.Vector3(...v.pos) : HOME.pos.clone();
+    const k = Math.min(2.9, Math.max(1, 1.6 / Math.max(0.3, camera.aspect)));
+    return { pos: target.clone().add(pos.sub(target).multiplyScalar(k)), target };
+  }
+  { const r = refView(0); camera.position.copy(r.pos); controls.target.copy(r.target); }
   function addLayout(arr, view) { layouts.push(arr); homes[layouts.length - 1] = view || null; return layouts.length - 1; }
+  // a layout computed in the browser replaces a precomputed one (galaxy.bin): same words, new positions
+  function replaceLayout(L, arr, view) {
+    if (!layouts[L] || arr.length !== layouts[L].length) return;
+    layouts[L] = arr; homes[L] = view || homes[L] || null; suraMid[L] = null;
+    if (L === layout && !morph) {
+      const pa = geo.getAttribute('position'), pb = geo.getAttribute('position2');
+      pa.array.set(arr); pb.array.set(arr); pa.needsUpdate = pb.needsUpdate = true;
+      geo.computeBoundingSphere(); drawPath(); drawThread();
+    }
+  }
   function setLayout(L, moveCamera = true) {
     if (L === layout || !layouts[L]) return;
-    const v = homes[L];
-    if (moveCamera) {
-      if (v) animateTo(new THREE.Vector3(...v.pos), new THREE.Vector3(...v.target), 2200);
-      else animateTo(HOME.pos.clone(), HOME.target.clone(), 2200);
-    }
+    if (moveCamera) { const r = refView(L); animateTo(r.pos, r.target, 2200); }
     controls.autoRotate = false;
     const posAttr = geo.getAttribute('position'), pos2 = geo.getAttribute('position2');
     posAttr.array.set(layouts[layout]); pos2.array.set(layouts[L]);
@@ -438,11 +461,10 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
 
   function home() {
     ring.visible = false;
-    const target = (morph ? morph.to : layout);
-    const v = homes[target];
-    if (v) { animateTo(new THREE.Vector3(...v.pos), new THREE.Vector3(...v.target), 1500); return; }
-    animateTo(HOME.pos.clone(), HOME.target.clone(), 1500);
-    setTimeout(() => { if (!follow && !anim) controls.autoRotate = true; }, 1600);
+    const L = (morph ? morph.to : layout), r = refView(L);
+    animateTo(r.pos, r.target, 1500);
+    // the two galaxies turn slowly again; the other shapes stay still
+    if (!homes[L] || L <= 1) setTimeout(() => { if (!follow && !anim) controls.autoRotate = true; }, 1600);
   }
 
   // --- picking
@@ -531,7 +553,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   loop();
 
   return {
-    flyToVerse, fitVerses, highlightVerses, setGroups, setLayout, addLayout, home,
+    flyToVerse, fitVerses, highlightVerses, setGroups, setLayout, addLayout, replaceLayout, home,
     // the verse whose words are labelled and linked by a thread
     setFocusVerse(v) { focusV = v == null ? null : v; drawThread(); },
     // recitation: only the recited word is written; the field of stars dims
