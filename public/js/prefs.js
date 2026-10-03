@@ -10,6 +10,7 @@ export const DEFAULTS = {
   read: '',                                 // verses read (bitset, base64, see khatma.js)
   log: {},                                  // { 'YYYY-MM-DD': verses read that day }
   autoMark: true,                           // a verse recited to its end in the reader counts as read
+  scrollMark: true,                         // a verse read by scrolling (it stayed at the reading line long enough) counts as read
   showReadOnGalaxy: true,
 };
 

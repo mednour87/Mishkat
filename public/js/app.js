@@ -175,7 +175,7 @@ async function boot() {
   // the galaxy drawn in the browser (smooth arms, a bulge at the core) replaces the precomputed layouts 0 and 1
   for (const [L, order] of [[0, 'mushaf'], [1, 'nuzul']]) {
     const lay = await buildLayout({ shape: 'galaxy', order, wordVerse: state.galaxy.wordVerse, suras: core.suras });
-    state.galaxy.replaceLayout(L, lay.positions, lay.view);
+    state.galaxy.replaceLayout(L, lay.positions, lay.view, lay.spine);
     layoutNote[`galaxy|${order}`] = lay.note;
   }
   state.wordsP = getJSON('data/words.json').then(w => { state.words = w; return w; });
@@ -248,7 +248,11 @@ async function boot() {
     const s0 = Math.min(114, Math.max(1, +sp.get('s') || 1)), S0 = core.suras[s0 - 1];
     const a0 = Math.min(S0.ayas, Math.max(1, +sp.get('a') || 1));
     openReader(s0, S0.first + a0 - 1, { fly: true });
-  } else if (!sp.get('q') && store.get('welcomed') !== '1') openWelcome();
+  } else if (!sp.get('q')) {
+    // the reference view once the galaxy zone has its final size (the first one used a provisional size)
+    state.galaxy.home();
+    if (store.get('welcomed') !== '1') openWelcome();
+  }
 }
 
 // ------------------------------------------------------------ entry gate
@@ -1004,7 +1008,50 @@ function renderReader() {
   $('#mushaf').querySelectorAll('.v').forEach(el => el.onclick = () => selectVerse(+el.dataset.i, { scroll: false }));
   markHits();
   if (en && state.showTranslit) fillTranslit(sura);
+  scrollRead.cur = null;
+  $('#rdBody').addEventListener('scroll', onReaderScroll, { passive: true });
 }
+// ------------------------------------------------------------ reading by scrolling (no recitation)
+// The verse at the reading line (a third of the way down the Mushaf) lights up as if it were recited. When the
+// reader scrolls on to the next verses, the verses passed count as read for the khatma (Settings: «count a verse
+// as read when read by scrolling») only if they stayed long enough to be read: 0.3 s a word, at least 1.5 s.
+// Jumps (a chosen verse, more than 8 verses at once) never count.
+const scrollRead = { cur: null, since: 0, t: 0, jumpAt: 0 };
+function onReaderScroll() {
+  if (state.playing) return;
+  clearTimeout(scrollRead.t);
+  scrollRead.t = setTimeout(readingLine, 90);
+}
+function verseAtReadingLine() {
+  const b = $('#rdBody');
+  if (!b) return null;
+  const r = b.getBoundingClientRect(), y = r.top + b.clientHeight * 0.33;
+  for (const fx of [0.5, 0.3, 0.7, 0.15, 0.85]) {
+    const el = document.elementFromPoint(r.left + r.width * fx, y);
+    const v = el && el.closest && el.closest('#mushaf .v');
+    if (v) return +v.dataset.i;
+  }
+  return null;
+}
+const wordsIn = (v) => { const [a, b] = state.galaxy.wordsOfVerse(v); return Math.max(1, b - a); };
+function readingLine() {
+  if (state.playing) return;
+  const i = verseAtReadingLine();
+  if (i == null || i === scrollRead.cur) return;
+  const prev = scrollRead.cur, now = performance.now();
+  if (prev != null && i > prev && i - prev <= 8 && now - scrollRead.jumpAt > 1200) {
+    let words = 0; for (let v = prev; v < i; v++) words += wordsIn(v);
+    if (now - scrollRead.since >= Math.max(1500, 300 * words)) for (let v = prev; v < i; v++) markRecited(v, 'scroll');
+  }
+  scrollRead.cur = i; scrollRead.since = now;
+  litVerse(i);
+  $('#lampRef').textContent = refLabel(i);
+}
+function litVerse(i) {
+  document.querySelectorAll('#mushaf .v.lit').forEach(el => el.classList.remove('lit'));
+  if (i != null) document.querySelectorAll(`#mushaf .v[data-i="${i}"]`).forEach(el => el.classList.add('lit'));
+}
+
 // ▶ this verse only · ⏵⏵ from this verse onwards (continuous); pressing the playing one pauses
 function togglePlay(mode) {
   if (state.playing && state.playMode === mode) { stopAudio(true); return; }
@@ -1056,7 +1103,7 @@ function selectVerse(i, { scroll = true, fly = true, keepAudio = false } = {}) {
   document.querySelectorAll('#mushaf .v').forEach(el => el.classList.toggle('cur', +el.dataset.i === i));
   const sel = $('#rSel'); if (sel) sel.value = i;
   const el = $(`#mushaf .v[data-i="${i}"]`), b = $('#rdBody');
-  if (el && b && scroll) b.scrollTo({ top: Math.max(0, el.offsetTop - b.clientHeight * 0.3), behavior: changed ? 'smooth' : 'auto' });
+  if (el && b && scroll) { scrollRead.jumpAt = performance.now(); b.scrollTo({ top: Math.max(0, el.offsetTop - b.clientHeight * 0.3), behavior: changed ? 'smooth' : 'auto' }); }
   state.galaxy.setFocusVerse(i);
   if (fly) state.galaxy.flyToVerse(i, 70);
   if (!state.playing) $('#lampRef').textContent = refLabel(i);
@@ -1201,6 +1248,7 @@ function showLampWord(w, ref) {
 // play(i, fromUser): fromUser resets the repetition counter
 async function play(i, fromUser = false) {
   endDwell();                                       // the recited verse takes the light back
+  litVerse(null); scrollRead.cur = null;
   stopAudio();
   stopSpeech();
   if (fromUser || state.repeatLeft == null) state.repeatLeft = state.repeat || 1;
@@ -1270,17 +1318,24 @@ function stopAudio(updateBtn) {
 const DWELL_MS = 3000, LONG_PRESS_MS = 600;
 let dwellT = 0, dwellWord = null;
 function hover(p) {
+  // during a recitation the recited word alone is shown (in the lamp and in the middle of the view)
+  if (state.playing) p = null;
   showTip(p);
   armDwell(p);
 }
+// the tooltip is placed inside the galaxy zone, beside the star under the cursor, and kept inside the zone
+// (it is absolutely positioned in #gzone: as «fixed» it was offset whenever the zone was not at the page origin)
 function showTip(p) {
   const tt = $('#tooltip');
   if (!p || !state.words) { tt.style.display = 'none'; return; }
-  const e = state.engine;
+  const e = state.engine, z = $('#gzone').getBoundingClientRect();
   tt.innerHTML = `<div class="w">${esc(state.words[p.word])}</div><div>${esc(T().hoverAya(suraName(e.suraOf[p.verse]), e.ayaOf[p.verse]))}</div>`;
   tt.style.display = 'block';
-  tt.style.left = Math.min(innerWidth - 270, p.x + 14) + 'px';
-  tt.style.top = Math.min(innerHeight - 90, p.y + 14) + 'px';
+  const w = tt.offsetWidth, h = tt.offsetHeight, x = p.x - z.left, y = p.y - z.top;
+  const left = x + 14 + w > z.width - 6 ? x - 14 - w : x + 14;            // flip to the other side near the edge
+  const top = y + 14 + h > z.height - 6 ? y - 14 - h : y + 14;
+  tt.style.left = Math.max(6, left) + 'px';
+  tt.style.top = Math.max(6, top) + 'px';
 }
 function armDwell(p) {
   const w = p ? p.word : null;
@@ -1358,6 +1413,17 @@ function setupTools() {
     // hadiths of the remarkable days, by HadeethEnc id, verbatim from the local files (search worker)
     hadiths: (ids, lang) => workerCall({ op: 'hadiths', ids, lang }),
     status: alertNote,
+    // the page's own controls, offered in the Settings panel too
+    ui: {
+      setLang: (l) => applyLang(l),
+      theme: () => document.documentElement.dataset.theme === 'light' ? 'light' : 'dark', setTheme: (th) => setTheme(th),
+      names: () => $('#gNames').getAttribute('aria-pressed') === 'true', setNames: (v) => setNames(v),
+      rotate: () => !!state.galaxy.autoRotate, setRotate: (v) => { state.galaxy.setAutoRotate(v); $('#gRot').setAttribute('aria-pressed', v); },
+      speed: () => state.speed,
+      setSpeed: (v) => { state.speed = v; store.set('speed', v); if (state.audio) state.audio.playbackRate = v; const s = $('#rSpeed'); if (s) s.value = v; },
+      font: (d) => { state.qs = Math.round(Math.min(1.8, Math.max(0.7, state.qs + d)) * 10) / 10; store.set('qs', state.qs); $('#rzone').style.setProperty('--qs', state.qs); },
+      open: (id) => state.panels.open(id),
+    },
   });
   const renderers = {
     khatma: (body, args) => state.tools.khatma(body, args),
@@ -1376,10 +1442,10 @@ function setupTools() {
   });
   labelDock();
 }
-// a verse recited to its end in the reader counts as read (Settings: «count a verse as read…»), in this browser only
-function markRecited(i) {
+// a verse recited to its end, or read by scrolling, counts as read (Settings), in this browser only
+function markRecited(i, how = 'audio') {
   const P = state.prefs;
-  if (!P.autoMark) return;
+  if (how === 'audio' ? !P.autoMark : !P.scrollMark) return;
   const bits = decodeRead(P.read);
   if (isRead(bits, i)) return;
   const before = surasRead(bits, state.core.suras).length;
@@ -1422,7 +1488,7 @@ async function setView(shape, order, { quiet = false } = {}) {
   $('#shapeSel').value = shape; $('#orderSel').value = order;
   if (!(key in layoutIdx) || !layoutNote[key]) {
     const lay = await buildLayout({ shape, order, wordVerse: state.galaxy.wordVerse, suras: state.core.suras, words: order === 'letters' ? await state.wordsP : null });
-    if (!(key in layoutIdx)) layoutIdx[key] = state.galaxy.addLayout(lay.positions, lay.view);
+    if (!(key in layoutIdx)) layoutIdx[key] = state.galaxy.addLayout(lay.positions, lay.view, lay.spine);
     layoutNote[key] = lay.note;
   }
   if (view.shape !== shape || view.order !== order) return; // another choice was made meanwhile
@@ -1442,6 +1508,21 @@ function setNames(v) { state.galaxy.setNames(v); $('#gNames').setAttribute('aria
 $('#shapeSel').onchange = (ev) => setView(ev.target.value, view.order);
 $('#orderSel').onchange = (ev) => setView(view.shape, ev.target.value);
 $('#gHome').onclick = () => state.galaxy.home();
+// camera buttons: a click (or Enter) turns/tilts by one eased step; held down, the camera moves continuously
+{
+  const STEP = { left: [-1, 0], right: [1, 0], up: [0, -1], down: [0, 1] };
+  let hold = 0, held = false;
+  const stopHold = () => { clearInterval(hold); hold = 0; };
+  document.querySelectorAll('#gcam [data-cam]').forEach(b => {
+    const [a, e] = STEP[b.dataset.cam];
+    b.addEventListener('pointerdown', (ev) => {
+      ev.preventDefault(); held = false; stopHold();
+      hold = setTimeout(() => { held = true; hold = setInterval(() => state.galaxy.orbit(a * 0.025, e * 0.018), 30); }, 260);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(k => b.addEventListener(k, stopHold));
+    b.addEventListener('click', () => { if (!held) state.galaxy.orbit(a * 0.26, e * 0.17, 450); held = false; });
+  });
+}
 $('#gIn').onclick = () => state.galaxy.zoom(0.6);
 $('#gOut').onclick = () => state.galaxy.zoom(1.6);
 $('#gRot').onclick = () => { const v = !state.galaxy.autoRotate; state.galaxy.setAutoRotate(v); $('#gRot').setAttribute('aria-pressed', v); };

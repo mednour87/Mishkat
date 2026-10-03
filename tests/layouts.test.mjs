@@ -79,11 +79,42 @@ function checkProgress(shape, lay, tag) {
   for (let s = 1; s <= 114; s++) assert.equal(runs[s][1] - runs[s][0], wordsOf[s], `${tag} surah ${s} contiguous`);
   // 2) surahs advance along the shape in the order of the sequence
   const mean = lay.sequence.map((s) => { let t = 0; for (let w = runs[s][0]; w < runs[s][1]; w++) t += pr(w); return t / wordsOf[s]; });
-  if (shape === 'galaxy') { // random verse offsets (σ ≤ 29) blur the radius of tiny neighbouring surahs
+  if (shape === 'galaxy') {
+    // two arms, each carrying half of the words in the order of the sequence: on the whole disc the surahs go from
+    // the core to the rim in that order — measured by each surah's PROGRESS ALONG ITS ARM (the radius is a poor
+    // yardstick: the verses' lanes weave across the arm) — and ON EACH ARM they advance strictly (checked below)
+    // the layout says which surahs each arm carries: both arms are used, in the order of the sequence, and along
+    // each arm the surahs move outward
+    assert.ok(lay.arms && lay.arms.length === 2, `${tag} arms`);
+    assert.deepEqual([...lay.arms[0], ...lay.arms[1]].sort((a, b) => a - b), Array.from({ length: 114 }, (_, k) => k + 1));
+    // progress along an arm = the spiral angle, unwrapped word after word along the arm (consecutive words are a
+    // tiny angle apart): every surah's words come strictly after the previous surah's, and almost every word
+    // after the previous one — the recited word only moves forward
+    const pos = new Map(lay.sequence.map((s, k) => [s, k])), progress = new Map();
+    for (const arm of lay.arms) {
+      assert.ok(arm.length > 10, tag);
+      let prevAngle = null, acc = 0, back = 0, all = 0, lastMax = -Infinity;
+      const sums = [];
+      for (let k = 0; k < arm.length; k++) {
+        if (k) assert.ok(pos.get(arm[k]) > pos.get(arm[k - 1]), `${tag}: arm keeps the order of the sequence`);
+        let lo = Infinity, hi = -Infinity, sum = 0;
+        for (let w = runs[arm[k]][0]; w < runs[arm[k]][1]; w++) {
+          const a = Math.atan2(P[w * 3 + 1], P[w * 3]);
+          if (prevAngle != null) { let d = a - prevAngle; d -= 2 * Math.PI * Math.round(d / (2 * Math.PI)); acc += d; all++; if (d < -1e-4) back++; }
+          prevAngle = a; lo = Math.min(lo, acc); hi = Math.max(hi, acc); sum += acc;
+        }
+        assert.ok(lo >= lastMax - 1e-3, `${tag}: surah ${arm[k]} starts behind the previous surah on its arm`);
+        lastMax = hi; sums.push(sum / wordsOf[arm[k]]);
+      }
+      // the angle grows as √(progress): progress of a surah = (its mean angle / the arm's whole angle)²
+      arm.forEach((s, k) => progress.set(s, (sums[k] / acc) ** 2));
+      assert.ok(back / all < 0.01, `${tag}: ${(100 * back / all).toFixed(1)} % of the words step back along the arm`);
+    }
+    const prog = lay.sequence.map(s => progress.get(s));
     const rank = (v) => { const o = v.map((x, i) => [x, i]).sort((p, q) => p[0] - q[0]), r = new Array(v.length); o.forEach(([, i], k) => { r[i] = k; }); return r; };
-    const r = rank(mean); let d2 = 0; r.forEach((x, k) => { d2 += (x - k) ** 2; });
+    let d2 = 0; rank(prog).forEach((x, k) => { d2 += (x - k) ** 2; });
     const rho = 1 - (6 * d2) / (114 * (114 * 114 - 1));
-    assert.ok(rho > 0.97, `${tag} Spearman ${rho}`);
+    assert.ok(rho > 0.97, `${tag} Spearman of the progress along the arms ${rho}`);
   } else {
     for (let k = 1; k < 114; k++) assert.ok(mean[k] > mean[k - 1], `${tag}: surah ${lay.sequence[k]} before ${lay.sequence[k - 1]}`);
   }
@@ -145,7 +176,8 @@ test('galaxy + mushaf keeps the skeleton of the precomputed galaxy (layout 0 of 
     for (let w = runs[s][0]; w < runs[s][1]; w++) { a += Math.hypot(P[w * 3], P[w * 3 + 1]); b += Math.hypot(q[w * 3], q[w * 3 + 1]) * scale; }
     worst = Math.max(worst, Math.abs(a - b) / wordsOf[s]);
   }
-  assert.ok(worst < 40, `mean radius of a surah moved by ${worst.toFixed(1)}`);
+  // (two arms of half the words each: a surah moves by less than ~one tenth of the radius)
+  assert.ok(worst < 60, `mean radius of a surah moved by ${worst.toFixed(1)}`);
   const thick = (lo, hi) => { let n = 0, z = 0; for (let w = 0; w < N; w++) { const r = Math.hypot(P[w * 3], P[w * 3 + 1]); if (r >= lo && r < hi) { n++; z += Math.abs(P[w * 3 + 2]); } } return z / n; };
   assert.ok(thick(0, 120) > 3 * thick(450, 700), 'a bulge at the core, a thin disc at the rim');
 });

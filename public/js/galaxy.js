@@ -41,7 +41,9 @@ const VERT = /* glsl */`
     // almost touch the camera fade out), nor dissolve far away (a floor of 1.6 px, so the core stays sharp)
     float px = size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (520.0 / -mv.z);
     gl_PointSize = clamp(px, 1.6 * uPx, (strong > 0.5 ? 15.0 : 10.0) * uPx);
-    vNear = smoothstep(8.0, 40.0, -mv.z);
+    // only a star almost touching the lens fades (it faded below 40 units: zooming in on the recited word, at the
+    // minimum distance of 12, made it vanish)
+    vNear = smoothstep(1.0, 6.0, -mv.z);
     // depth: the far side of the galaxy is a little dimmer than the near side
     vFar = 1.0 - 0.45 * smoothstep(700.0, 2400.0, -mv.z);
     gl_Position = projectionMatrix * mv;
@@ -65,8 +67,9 @@ const FRAG = /* glsl */`
     float halo = exp(-d * d * 5.0) * 0.42;
     float a = clamp(core + halo, 0.0, 1.0);
     // strong = verse of the answer, soft = rest of its surah, the rest of the sky stays visible
-    vec3 col = vHl > 0.75 ? vColor * 1.5 : vHl > 0.25 ? vColor : vColor * mix(1.05, 0.55, uDim);
-    col = mix(col, vec3(1.0), core * 0.25);
+    // brighter stars (author's request); the verses of an answer brightest
+    vec3 col = vHl > 0.75 ? vColor * 1.9 : vHl > 0.25 ? vColor * 1.15 : vColor * mix(1.22, 0.6, uDim);
+    col = mix(col, vec3(1.0), core * 0.28);                 // a whiter core, but the stars keep their colour
     gl_FragColor = vec4(col, a * vNear * vFar * (vHl > 0.75 ? 1.0 : vHl > 0.25 ? 0.9 : mix(0.9, 0.6, uDim)));
   }`;
 
@@ -167,7 +170,10 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     return new THREE.CanvasTexture(c);
   })();
   const active = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-  active.scale.set(7, 7, 1); active.visible = false; scene.add(active);
+  // the recited word's star: a larger, brighter glow (two sprites: a white core in a golden halo)
+  active.scale.set(10, 10, 1); active.visible = false; scene.add(active);
+  const activeCore = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffffff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+  activeCore.scale.set(0.42, 0.42, 1); active.add(activeCore);   // relative to the halo's scale
 
   let layout = 0;
   let highlighted = [];
@@ -430,17 +436,20 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   // a reference view (start, ⌂, change of shape), stepped back on narrow portrait screens: the field of view
   // is fixed vertically, so without this a phone showed only the middle of the disc
   function refView(L) {
+    resize();                                         // the zone's size right now (the observer may not have run yet)
     const v = homes[L], target = v ? new THREE.Vector3(...v.target) : HOME.target.clone();
     const pos = v ? new THREE.Vector3(...v.pos) : HOME.pos.clone();
-    const k = Math.min(2.9, Math.max(1, 1.6 / Math.max(0.3, camera.aspect)));
+    const k = Math.min(2.6, Math.max(1, 1.25 / Math.max(0.3, camera.aspect)));
     return { pos: target.clone().add(pos.sub(target).multiplyScalar(k)), target };
   }
   { const r = refView(0); camera.position.copy(r.pos); controls.target.copy(r.target); }
-  function addLayout(arr, view) { layouts.push(arr); homes[layouts.length - 1] = view || null; return layouts.length - 1; }
-  // a layout computed in the browser replaces a precomputed one (galaxy.bin): same words, new positions
-  function replaceLayout(L, arr, view) {
+  function addLayout(arr, view, spine) { layouts.push(arr); homes[layouts.length - 1] = view || null; spines[layouts.length - 1] = spine || null; return layouts.length - 1; }
+  // a layout computed in the browser replaces a precomputed one (galaxy.bin): same words, new positions; its
+  // optional spine (the middle curve of the arms, per word) is what the reading camera follows
+  const spines = [];
+  function replaceLayout(L, arr, view, spine) {
     if (!layouts[L] || arr.length !== layouts[L].length) return;
-    layouts[L] = arr; homes[L] = view || homes[L] || null; suraMid[L] = null;
+    layouts[L] = arr; homes[L] = view || homes[L] || null; suraMid[L] = null; spines[L] = spine || null;
     if (L === layout && !morph) {
       const pa = geo.getAttribute('position'), pb = geo.getAttribute('position2');
       pa.array.set(arr); pb.array.set(arr); pa.needsUpdate = pb.needsUpdate = true;
@@ -501,7 +510,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
 
   const clock = new THREE.Clock();
   let last = performance.now();
-  const FOLLOW_DIST = 34;
+  const FOLLOW_DIST = 34, FOLLOW_SLACK = 0.3;     // tests/reading_camera.mjs simulates the same rule
   let slow = 0;
   function loop() {
     requestAnimationFrame(loop);
@@ -567,8 +576,26 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
       if (i == null || i < 0 || i >= N) return;
       const p = wpos(i);
       ring.position.copy(p); ring.visible = true;
-      if (!follow) { follow = { target: p.clone(), dist: FOLLOW_DIST }; anim = null; controls.autoRotate = false; }
-      else follow.target.copy(p);
+      // a calm camera for reading: it stays still while the recited word is in the middle of the view and only
+      // glides FORWARD to it when the word nears the edge — the words advance along the shape in one direction
+      // (an arm, a ring, the dome's circuit, a petal, the letters' columns), so the view only moves that way.
+      // Following each word, or jumping to each verse's centre (in the void for a verse along a ring), made the
+      // view swing back and forth. The distance shows the verse (closer for a short one).
+      // on a layout with a spine (the galaxy), the camera follows the arm's middle curve, not the scattered word
+      const S = morph ? null : spines[layout];
+      const at = (k, o = new THREE.Vector3()) => S ? o.set(S[k * 3], S[k * 3 + 1], S[k * 3 + 2]) : wpos(k, o);
+      const v = wordVerse[i], half = Math.tan(camera.fov * Math.PI / 360);
+      if (S) p.copy(at(i));
+      if (!follow || follow.v !== v) {
+        const mid = at((vStart[v] + vEnd[v] - 1) >> 1), w = new THREE.Vector3();
+        let r = 0;
+        for (let k = vStart[v]; k < vEnd[v]; k++) r = Math.max(r, at(k, w).distanceTo(mid));
+        const dist = Math.min(110, Math.max(FOLLOW_DIST, r / half * 1.15 + 8));
+        if (!follow) { follow = { target: p.clone(), dist, v }; anim = null; controls.autoRotate = false; }
+        else { follow.dist = dist; follow.v = v; }
+      }
+      // the recited word stays near the middle of the view (within 30 % of the half-view)
+      if (p.distanceTo(follow.target) > FOLLOW_SLACK * follow.dist * half * Math.min(1, camera.aspect)) follow.target.copy(p);
     },
     get count() { return N; },
     // the recited word: a glowing sprite + its text in a luminous disc on the star
@@ -582,6 +609,18 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
         pill.textContent = t;
         pill.classList.remove('pop'); void pill.offsetWidth; pill.classList.add('pop');
       }
+    },
+    // camera buttons: turn around the target (dAz) or tilt (dEl), in radians — same axes as dragging with the
+    // mouse (OrbitControls); ms = 0 moves at once (button held down), otherwise an eased step
+    orbit(dAz, dEl, ms = 0) {
+      const sph = new THREE.Spherical().setFromVector3(camera.position.clone().sub(controls.target));
+      sph.theta += dAz;
+      sph.phi = Math.min(Math.PI - 0.05, Math.max(0.05, sph.phi + dEl));
+      const pos = controls.target.clone().add(new THREE.Vector3().setFromSpherical(sph));
+      controls.autoRotate = false;
+      userAt = performance.now();
+      if (ms) animateTo(pos, controls.target.clone(), ms);
+      else { anim = null; follow = null; camera.position.copy(pos); }
     },
     zoom(f) {
       const offv = camera.position.clone().sub(controls.target);

@@ -80,6 +80,7 @@ export const UI = {
     notQuranWord: (w) => `لم أجد «${w}» بين ألفاظ القرآن. هل تقصد:`, maybeAlso: 'قد تقصد أيضًا:', inVerses: (n) => n === 1 ? 'في آية' : `في ${n} آيات`,
     wordTitle: (w) => `«${w}» في القرآن الكريم`, keyTitle: 'الآيات الأقرب إلى سؤالك، مع تفسيرها كاملًا', moreEx: (n) => `بيان ${n} آيات أخرى`, otherVerses: 'آيات أخرى ذات صلة، سورةً سورة',
     hoverAya: (s, a) => `سورة ${s} · الآية ${a}`,
+    camera: 'تحريك الكاميرا', camUp: 'إمالة إلى الأعلى', camDown: 'إمالة إلى الأسفل', camLeft: 'تدوير إلى اليسار', camRight: 'تدوير إلى اليمين',
     // hover-dwell (3 s on a word, or a long press): under the lamp, three short lines
     dwellInfo: (ref, kV, nV, kS, occ) => {
       const n = (x) => String(x).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
@@ -167,6 +168,7 @@ export const UI = {
     notQuranWord: (w) => `“${w}” is not among the words of the Quran. Did you mean:`, maybeAlso: 'You may also mean:', inVerses: (n) => `in ${n} verse${n === 1 ? '' : 's'}`,
     wordTitle: (w) => `“${w}” in the Quran`, keyTitle: 'The verses closest to your question, with their full tafsir', moreEx: (n) => `Explanation of ${n} more verse${n === 1 ? '' : 's'}`, otherVerses: 'Other related verses, surah by surah',
     hoverAya: (s, a) => `Surah ${s} · verse ${a}`,
+    camera: 'Move the camera', camUp: 'Tilt up', camDown: 'Tilt down', camLeft: 'Turn left', camRight: 'Turn right',
     dwellInfo: (ref, kV, nV, kS, occ) => `${ref}\nword ${kV} of ${nV} in the verse · ${kS.toLocaleString('en')} in the surah\nthis form occurs ${occ === 1 ? 'once' : occ === 2 ? 'twice' : occ.toLocaleString('en') + ' times'} in the Quran`,
   },
 

@@ -27,6 +27,7 @@
     </button>
   </form>
   <div class="hright">
+    <nav id="dock" hidden></nav>
     <button id="btnMenu" class="hbtn" data-i18n-title="menuTitle"><span aria-hidden="true">✦</span> <span class="hl" data-i18n="menu">اهتماماتي</span></button>
     <button id="btnAbout" class="hbtn" data-i18n-title="about"><span aria-hidden="true">ⓘ</span> <span class="hl" data-i18n="about">عن مشكاة</span></button>
     <button id="themeBtn" class="icon" data-i18n-aria="themeLabel">☾</button>
@@ -35,7 +36,7 @@
 </header>
 <div id="status" aria-live="polite"></div>
 <!-- tool panels: ONE open at a time (drawer beside the galaxy on a computer, bottom sheet on a phone);
-     their dock of icon buttons sits at the top of the galaxy, under the search bar -->
+     their dock of icon buttons is in the top bar -->
 <div id="tray"></div>
 
 <main id="work">
@@ -45,7 +46,13 @@
       <h2 id="gTitle" class="sr" data-i18n="zGalaxy">المجرّة</h2>
       <canvas id="galaxy" aria-label="Quran galaxy"></canvas>
       <div id="tooltip" role="tooltip"></div>
-      <nav id="dock" hidden></nav>
+      <!-- camera: turn and tilt (click = one step, hold = continuous), in a corner far from the middle -->
+      <div id="gcam" role="group" data-i18n-aria="camera">
+        <button type="button" data-cam="up" data-i18n-title="camUp" data-i18n-aria="camUp">▲</button>
+        <button type="button" data-cam="left" data-i18n-title="camLeft" data-i18n-aria="camLeft">◀</button>
+        <button type="button" data-cam="right" data-i18n-title="camRight" data-i18n-aria="camRight">▶</button>
+        <button type="button" data-cam="down" data-i18n-title="camDown" data-i18n-aria="camDown">▼</button>
+      </div>
       <aside id="lampDock" aria-live="off">
         <div id="lampSlot"></div>
         <div id="lampRef"></div>

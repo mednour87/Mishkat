@@ -32,14 +32,17 @@ export const S = {
     kStats: 'إحصاءات', kVerses: 'آيات مقروءة', kWords: 'كلمات مقروءة', kSuras: 'سور أتممتها', kStreak: 'أيام متتالية', kSurasList: 'السور المكتملة (خضراء في المجرّة):',
     kIcs: 'تذكيرات في التقويم (.ics)', kIcsHelp: 'ملف تفتحه في تقويم هاتفك أو حاسوبك: تذكير في كل وقت من أوقاتك بوِرد ذلك اليوم.',
     kMarkHere: (r) => `علّم حتى الآية المفتوحة (${r}) كمقروءة`, kMarkHereQ: (r, n) => `تعليم كل الآيات من أول المصحف حتى ${r} (${arCount(n, AYAS)}) كمقروءة؟`, kStop: 'إلغاء الخطة', kStopQ: 'إلغاء الخطة؟ تبقى الآيات المقروءة محفوظة.', kGalaxy: 'أظهر السور المكتملة في المجرّة',
-    kAutoNote: 'تُحسب الآية مقروءة عند الاستماع إلى تلاوتها كاملة في المصحف، أو عند الضغط على «قرأته».',
+    kAutoNote: 'تُحسب الآية مقروءة عند الاستماع إلى تلاوتها كاملة، أو عند قراءتها بالتمرير في المصحف (تبقى عند سطر القراءة وقتًا كافيًا ثم تتجاوزها)، أو عند الضغط على «قرأته». يمكن تغيير ذلك في الإعدادات.',
     kIcsTitle: 'مشكاة — وِرد الختمة', kIcsPart: (p) => `${p.moment.label}: ${p.from === p.to ? 'صفحة ' + p.from : 'الصفحات ' + p.from + '–' + p.to} (اليوم ${p.day})`,
     // hijri
     hToday: 'اليوم', hConv: 'تحويل التاريخ', hToH: 'ميلادي ← هجري', hToG: 'هجري ← ميلادي', hDay: 'اليوم', hMonth: 'الشهر', hYear: 'السنة', hConvert: 'حوّل',
     hNoDay: 'هذا اليوم غير موجود في تقويم أم القرى.', hUpcoming: 'أيام فاضلة قادمة', hIn: (n) => n === 0 ? 'اليوم' : n === 1 ? 'غدًا' : n === 2 ? 'بعد يومين' : `بعد ${arCount(n, DAYS)}`, hOngoing: 'جارٍ الآن',
     hEvidence: 'الدليل', hVerses: 'من القرآن الكريم', hHadith: 'من السنة النبوية (HadeethEnc)', hGrade: 'الدرجة', hOpen: 'افتح الحديث في موسوعة الأحاديث النبوية',
     hNoEn: 'هذا الحديث غير متوفر بالإنجليزية في الموسوعة؛ نعرضه بالعربية.',
-    hNote: 'التاريخ محسوب بتقويم أم القرى في متصفحك. بداية الشهر تتبع رؤية الهلال التي تعلنها الجهات الرسمية في بلدك؛ يمكنك ضبط الفرق (± يومان) في الإعدادات.',
+    hNote: 'التاريخ محسوب بتقويم أم القرى في متصفحك. بداية الشهر تتبع رؤية الهلال التي تعلنها الجهات الرسمية في بلدك.',
+    hAdj: 'بداية الشهر في بلدك', hAdjHelp: 'إن بدأ الشهر عندكم قبل أم القرى أو بعده، اضبط الفرق هنا: يتغيّر التاريخ والتحويل والأيام القادمة معًا.',
+    hAdjN: (n) => n === 0 ? 'كما في أم القرى' : n === 1 ? 'بعده بيوم' : n === 2 ? 'بعده بيومين' : n === -1 ? 'قبله بيوم' : 'قبله بيومين',
+    hGreg: 'التاريخ الميلادي', hHij: 'التاريخ الهجري', hConvHelp: 'اختر تاريخًا في أحد الجانبين، فيظهر ما يقابله في الجانب الآخر.',
     hDisputed: 'لا تُدرج المناسبات المختلف في تاريخها أو في مشروعية الاحتفال بها.', hWhite: 'الأيام البيض القادمة', hWeekly: 'كل أسبوع',
     // links
     lIntro: 'مواقع من المرجعية العلمية للتحدي ومن مصادر مشكاة:',
@@ -47,7 +50,10 @@ export const S = {
     sHijri: 'فرق التقويم الهجري (أيام)', sHijriHelp: 'إذا بدأ الشهر في بلدك قبل أم القرى أو بعده.', sAuto: 'احسب الآية مقروءة عند سماع تلاوتها كاملة',
     sGalaxy: 'أظهر السور المكتملة في المجرّة', sData: 'بياناتك', sDataHelp: 'تُحفظ الإعدادات والختمة في متصفحك فقط، ولا تُرسل إلى أي خادم.',
     sExport: 'نزّل نسخة من بياناتك', sImport: 'استرجع نسخة', sReset: 'امسح كل بياناتك', sResetQ: 'مسح الإعدادات والختمة والآيات المقروءة من هذا المتصفح؟', sImported: 'تم استرجاع البيانات.', sBadFile: 'ملف غير صالح.',
-    langNote: 'اللغة والوضع الفاتح/الداكن من أعلى الصفحة.',
+    sDisplay: 'العرض', sLang: 'اللغة', sTheme: 'المظهر', sDark: 'داكن', sLight: 'فاتح', sNames: 'أسماء السور على المجرّة', sRotate: 'دوران المجرّة تلقائيًا',
+    sReading: 'القراءة والتلاوة', sSpeed: 'سرعة التلاوة', sFont: 'حجم خط المصحف', sSmaller: 'أصغر', sLarger: 'أكبر',
+    sScroll: 'احسب الآية مقروءة عند قراءتها بالتمرير (تبقى عند سطر القراءة وقتًا كافيًا ثم تتجاوزها)',
+    sKhatmaSec: 'الختمة', sOpenKhatma: 'افتح الختمة', sHijriSec: 'التقويم الهجري', sOpenHijri: 'افتح التقويم والتحويل',
   },
   en: {
     dock: 'Tools', khatma: 'Khatma', hijri: 'Hijri calendar', links: 'Useful links', settings: 'Settings', close: 'Close',
@@ -60,19 +66,25 @@ export const S = {
     kStats: 'Statistics', kVerses: 'Verses read', kWords: 'Words read', kSuras: 'Surahs completed', kStreak: 'Days in a row', kSurasList: 'Completed surahs (green on the galaxy):',
     kIcs: 'Calendar reminders (.ics)', kIcsHelp: 'A file to open in your phone or computer calendar: a reminder at each of your moments with that day’s portion.',
     kMarkHere: (r) => `Mark up to the open verse (${r}) as read`, kMarkHereQ: (r, n) => `Mark every verse from the start of the Mushaf up to ${r} (${n} verses) as read?`, kStop: 'Cancel the plan', kStopQ: 'Cancel the plan? The verses read stay saved.', kGalaxy: 'Show completed surahs on the galaxy',
-    kAutoNote: 'A verse counts as read when you listen to its full recitation in the Mushaf, or when you press “Done”.',
+    kAutoNote: 'A verse counts as read when you listen to its full recitation, when you read it by scrolling the Mushaf (it stays at the reading line long enough, then you scroll on), or when you press “Done”. This can be changed in Settings.',
     kIcsTitle: 'Mishkat — khatma portion', kIcsPart: (p) => `${p.moment.label}: ${p.from === p.to ? 'page ' + p.from : 'pages ' + p.from + '–' + p.to} (day ${p.day})`,
     hToday: 'Today', hConv: 'Convert a date', hToH: 'Gregorian → Hijri', hToG: 'Hijri → Gregorian', hDay: 'Day', hMonth: 'Month', hYear: 'Year', hConvert: 'Convert',
     hNoDay: 'This day does not exist in the Umm al-Qura calendar.', hUpcoming: 'Coming virtuous days', hIn: (n) => n === 0 ? 'today' : n === 1 ? 'tomorrow' : `in ${n} days`, hOngoing: 'now',
     hEvidence: 'Evidence', hVerses: 'From the Quran', hHadith: 'From the Sunnah (HadeethEnc)', hGrade: 'Grade', hOpen: 'Open the hadith in the Encyclopedia of Translated Hadiths',
     hNoEn: 'This hadith is not available in English in the encyclopedia; shown in Arabic.',
-    hNote: 'Dates are computed with the Umm al-Qura calendar of your browser. A month begins with the moon sighting announced by the authorities of your country; you can set the difference (± 2 days) in Settings.',
+    hNote: 'Dates are computed with the Umm al-Qura calendar of your browser. A month begins with the moon sighting announced by the authorities of your country.',
+    hAdj: 'Start of the month where you live', hAdjHelp: 'If the month starts earlier or later in your country than in Umm al-Qura, set the difference here: the date, the conversion and the coming days change together.',
+    hAdjN: (n) => n === 0 ? 'As in Umm al-Qura' : n > 0 ? `${n} day${n > 1 ? 's' : ''} later` : `${-n} day${n < -1 ? 's' : ''} earlier`,
+    hGreg: 'Gregorian date', hHij: 'Hijri date', hConvHelp: 'Choose a date on either side; the matching date appears on the other side.',
     hDisputed: 'Occasions whose date or celebration is disputed are not listed.', hWhite: 'Next white days', hWeekly: 'Every week',
     lIntro: 'Sites from the challenge’s scholarly reference pack and from Mishkat’s sources:',
     sHijri: 'Hijri calendar difference (days)', sHijriHelp: 'If the month starts earlier or later in your country than in Umm al-Qura.', sAuto: 'Count a verse as read when its recitation is heard to the end',
     sGalaxy: 'Show completed surahs on the galaxy', sData: 'Your data', sDataHelp: 'Settings and khatma are kept in this browser only, never sent to a server.',
     sExport: 'Download a copy of your data', sImport: 'Restore a copy', sReset: 'Erase all your data', sResetQ: 'Erase settings, khatma and read verses from this browser?', sImported: 'Data restored.', sBadFile: 'Invalid file.',
-    langNote: 'Language and light/dark mode are at the top of the page.',
+    sDisplay: 'Display', sLang: 'Language', sTheme: 'Theme', sDark: 'Dark', sLight: 'Light', sNames: 'Surah names on the galaxy', sRotate: 'Galaxy turns by itself',
+    sReading: 'Reading and recitation', sSpeed: 'Recitation speed', sFont: 'Mushaf text size', sSmaller: 'Smaller', sLarger: 'Larger',
+    sScroll: 'Count a verse as read when read by scrolling (it stays at the reading line long enough, then you scroll on)',
+    sKhatmaSec: 'Khatma', sOpenKhatma: 'Open the khatma', sHijriSec: 'Hijri calendar', sOpenHijri: 'Open the calendar and converter',
   },
 };
 
@@ -200,21 +212,26 @@ export function createToolPanels(ctx) {
     const evItem = (e) => `<li class="h-ev ${pick && pick.id === e.id ? 'hit' : ''}" data-ev="${e.id}"><details ${pick && pick.id === e.id ? 'open' : ''}>
         <summary><b>${esc(e[lg] || e.ar)}</b> <span class="h-when">${esc(e.ongoing ? t.hOngoing : t.hIn(e.inDays))}</span>
         <small>${esc(formatHijri({ y: e.hy, m: e.m, d: e.d }, lg))} · ${esc(dateStr(e.start))}</small></summary><div class="h-evid"></div></details></li>`;
-    body.innerHTML = `<div class="h-today"><div class="h-big">${esc(formatHijri(h, lg))}</div><div class="p-small">${esc(dateStr(now))}</div></div>
+    // order: today (with the local start of the month right there) → converter → coming days → notes
+    body.innerHTML = `<div class="h-today"><div class="h-big">${esc(formatHijri(h, lg))}</div><div class="p-small">${esc(dateStr(now))}</div>
+        <label class="h-adj">${esc(t.hAdj)} <select id="hAdj">${[-2, -1, 0, 1, 2].map(n => `<option value="${n}" ${n === adj ? 'selected' : ''}>${esc(t.hAdjN(n))}</option>`).join('')}</select></label></div>
+      <p class="p-small">${esc(t.hAdjHelp)}</p>
+      <section class="h-conv" aria-labelledby="hConvT"><h3 class="p-sub" id="hConvT">${esc(t.hConv)}</h3><p class="p-small">${esc(t.hConvHelp)}</p>
+        <div class="h-side"><div class="h-lab">${esc(t.hToH)}</div><input type="date" id="hG" value="${ymd(now)}" aria-label="${esc(t.hGreg)}"><output id="hGo" class="h-out"></output></div>
+        <div class="h-side"><div class="h-lab">${esc(t.hToG)}</div><div class="h-dmy"><input type="number" id="hD" min="1" max="30" value="${h.d}" aria-label="${esc(t.hDay)}">
+          <select id="hM" aria-label="${esc(t.hMonth)}">${MONTHS[lg === 'en' ? 'en' : 'ar'].map((m, k) => `<option value="${k + 1}" ${k + 1 === h.m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
+          <input type="number" id="hY" min="1300" max="1600" value="${h.y}" aria-label="${esc(t.hYear)}"></div><output id="hHo" class="h-out"></output></div></section>
       <h3 class="p-sub">${esc(t.hUpcoming)}</h3><ol class="h-list">${list.map(evItem).join('')}
         ${white ? `<li class="h-ev" data-ev="white"><details><summary><b>${esc(MONTHLY[lg] || MONTHLY.ar)}</b> <span class="h-when">${esc(t.hIn(white.inDays))}</span> <small>${esc(dateStr(white.start))}</small></summary><div class="h-evid"></div></details></li>` : ''}
         <li class="h-ev" data-ev="monthu"><details><summary><b>${esc(WEEKLY[lg] || WEEKLY.ar)}</b> <span class="h-when">${esc(t.hWeekly)}</span></summary><div class="h-evid"></div></details></li></ol>
-      <p class="p-small">${esc(t.hNote)} ${esc(t.hDisputed)}</p>
-      <h3 class="p-sub">${esc(t.hConv)}</h3>
-      <div class="p-row"><b>${esc(t.hToH)}</b> <input type="date" id="hG" value="${ymd(now)}"> <output id="hGo"></output></div>
-      <div class="p-row"><b>${esc(t.hToG)}</b> <input type="number" id="hD" min="1" max="30" value="${h.d}" aria-label="${esc(t.hDay)}">
-        <select id="hM" aria-label="${esc(t.hMonth)}">${MONTHS[lg === 'en' ? 'en' : 'ar'].map((m, k) => `<option value="${k + 1}" ${k + 1 === h.m ? 'selected' : ''}>${esc(m)}</option>`).join('')}</select>
-        <input type="number" id="hY" min="1300" max="1600" value="${h.y}" aria-label="${esc(t.hYear)}"> <output id="hHo"></output></div>`;
+      <p class="p-small">${esc(t.hNote)} ${esc(t.hDisputed)}</p>`;
     const g2h = () => { const v = body.querySelector('#hG').value; if (!v) return; const [y, m, d] = v.split('-').map(Number); body.querySelector('#hGo').textContent = formatHijri(toHijri(new Date(y, m - 1, d), adj), lg); };
     const h2g = () => { const g = toGregorian(+body.querySelector('#hY').value, +body.querySelector('#hM').value, +body.querySelector('#hD').value, adj); body.querySelector('#hHo').textContent = g ? dateStr(g) : t.hNoDay; };
     ['#hG'].forEach(s => body.querySelector(s).oninput = g2h);
     ['#hD', '#hM', '#hY'].forEach(s => body.querySelector(s).oninput = h2g);
     g2h(); h2g();
+    // the local start of the month: saved, and the whole panel follows at once
+    body.querySelector('#hAdj').onchange = (ev) => { ctx.prefs.hijriAdjust = +ev.target.value; ctx.save(); hijri(body, args); };
     // the evidence of a day loads when it is opened (hadiths verbatim, from the local HadeethEnc files)
     const evidence = async (li) => {
       const box = li.querySelector('.h-evid'); if (!box || box.dataset.done) return;
@@ -246,15 +263,40 @@ export function createToolPanels(ctx) {
   // ------------------------------------------------------------------ settings
   function settings(body) {
     const t = L(), P = ctx.prefs;
-    body.innerHTML = `<label class="p-row">${esc(t.sHijri)} <select id="sHj">${[-2, -1, 0, 1, 2].map(n => `<option value="${n}" ${n === (+P.hijriAdjust || 0) ? 'selected' : ''}>${n > 0 ? '+' : ''}${n}</option>`).join('')}</select></label>
-      <p class="p-small">${esc(t.sHijriHelp)}</p>
-      <label class="p-row"><input type="checkbox" id="sAuto" ${P.autoMark ? 'checked' : ''}> ${esc(t.sAuto)}</label>
-      <label class="p-row"><input type="checkbox" id="sGal" ${P.showReadOnGalaxy ? 'checked' : ''}> ${esc(t.sGalaxy)}</label>
-      <p class="p-small">${esc(t.langNote)}</p>
-      <h3 class="p-sub">${esc(t.sData)}</h3><p class="p-small">${esc(t.sDataHelp)}</p>
-      <div class="k-btns"><button type="button" class="mini" id="sExp">⤓ ${esc(t.sExport)}</button>
-      <label class="mini file">${esc(t.sImport)}<input type="file" id="sImp" accept="application/json,.json" hidden></label>
-      <button type="button" class="mini danger" id="sRst">${esc(t.sReset)}</button></div><p id="sMsg" class="p-small" aria-live="polite"></p>`;
+    // sections: display · reading and recitation · khatma · Hijri calendar · your data (the page's own controls
+    // through ctx.ui: language, theme, galaxy, recitation speed, Mushaf text size)
+    const U = ctx.ui, lg = ctx.lang(), sec = (title, html) => `<section class="s-sec"><h3 class="p-sub">${esc(title)}</h3>${html}</section>`;
+    const seg = (id, items, cur) => `<div class="seg" role="group" id="${id}">${items.map(([v, label]) => `<button type="button" data-v="${v}" aria-pressed="${v === cur}">${esc(label)}</button>`).join('')}</div>`;
+    const check = (id, on, label) => `<label class="p-row"><input type="checkbox" id="${id}" ${on ? 'checked' : ''}> ${esc(label)}</label>`;
+    body.innerHTML = (U ? sec(t.sDisplay,
+        `<div class="s-line"><span>${esc(t.sLang)}</span>${seg('sLang', [['ar', 'العربية'], ['en', 'English']], lg)}</div>
+        <div class="s-line"><span>${esc(t.sTheme)}</span>${seg('sTheme', [['dark', t.sDark], ['light', t.sLight]], U.theme())}</div>
+        ${check('sNames', U.names(), t.sNames)}${check('sRot', U.rotate(), t.sRotate)}`)
+      + sec(t.sReading,
+        `<div class="s-line"><span>${esc(t.sSpeed)}</span>${seg('sSpeed', [0.75, 1, 1.25, 1.5].map(x => [String(x), '×' + x]), String(U.speed()))}</div>
+        <div class="s-line"><span>${esc(t.sFont)}</span><div class="seg" role="group"><button type="button" id="sFm">A− ${esc(t.sSmaller)}</button><button type="button" id="sFp">A+ ${esc(t.sLarger)}</button></div></div>
+        ${check('sAuto', P.autoMark, t.sAuto)}${check('sScroll', P.scrollMark, t.sScroll)}`) : sec(t.sReading, check('sAuto', P.autoMark, t.sAuto) + check('sScroll', P.scrollMark, t.sScroll)))
+      + sec(t.sKhatmaSec, `${check('sGal', P.showReadOnGalaxy, t.sGalaxy)}${U ? `<button type="button" class="mini gold" id="sGoK">${esc(t.sOpenKhatma)}</button>` : ''}`)
+      + sec(t.sHijriSec, `<label class="p-row">${esc(t.hAdj)} <select id="sHj">${[-2, -1, 0, 1, 2].map(n => `<option value="${n}" ${n === (+P.hijriAdjust || 0) ? 'selected' : ''}>${esc(t.hAdjN(n))}</option>`).join('')}</select></label>
+        <p class="p-small">${esc(t.sHijriHelp)}</p>${U ? `<button type="button" class="mini gold" id="sGoH">${esc(t.sOpenHijri)}</button>` : ''}`)
+      + sec(t.sData, `<p class="p-small">${esc(t.sDataHelp)}</p>
+        <div class="k-btns"><button type="button" class="mini" id="sExp">⤓ ${esc(t.sExport)}</button>
+        <label class="mini file">${esc(t.sImport)}<input type="file" id="sImp" accept="application/json,.json" hidden></label>
+        <button type="button" class="mini danger" id="sRst">${esc(t.sReset)}</button></div><p id="sMsg" class="p-small" aria-live="polite"></p>`);
+    const $b = (s) => body.querySelector(s);
+    const segOn = (id, fn) => { const g = $b('#' + id); if (g) g.querySelectorAll('[data-v]').forEach(b => b.onclick = () => { g.querySelectorAll('[data-v]').forEach(x => x.setAttribute('aria-pressed', x === b)); fn(b.dataset.v); }); };
+    if (U) {
+      segOn('sLang', (v) => U.setLang(v));                 // the page redraws this panel in the new language
+      segOn('sTheme', (v) => U.setTheme(v));
+      segOn('sSpeed', (v) => U.setSpeed(+v));
+      $b('#sNames').onchange = (ev) => U.setNames(ev.target.checked);
+      $b('#sRot').onchange = (ev) => U.setRotate(ev.target.checked);
+      $b('#sFm').onclick = () => U.font(-0.1);
+      $b('#sFp').onclick = () => U.font(0.1);
+      $b('#sGoK').onclick = () => U.open('khatma');
+      $b('#sGoH').onclick = () => U.open('hijri');
+    }
+    $b('#sScroll').onchange = (ev) => { P.scrollMark = ev.target.checked; ctx.save(); };
     body.querySelector('#sHj').onchange = (ev) => { P.hijriAdjust = +ev.target.value; ctx.save(); };
     body.querySelector('#sAuto').onchange = (ev) => { P.autoMark = ev.target.checked; ctx.save(); };
     body.querySelector('#sGal').onchange = (ev) => { P.showReadOnGalaxy = ev.target.checked; ctx.save(); ctx.onReadChange(); };

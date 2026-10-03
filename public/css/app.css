@@ -100,7 +100,7 @@ body.reciting #lampDock { filter: drop-shadow(0 0 40px rgba(255, 200, 90, .6)); 
 #legendBox i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; box-shadow: 0 0 8px currentColor; }
 #viewNote { position: absolute; top: 10px; inset-inline: 12px; margin-inline: auto; max-width: 560px; z-index: 4; background: rgba(10, 14, 24, .9);
   border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; font-size: 12.5px; line-height: 1.6; }
-#tooltip { position: fixed; pointer-events: none; z-index: 12; background: rgba(8, 11, 20, .94); border: 1px solid rgba(255, 214, 107, .35); border-radius: 10px;
+#tooltip { position: absolute; pointer-events: none; z-index: 12; background: rgba(8, 11, 20, .94); border: 1px solid rgba(255, 214, 107, .35); border-radius: 10px;
   padding: 6px 10px; font-size: 13px; display: none; max-width: 260px; }
 #tooltip .w { font-family: var(--quran); font-size: 24px; color: var(--gold); text-align: center; direction: rtl; }
 
@@ -522,7 +522,7 @@ html[data-theme=light] dialog { background: #fffdf8; color: #1d2433; }
   body[data-mode=answers] #work { grid-template-columns: minmax(0, 1fr) min(900px, 55vw); }
   body[data-mode=answers] .col-side { grid-template-rows: minmax(0, 1fr) 0 0; }
   body[data-mode=answers] #tzone, body[data-mode=answers] #splitSide { visibility: hidden; border: 0; }
-  body[data-mode=study] #work { grid-template-columns: minmax(0, 1fr) clamp(370px, 35vw, 600px); }
+  body[data-mode=study] #work { grid-template-columns: minmax(0, 1fr) clamp(300px, 27vw, 450px); }
   body[data-mode=study] .col-side { grid-template-rows: auto 8px minmax(0, 1fr); }
   body[data-mode=study] #splitSide { visibility: hidden; }
   body[data-mode=study].ans-open .col-side, body[data-mode=study].ans-peek .col-side { grid-template-rows: minmax(0, 1fr) 8px auto; }
@@ -727,22 +727,70 @@ html[data-theme=light] .brief { background: #fffaf0; }
 .crisis-help { margin: 8px 0; padding: 10px 12px; border-radius: 10px; background: rgba(94, 230, 160, .1); border: 1px solid rgba(94, 230, 160, .45); font-weight: 600; }
 .crisis-help a { color: #5EE6A0; }
 
+/* Hijri panel: today with the local start of the month, then the converter (two sides) */
+.h-adj { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px; margin-top: 8px; font-size: 12.5px; color: var(--mut); }
+.h-conv { margin: 10px 0 4px; padding: 8px 10px 10px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); }
+.h-conv .p-sub { margin-top: 2px; }
+.h-side { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; padding: 8px 0; border-top: 1px dashed var(--line); }
+.h-side:first-of-type { border-top: 0; }
+.h-lab { font-size: 12.5px; font-weight: 600; color: var(--gold); }
+.h-dmy { display: flex; gap: 6px; flex-wrap: wrap; }
+.h-out { display: block; font-family: 'Amiri', var(--ui); font-size: 18px; color: var(--txt); min-height: 1.4em; padding: 2px 8px; border-inline-start: 3px solid rgba(255, 214, 107, .6); }
+/* Settings panel: sections, one line per setting, segmented choices */
+.s-sec { padding: 4px 0 10px; border-bottom: 1px solid var(--line); }
+.s-sec:last-child { border-bottom: 0; }
+.s-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 8px 0; }
+.s-sec label.p-row, .p-body label.p-row:has(input[type=checkbox]) { flex-wrap: nowrap; align-items: flex-start; }
+.p-body label.p-row input[type=checkbox] { flex: none; margin-top: 4px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: none; color: var(--txt); padding: 5px 12px; font-size: 12.5px; min-height: 32px; }
+.seg button + button { border-inline-start: 1px solid var(--line); }
+.seg button[aria-pressed=true] { background: rgba(255, 214, 107, .2); color: var(--gold); }
+
+/* reading by scrolling: the verse at the reading line glows as if it were recited */
+.mushaf .v.lit { background: rgba(255, 214, 107, .16); color: #fff3cf; border-radius: 8px; box-shadow: 0 0 0 2px rgba(255, 214, 107, .12); transition: background .3s; }
+html[data-theme=light] .mushaf .v.lit { background: rgba(168, 111, 12, .16); color: #1a1205; }
+
+/* camera buttons: a small cross in the top corner (physical directions, so always laid out left-to-right) */
+/* (opposite the lamp; physical sides: «direction: ltr» below would otherwise turn inline-end into the right in Arabic) */
+html[dir=rtl] #gcam { left: 8px; right: auto; }
+html[dir=ltr] #gcam { right: 8px; left: auto; }
+#gcam { position: absolute; top: 8px; z-index: 4; direction: ltr; display: grid;
+  grid-template-columns: repeat(3, 26px); grid-template-rows: repeat(3, 26px); gap: 2px; opacity: .72; transition: opacity .2s; }
+#gcam:hover, #gcam:focus-within { opacity: 1; }
+#gcam button { width: 26px; height: 26px; padding: 0; border-radius: 7px; border: 1px solid var(--line); background: rgba(10, 14, 24, .72);
+  color: #dfe5f1; font-size: 10px; line-height: 1; display: grid; place-items: center; touch-action: none; user-select: none; }
+#gcam button:hover { color: var(--gold); border-color: rgba(255, 214, 107, .5); }
+#gcam [data-cam=up] { grid-area: 1 / 2; } #gcam [data-cam=left] { grid-area: 2 / 1; }
+#gcam [data-cam=right] { grid-area: 2 / 3; } #gcam [data-cam=down] { grid-area: 3 / 2; }
+body.reciting #gcam { opacity: .4; }
+@media (max-width: 860px) { #gcam { top: 6px; grid-template-columns: repeat(3, 24px); grid-template-rows: repeat(3, 24px); } #gcam button { width: 24px; height: 24px; } }
+
+/* compact reading bar under the galaxy (author's request): smaller controls, smaller Mushaf text by default */
+.rd-head { padding: 5px 10px; gap: 4px; }
+.rd-ctrl { gap: 4px; }
+.rd-ctrl .btn, .rd-ctrl .btn.play { min-height: 30px; padding: 3px 8px; font-size: 12px; min-width: 0; border-radius: 8px; }
+.rd-ctrl .icon-b, .rd-ctrl .icon-b.sm { width: 30px; font-size: 14px; }
+.rd-ctrl .rep select, .rd-row select { font-size: 12.5px; }
+.rd-row { gap: 6px; font-size: 12.5px; }
+.rd-row .mini, .rd-row .icon { min-height: 28px; height: 28px; }
+.mushaf { font-size: calc(21px * var(--qs)); }
+.mushaf.en .ayah { font-size: calc(21px * var(--qs)); }
+
 /* ---------------------------------------------------------------- tools: dock + exclusive panels (T060)
-   The dock floats under the search bar; ONE panel at a time: a drawer over the side column on a computer
+   The dock is a group of icons in the top bar; ONE panel at a time: a drawer over the side column on a computer
    (the galaxy stays visible), a bottom sheet on a phone. Height/opacity animation from js/panels.js. */
-#dock { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); z-index: 6; display: flex; gap: 6px; padding: 4px;
-  background: rgba(10, 14, 24, .8); border: 1px solid rgba(255, 214, 107, .22); border-radius: 999px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-#dock button { width: 40px; height: 40px; border-radius: 50%; border: 1px solid transparent; background: none; color: var(--gold); display: grid; place-items: center; padding: 0; }
+#dock { display: flex; gap: 2px; padding: 2px; background: rgba(255, 255, 255, .05); border: 1px solid var(--line); border-radius: 999px; }
+#dock button { width: 34px; height: 34px; border-radius: 50%; border: 1px solid transparent; background: none; color: var(--gold); display: grid; place-items: center; padding: 0; }
+#dock button svg { width: 19px; height: 19px; }
 #dock button:hover { background: rgba(255, 214, 107, .1); }
 #dock button[aria-expanded=true] { background: rgba(255, 214, 107, .2); border-color: rgba(255, 214, 107, .55); }
-#dock:not([hidden]) ~ #viewNote { top: 62px; }
-body:has(#dock:not([hidden])) #status { top: calc(var(--head) + 64px); }   /* the passing status line stays below the dock */
 #tray { position: fixed; z-index: 12; top: calc(var(--head) + var(--gap)); bottom: var(--gap); inset-inline-end: var(--gap); width: var(--side);
   display: flex; flex-direction: column; pointer-events: none; }
 body[data-mode=home] #tray { bottom: 60px; }                 /* the galaxy toolbar stays reachable */
 @media (min-width: 861px) {                                   /* exactly over the side column of each moment */
   body[data-mode=answers] #tray { width: min(900px, 55vw); }
-  body[data-mode=study] #tray { width: clamp(370px, 35vw, 600px); }
+  body[data-mode=study] #tray { width: clamp(300px, 27vw, 450px); }
 }
 body[data-panel] #suggest, body[data-panel] #sgOpen { display: none !important; }
 .panel { pointer-events: auto; display: flex; flex-direction: column; max-height: 100%; min-height: 0; overflow: hidden; border: 1px solid rgba(255, 214, 107, .25);
@@ -803,12 +851,18 @@ body[data-panel] #suggest, body[data-panel] #sgOpen { display: none !important; 
 #tray { transform: translateZ(0); }
 #tray .panel { background: rgba(11, 15, 26, .97); backdrop-filter: none; -webkit-backdrop-filter: none; }
 html[data-theme=light] #tray .panel { background: rgba(251, 248, 241, .98); }
-html[data-theme=light] #dock { background: rgba(251, 248, 241, .92); }
+html[data-theme=light] #dock { background: #fff; }
 html[data-theme=light] .p-body select option { background: #fff; color: #1d2433; }
 @media (max-width: 860px) {
-  #dock { top: 6px; gap: 2px; padding: 3px; }
-  #dock button { width: 36px; height: 36px; }
-  #dock:not([hidden]) ~ #viewNote { top: 54px; }
+  #dock { gap: 0; padding: 1px; }
+  #dock button { width: 28px; height: 28px; }
+  #dock button svg { width: 16px; height: 16px; }
+  /* the top bar holds the tools too: logo without its name, tighter buttons (it overflowed by 66 px at 375 px) */
+  .brand .bt { display: none; }
+  .hright { gap: 4px; }
+  .hbtn { padding: 5px 8px; min-height: 32px; }
+  #themeBtn { width: 30px; height: 30px; }
+  .langs { padding: 2px; } .langs button { padding: 4px 7px; }
   #tray, body[data-mode=home] #tray { top: auto; bottom: 0; inset-inline: 0; width: auto; max-height: 74vh; z-index: 13; }
   .panel { border-radius: 18px 18px 0 0; border-bottom: 0; }
   .p-body { padding: 10px 14px calc(16px + env(safe-area-inset-bottom)); }

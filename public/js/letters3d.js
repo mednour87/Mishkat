@@ -31,11 +31,12 @@ async function glyphPath() {
       cols.get(b).push([x, y]);
     }
   }
-  // right-to-left bands, serpentine inside each band → a continuous sweep
+  // right-to-left bands, each read from top to bottom (always the same way: an up-and-down serpentine made the
+  // view go back and forth while reading)
   const bands = [...cols.keys()].sort((a, b) => b - a);
   const pts = [];
-  bands.forEach((b, k) => {
-    const list = cols.get(b).sort((p, q) => (k % 2 ? q[1] - p[1] : p[1] - q[1]) || (q[0] - p[0]));
+  bands.forEach((b) => {
+    const list = cols.get(b).sort((p, q) => (p[1] - q[1]) || (q[0] - p[0]));
     for (const p of list) pts.push(p);
   });
   const s = 1100 / W;

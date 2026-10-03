@@ -142,37 +142,55 @@ export function suraSequence(order, { suras, count, letters }) {
 
 // ---------------------------------------------------------------- shapes
 
-// galaxy — same spiral skeleton as build_data.py spiral_layout (radius 22 + 540·√t, 2.8 turns, two arms),
-// drawn as a real galaxy: each arm a smooth luminous band whose width grows
-// outward (no more string of separate clumps, one per verse), a thick bulge at the core thinning to a flat
-// disc at the rim, and small gaps between surahs. The words of a verse stay together (a small common offset).
+// galaxy — the spiral of build_data.py spiral_layout (radius 22 + 540·√t, 2.8 turns, two arms), drawn as a real
+// galaxy and laid out for READING with a stable eye:
+//  · each surah lies on one arm (the one that is behind), each arm has its own progress (its surahs back to back),
+//    so both arms are continuous (no gap at every other surah) and a surah is read along one arm, outward;
+//  · a verse is a short streak ALONG the arm, in its own lane across the arm: its words follow one another in
+//    reading order (no random scatter, the recited word moves steadily forward), the next verse just after it;
+//  · a thick bulge at the core thinning to a flat disc at the rim.
 function galaxy(N, seq, st, wordVerse, seed) {
   const rand = mulberry32(seed), g = gaussian(rand);
-  const out = new Float32Array(N * 3);
-  const GAP = 90;
-  const total = N + GAP * seq.length;
-  const vOff = new Map();
-  let virt = 0;
-  seq.forEach((s) => {
-    const ws = st.bySura[s];
-    for (let j = 0; j < ws.length; j++, virt++) {
-      // the VERSES alternate between the two arms: every surah lies on both arms at its radius, so both arms are
-      // continuous (when whole surahs alternated, each arm was a string of beads with a gap at every other surah)
-      const i = ws[j], t = virt / total, vv = wordVerse[i], arm = vv % 2;
-      let o = vOff.get(vv);
-      if (!o) { const spread = 2 + 7 * t; o = [g() * spread, g() * spread]; vOff.set(vv, o); }
-      const radius = 22 + 540 * Math.sqrt(t);
-      const theta = 5.6 * Math.PI * Math.sqrt(t) + arm * Math.PI;
-      const across = (3.5 + 24 * t) * g();                 // across the arm (radial on this tight spiral)
-      const along = (2 + 10 * t) * g() / Math.max(60, radius); // along the arm (a small angle)
-      const r = radius + across, th = theta + along;
-      out[i * 3] = r * Math.cos(th) + o[0];
-      out[i * 3 + 1] = r * Math.sin(th) + o[1];
-      out[i * 3 + 2] = (1.6 + 26 * (1 - t) ** 3) * g();   // bulge at the core, thin disc at the rim
+  // spine: for each word, the point of its arm's middle curve at its progress — the reading camera follows it
+  // (galaxy.js), so the view glides along the spiral while the words keep the arm's width and glow
+  const out = new Float32Array(N * 3), spine = new Float32Array(N * 3);
+  const GAP = 60;
+  // each surah goes to the arm that is behind: both arms advance together, so the surahs keep the order of the
+  // sequence from the core to the rim on the whole disc, and each arm stays continuous
+  const arms = [[], []], fill = [0, 0];
+  for (const s of seq) { const a = fill[0] <= fill[1] ? 0 : 1; arms[a].push(s); fill[a] += st.bySura[s].length + GAP; }
+  arms.forEach((list, arm) => {
+    const total = list.reduce((a, s) => a + st.bySura[s].length + GAP, 0);
+    let virt = 0;
+    const phase = arm * 1.7;
+    for (const s of list) {
+      const ws = st.bySura[s];
+      let cur = -1, lane = 0, zv = 0;
+      for (let j = 0; j < ws.length; j++, virt++) {
+        const i = ws[j], vv = wordVerse[i], t = virt / total;
+        if (vv !== cur) {
+          // the verse's lane follows a smooth wave ALONG the arm (3 gentle undulations from core to rim, the same
+          // for any order of the surahs): the next verse is always beside the previous one, and the arm's edge is
+          // smooth (a wave counted in verses went jagged where the verses are short)
+          cur = vv;
+          lane = (2 + 10 * t) * Math.sin(6 * Math.PI * Math.sqrt(t) + phase);
+          zv = (1.4 + 22 * (1 - t) ** 3) * Math.sin(4 * Math.PI * Math.sqrt(t) + phase);
+        }
+        // every word at its OWN place along the arm (its own progress t): the words, and the verses after them,
+        // only ever move forward along the spiral — a verse never starts behind the end of the previous one;
+        // a scatter around the lane gives the arm its width and glow (the camera follows the spine, not the word)
+        const radius = 22 + 540 * Math.sqrt(t), th = 5.6 * Math.PI * Math.sqrt(t) + arm * Math.PI;
+        const r = radius + lane + (2 + 13 * t) * g();
+        out[i * 3] = r * Math.cos(th);
+        out[i * 3 + 1] = r * Math.sin(th);
+        out[i * 3 + 2] = zv + (0.6 + 9 * (1 - t) ** 3) * g();
+        // the spine keeps the smooth parts (the verse's lane and height, which weave slowly), not the scatter
+        spine[i * 3] = (radius + lane) * Math.cos(th); spine[i * 3 + 1] = (radius + lane) * Math.sin(th); spine[i * 3 + 2] = zv;
+      }
+      virt += GAP;
     }
-    virt += GAP;
   });
-  return { positions: out, view: { pos: [0, -860, 640], target: [0, -60, 0] } };
+  return { positions: out, view: { pos: [0, -860, 640], target: [0, -60, 0] }, arms, spine };
 }
 
 // rose — concentric rings (IT5/IT6), ring k at a radius growing with its rank;
@@ -235,10 +253,11 @@ function dome(N, seq, st, wordVerse) {
 }
 
 // petals — sunburst sectors (IT5 petals, I6 sunburst): angular width ∝ words, clockwise
-// from 12 o'clock; inside its sector a surah moves outward inside a leaf-shaped envelope, its words spread
-// evenly across the leaf (a stratified scatter — no more sinusoidal hatching, which drew wavy wires).
+// from 12 o'clock; inside its sector a surah moves outward inside a leaf-shaped envelope, its words spread evenly
+// across the leaf (a low-discrepancy fill). The reading camera follows the leaf's MIDLINE (the spine) at the
+// recited word's radius: it moves straight outward, never back and forth across the leaf.
 function petals(N, seq, st) {
-  const out = new Float32Array(N * 3);
+  const out = new Float32Array(N * 3), spine = new Float32Array(N * 3);
   const R0 = 30, SPAN = 530, GAPF = 0.07, H = 240;
   const usable = TAU * (1 - GAPF), gapA = (TAU * GAPF) / seq.length;
   let acc = gapA / 2;
@@ -252,14 +271,16 @@ function petals(N, seq, st) {
       const across = ((j * 0.6180339887 + 0.5 * jit(i)) % 1 + 1) % 1 * 2 - 1;
       const a = mid + half * 0.92 * env * across;
       const rf = Math.pow(f, 0.86), r = R0 + SPAN * rf + jit(i) * 1.6;
-      const th = Math.PI / 2 - a;
+      const th = Math.PI / 2 - a, z = H * Math.pow(rf, 1.8) + (k % 2 ? 3 : -3) - 60;
       out[i * 3] = r * Math.cos(th);
       out[i * 3 + 1] = r * Math.sin(th);
-      out[i * 3 + 2] = H * Math.pow(rf, 1.8) + (k % 2 ? 3 : -3) + jit2(i) * 2 - 60;
+      out[i * 3 + 2] = z + jit2(i) * 2;
+      const rs = R0 + SPAN * rf, ts = Math.PI / 2 - mid;                 // the leaf's midline at this radius
+      spine[i * 3] = rs * Math.cos(ts); spine[i * 3 + 1] = rs * Math.sin(ts); spine[i * 3 + 2] = z;
     }
     acc += width + gapA;
   });
-  return { positions: out, view: { pos: [0, -800, 740], target: [0, -40, 60] } };
+  return { positions: out, view: { pos: [0, -800, 740], target: [0, -40, 60] }, spine };
 }
 
 // ---------------------------------------------------------------- notes
@@ -319,5 +340,5 @@ export async function buildLayout({ shape = 'galaxy', order = 'mushaf', wordVers
   } else if (shape === 'rose') res = rose(N, seq, st, wordVerse);
   else if (shape === 'dome') res = dome(N, seq, st, wordVerse);
   else res = petals(N, seq, st);
-  return { positions: res.positions, view: res.view, sequence: seq.slice(), note: makeNote(shape, order, seq, suras) };
+  return { positions: res.positions, view: res.view, sequence: seq.slice(), note: makeNote(shape, order, seq, suras), ...(res.arms ? { arms: res.arms } : {}), ...(res.spine ? { spine: res.spine } : {}) };
 }
