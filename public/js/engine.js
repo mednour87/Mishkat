@@ -424,14 +424,21 @@ const GUARD = [
   ['ruling', /(^|\s)و?ما\s+حكم|حكم\s+(ال)?\S+\s+في\s+الإسلام|هل\s+(يجوز|يحل|يحرم|يصح|تجوز|تصح|يباح)|هل\s+\S*\s*(حرام|حلال|مكروه|جائز|بدعة)|(حرام|حلال)\s+(أم|او|أو)\s+(حلال|حرام)|فتو[ىي]|أفتوني|ما\s+الحكم|\bfatwa\b|\bruling (on|about|of)\b|\bis (it|this|that|\w+ing|\w+) (\w+ )?(halal|haram|permissible|allowed|forbidden|lawful|unlawful|sinful|a sin)\b|\b(halal|haram) or (halal|haram)\b|\bam i allowed\b|\best[ -](ce|il) (que )?(\w+ )?(permis|licite|illicite|haram|halal|interdit|autoris[eé]|un p[eé]ch[eé])\b|\bai[ -]je le droit\b|\bavis juridique\b|\b(est|sont|serait)[- ](il |elle )?(haram|halal|licite|illicite|interdite?s?|permise?s?|autoris[eé]e?s?)\b|\b(is|are) (it |this |that )?(halal|haram)\b/i],
   ['takfir', /هل\s+(ال)?\S+\s+(كفار|كافر|كافرة|مرتد|مرتدون|مشركون|مشرك)\s*[؟?]?$|\bis\s+\S+(\s+\S+)?\s+(a\s+)?(kafir|kaffir|infidel|apostate|disbeliever)s?\b|\bare\s+\S+(\s+\S+)?\s+(kafirs?|infidels?|apostates?|disbelievers)\b|\best[- ]ce que\s+.{1,40}\s+(est|sont)\s+(un |des )?(mécréants?|mecreants?|apostats?|kafirs?)\b/i],
   ['violence', /كيف\s+(اقتل|أقتل|نقتل|أفجر|افجر|اصنع\s+قنبلة|أصنع\s+قنبلة)|\bhow (to|do i|can i) (kill|murder|attack|make a bomb|build a bomb)\b|\bcomment (tuer|fabriquer une bombe|attaquer)\b/i],
-  ['personal', /(زوجي|زوجتي|طليقي|طليقتي|أبي|أمي|ابني|ابنتي|مديري)\s+(يضرب|تضرب|يمنع|تمنع|تمنعني|يمنعني|طلق|يريد|تريد|لا\s+يصلي|لا\s+تصلي|ترفض|يرفض)|هل\s+(أطلق|أترك|أتزوج|أسامح)|ماذا\s+أفعل|\bshould i\b|(?<!\bhow )\bcan i\b|\bwhat should i do\b|\bmy (husband|wife|father|mother|son|daughter|boss)\b|\bdois[ -]je\b|\bpuis[ -]je\b|\bque dois[ -]je faire\b|\bmon (mari|p[eè]re|fils|patron)\b|\bma (femme|m[eè]re|fille)\b/i],
+  ['ruling', /^\s*(\S+\s+){1,3}(halal|haram)(\s+or\s+(halal|haram))?\s*\??\s*$/im],
+  // «can i pray sitting», "may i fast while travelling": a question of status, not a personal case
+  ['ruling', /\b(can|may) i (pray|fast|eat|drink|marry|wear|shave|smoke|listen|celebrate|combine|shorten|break my fast)\b/i],
+  // E3: «personal» only when a decision about a relative, spouse or employer is asked — never
+  // «ماذا أفعل إذا شعرت بالحزن», "should i be patient", "what should i read when i feel anxious"
+  ['personal', /(زوجي|زوجتي|طليقي|طليقتي|أبي|أمي|ابني|ابنتي|مديري|أخي|أختي)\s+(يضرب|تضرب|يمنع|تمنع|تمنعني|يمنعني|طلق|طلقني|يريد|تريد|لا\s+يصلي|لا\s+تصلي|ترفض|يرفض|يظلمني|تظلمني|يهددني|تهددني|خانني|خانتني)|هل\s+(أطلق|أترك|أتزوج|أسامح|أخلع)\s|ماذا\s+أفعل\s+(مع|في|بـ?)\s*(زوجي|زوجتي|أبي|أمي|ابني|ابنتي|مديري|أخي|أختي|أهلي|طليقي|طليقتي)|\bshould i (divorce|marry|leave|forgive|cut off|report|quit|sue)\b|\bwhat should i do (about|with) my (husband|wife|father|mother|son|daughter|boss|family|brother|sister|parents)\b|\bmy (husband|wife|father|mother|son|daughter|boss|brother|sister) (hits|beats|forbids|wants|refuses|does not pray|doesn t pray|cheated|cheats|abuses|threatens)\b/i],
 ];
 // + spoken dialect forms (tested on normAr text): «وش حكم…», «حرام ولا حلال», «وش اسوي», «حلمت…»
 const GUARD_EXTRA = [
   ['ruling', /^هل\s+.{1,60}\s(حرام|حلال|مكروه|مكروهة|جايز|جايزة|بدعة|مباح|مباحة|واجب|واجبة|فرض|شرك)\s*$/],
+  // E2: a status word without «هل» («الموسيقى حرام؟», «التدخين حلال ولا حرام», «الاحتفال بالمولد بدعة»)
+  ['ruling', /^(\S+\s+){1,3}(حرام|حلال|مكروه|مكروهة|جايز|جايزة|جائز|جائزة|مباح|مباحة|بدعة)(\s+(ولا|والا|او|ام)\s+(حرام|حلال))?\s*[؟?]?$/],
   ['ruling', /(^|\s)(ايش|وش|شو|شنو|ايه|اش)\s+(حكم|الحكم)(\s|$)|(حرام|حلال)\s+(ولا|والا|او|ام|وله)\s+(حلال|حرام)|(^|\s)(يجوز|يحل|يحرم)\s+(لي|اني|نسوي|اسوي)(\s|$)/],
   ['dream', /(^|\s)(حلمت|حلمتو|احلم|شفت\s+في\s+(المنام|منامي|الحلم|حلمي)|رايت\s+في\s+(المنام|منامي|حلمي)|رايت\s+حلما?|تفسير\s+(حلمي|منامي|المنام|الاحلام|رويا|الرويا))(\s|$)/],
-  ['personal', /(^|\s)(وش|ايش|شو|شنو|ماذا)\s+(اسوي|افعل|اعمل|ندير|نعمل|بعمل|نسوي|اتصرف)(\s|$)|(^|\s)(اعمل|نعمل|اسوي)\s+(ايه|اي|ايش|وش)(\s|$)|(^|\s)(زوجي|زوجتي|جوزي|مراتي|ابوي|ابويا|امي|اخوي|اختي|ولدي|بنتي|مديري)\s+(ما|مش|مو|لا)\s+\S+|(^|\s)(يضربني|تضربني|يهددني|تهددني|يظلمني|تظلمني|طلقني|خانني|خانتني)(\s|$)/],
+  ['personal', /(^|\s)(وش|ايش|شو|شنو|ماذا)\s+(اسوي|افعل|اعمل|ندير|نعمل|بعمل|نسوي|اتصرف)\s+(مع|في|ب)\s*(زوجي|زوجتي|جوزي|مراتي|ابوي|ابويا|ابي|امي|اخوي|اختي|ولدي|بنتي|ابني|ابنتي|مديري|اهلي)(\s|$)|(^|\s)(زوجي|زوجتي|جوزي|مراتي|ابوي|ابويا|امي|اخوي|اختي|ولدي|بنتي|مديري)\s+(ما|مش|مو|لا)\s+\S+|(^|\s)(يضربني|تضربني|يهددني|تهددني|يظلمني|تظلمني|طلقني|خانني|خانتني)(\s|$)/],
   ['takfir', /^هل\s+(اللي|الذي|من|الي)\s+(ما|لا|مش)\s+\S+\s+(كافر|كفار|مرتد|مشرك)\s*$/],
 ];
 export function guardCheck(q) {
@@ -861,7 +868,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const all = groups.map((_, gi) => gi);
     let segs = [all];
     if (segments && qtoks.length > 1) {
-      const parts = lang === 'ar' ? normAr(q).split(/ و (?=S)| (?=وال)/) : normLatin(q).split(/ (?:and|or) /);
+      const parts = lang === 'ar' ? normAr(q).split(/ و (?=\S)| (?=وال)/) : normLatin(q).split(/ (?:and|or) /);
       if (parts.length > 1) {
         segs = parts.map(p => { const s = new Set(tokens(p, lang)); return all.filter(gi => s.has(qtoks[gi])); }).filter(x => x.length);
         if (!segs.length) segs = [all];
@@ -1315,7 +1322,9 @@ export function createEngine({ core, searchAr, sources = {} }) {
   // pack). Each sentence keeps its verse and source; a sentence must contain a word of the question
   // (or of the AI's search keywords), except the first one of the first verse. Nothing is generated.
   function briefOf(res) {
-    if (!['topic', 'term'].includes(res.type) || !['ai', 'index', 'context'].includes(res.confirmedBy)) return null;
+    // E4/E5: only when the AI's closed-list selection vouches for the verses — a subject-index entry
+    // may carry another sense of the word («الحجاب» → 7:46), a context pack is not an answer
+    if (!['topic', 'term'].includes(res.type) || res.confirmedBy !== 'ai') return null;
     const lang = res.lang === 'en' ? 'en' : 'ar';
     let keyIdx = res.answer.filter(a => a.kind === 'quote' && a.role !== 'context' && a.idx != null).map(a => a.idx).slice(0, 3);
     // no explained verse (e.g. the subject index lists the verses): the first listed verses, and then
@@ -1332,7 +1341,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const out = [];
     for (const i of keyIdx) {
       const mine = pool.filter(p => p.idx === i);
-      const best = mine.find(hit) || (out.length === 0 && !strict ? mine[0] : null);
+      const best = mine.find(hit);   // never a sentence without a word of the question
       if (best && best.text.length >= 12) out.push(best);
       if (out.length >= 3) break;
     }
@@ -1545,15 +1554,17 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const direct = softPrefix || WHY || sp.kinds.has('story') ? null : indexTopicOf(cq, L);
     let expansion = null, rulingAfter = false;
     const nWords = q.trim().split(/\s+/).length;   // a bare topic word flagged «ruling» stays a topic
+    // … unless the query itself carries a word of status («الموسيقى حرام», "music haram")
+    const rulingHint = /(حكم|حرام|حلال|يجوز|جائز|جايز|مكروه|بدعة|فتو|\bhalal\b|\bharam\b|\bpermissible\b|\ballowed\b|\bruling\b|\bfatwa\b)/i.test(q);
     // semantic neighbours (bge-m3 vectors of «verse — tafsir», computed by the server), started now so
     // they arrive with the expansion; used only as CANDIDATES and to confirm AI-proposed references
-    const denseP = (llm && llm.dense && !direct) ? withTimeout(llm.dense({ query: q, lang: L }), llmTimeoutMs).catch(() => null) : null;
+    const denseP = (llm && llm.dense) ? withTimeout(llm.dense({ query: q, lang: L }), llmTimeoutMs).catch(() => null) : null;
     if (llm && llm.expand && !(direct && tokens(cq, L).length <= 3)) {
       try {
         expansion = verifyExpansion(await withTimeout(llm.expand({ query: q, lang }), llmTimeoutMs));
         base.meta.llm = { used: true, stage: 'expand', intent: expansion.intent };
         // a bare topic word ("الخمر", "usury") is a topic, not a fatwa request
-        if (expansion.intent === 'ruling' && nWords < 3) expansion.intent = 'topic';
+        if (expansion.intent === 'ruling' && nWords < 3 && !rulingHint) expansion.intent = 'topic';
         // a fatwa request: no ruling, but the AI still selects the verses on the subject (shown as «not a fatwa»)
         if (expansion.intent === 'ruling') rulingAfter = true;
         // the LLM recognised a question (not a pasted quote): answer it as a topic
@@ -1580,12 +1591,17 @@ export function createEngine({ core, searchAr, sources = {} }) {
     // through the AI's keywords, only a query that is itself a topic («patience», «بر الوالدين»):
     // a real question («patience when you lose someone») keeps the AI selection, whose candidates
     // include the index verses — the index alone would list the whole topic, not the answer
-    if (!tix && !softPrefix && !WHY && kwAr.length && tokens(cq, L).length <= 2) { const t = topicIndexFor(cq, L, kwAr); if (t && t.mode === 'exact') tix = t; }
+    // E1: a subject-index topic reached only through ONE of the AI's keywords is never the answer
+    // (it can be one facet — «الصبر» for «الصبر والشكر» — or another sense — «الحرام» for «الموسيقى حرام»):
+    // its verses are only candidates (tixK below) for the AI's closed-list selection.
     let tixUse = !!tix;
     if (altSura) base.alt = { mode: 'sura', sura: altSura, name: L === 'ar' ? suras[altSura - 1].ar : suras[altSura - 1].tr };
     let order = [];
     let confirmed = false, personalNote = false, llmOk = false, aiNone = false, relatedOnly = new Set();
-    if (!tixUse && llm && llm.select && !(expansion == null && llm.expand && base.meta.llm.error)) {
+    // E1/E4: when the AI is available it ALWAYS selects, also for a subject-index topic: an index entry
+    // may carry another sense of the word («الحجاب» → the barrier of al-A'raf, 7:46), so its verses
+    // come first in the closed list and the AI keeps only those that answer
+    if (llm && llm.select && !(expansion == null && llm.expand && base.meta.llm && base.meta.llm.error)) {
       // candidates (closed list): verses proposed by the LLM — kept only if they exist AND their text
       // (verse, tafsir or translation) contains a word of the query or of its keywords —, the lexical
       // ranking, the keyword ranking and the subject-index topics named by the keywords
@@ -1606,7 +1622,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
       // English question: the AI's Arabic keywords also search the Arabic text and tafsir
       const arK = [];
       if (L !== 'ar') for (const k of kwAr.slice(0, 3)) for (const x of topicSearch(k.replace(/_/g, ' '), 'ar', 8).ranked) if (!arK.includes(x.idx)) arK.push(x.idx);
-      const lex = ranked.map(x => x.idx), kw = (ts.kwTop || []).concat(arK.filter(i => !(ts.kwTop || []).includes(i))), ix = tixK ? tixK.ids : [];
+      const lex = ranked.map(x => x.idx), kw = (ts.kwTop || []).concat(arK.filter(i => !(ts.kwTop || []).includes(i))), ix = [...new Set((tix ? tix.ids : []).concat(tixK ? tixK.ids : []))];
       const seen = new Set(), candIdx = [];
       for (const i of proposed) if (!seen.has(i)) { seen.add(i); candIdx.push(i); }
       // round robin (reciprocal-rank style fusion): words, meaning, AI keywords, subject index
@@ -1619,7 +1635,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
           const out = await withTimeout(llm.select({ query: q, lang: L, candidates: cands }), llmTimeoutMs);
           const v = verifyLLM(out, cands);
           base.meta.llm = { ...base.meta.llm, used: true, model: out && out.model, rejected: v.rejected, intent: v.intent, candidates: cands.length };
-          if (v.intent === 'ruling' && nWords < 3) v.intent = 'topic';
+          if (v.intent === 'ruling' && nWords < 3 && !rulingHint) v.intent = 'topic';
           if (v.intent === 'ruling') rulingAfter = true;
           if (v.intent === 'personal' || (expansion && expansion.intent === 'personal')) personalNote = true;
           if (v.ids.length) {
@@ -1636,6 +1652,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
       }
     }
     if (rulingAfter) return rulingAnswer(q, lang, uiLang, base, order);
+    if (llmOk && tixUse) { base.meta.indexCandidates = tix.name; tixUse = false; }
     let evid = null;
     if (tixUse) {
       // the subject index (human-curated) gives the verses; the tafsir explains them. Verses whose own
@@ -1644,7 +1661,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
       const fs = ts.fullSet || new Set();
       const withE = tix.ids.filter(i => fs.has(i)), without = tix.ids.filter(i => !fs.has(i));
       if (!withE.length && ranked.some(x => x.full) && !llmOk) { tixUse = false; tix = null; }
-      else { order = withE.concat(without); evid = new Set(withE); confirmed = withE.length > 0; }
+      else { order = withE.concat(without); evid = new Set(withE); confirmed = false; }
     }
     if (tixUse) { /* order set above */ } else if (!llmOk && !aiNone) {
       // no AI confirmation: only verses that cover the whole question, no explanation
