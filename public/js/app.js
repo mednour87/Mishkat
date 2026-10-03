@@ -523,7 +523,7 @@ function renderResults() {
   }
   if (res.topicIndex) h += topicIndexBox(res.topicIndex);
   for (const a of notes) h += `<p class="note" dir="${dir}">${esc(a.text)}</p>`;
-  if (res.alt && res.alt.mode === 'topic') h += `<p><button class="btn alt" id="altBtn">${esc(t.asTopic(res.alt.query))}</button></p>`;
+  if (res.alt && res.alt.mode === 'topic') h += `<p><button class="btn alt" id="altBtn">${esc(res.alt.person ? t.asPerson(res.alt.person) : t.asTopic(res.alt.query))}</button></p>`;
   if (res.alt && res.alt.mode === 'sura') h += `<p><button class="btn alt" id="altBtn">${esc(t.asSura(res.alt.name))}</button></p>`;
 
   // surahs ranked by relevance (topics) / verse list (verification)

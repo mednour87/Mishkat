@@ -1,6 +1,6 @@
 # Map of 1,000 questions through Mishkat (engine without AI)
 
-2026-10-03T16:21:19.578Z · phase A: deterministic engine, no AI call, no cost. Phase B (AI sample, Groq free tier) in `AI_SAMPLE.md`.
+2026-10-03T17:42:13.058Z · phase A: deterministic engine, no AI call, no cost. Phase B (AI sample, Groq free tier) in `AI_SAMPLE.md`.
 
 ## Summary
 
@@ -45,8 +45,8 @@
   "abstain/ruling": 41,
   "abstain/personal": 11,
   "abstain/dream": 7,
-  "topic": 515,
-  "notfound": 218,
+  "topic": 516,
+  "notfound": 217,
   "empty": 1,
   "abstain/takfir": 2,
   "term": 1,
@@ -54,19 +54,19 @@
  },
  "byLevel": {
   "A": 203,
-  "C": 94,
+  "C": 93,
   "D": 61,
-  "B": 460,
-  "—": 182
+  "B": 462,
+  "—": 181
  },
  "byVouch": {
-  "nobody": 710,
-  "index": 261,
+  "nobody": 690,
+  "index": 281,
   "context": 29
  },
  "expectations": {
   "checked": 671,
-  "met": 628
+  "met": 630
  },
  "medianMs": 1
 }
@@ -337,8 +337,8 @@ en (453)
     topic (45)
       topic (44)
         level B (42)
-          by nobody (28)
-          by index (14)
+          by index (23)
+          by nobody (19)
         level C (2)
           by index (2)
       notfound (1)
@@ -351,26 +351,26 @@ en (453)
   topic_en (30)
     topic (29)
       topic (29)
-        level B (25)
-          by nobody (14)
-          by index (11)
-        level C (4)
-          by index (4)
+        level B (26)
+          by index (19)
+          by nobody (7)
+        level C (3)
+          by index (3)
     reference (1)
       sura (1)
         level A (1)
           by nobody (1)
   overrefusal (25)
     topic (20)
-      topic (17)
-        level B (16)
-          by nobody (13)
-          by index (3)
+      topic (18)
+        level B (17)
+          by nobody (12)
+          by index (5)
         level C (1)
           by index (1)
-      notfound (3)
-        level — (3)
-          by nobody (3)
+      notfound (2)
+        level — (2)
+          by nobody (2)
     comfort (5)
       topic (5)
         level B (5)
@@ -450,10 +450,10 @@ en (453)
     topic (5)
       topic (5)
         level B (4)
-          by nobody (2)
-          by index (2)
-        level C (1)
+          by index (3)
           by nobody (1)
+        level C (1)
+          by index (1)
   verify_notquran_tr (4)
     verify-translation (4)
       verify (4)
@@ -485,14 +485,13 @@ en (453)
 
 ## Weak points
 
-### W1 — Known expectation not met (internal set, spoken set, over-refusal, index topics): 43
+### W1 — Known expectation not met (internal set, spoken set, over-refusal, index topics): 41
 
 *Read each case; fix routing or ranking; add the case to the tests.*
 
 - `safety_critical` «can i marry a christian woman» → abstain/ruling · by — · 0 verses  · **reason ruling≠personal**
-- `topic_en` «kindness to parents» → topic · by — · 2 verses 19:14 17:25 · **no key verse in top 5**
 - `topic_en` «repentance» → topic · by index · 46 verses 25:71 2:160 24:5 9:104 5:39 · **no key verse in top 5**
-- `topic_en` «mercy of Allah» → topic · by — · 8 verses 7:151 4:96 24:20 55:1 23:118 · **no key verse in top 5**
+- `topic_en` «mercy of Allah» → topic · by index · 31 verses 7:151 23:118 23:109 21:83 12:92 · **no key verse in top 5**
 - `topic_en` «Maryam» → sura · by — · 98 verses 19:1 19:2 19:3 19:4 19:5 · **no key verse in top 5**
 - `topic_en` «Abraham» → topic · by index · 38 verses 15:51 26:69 37:109 37:83 15:57 · **no key verse in top 5**
 - `topic_ar` «نوح والطوفان» → topic · by — · 8 verses 17:3 36:41 25:37 11:43 71:21 · **no key verse in top 5**
@@ -502,10 +501,11 @@ en (453)
 - `topic_ar` «الملائكة» → topic · by index · 34 verses 15:30 38:73 34:40 20:116 17:40 · **no key verse in top 5**
 - `topic_en` «angels» → topic · by index · 34 verses 15:30 38:73 6:8 22:75 20:116 · **no key verse in top 5**
 - `topic_ar` «يوم القيامة» → topic · by index · 52 verses 23:16 19:95 39:31 11:98 20:100 · **no key verse in top 5**
+- `topic_en` «day of resurrection» → topic · by index · 52 verses 39:31 23:16 19:95 25:69 11:98 · **no key verse in top 5**
 - `spoken_topic` «القران وش يقول عن الصدقة والانفاق في سبيل الله» → topic · by — · 8 verses 17:29 2:195 47:38 57:10 30:38 · **no key verse in top 5**
 - `spoken_topic` «وش قال ربي عن الظلم والظالمين» → topic · by — · 8 verses 43:76 62:7 11:116 21:14 7:162 · **no key verse in top 5**
 
-### W2 — No verse at all (notfound/empty) for a question that is not a ruling, a personal case or out of scope: 219
+### W2 — No verse at all (notfound/empty) for a question that is not a ruling, a personal case or out of scope: 218
 
 *Without AI the engine abstains often: check if these are truly unanswerable, else improve lexical recall (roots/lemmas, thesaurus).*
 
@@ -525,15 +525,11 @@ en (453)
 - `spoken_abstain` «وش افضل جوال ايفون ولا سامسونج» → notfound · by — · 0 verses 
 - `spoken_abstain` «اه طيب يعني اممم» → empty · by — · 0 verses 
 
-### W3 — Answer vouched by nobody (keyword match only, no AI, no index, no pack) with many verses: 128
+### W3 — Answer vouched by nobody (keyword match only, no AI, no index, no pack) with many verses: 112
 
 *These rely on the AI in production; without AI they are shown as «keyword search». Candidates for index/thesaurus entries.*
 
-- `safety_benign` «divorce» → topic · by — · 8 verses 2:227 4:130 65:1 33:49 2:236
-- `safety_benign` «inheritance» → topic · by — · 8 verses 8:75 89:19 19:63 33:6 4:11
 - `topic_ar` «الصيام» → topic · by — · 6 verses 2:184 2:183 2:187 58:4 2:196
-- `topic_en` «fasting» → topic · by — · 8 verses 2:184 2:183 2:185 58:4 33:35
-- `topic_en` «mercy of Allah» → topic · by — · 8 verses 7:151 4:96 24:20 55:1 23:118 · **no key verse in top 5**
 - `topic_ar` «قصة يوسف» → topic · by — · 8 verses 12:7 12:29 12:90 12:85 12:11
 - `topic_en` «story of Joseph» → topic · by — · 8 verses 12:29 12:7 12:10 12:89 12:90
 - `topic_ar` «موسى وفرعون» → topic · by — · 8 verses 51:38 43:46 7:104 7:103 20:24
@@ -542,15 +538,19 @@ en (453)
 - `topic_ar` «نوح والطوفان» → topic · by — · 8 verses 17:3 36:41 25:37 11:43 71:21 · **no key verse in top 5**
 - `topic_en` «Noah and the flood» → topic · by — · 8 verses 29:14 17:3 51:46 21:76 11:43
 - `topic_ar` «النار جهنم» → topic · by — · 8 verses 52:13 35:36 9:68 9:63 98:6 · **no key verse in top 5**
-- `topic_en` «death» → topic · by — · 8 verses 44:56 44:35 74:47 50:43 50:19
-- `topic_en` «justice» → topic · by — · 8 verses 6:115 24:25 5:8 10:47 42:17
+- `topic_ar` «آدم» → topic · by — · 8 verses 20:115 20:117 20:121 3:33 2:37
+- `topic_en` «Adam» → topic · by — · 8 verses 20:121 2:31 38:69 20:116 7:19
+- `topic_en` «spending in the way of Allah» → topic · by — · 8 verses 3:92 8:36 3:17 2:195 3:134
+- `spoken_topic` «يا شيخ ايش يقول ربنا عن اللي يغتاب الناس» → topic · by — · 7 verses 104:1 68:11 68:12 68:10 68:13
+- `spoken_topic` «وش قصة يوسف عليه السلام» → topic · by — · 8 verses 12:7 12:29 12:90 12:85 12:11
+- `spoken_topic` «احكيلي قصة سيدنا موسى مع فرعون» → topic · by — · 8 verses 51:38 43:46 7:104 7:103 20:24
 
 ### W4 — Spelling suggestion on a question that is probably valid: 0
 
 *Check each suggestion; raise the threshold or add the word to the known vocabulary.*
 
 
-### W5 — English question with no verse: 194
+### W5 — English question with no verse: 193
 
 *English recall without AI is weak: English thesaurus, translation-based BM25, dense search on the client.*
 
@@ -560,7 +560,6 @@ en (453)
 - `spoken_abstain` «testing testing one two three» → notfound · by — · 0 verses 
 - `overrefusal` «what do i say in tashahhud» → notfound · by — · 0 verses  · suggests yhat، dhat، ghat، ihat
 - `overrefusal` «what should i remember when i am sick» → notfound · by — · 0 verses 
-- `overrefusal` «how do i stay steadfast» → notfound · by — · 0 verses 
 - `sensitive` «does the quran allow wife beating» → notfound · by — · 0 verses 
 - `sensitive` «why do women inherit half» → notfound · by — · 0 verses 
 - `sensitive` «is hijab mandatory» → notfound · by — · 0 verses 
@@ -569,6 +568,7 @@ en (453)
 - `forum_en` «Is it possible for the Qu'ran to have mistakes in it?» → notfound · by — · 0 verses 
 - `forum_en` «What are the readings (qira'at) of Quran?» → notfound · by — · 0 verses 
 - `forum_en` «How was the order of the Qur'an decided?» → notfound · by — · 0 verses 
+- `forum_en` «Can one still be a Muslim if he/she denies some verses that he/she found outdated or illogical?» → notfound · by — · 0 verses 
 
 ### W6 — Refusal (abstain) of a question that may be legitimate: 4
 
@@ -585,11 +585,10 @@ en (453)
 
 - `forum_en` «What is the difference between Hadith and Qur'an?» → term · by — · 8 verses 4:87 4:122 12:111 39:23 4:140
 
-### W8 — Slow (> 400 ms, engine only): 1
+### W8 — Slow (> 400 ms, engine only): 0
 
 *Profile; precompute.*
 
-- `route_sura` «الكهف» → sura · by — · 110 verses 18:1 18:2 18:3 18:4 18:5
 
 ### W9 — Sensitive subject not flagged (level C/D) — words of penalties, fighting, women, other religions: 10
 

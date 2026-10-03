@@ -401,6 +401,73 @@ export function expandTokens(qtoks, fromLang, toLang) {
   return extra;
 }
 
+// ---------------------------------------- English names of the topics of the subject index (W5, T021)
+// An English question answered WITHOUT AI («patience», "what does the quran say about repentance", "how do i
+// stay steadfast") reaches the human-curated Quranpedia subject index through this table — only to FIND the
+// topic: never used as search keywords, never shown. [words naming the topic (one must be present), other words
+// allowed with them, Arabic topic, senses kept when the index has homographs (names without tashkil; default:
+// the names without a «[qualifier]»)]. Topics of punishments, fighting or polemics are left to the AI + context.
+const EN_TOPICS = [
+  ['patience patient sabr perseverance persevere', '', 'الصبر'], ['repentance repent tawbah tawba', '', 'التوبة'],
+  ['prayer prayers salah salat', 'daily obligatory', 'الصلاة', null, /صلاة الله على/], ['fasting fast sawm', '', 'الصوم'],
+  ['charity sadaqah alms almsgiving', '', 'الصدقة'], ['zakat zakah', '', 'الزكاة'], ['hajj pilgrimage', '', 'الحج'],
+  ['paradise jannah heaven', 'garden gardens', 'الجنة'], ['tawakkul reliance rely relying trust', 'god allah upon', 'التوكل على الله'], ['hell hellfire jahannam', 'fire', 'النار'],
+  ['angel angels', '', 'الملائكة'], ['jinn djinn', '', 'الجن'], ['satan shaytan shaitan devil iblis', '', 'الشيطان'],
+  ['death dying die', '', 'الموت', null, /الميتة/], ['judgment judgement qiyamah resurrection', 'day last', 'يوم القيامة'],
+  ['mercy merciful compassion', 'god allah', 'الرحمة'], ['forgiveness forgive pardon', 'seeking god allah', 'العفو', ['=العفو'], /فضل المال/],
+  ['istighfar', 'seeking forgiveness', 'الاستغفار'], ['gratitude grateful thankful thankfulness shukr', '', 'الشكر'],
+  ['justice fairness', '', 'العدل'], ['oppression injustice tyranny wrongdoing zulm', '', 'الظلم'],
+  ['honesty truthfulness truthful honest', '', 'الصدق'], ['lying lie lies liar falsehood', '', 'الكذب'],
+  ['envy jealousy envious', '', 'الحسد'], ['humility humble', '', 'التواضع'], ['arrogance arrogant pride', '', 'التكبر'],
+  ['backbiting gossip', '', 'الغيبة'], ['anger angry', '', 'الغضب'],
+  ['parent parents', 'kindness honoring honouring respect obedience dutiful duty mother father', 'بر الوالدين'],
+  ['mother mothers', '', 'الأم'], ['orphan orphans', '', 'اليتامى'], ['marriage marry wedding nikah', '', 'النكاح'],
+  ['divorce talaq', '', 'الطلاق'], ['inheritance inherit', '', 'الميراث', null, /يرثها|ميراث السموات|ورثة الجنة|ميراث الكتاب/], ['usury riba', '', 'الربا'],
+  ['alcohol wine intoxicant intoxicants khamr', '', 'الخمر'], ['gambling', '', 'الميسر'], ['modesty haya shyness', '', 'الحياء'],
+  ['knowledge learning', 'seeking', 'العلم'], ['steadfastness steadfast firmness', '', 'الثبات'],
+  ['sickness illness disease sick ill', '', 'المرض'], ['healing cure', '', 'الشفاء'], ['supplication dua duaa', '', 'الدعاء'],
+  ['remembrance dhikr zikr', 'god allah', 'الذكر', ['الذكر [ذكر الله]']], ['ramadan ramadhan', 'month', 'رمضان'],
+  ['kindness goodness ihsan excellence', '', 'الإحسان'], ['faith iman belief', '', 'الإيمان', ['الإيمان', 'الايمان [عقيدة والتزام]']],
+  ['disbelief kufr unbelief', '', 'الكفر'], ['polytheism shirk idolatry', '', 'الشرك'], ['idols idol', '', 'الأصنام'],
+  ['revelation wahy', '', 'الوحي'], ['rain', '', 'المطر'], ['water', '', 'الماء'], ['moon', '', 'القمر'], ['stars star', '', 'النجوم'],
+  ['mountains mountain', '', 'الجبال'], ['night', '', 'الليل'], ['sea seas ocean', '', 'البحر'], ['bees bee', '', 'النحل'],
+  ['cattle livestock', '', 'الأنعام'], ['embryo fetus foetus', '', 'الجنين'], ['children offspring', '', 'الأولاد'],
+  ['family families', '', 'الأسرة'], ['wealth money riches property', '', 'المال'], ['poverty', '', 'الفقر'], ['poor', '', 'الفقراء'],
+  ['food', '', 'الطعام'], ['sleep', '', 'النوم'], ['fear', '', 'الخوف'], ['hope', '', 'الرجاء'], ['intercession shafaah', '', 'الشفاعة'],
+  ['hereafter afterlife akhirah', '', 'الآخرة'], ['grave barzakh', '', 'القبر'], ['tranquility tranquillity serenity', '', 'الطمأنينة'],
+  ['sakinah', '', 'السكينة'], ['sadness grief sorrow', '', 'الحزن'], ['brotherhood', '', 'الأخوة', ['الأخوة']],
+  ['unity', '', 'الاعتصام'], ['consultation shura', '', 'الشورى'], ['covenant covenants pledge', '', 'العهد'],
+  ['ablution wudu wudhu', '', 'الوضوء'], ['purity purification cleanliness', '', 'الطهارة'], ['mosques mosque masjid', '', 'المساجد'],
+  ['kaaba kabah', '', 'الكعبة'], ['qibla qiblah', '', 'القبلة'], ['pork swine pig', '', 'الخنزير'], ['trust trustworthiness amanah', '', 'الأمانة'],
+  ['provision sustenance rizq', '', 'الرزق'], ['extravagance wastefulness', '', 'الإسراف'], ['stinginess miserliness', '', 'البخل'],
+  ['piety taqwa righteousness', '', 'التقوى'], ['ostentation riya', 'showing', 'الرياء'], ['wisdom hikmah', '', 'الحكمة'],
+  ['intellect reason', '', 'العقل'], ['reflection contemplation pondering', '', 'التفكر'], ['unseen ghayb', '', 'الغيب'],
+  ['magic sorcery witchcraft', '', 'السحر', ['السحر [ما يؤدي إلى أمور خارقة للمألوف]']], ['trade commerce business', '', 'التجارة'],
+  ['desires lust', '', 'الهوى'], ['world worldly dunya', 'life', 'الدنيا'], ['certainty yaqin', '', 'اليقين'],
+  ['humbleness khushu', '', 'الخشوع'], ['recitation', '', 'تلاوة القرآن'], ['glorification tasbih', '', 'التسبيح'],
+  ['prostration sujud', '', 'السجود'], ['bowing ruku', '', 'الركوع'], ['adornment', '', 'الزينة'], ['gold', '', 'الذهب'], ['iron', '', 'الحديد'],
+  // not here, on purpose: adhan (the index's «الأذان» is a proclamation), hijab (the index mixes in the barrier
+  // of 7:46), Jews / Christians, jihad, punishments — answered with the AI and the reviewed context only
+];
+// surahs named after a person: [Arabic, English] name of the person (searched as a topic, T021)
+const PERSON_SURAS = { 10: ['يونس', 'Jonah'], 11: ['هود', 'Hud'], 12: ['يوسف', 'Joseph'], 14: ['إبراهيم', 'Abraham'], 19: ['مريم', 'Mary'],
+  31: ['لقمان', 'Luqman'], 47: ['محمد', 'Muhammad'], 71: ['نوح', 'Noah'] };
+// words that frame an English question without naming its subject («what does the quran say about…», "how do i stay…")
+const EN_FRAME = new Set(tokens('islam islamic muslim muslims religion say says talk talks speak speaks mention mentions teach teaches teaching teachings ' +
+  'importance important concept view stay remain become keep get be am being regarding concerning related topic subject virtue virtues ' +
+  'benefit benefits holy the of in on about', 'en', { stop: false }));
+// (a 5th element drops the sub-topics of another sense listed under the same entry: «العفو: فضل المال…»)
+const EN_TOPIC_INDEX = EN_TOPICS.map(([need, opt, ar, senses, drop]) => ({
+  need: new Set(tokens(need, 'en', { stop: false })), all: new Set(tokens(need + ' ' + opt, 'en', { stop: false })), ar, senses, drop }));
+// the entry named by the question: every remaining word belongs to it and one of its naming words is there
+export function englishTopicOf(text) {
+  // «what should i say when it rains», "what do i do if…": what to SAY or DO (a supplication, an act), not a topic
+  if (/\b(say|recite|read|do|pray)\b.*\b(when|before|after|if|while|during)\b/i.test(text)) return null;
+  const toks = [...new Set(tokens(text, 'en'))].filter(t => !EN_FRAME.has(t));
+  if (!toks.length || toks.length > 3) return null;
+  return EN_TOPIC_INDEX.find(e => toks.every(t => e.all.has(t)) && toks.some(t => e.need.has(t))) || null;
+}
+
 // ----------------------------------------------------- well-known names
 // Only names on which there is no disagreement. [aliases], [[sura, from, to]...]
 const FAMOUS = [
@@ -1448,8 +1515,26 @@ export function createEngine({ core, searchAr, sources = {} }) {
     for (const t of toks) { const gi = THES_INDEX.en.get(t); if (gi == null) return null; out.push(THESAURUS[gi][0].split(' ')[0]); }
     return [...new Set(out)].join(' ');
   }
+  // English: the topic named through EN_TOPICS, with the sense chosen among homographs (الجنة ≠ الجِنة, الإيمان ≠ الأيمان)
+  const bare = (s) => String(s).replace(/[ً-ْٰ]/g, '').replace(/\s+/g, ' ').trim();
+  function englishIndexTopic(text) {
+    const e = englishTopicOf(text);
+    if (!e) return null;
+    const hit = TOPICS.byKey.get([...new Set(tokens(e.ar, 'ar'))].sort().join(' ')) || [];
+    // a sense written «=name» must match the name exactly, tashkil included («=العفو» ≠ «العفوَ», the surplus of 2:219)
+    const keep = hit.filter(t => e.senses ? e.senses.some(s => s[0] === '=' ? s.slice(1) === t.name : s === bare(t.name)) : !/\[/.test(t.name));
+    if (!keep.length || !treeSize(keep)) return null;
+    const t = topicTree(keep, 60);
+    if (e.drop) {
+      t.groups = t.groups.filter(g => !e.drop.test(bare(g.name)));
+      const ok = new Set(t.groups.flatMap(g => g.ids));
+      t.ids = t.ids.filter(i => ok.has(i)); t.total = ok.size;
+    }
+    return t.ids.length ? { mode: 'exact', via: 'en', name: keep[0].name, ...t } : null;
+  }
   function indexTopicOf(text, L) {
     if (!TOPICS || !text) return null;
+    if (L !== 'ar') { const en = englishIndexTopic(text); if (en) return en; }
     const tries = [];
     if (L === 'ar') {
       tries.push(text);
@@ -1517,8 +1602,11 @@ export function createEngine({ core, searchAr, sources = {} }) {
         }
         if (!altSura) {
           const vs = []; for (let a = 1; a <= S.ayas; a++) vs.push(verseResult(S.first + a - 1));
+          // a surah named after a person («Maryam», «يوسف», "Noah"): the surah, and the person as the other reading
+          const P = r.bare && PERSON_SURAS[S.n];
           return { ...base, type: 'sura', sura: S.n, answer: [{ kind: 'text', text: M.sura(S) }], verses: vs, focus: S.first,
-            suras: [{ sura: S.n, verses: vs.map(v => v.idx), score: 1 }], alt: r.bare ? { mode: 'topic', query: q } : null };
+            suras: [{ sura: S.n, verses: vs.map(v => v.idx), score: 1 }],
+            alt: P ? { mode: 'topic', query: P[uiLang === 'ar' ? 0 : 1], person: P[uiLang === 'ar' ? 0 : 1] } : r.bare ? { mode: 'topic', query: q } : null };
         }
       } else {
         const lastA = r.b ?? r.a;
@@ -1723,7 +1811,9 @@ export function createEngine({ core, searchAr, sources = {} }) {
       const lexRank = new Map(ranked.map((x, k) => [x.idx, k]));
       const byRank = (a, b) => (lexRank.has(a) ? lexRank.get(a) : 1e6) - (lexRank.has(b) ? lexRank.get(b) : 1e6);
       const withE = tix.ids.filter(i => fs.has(i)).sort(byRank), without = tix.ids.filter(i => !fs.has(i));
-      if (!withE.length && ranked.some(x => x.full) && !llmOk) { tixUse = false; tix = null; }
+      // (not for an English topic named through EN_TOPICS: its sense was chosen there, and the words of the
+      // English question need not be those of the translation — «kindness to parents», 17:23 «be good to»)
+      if (!withE.length && ranked.some(x => x.full) && !llmOk && (tix.via !== 'en' || tix.total < 3)) { tixUse = false; tix = null; }
       else { order = withE.concat(without); evid = new Set(withE); confirmed = false; }
     }
     if (!llmOk && !softPrefix && isComfortQ(q)) {
