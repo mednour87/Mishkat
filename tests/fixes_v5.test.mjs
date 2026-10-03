@@ -98,3 +98,14 @@ test('E7: a 429 or 402 on the paid provider does not block the same model on the
   }
   resetCoolDown();
 });
+
+test('E9/E11: penalties are sensitive (C) whatever the wording; a cut war quotation is flagged and gets context', async () => {
+  for (const q of ['ما عقوبة الزنا', 'حد السرقة', 'punishment for adultery']) assert.equal((await ask(q)).level, 'C', q);
+  assert.equal((await ask('قصة امرأة فرعون')).level, 'B');      // a pack word only mentioned → not sensitive
+  for (const q of ['اقتلوهم حيث ثقفتموهم', 'kill them wherever you find them']) {
+    const r = await ask(q);
+    assert.ok(r.verses.some(v => v.ref === '2:191'), q);
+    assert.equal(r.sensitive, true, q); assert.equal(r.level, 'C', q);
+    assert.ok(r.answer.some(a => a.kind === 'note'), q);
+  }
+});

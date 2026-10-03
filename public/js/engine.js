@@ -476,8 +476,13 @@ export function packFor(q) {
   }
   return null;
 }
-const SENSITIVE = /(الحدود|حد\s+السرقة|قطع\s+اليد|الرجم|الجلد|القصاص|تعدد\s+الزوجات|ضرب\s+الزوجة|الميراث|stoning|amputation|flogging|polygamy|beat(ing)? (his |the )?wi(fe|ves)|lapidation|polygamie|frapper (sa|les) femmes?)/i;
-export function isSensitive(q) { return SENSITIVE.test(q) || SENSITIVE.test(normLatin(q)) || !!packFor(q); }
+// E9: penalties and family-law subjects (level C), whatever the wording («ما عقوبة الزنا» like «حد السرقة»)
+const SENSITIVE = /(الحدود|حد\s+(السرقة|الزنا|القذف|الردة|الحرابة)|قطع\s+اليد|الرجم|الجلد|القصاص|الزنا|الزاني|القذف|عقوبة|عقوبات|تعدد\s+الزوجات|ضرب\s+الزوجة|ضرب\s+النساء|الميراث|stoning|amputation|flogging|lashes|adultery|fornication|punishment for|penalt(y|ies)|polygamy|beat(ing)? (his |the |their )?wi(fe|ves)|wife beating|inheritance)/i;
+export function isSensitiveText(q) { return SENSITIVE.test(q) || SENSITIVE.test(normLatin(q)); }
+export function isSensitive(q) { return isSensitiveText(q) || !!packFor(q); }
+// E11: verses about fighting, often quoted cut from their context — wherever they appear in an answer,
+// it is flagged sensitive (level C) and the reader opens the surrounding verses
+const WAR_VERSES = new Set(['2:190', '2:191', '2:192', '2:193', '2:216', '4:76', '4:89', '4:91', '8:12', '8:39', '8:60', '9:5', '9:29', '9:36', '9:73', '9:123', '47:4', '66:9']);
 
 // Words that turn a subject into a fatwa request; removed to search the related verses.
 const RULING_WORDS = /(ما\s+حكم|حكم|هل\s+يجوز|يجوز|هل|حلال|حرام|مكروه|جائز|بدعة|فتوى|أفتوني|is it|is|are|haram|halal|permissible|allowed|forbidden|ruling on|ruling|fatwa|est[- ]ce que|est[- ]il|est[- ]elle|permis|licite|illicite|interdit|avis juridique|\?|؟)/gi;
@@ -1311,6 +1316,11 @@ export function createEngine({ core, searchAr, sources = {} }) {
     if (res.type === 'verify' && (res.verdict === 'notfound' || res.verdict === 'notverse') && res.checked) res.hadithCheck = res.checked;
     // an Arabic saying (not a question) that is not in the Quran: is it a hadith? (Dorar, looked up by the app)
     else if (res.type === 'notfound' && AR_RANGE.test(q) && !/^(ما|ماذا|من|متى|اين|كيف|لماذا|لم|كم|هل)\s/.test(normAr(q)) && normAr(q).split(' ').length >= 2) res.hadithCheck = q;
+    if (!res.sensitive && ['topic', 'verify', 'term'].includes(res.type) && (res.verses || []).some(v => WAR_VERSES.has(v.ref))) {
+      res.sensitive = true; res.pack = res.pack || 'violence';
+      if (Array.isArray(res.answer) && !res.answer.some(a => a.kind === 'note' && a.text === MSG[res.lang === 'en' ? 'en' : 'ar'].sensitiveNote))
+        res.answer.push({ kind: 'note', text: MSG[res.lang === 'en' ? 'en' : 'ar'].sensitiveNote });
+    }
     res.brief = briefOf(res);
     res.level = levelOf(res);
     return res;
@@ -1550,7 +1560,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const WHY = /^(لماذا|لم|ليش|ليه|هل|اليس|الم|why|is|are|does|do|did|was|were)( |$)/.test(L === 'ar' ? normAr(shown) : normLatin(shown));
     const polemic0 = isPolemic(q);
     const pack = packFor(q);
-    const sensitive = !!pack || isSensitive(q);
+    let sensitive = isSensitiveText(q);
     const direct = softPrefix || WHY || sp.kinds.has('story') ? null : indexTopicOf(cq, L);
     let expansion = null, rulingAfter = false;
     const nWords = q.trim().split(/\s+/).length;   // a bare topic word flagged «ruling» stays a topic
@@ -1582,6 +1592,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     // the context pack comes first for a trap question, or when the pack's subject IS the question
     // («الجهاد», "slavery") — not when it is only mentioned («قصة امرأة فرعون»)
     const usePack = !!pack && (polemic || packRest(cq, L, pack).length === 0);
+    sensitive = sensitive || usePack;
     const kwAr = expansion && expansion.keywords ? (expansion.keywords.ar || []) : [];
     // kept for the post-processing only (never serialised: LLM keywords are not content)
     Object.defineProperty(base.meta, 'kwAr', { value: kwAr, enumerable: false });
