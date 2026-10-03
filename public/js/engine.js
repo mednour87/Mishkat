@@ -1277,7 +1277,8 @@ export function createEngine({ core, searchAr, sources = {} }) {
       if (weak) return wordResult({ query: q, lang, meta: res.meta || {} }, wl, lang);
       if (wl.verses.length <= 12) { res.wordHits = wl.verses; res.wordQuery = wl.toks.join(' '); res.wordTerms = wl.isAr ? [...new Set(wl.toks.flatMap(t => [...baseForms(t)]))] : []; }
       // a rare word next to a much more common one: maybe a typo («اليتم» / «اليتيم»)
-      if (wl.toks.length === 1 && wl.verses.length <= 3) { const sg = suggestWords(wl.toks[0], { min: Math.max(6, wl.verses.length * 4) }); if (sg.length) res.suggest = sg.slice(0, 2); }
+      // E12: not for a word the vetted tafsirs use often («الحجاب», «الغضب», «الجار», «الأمانة»)
+      if (wl.toks.length === 1 && wl.verses.length <= 3 && !(wl.isAr && [normAr(wl.toks[0]), normAr(wl.toks[0]).replace(/^(وال|فال|بال|لل|ال)/, "")].reduce((a, f) => a + (vocab().get(f) || 0), 0) >= 5)) { const sg = suggestWords(wl.toks[0], { min: Math.max(6, wl.verses.length * 4) }); if (sg.length) res.suggest = sg.slice(0, 2); }
       return res;
     }
     // every word exists but never in the same verse: nothing to correct
@@ -1286,6 +1287,10 @@ export function createEngine({ core, searchAr, sources = {} }) {
     // it is found in the vetted tafsirs, so no correction is offered
     if (wl.isAr) {
       const V = vocab(), m = normAr(wl.missing);
+      // E13: a rare spelling next to a frequent Quran word one letter away («الزكات» → «الزكاة»):
+      // corrected, even though «زكاة» is among its base forms
+      const own = V.get(m) || 0;
+      if (own < 3) { const sg0 = suggestWords(wl.missing); if (sg0.length && sg0[0].sure && sg0[0].count >= 5 * Math.max(1, own)) { res.suggest = sg0; res.suggestFor = wl.missing; return res; } }
       if (V.has(m) || [...baseForms(m)].some(f => f.length >= 3 && V.has(f))) return res;
     }
     const sg = suggestWords(wl.missing);

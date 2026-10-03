@@ -109,3 +109,11 @@ test('E9/E11: penalties are sensitive (C) whatever the wording; a cut war quotat
     assert.ok(r.answer.some(a => a.kind === 'note'), q);
   }
 });
+
+test('E12/E13: no absurd suggestion on valid words; a sure misspelling is corrected', async () => {
+  for (const q of ['الحجاب', 'الغضب', 'الجار', 'الأمانة']) assert.ok(!(await ask(q)).suggest, q);
+  const r = await ask('الزكات');
+  assert.equal(r.correctedFrom, 'الزكات');
+  assert.ok(r.verses.length > 0);
+  assert.ok(!(await ask('الجهاد')).correctedFrom);
+});
