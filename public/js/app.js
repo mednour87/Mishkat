@@ -1289,6 +1289,7 @@ function setupTools() {
   const renderers = {
     khatma: (body, args) => state.tools.khatma(body, args),
     hijri: (body, args) => state.tools.hijri(body, args),
+    links: (body) => state.tools.links(body),
     settings: (body) => state.tools.settings(body),
   };
   const ids = DOCK.filter(id => renderers[id]);

@@ -77,7 +77,7 @@ export const S = {
 };
 
 // reviewed list (challenge reference pack + sources of Mishkat); labels are names of the sites
-const LINKS = [
+export const LINKS = [
   { cat: { ar: 'القرآن والتفسير', en: 'Quran and tafsir' }, items: [
     ['https://quranenc.com', 'موسوعة القرآن الكريم المترجمة', 'QuranEnc — translated Quran encyclopedia'],
     ['https://quranpedia.net', 'قرآنبيديا', 'Quranpedia'],
@@ -93,8 +93,8 @@ const LINKS = [
     ['https://alifta.gov.sa', 'الرئاسة العامة للبحوث العلمية والإفتاء', 'General Presidency of Scholarly Research and Ifta'],
     ['https://dorar.net/feqhia', 'الموسوعة الفقهية — الدرر السنية', 'Fiqh encyclopedia — Dorar'] ] },
   { cat: { ar: 'الرد على الشبهات والدعوة', en: 'Answering objections and da‘wah' }, items: [
-    ['https://bayenat.net', 'بيّنات', 'Bayyinat'],
-    ['https://dawa.center', 'مركز الدعوة', 'Da‘wah center'] ] },
+    ['https://bayenat.net/ar', 'بيّنات: أسئلة وأجوبة عن الإسلام', 'Bayyinat: questions and answers about Islam'],
+    ['https://dawa.center', 'المستودع الدعوي الرقمي', 'Digital Da‘wah Repository'] ] },
 ];
 
 const PRESETS = [7, 10, 15, 20, 30, 40, 60];
