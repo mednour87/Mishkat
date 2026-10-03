@@ -61,7 +61,7 @@ query ─► famous names / references / surah names (deterministic)
 - **Hybrid search**: bge-m3 meaning vectors of «verse — Al-Mukhtasar» (Cloudflare Workers AI) add candidates to the AI's closed list and confirm the verses the AI proposes (`functions/_lib/dense.js`).
 - **Published fatwas (level D)**: for a fatwa request, fatwas of Sheikh Ibn Baz from his official site, verbatim with his recorded answer and the link — Mishkat itself never rules (`functions/_lib/fatwa.js`).
 - **From the Sunnah**: authentic hadiths of HadeethEnc (3,572 ar / 2,328 en) under topic answers, verbatim with attribution, grade and explanation, chosen from a closed list.
-- **Public benchmark**: Qur'an QA 2023 Task A, official scorer — Mishkat **MRR@10 0.609** (best published fine-tuned systems 0.576), MAP@10 0.266 — see [`eval/qqa23/RESULTS.md`](eval/qqa23/RESULTS.md).
+- **Public benchmark**: Qur'an QA 2023 Task A, official scorer — Mishkat **MRR@10 0.609** (95 % CI 0.485–0.725), MAP@10 0.266 (0.181–0.361) — **comparable** to the best published fine-tuned systems (0.576 / 0.313, inside the intervals; not significantly better on 52 questions) — see [`eval/qqa23/RESULTS.md`](eval/qqa23/RESULTS.md).
 - **Private preview** until submission (password + noindex, `functions/_middleware.js`).
 
 ## Results (synthetic benchmark, `eval/`)

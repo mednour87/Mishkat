@@ -28,15 +28,24 @@ For reference (published, same test set, as reported by their authors):
 | Best 2023 systems / later fine-tuned ensembles (arXiv 2412.11431) | 0.313 | 0.576 |
 | LLMs used directly as retrievers (ArabicNLP 2025) | higher, but they *write* references, which may be inaccurate | |
 
+## 95 % confidence intervals (added 3 October 2026, audit V2)
+
+| Run | MAP@10 [95 % CI] | MRR@10 [95 % CI] |
+|---|---|---|
+| `Mishkat_ai` | 0.262 [0.174–0.360] | 0.597 [0.467–0.721] |
+| `Mishkat_aidense` | 0.266 [0.181–0.361] | 0.609 [0.485–0.725] |
+| `Mishkat_dense` | 0.119 [0.061–0.190] | 0.305 [0.212–0.414] |
+| `Mishkat_lex` | 0.167 [0.069–0.284] | 0.176 [0.078–0.294] |
+
+Published best (MAP 0.313, MRR 0.576) is inside the intervals of `Mishkat_ai` and `Mishkat_aidense`: the difference is not significant on 52 questions.
+
 ## Reading
 
-- **MRR@10 0.609**: the first passage Mishkat shows is right more often than with the best published
-  fine-tuned systems (0.576), with **no training on Qur'an QA data** and while every verse shown comes from the
-  verified text, chosen from a closed list.
+- **MRR@10 0.609, 95 % CI [0.485–0.725]** (bootstrap, 2,000 samples of the 52 questions, seed 42, `bootstrap_ci.py` → `ci_test.json`): the published best (0.576) lies **inside** this interval, so Mishkat is **comparable** to the best fine-tuned systems, **not** shown to be better — with no training on Qur'an QA data, every verse coming from the verified text and chosen from a closed list. One run only; the test questions were seen before later commits (no tuning on them, but not a blind test).
 - **MAP@10 is lower (0.266 vs 0.313)** by design: Mishkat shows only the verses the AI confirms
   (a few, with their full tafsir) instead of ten passages; recall of *all* gold passages is not its goal.
 - **AI is the main gain** (MAP +57 %, MRR ×3.4 over the engine without AI); semantic neighbours add a little
-  on top and halve the wrong abstentions (9 → 4).
+  on top (MRR +0.012, paired 95 % CI [-0.067, 0.094]: **not significant**) and halve the wrong abstentions (9 → 4).
 - **Abstention**: 4 abstentions on 52 questions (7 expected); questions with no answer in the Qur'an
   (e.g. «من هم العشرة المبشرين بالجنة؟») are only rewarded if the system says nothing — Mishkat may still show
   related verses, which the benchmark counts as wrong.

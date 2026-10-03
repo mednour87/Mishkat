@@ -13,6 +13,7 @@ Audit of 3 October (`01_PLAN/CARTOGRAPHIE_ERREURS_ET_AMELIORATIONS.md`) and firs
 - T019 (I1): semantic search ranked in the browser (Web Worker, 6,236 × 256 int8 vectors, 1.6 MB); the API only embeds and projects the question (< 1 ms CPU, inside the free plan's 10 ms); `/api/dense` called only when the server has an embedding model. Select prompt: every subject of «X و Y» covered; English translation named correctly.
 - T020 (X1, X3): one confidence badge per answer; galaxy toolbar fully visible at 375 px.
 - Tests: 93/93.
+- Later on 3 October, at the author's request (also declared): tool modules not yet wired (Hijri calendar, khatma plan with .ics, panels, local preferences; Tanzil page/juz metadata); **extractive RAG short answer** (`/api/answer`: composer returns sentence IDs per concept from a closed list built in the browser, independent judge model, uncovered concepts reported, verbatim display; `tests/answer.test.mjs`, live check `eval/results/rag_live.json`); honest benchmark figures (bootstrap 95 % CIs, `eval/qqa23/bootstrap_ci.py`: comparable to the published best, not significantly better); benefit-measurement kit (`eval/human/`: blind A/B rating sheet Mishkat vs a general chatbot, automatic count of invented/altered Quran quotations, user-test protocol with SUS ar/en, scoring script).
 
 ## Challenge — 4 October 2026
 - (to be filled with the work done during the challenge window)

@@ -213,9 +213,15 @@ if os.path.exists(qq_path):
     qq = json.load(open(qq_path, encoding='utf-8'))
     s = slide("Public benchmark — Qur'an QA 2023 (52 test questions)", 'معيار علمي عام')
     names = {'Mishkat_lex': 'Engine without AI', 'Mishkat_dense': 'Meaning vectors alone (bge-m3)', 'Mishkat_ai': '+ AI (closed-list selection)', 'Mishkat_aidense': 'Mishkat — AI + meaning + words (deployed)'}
-    rows = [f"{names.get(k, k)}:  MAP@10 {v['map10']:.3f} · MRR@10 {v['mrr10']:.3f}" for k, v in sorted(qq['runs'].items(), key=lambda kv: kv[1]['mrr10'])]
+    ci_path = os.path.join(ROOT, 'eval', 'qqa23', 'ci_test.json')
+    ci = json.load(open(ci_path, encoding='utf-8'))['runs'] if os.path.exists(ci_path) else {}
+    def ci_txt(k, m):
+        c = ci.get(k, {}).get(m + '_ci')
+        return f" [{c[0]:.2f}–{c[1]:.2f}]" if c else ''
+    rows = [f"{names.get(k, k)}:  MAP@10 {v['map10']:.3f}{ci_txt(k, 'map10')} · MRR@10 {v['mrr10']:.3f}{ci_txt(k, 'mrr10')}" for k, v in sorted(qq['runs'].items(), key=lambda kv: kv[1]['mrr10'])]
     pb = qq['published_best']
     rows += ['', f"Best published fine-tuned systems: MAP@10 {pb['map10']:.3f} · MRR@10 {pb['mrr10']:.3f} ({pb['source']})",
+             'Comparable, not better: the published best lies inside our 95 % confidence intervals (bootstrap, 52 questions).',
              'Mishkat: no training on this data, every verse from the verified text, chosen from a closed list; few verses shown on purpose (lower MAP).']
     text(s, rows, cm(1.7), cm(4.4), cm(30), cm(11), 15)
 

@@ -19,3 +19,9 @@ eval/qqa23/*
 !eval/qqa23/RESULTS.md
 !eval/qqa23/score_all.py
 !eval/qqa23/scores_test.json
+
+# blind rating: the A/B key stays with the organiser until the sheets are filled
+eval/human/rating_key.json
+eval/human/rater*.csv
+!eval/qqa23/bootstrap_ci.py
+!eval/qqa23/ci_test.json

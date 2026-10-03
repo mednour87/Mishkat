@@ -1,0 +1,1219 @@
+{
+ "date": "2026-10-03T11:45:07.598Z",
+ "questions": 60,
+ "chatbot_model": "openai/gpt-oss-120b",
+ "chatbot_totals": {
+  "refs": 69,
+  "badRefs": 0,
+  "quotes": 121
+ },
+ "mishkat": "every verse text comes from the Tanzil file (tested byte for byte, tests/engine.test.mjs); quotations: 0 by construction",
+ "rows": [
+  {
+   "q": "الصبر",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 0,
+    "detail": [
+     {
+      "quote": "وَاصْبِرْ وَمَا صَبْرُكَ إِلَّا بِاللَّهِ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُمْ بِغَيْرِ حِسَابٍ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "فَإِنَّ مَعَ العُسْرِ يُسْرًا",
+      "verdict": "exact"
+     }
+    ]
+   }
+  },
+  {
+   "q": "بر الوالدين",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "الصلاة",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "وَأَقِمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ وَارْكَعُوا مَعَ الرَّاكِعِينَ",
+      "verdict": "near"
+     },
+     {
+      "quote": "إِنَّ الصَّلَاةَ كَانَتْ لِلْمُؤْمِنِ كَالنُّورِ يَسْتَضِيءُ بِهَا الْمُظْلِمُ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "إِنَّ الصَّلَاةَ تَنْهَى عَنِ الْفِحْشَى وَالْفُحْشَاءِ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الصيام",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "يَا أَيُّهَا الَّذِينَ آمَنُوا كُتِبَ عَلَيْكُمُ الصِّيَامُ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "وَصِيَّةً مِّنَ اللَّهِ لِيَجْعَلَكُمْ تَذَكَّرُونَ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "إِنَّمَا يُرِيدُ اللَّهُ بِكُمْ الْخَيْرَ وَيُزَكِّيكُمْ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الحج",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "وَأَذِّن فِي النَّاسِ بِالْحَجِّۚ يَأْتُوكَ رِجَالٌ وَعَلَىٰ كُلِّ ضَامِرٍ يَسْتَطِيعُونَ مِنكُمْ وَأُنثَىٰۚ وَمِنْ حَرَ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَإِذَا أَدْرَكْتُمُ الْحَجَّ فَأَذْكُرُوا اللَّهَ كَذِكْرِكُمْ أَوَّلَ مَرَّةٍ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "إِنَّ الصَّلَاةَ وَالذِّكْرَ وَالْحَجَّ وَالصَّلَاةِ عَلَى النَّبِيِّۚ وَالْجَنَّةُ لِلْمُتَّقِينَ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الزكاة",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 4,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "الَّذِينَ يُنفِقُونَ أَمْوَالَهُمْ فِي سَبِيلِ اللَّهِ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "مَن يَتَفَقَّهُ فِي الدِّينِ وَيَسْتَغْنِ عَنِ الزَّكَاةِ فَأُولَئِكَ يَكُونُ لَهُمْ عَذَابٌ شَدِيدٌ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "إِنَّمَا الصَّدَقَاتُ لِلْفُقَرَاءِ وَالْمَسَاكِينِ وَالْأَئِمَّانِ وَالْمُؤَلَّفَةِ قُرَبَانًا",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "التوبة",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "وَتُوبُوا إِلَى اللَّهِ جَمِيعًا أَيُّهَا الْمُؤْمِنُونَ لَعَلَّكُمْ تُفْلِحُونَ",
+      "verdict": "near"
+     },
+     {
+      "quote": "إِنَّ اللَّهَ يَغْفِرُ الذُّنُوبَ جَمِيعًا إِنَّهُ هُوَ الْغَفُورُ الرَّحِيمُ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "فَإِن تَابَ عَنْ مَا أَسْفَكَتْ يَدُكَ فَإِنَّمَا يَغْفِرُ اللَّهُ لَكَ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "رحمة الله",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "فَبِمَا رَحْمَةٍ مِّنَ اللَّهِ لِنتَجَىٰ",
+      "verdict": "near"
+     },
+     {
+      "quote": "وَرَبُّكَ الْغَفُورُ ذُو الرَّحْمَةِۚ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "إِنَّ رَبَّكَ هُوَ أَعْلَمُ بِمَن ضَلَّ عَن سَبِيلِهِۚ فَٱعْتَرِفْ بِٱلْحَقِّۚ إِنَّهُ هُوَ أَقْوَىٰ سَتْرًا",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "قصة يوسف",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 6,
+    "notExact": 6,
+    "detail": [
+     {
+      "quote": "الآية 12",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "قَالَ الَّذِي نَجَا مِنْهَا وَهُوَ يَتَأَلَّمُ: \"إِنِّي أَذْهَبُ إِلَىٰ رَبِّي سَيُصْلِحُ لِي\"",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "الآية 86",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَجَعَلَتْ لَهُ يَدُ اللَّهِ مَكْرَهَا فَأَحْسَنَ إِلَىٰ مَنْ أَحْسَنَ إِلَيْهِ وَمَا أَسْوَأَ إِلَىٰ مَنْ أَسْوَأَ إِلَ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "الآية 111",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "قَالُوا سَتَجْعَلُنَا رَبَّنَا عَذْبًا فِي الْأَرْضِ وَنَحْنُ أَصْحَابُ السَّبْيِ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "موسى وفرعون",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "وَإِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً﴿\n﴿٢٨:٣٦",
+      "verdict": "near"
+     },
+     {
+      "quote": "فَأَرْسَلْنَا مُوسَىٰ إِلَىٰ فِرْعَوْنَ بِسُلْطَانٍ مُبِينٍ﴿\n﴿٢٨:٤٠",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَتَوَلَّىٰ فَرْعَوْنُ وَمَن قَبْلَهُ وَالَّذِينَ كَفَرُوا۟ مِنْ أَهْلِ الْكِتَابِ﴿\n﴿٢٨:٦١",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "مريم",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "وَإِذْ قَالَتِ ٱلْمَلَـٰٓئِكَةُ يَـٰ مَرْيَمُ إِنَّ ٱللَّهَ يُبَشِّرُكِ بِكَلِمَةٍۢ مِّنْهُۚ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَتَقَبَّلَتْهُ رَبُّهَا بِقَبُولٍۢ حَسَنٍۢ وَأَثْنَىٰ بِهِۦۚ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "إِنَّ ٱللَّهَ رَبُّ ٱلْجَنَّةِ وَٱلْأَرْضِ وَمَا بَيْنَهُمَاۚ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "عيسى ابن مريم",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "سورة آل عمران:45",
+      "verdict": "verse"
+     },
+     {
+      "quote": "سورة المائدة:110",
+      "verdict": "verse"
+     },
+     {
+      "quote": "سورة النساء:157",
+      "verdict": "verse"
+     }
+    ]
+   }
+  },
+  {
+   "q": "إبراهيم",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "نوح والطوفان",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "إِنَّا أَرْسَلْنَا نُوحًا إِلَى قَوْمِهِ فَتَابَ عَلَيْهِمْ وَأَرْسَلَ فِيهِمْ سَفِينَةً",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَأَخْرَجْنَا مَن كَانَ فِي السَّمَاءِ وَمَن كَانَ فِي الْأَرْضِ بِإِذْنِ رَبِّهِمْ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَإِذَا جَاءَ أَمْرُنَا وَفِيْتُ بِالْقَوْلِ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "اليتيم",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 5,
+    "notExact": 4,
+    "detail": [
+     {
+      "quote": "وَأَوْلِيَاءُهُمْ فِي السَّمَاءِ وَالْأَرْضِ",
+      "verdict": "near"
+     },
+     {
+      "quote": "وَأَنْفِقُوا فِي سَبِيلِ اللَّهِ وَلا تُقَدِّمُوا لِنَفْسِكُمْ وَلا تَكُونُوا أَصْحَابَ سَبِيلٍ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "إِنَّمَا النَّاسُ عِندَ رَبِّهِمْ أَجَلٌ مُّسَمًّى",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَإِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً",
+      "verdict": "exact"
+     },
+     {
+      "quote": "وَأَنْتُمْ لَا تَسْتَطِيعُونَ أَنْ تَجْنِبُوا مَا يَسْتَحِقُّهُ الْقَوْمُ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الربا",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "الَّذِينَ يَأْكُلُونَ الرِّبَا لَا يَقُومُونَ إِلَّا كَأَنَّمَا يُسْقَطُونَ مِنَ الْمَطَرِ الْغَيْظِ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَأَحَلَّ اللَّهُ الْبَيْعَ وَحَرَّمَ الرِّبَا",
+      "verdict": "exact"
+     },
+     {
+      "quote": "إِنَّ اللَّهَ يَحْبِطُ عَمَلَ الأَشْقَى الَّذِي يَكْسِبُ رِبًا",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الخمر",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 1,
+    "detail": [
+     {
+      "quote": "يَا أَيُّهَا الَّذِينَ آمَنُوا إِنَّمَا الْخَمْرُ وَالْمَيْسِرُ وَالأَنْصَابُ وَالأَزْلَامُ رِجْسٌ مِنْ عَمَلِ الشَّيْطَ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "وَمَا خَلَقْتُ الجِنَّ وَالإِنسَ إِلَّا لِيَعْبُدُونِ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "يَا أَيُّهَا الَّذِينَ آمَنُوا لَا تَقْرَبُوا الصَّلَاةَ وَأَنْتُمْ سُكَرَى",
+      "verdict": "near"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الجنة",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "النار جهنم",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "إِنَّ الْجَحِيمَ لَمَوْعِدُهُمْ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَأَصْبَحُوا فِي جَهَنَّمَ يَتَسَاءَلُونَ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَإِذَا جَاءَتْ صَاحِبَةُ الْمَرْجِعِ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الموت",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "كُلُّ نَفْسٍ ذَائِقَةُ الْمَوْتِ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "وَإِذَا قُرِّبَتِ الْمَوْتَىٰ فَإِنَّا نُحْيِي الْمَوْتَىٰ وَنُرِيدُ أَن نُجْزِيَ الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِح",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَإِذَا جَاءَتِ الصَّاخَّةُ يَوْمَ يَفْرُغُ الْمَرْءُ مِمَّا كَانَ يَكْسِبُ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الشكر",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "وَإِذْ شَكَرْتُمْ لَـأَكْفَرُوا",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَإِذَا شَكَرْتُمْ فَأَكْثِرُوا۟",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "العدل",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "إِنَّ اللَّهَ يَأْمُرُكُمْ أَنْ تُؤَدُّواْ الأَمَانَاتِ إِلَى أَهْلِهَا وَإِذَا حَكَمْتُمْ بَيْنَ النَّاسِ أَنْ تَحْكُمُ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "إِنَّ اللَّهَ يَأْمُرُكُمْ أَنْ تُقَاتِلُواْ فِي سَبِيلِهِ الَّذِينَ يُقَاتِلُونَكُمْ وَأَنْ تَتَوَفَّواْ وَتُقْتَلُواْ ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَإِذَا قُلْتُمْ فَاعْدِلُواْ وَإِذَا عَسَىٰ أَنْ تَكُونُواْ خَاطِئِينَ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الحسد",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "الوضوء",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 1,
+    "detail": [
+     {
+      "quote": "يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا قُمْتُمْ إِلَى الصَّلَاةِ فَاغْسِلُوا وُجُوهَكُمْ وَأَيْدِيَكُمْ إِلَى الْمَرَافِقِ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "وَٱمْسَحُوا۟ بِرُءُوسِكُمْ وَأَرْجُلَكُمْ إِلَى ٱلْكَعْبَيْنَ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "فَٱسْتَغْشِلُوا۟ بِرَبَاطِكُمْ وَٱسْتَغْفِرُوا۟ لِلَّهِ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الشورى",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 0,
+    "detail": [
+     {
+      "quote": "وَأَمْرُهُمْ شُورَى بَيْنَهُمْ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "فَاسْأَلُوا أَهْلَ الذِّكْرِ إِن كُنتُمْ لا تَعْلَمُونَ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "وَإِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الأَرْضِ خَلِيفَةً",
+      "verdict": "exact"
+     }
+    ]
+   }
+  },
+  {
+   "q": "آدم",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 4,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "إِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً﴿\n﴿7:11",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَإِذْ قُلْنَا لِلْمَلَائِكَةِ اسْجُدُوا لِآدَمَ فَأَسْجَدُوا إِلَّا إِبْلِيسَ﴿\n﴿7:19",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَأَنْزَلَ رَبُّكَ إِلَى الْمَلَائِكَةِ أَنْ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً﴿\n﴿2:37",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "الملائكة",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "الْفَلاَئِفُ الْمَلَائِكَةُ يُقْسِمُونَ بِالْقُرْبَى",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَإِذْ قَالَ رَبُّكَ لِلْمَلَائِكَةِ إِنِّي جَاعِلٌ فِي الْأَرْضِ خَلِيفَةً",
+      "verdict": "exact"
+     },
+     {
+      "quote": "دَعْوَةُ اللَّهِ أَحَبُّ أَن يَسْتَغْفِرَ لَكُمْ وَاللَّهُ غَفُورٌ رَحِيمٌ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "يوم القيامة",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "الصدق",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "الإنفاق في سبيل الله",
+   "lang": "ar",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "وَمَا أَنفَقْتُم مِّن شَيْءٍ فِي سَبِيلِ اللَّهِ فَلَكُمْ أَجْرُهُ وَأَنتُمْ لَا تُظْلَمُونَ",
+      "verdict": "near"
+     },
+     {
+      "quote": "الَّذِينَ يُنفِقُونَ فِي سَبِيلِ اللَّهِ",
+      "verdict": "near"
+     },
+     {
+      "quote": "وَأَقِيمُوا الصَّلَاةَ وَآتُوا الزَّكَاةَ وَأَطِيعُوا الرَّسُولَ لَعَلَّكُمْ تُرْحَمُونَ",
+      "verdict": "exact"
+     }
+    ]
+   }
+  },
+  {
+   "q": "How do we know that the Qur'an has never been changed?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ",
+      "verdict": "exact"
+     },
+     {
+      "quote": "وَلَن تَرَىٰ إِلَّاٰ قَوْمًا مُّسْلِمِينَ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "سَنُقْطِعُ عَنِ الْقُرْآنِ مَا سِقْطَتْ بِهِ أَصَابِعُ النَّاسِ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "What does Islam say about reading the Quran in a language other than Arabic?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "إِنَّا نَحْنُ نَزَّلْنَا الْقُرْآنَ وَإِنَّا لَهُ لَحَافِظُونَ",
+      "verdict": "merged"
+     },
+     {
+      "quote": "وَلَقَدْ جَعَلْنَا لَكُمْ فِي الْقُرْآنِ أَئِمَّةًۢ يَهْدُونَ إِلَىٰ صِرَاطٍ مُّسْتَقِيمٍ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "What are the readings (qira'at) of Quran?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "قُرْآنًا فَرَقًا",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "قُرْآنًا عَرَبِيًّا غَيْرَ ذِي عِوَجٍ لِّسَانٍ",
+      "verdict": "near"
+     }
+    ]
+   }
+  },
+  {
+   "q": "How was the order of the Qur'an decided?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 4,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "وَلَوْ أَنَّا أَنزَلْنَا إِلَيْكَ كِتَابًا فِي قِرْبٍ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "إِنَّا نَزَّلْنَا الذِّكْرَ إِلَىٰ عِبَادِنَا لِيَكُونُوا لَهُ شُهَدَاءً",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Can one still be a Muslim if he/she denies some verses that he/she found outdated or illogical?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "وَمَن يُؤْمِنُ بِاللَّهِ وَالْيَوْمِ الْآخِرِ فَلَهُ مَا سَتَرْجُهُ الْأَرْضُ وَالسَّمَاوَاتُ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَإِنْ لَمْ يَكُنْ لَكُمْ عَمَلٌ فَإِنَّ اللَّهَ يَسْتَحْقُّ أَنْ يُعْطِيَكُمْ عَذَابًا عَظِيمًا",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Is Textual Criticism important to Islamic studies?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "What exactly is the challenge of the Quran?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "فَإِنْ لَمْ تَفْعَلُوا فَاعْلَمُوا أَنَّا مَسْئُولُونَ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "أَفَلَا يَتَدَبَّرُونَ الْقُرْآنَ أَوْ يَجْعَلُوا لَهُ رُقْبًا",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "How is the concept of Reincarnation treated in Islam?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "وَكُلُّ نَفْسٍۢ لَّا تَسْتَطِيعُ أَن تَكْفُرَ بِهَا إِلَّا مَن سَلَكَ سَبِيلَ ٱلْجَهَنَّمِ وَهُوَ فِى ٱلْقِصَصِۢ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "فَإِذَا جَاءَ أَحَدٌۢ مِّنكُمْ مَوْتَىًۢ فَإِنَّمَا يُصْلَىٰ لِقَبْرِهِۦ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Why Islam contradicts with Quran about the authenticity of Bible?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "إِنَّا أَنزَلْنَا إِلَيْكَ الْكِتَابَ بِالْحَقِّ لِيَكُونَ لِلَّذِينَ أَسْرَفُوا فِي أَنْفُسِهِمْ حَذَرًا",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَأَوْحَىٰ إِلَىٰ رَبِّكَ أَنَّهُ لَا يَحْقُرُ مَنْ أَحْسَنَ عَمَلًا",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَأَنْزَلْنَا إِلَيْكَ الْكِتَابَ بِالْحَقِّ لِتُثْبِتَ الَّذِينَ أَسْلَمُوا",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Do Shi'ites believe in other holy books/revelations after Qur'an?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "Does the Quran urge persecution of the infidel?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "وَلَا تَسْتَكْبِرْ إِن كَانَ أَحَدٌ مِّنكُمْ فِي سَبِيلِ اللَّهِ فَإِنَّ اللَّهَ لَا يُحِبُّ الْمُسْتَكْبِرِينَ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَقَاتِلُوا فِي سَبِيلِ اللَّهِ الَّذِينَ يُقَاتِلُونَكُمْ وَلَا تَعْتَدُوا۟ إِنَّ اللَّهَ لَا يُحِبُّ الْمُتَسَطِّحِينَ",
+      "verdict": "near"
+     },
+     {
+      "quote": "إِنَّمَا الْمُؤْمِنُونَ الَّذِينَ إِذَا ذُكِرَتْ لَهُمْ آيَاتُ اللَّهِ زَادَتْهُمْ إِيمَانًا وَعَلَىٰ رَبِّهِمْ يَتَوَكَ",
+      "verdict": "near"
+     }
+    ]
+   }
+  },
+  {
+   "q": "How many ayaths are there in Al-Quran?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "Why some verses of Quran refer to God as a plural entity?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "إِنَّا هَذَا الْقُرْآنَ يَتْلُو عَلَىٰ عِبَادِنَا",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "إِنَّا نَحْنُ نَصْرُكُمْ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Does the Qur'an state that Jesus was crucified?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 1,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "Is knowing baby's sex in the womb contradictory to Quran?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 1,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "What exactly is the difference of meaning between saddan and suddan in Qur'an verse 36:9?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 1,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "What is the difference between Hadith and Qur'an?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "القرآن: 2:2",
+      "verdict": "topic"
+     },
+     {
+      "quote": "القرآن: 33:40",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Is it possible that the Quran contains any errors?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "إِنَّا نَحْنُ نَزَّلْنَا الْكِتَابَ وَإِنَّا لَهُ حَافِظُونَ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "أَفَلَا يَتَدَبَّرُونَ الْآيَاتِ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Why are Surat al-Khal and Surat al-Hafd not included in the Qur'an?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "إِنَّا نَحْنُ نَزَّلْنَا الْقُرْآنَ وَإِنَّا لَهُ لَحَافِظُونَ",
+      "verdict": "merged"
+     },
+     {
+      "quote": "وَإِنَّا لَنَحْنُ نَحْفَظُهُ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "What is the \"Go-To Verse\" in the Qur'an?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 0,
+    "detail": [
+     {
+      "quote": "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا",
+      "verdict": "exact"
+     },
+     {
+      "quote": "وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا",
+      "verdict": "exact"
+     }
+    ]
+   }
+  },
+  {
+   "q": "How to reconcile Allah's infallibility with Naskh?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "الأنعام: 115",
+      "verdict": "verse"
+     },
+     {
+      "quote": "الأنعام: 38",
+      "verdict": "verse"
+     }
+    ]
+   }
+  },
+  {
+   "q": "What is the definition of Muslim according to the Holy Quran?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَأَطَعْنَا اللَّهَ وَرَسُولَهُ أُولَـٰئِكَ هُمْ خَيْرُ الْبَرِيَّةِ",
+      "verdict": "near"
+     },
+     {
+      "quote": "وَمَن يَسْتَغْفِرِ اللَّهَ وَيَصْدِقِ النَّاسَ يَجْعَلْ لَهُ رَحْمَةً",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Which ayah in the Qur'an was the last to be revealed?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 3,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 0,
+    "detail": [
+     {
+      "quote": "الْيَوْمَ أُكْمِلْتُ لَكُمْ دِينَكُمْ وَأَتْمَمْتُ عَلَيْكُمْ نِعْمَتِي وَرَضِيتُ لَكُمُ الإِسْلَامَ دِينًا",
+      "verdict": "exact"
+     },
+     {
+      "quote": "وَمَا أَرْسَلْنَاكَ إِلَّا رَحْمَةً لِّلْعَالَمِينَ",
+      "verdict": "exact"
+     }
+    ]
+   }
+  },
+  {
+   "q": "When Uthman burn many versions of Quran, how do we know that the burned one are the \"wrong\" ones?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "إِنَّا أَنزَلْنَا إِلَيْكَ الْكِتَابَ بِالْحَقِّ لِتَكُونَ لِلْعَالَمِينَ نَذِيرًا",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَأَنْزَلْنَا إِلَيْكَ الْكِتَابَ بِالْحَقِّ مُصَدِّقًا لِمَا بَيْنَ يَدَيْهِ وَأَنْزَلَ مِنْ قَبْلُ",
+      "verdict": "merged"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Is it okay to leave Quranic Arabic audio playing in the background?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "Does someone who listens to the Quran in Ramadan gets the same amount of rewards as the one who reads it?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 2,
+    "notExact": 2,
+    "detail": [
+     {
+      "quote": "وَإِذَا قُرِئَ الْقُرْآنُ فَاسْتَمِعُوا لَهُ وَأَنْصِتُوا لِأَجَلِهِ",
+      "verdict": "near"
+     },
+     {
+      "quote": "إِنَّمَا يَسْتَخْلِفُكُمُ اللَّهُ فِي الْأَرْضِ وَمَنْ يَتَّقِهِۦ",
+      "verdict": "notfound"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Is there a model of reconciliation in the Qur'an?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 2,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "Are there Islamic guidelines on how and when to protest?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 3,
+    "notExact": 3,
+    "detail": [
+     {
+      "quote": "وَلَا تَسْتَكْبِرْ إِن كَانَ مَعَكَ شَيْءٌ",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَإِنْ خِفْتُمْ أَن يَفْتِنَكُمُ الَّذِينَ كَفَرُوا فَاجْهَدُوا",
+      "verdict": "notfound"
+     },
+     {
+      "quote": "وَإِذَا حَكَمْتُمْ بَيْنَ النَّاسِ أَنْقِلُوا إِلَى اللَّهِ",
+      "verdict": "near"
+     }
+    ]
+   }
+  },
+  {
+   "q": "Do ghosts exists according to Quran or Islam?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  },
+  {
+   "q": "What are the longest Surah and Ayah of the Qur'an?",
+   "lang": "en",
+   "chatbot": {
+    "refs": 0,
+    "badRefs": 0,
+    "quotes": 0,
+    "notExact": 0,
+    "detail": []
+   }
+  }
+ ],
+ "chatbot_quotes_by_verdict": {
+  "exact": 26,
+  "near": 14,
+  "notfound": 72,
+  "verse": 5,
+  "merged": 3,
+  "topic": 1
+ },
+ "reading": {
+  "quotes": 121,
+  "notInQuran": 72,
+  "notInQuranRate": 0.595,
+  "nearOrMerged": 17,
+  "exact": 26,
+  "questionsWithAQuoteNotInQuran": 36,
+  "questions": 60,
+  "caution": "notfound = no verse of the Quran matches (invented or heavily altered); near = close to a verse (misquote OR only a spelling variant: needs a human check); merged = two verses joined; verse/topic = the quote was read as a reference or a question. Single run, one model (gpt-oss-120b as a plain chatbot), 60 questions."
+ }
+}
