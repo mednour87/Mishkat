@@ -2,7 +2,7 @@
 
 The challenge rules allow pre-existing work if its baseline is disclosed before 4 October 2026; only work done during the challenge (4 October 09:00 – 6 October 23:59, Riyadh time) is evaluated. This file documents, honestly and with fingerprints, **everything** that existed before the window.
 
-**Last commit before this disclosure: `d71fa90`**; the git tag `baseline-2026-10-03` is placed on the commit that adds this file. Every commit after that tag is challenge work.
+**Last commit before this disclosure: `1b256d2`**; the git tag `baseline-2026-10-03` is placed on the commit that adds this file. Every commit after that tag is challenge work.
 
 ## 1. Pre-existing project: “Quran Cartography” (author’s own, July–August 2026)
 - A letter- and word-level database of the Quran (`quran.db`: 6,236 verses, 77,433 words, 326,159 letters) built from the Tanzil text, with a semantic colour layer (names of Allah, prophets, angels, Satan).
@@ -16,7 +16,7 @@ For full transparency: this repository was written and deployed (private preview
 - 1–2 Oct: v3–v8 interface (three moments, Mushaf + tafsir study, logo), spoken queries, reference-pack integration (answer levels A–D, Quranpedia subject index, glossary), Web Worker search, published fatwas (binbaz.org.sa), Sunnah section (HadeethEnc), hybrid semantic search (bge-m3), Qur'an QA 2023 benchmark, deck, OpenRouter provider, private deployment on Cloudflare Pages.
 - 3 Oct: audit of errors (`01_PLAN/CARTOGRAPHIE_ERREURS_ET_AMELIORATIONS.md`), plan v5, execution files and code drafts (`05_EXECUTION/`), and the first corrections of that audit (tasks T010–T020: AI selection always runs, status questions without «هل», over-refusal bench, short answer only when AI-confirmed, circuit breakers, semantic ranking moved to the browser, sensitivity levels, spelling suggestions, Origin check, single confidence badge).
 
-### 2.1 Dated commits before the window (39)
+### 2.1 Dated commits before the window (43)
 | Commit | Date | Message |
 |---|---|---|
 | `f0b1b80` | 2026-09-29 | Mishkat v2 — declared baseline before the challenge window (29 Sep 2026) |
@@ -58,15 +58,20 @@ For full transparency: this repository was written and deployed (private preview
 | `473c20a` | 2026-10-03 | T019b/E15: dense only when the server has an embedding model (health.dense, no vector download otherwise); select prompt covers every subject of «X و Y»; English translation named correctly (Noor International) |
 | `6a7089b` | 2026-10-03 | T020: one confidence badge per topic answer from confirmedBy (AI / subject index / context / word / keywords) (X1); galaxy toolbar wraps on phones, nothing off-screen at 375 px (X3) |
 | `d71fa90` | 2026-10-03 | Changelog of the pre-window corrections; baseline snapshot covers 28 Sep - 3 Oct (repo, dated commits, plans and drafts) |
+| `80e836c` | 2026-10-03 | Baseline disclosure regenerated before the challenge window (everything up to 3 October 2026) |
+| `97be32e` | 2026-10-03 | WIP (pre-window, declared): tool modules — router, Hijri calendar (Intl Umm al-Qura), khatma plan + .ics, exclusive panels, local prefs, panel rendering ar/en; Tanzil page/juz metadata. Not wired into the page yet. |
+| `7184ac0` | 2026-10-03 | RAG v5 (pre-window, declared): extractive evidence-bound short answer — closed list of numbered tafsir/hadith sentences built in the browser, /api/answer composer (gpt-oss-120b) returns sentence IDs per concept, independent judg… |
+| `1b256d2` | 2026-10-03 | Honest figures and benefit measurement (pre-window, declared): bootstrap 95% CIs on Qur'an QA 2023 (MRR 0.609 [0.485-0.725], comparable to the published best, not better; dense gain not significant); blind A/B rating kit Mishkat… |
 
-### 2.2 Repository files at the baseline commit (318 files, snapshot 2026-10-03)
+### 2.2 Repository files at the baseline commit (339 files, snapshot 2026-10-03)
 | File | Bytes | SHA-256 (prefix) |
 |---|---|---|
-| `CHANGELOG.md` | 2,134 | `a32bb0f6f8dc496e…` |
+| `CHANGELOG.md` | 2,924 | `10993f9cda82c6e0…` |
 | `data_build/baseline_snapshot.py` | 5,477 | `5ea3ba59bb1b7ae1…` |
 | `data_build/build_data.py` | 11,923 | `beccc50f574d6b7a…` |
 | `data_build/build_hadeeth.py` | 2,650 | `fc7cade2b0475cf3…` |
 | `data_build/build_latin_index.py` | 2,143 | `87955a6ffbbced35…` |
+| `data_build/build_meta.py` | 1,708 | `08fd34c41fad3fd6…` |
 | `data_build/build_pca.py` | 2,515 | `6242ce5049e35039…` |
 | `data_build/build_quranpedia_data.py` | 4,027 | `b397211150727653…` |
 | `data_build/build_vectors.py` | 3,001 | `db65adf9cf264828…` |
@@ -81,7 +86,7 @@ For full transparency: this repository was written and deployed (private preview
 | `data_build/quran-uthmani.txt` | 1,370,878 | `bf4f57b968d03f41…` |
 | `DEPLOY.md` | 1,493 | `4c40fac3b6981fe7…` |
 | `docs/GUIDE_DETAILLE.md` | 18,251 | `b43fa8256191bc72…` |
-| `docs/make_deck.py` | 16,904 | `7e02feb5353c2830…` |
+| `docs/make_deck.py` | 17,620 | `06ed736df23213f0…` |
 | `docs/traceability.html` | 155,362 | `6948e650ccb269de…` |
 | `docs/TRACEABILITY.md` | 72,060 | `541f4320c7fee4bd…` |
 | `eval/audit_relevance.mjs` | 2,290 | `02e04f67c1e0fc8f…` |
@@ -89,13 +94,20 @@ For full transparency: this repository was written and deployed (private preview
 | `eval/collect_forum.py` | 1,489 | `71c15a0bf5e1ecc3…` |
 | `eval/forum_questions.json` | 37,429 | `14d506c6e132a9e3…` |
 | `eval/golden.jsonl` | 61,480 | `538d77ac1c89a23e…` |
+| `eval/human/auto_metrics.json` | 34,351 | `21f7d40c76549bda…` |
+| `eval/human/make_sheet.mjs` | 7,752 | `dd9f5b98418a251c…` |
+| `eval/human/PROTOCOL.md` | 4,024 | `587adca0ef2520bc…` |
+| `eval/human/rating_key.json` | 3,293 | `06e7652512f5bc9c…` |
+| `eval/human/score_sheet.mjs` | 3,979 | `36acc6b6a5b1393e…` |
 | `eval/make_golden.mjs` | 12,178 | `267f88cf94388981…` |
 | `eval/overrefusal.json` | 2,005 | `46db1567cf6945a9…` |
 | `eval/precompute_cache.mjs` | 4,061 | `33b6ba0710adbd58…` |
+| `eval/qqa23/bootstrap_ci.py` | 3,247 | `64f8bf3720ee3000…` |
+| `eval/qqa23/ci_test.json` | 2,302 | `08931f4e2a9140df…` |
 | `eval/qqa23/QQA23_TaskA_eval.py` | 6,884 | `39f98576783fbb41…` |
 | `eval/qqa23/QQA23_TaskA_submission_checker.py` | 4,931 | `ea322f186c7ea9a3…` |
 | `eval/qqa23/README.md` | 8,327 | `5aac9406218c2de6…` |
-| `eval/qqa23/RESULTS.md` | 3,395 | `f53607af7c2d6aa7…` |
+| `eval/qqa23/RESULTS.md` | 4,317 | `dd06c9ad7380f744…` |
 | `eval/qqa23/score_all.py` | 1,180 | `e1ff7ff72260ebe0…` |
 | `eval/qqa23/scores_test.json` | 518 | `14129407cdefee9e…` |
 | `eval/report.mjs` | 4,678 | `ecf41dc74d79b0b7…` |
@@ -104,6 +116,7 @@ For full transparency: this repository was written and deployed (private preview
 | `eval/results/audit_crit.txt` | 29,338 | `6db930e9e1ffffb8…` |
 | `eval/results/audit_llm.txt` | 81,864 | `761e3c7815b5af78…` |
 | `eval/results/bench_llm.json` | 999 | `5fa3b56b0affa10d…` |
+| `eval/results/rag_live.json` | 11,788 | `4e1a3760f41a29dc…` |
 | `eval/results/REPORT.md` | 4,171 | `c31685745dcc4dcb…` |
 | `eval/results/results.json` | 291,505 | `e74a8bcbb0b02c0b…` |
 | `eval/results/SPOKEN_MAP.json` | 206,337 | `b1812bac8cde87fc…` |
@@ -122,17 +135,20 @@ For full transparency: this repository was written and deployed (private preview
 | `eval/results/SPOKEN_MAP_v71.md` | 14,081 | `097bd403d962d687…` |
 | `eval/run_eval.mjs` | 8,736 | `986c162707f3b316…` |
 | `eval/run_qqa23.mjs` | 4,843 | `44b73b6642e1058a…` |
+| `eval/run_rag.mjs` | 3,289 | `a0af996b361d58db…` |
 | `eval/run_spoken.mjs` | 18,436 | `9786c02f4f28cd35…` |
 | `eval/spoken_queries.json` | 50,624 | `ebcbf470c8ff5f0a…` |
+| `functions/_lib/answer.js` | 8,265 | `a4be3f382b0e5cf9…` |
 | `functions/_lib/csp.js` | 822 | `8d9602741d640913…` |
 | `functions/_lib/dense.js` | 4,823 | `a07026ac462ece51…` |
 | `functions/_lib/fatwa.js` | 5,565 | `d9d8f36dccaac309…` |
-| `functions/_lib/guard.js` | 1,472 | `df14d524219bdbb1…` |
+| `functions/_lib/guard.js` | 1,484 | `d150f3f1b3f22e64…` |
 | `functions/_lib/handler.js` | 1,899 | `6a4375bb8547fc33…` |
-| `functions/_lib/selector.js` | 19,431 | `af2ba267ab9f810d…` |
+| `functions/_lib/selector.js` | 19,244 | `201dcd1cb598014d…` |
 | `functions/_lib/sources.js` | 8,836 | `33421f11d4ac5c92…` |
 | `functions/_lib/tts.js` | 4,192 | `4ede1359af5eb8b8…` |
 | `functions/_middleware.js` | 1,681 | `e300158e5db0a41c…` |
+| `functions/api/answer.js` | 306 | `f24e2018d20122ca…` |
 | `functions/api/dense.js` | 302 | `62084a59a61afda2…` |
 | `functions/api/expand.js` | 204 | `972ddb618b045055…` |
 | `functions/api/fatwa.js` | 281 | `ffc2a3fd555ad6d8…` |
@@ -144,7 +160,7 @@ For full transparency: this repository was written and deployed (private preview
 | `functions/api/transcribe.js` | 1,255 | `5e02456dec44ed1c…` |
 | `functions/api/tts.js` | 1,636 | `7f05979cc94541f4…` |
 | `package.json` | 485 | `c089863a0c833739…` |
-| `public/css/app.css` | 62,969 | `eb3aa1afc6529b8b…` |
+| `public/css/app.css` | 63,637 | `d6cd05ffce807a48…` |
 | `public/data/bayenat_index.json` | 205,638 | `2cb47793398d78f8…` |
 | `public/data/build_info.json` | 2,737 | `fd45a5571ed5af25…` |
 | `public/data/core.json` | 1,361,623 | `4de8b86c65997541…` |
@@ -213,6 +229,7 @@ For full transparency: this repository was written and deployed (private preview
 | `public/data/hadeeth/idx_en.json` | 2,507,922 | `233c776fa6eaac4c…` |
 | `public/data/latin_index.json` | 752,869 | `5da0caafc12ecf94…` |
 | `public/data/llm_cache.json` | 4,482 | `ee1143f91a6cdce9…` |
+| `public/data/mushaf_meta.json` | 3,094 | `f8b477a03c92d041…` |
 | `public/data/qp_surahs.json` | 308,543 | `57e759c5e5645f03…` |
 | `public/data/qp_topics.json` | 438,104 | `c5c7979e3609253c…` |
 | `public/data/search_ar.json` | 1,318,106 | `667b744cfde9395c…` |
@@ -345,25 +362,33 @@ For full transparency: this repository was written and deployed (private preview
 | `public/img/logo.svg` | 8,228 | `db0631b8835cd416…` |
 | `public/img/logo_render.html` | 322 | `540da67f19db5baf…` |
 | `public/index.html` | 10,068 | `947fbf1345f2bc6d…` |
-| `public/js/app.js` | 88,527 | `5311226f844dd840…` |
+| `public/js/app.js` | 91,902 | `0467448ebcfd6ccc…` |
 | `public/js/basmala.js` | 2,055 | `1327d1d9a44d52c4…` |
 | `public/js/dense-rank.js` | 1,948 | `a0b7e7a6b2089141…` |
-| `public/js/engine.js` | 124,540 | `0025b5f0cb80bb5c…` |
+| `public/js/engine.js` | 124,548 | `5d4676e1600fd728…` |
 | `public/js/galaxy.js` | 26,490 | `1308fe28ebe65ffe…` |
 | `public/js/glossary.js` | 5,807 | `af51eb753255844e…` |
-| `public/js/i18n.js` | 48,762 | `890ab672dac03288…` |
+| `public/js/hijri.js` | 6,120 | `975f37524c491841…` |
+| `public/js/i18n.js` | 50,746 | `0eb386be63568b0a…` |
+| `public/js/khatma.js` | 7,511 | `b0fb9894c1aec2fe…` |
 | `public/js/lamp.js` | 10,822 | `fe3b006a8fc4c52b…` |
 | `public/js/layouts.js` | 15,887 | `03820da8249823de…` |
 | `public/js/letters3d.js` | 3,743 | `f2f0618612440af5…` |
-| `public/js/search-worker.js` | 7,969 | `a6cd0d3a50c3b4e2…` |
+| `public/js/panels.js` | 3,855 | `32443fb272c0c967…` |
+| `public/js/prefs.js` | 2,156 | `c0b93cac5bda1115…` |
+| `public/js/rag.js` | 3,758 | `1c0d48df871e6b07…` |
+| `public/js/search-worker.js` | 10,567 | `e968042037481071…` |
 | `public/js/speech.js` | 5,631 | `a5272f35e914b97a…` |
+| `public/js/toolpanels.js` | 27,547 | `20c26ed267041909…` |
+| `public/js/tools.js` | 4,816 | `6b24a1fc694f8af8…` |
 | `public/js/voice.js` | 6,473 | `6ca59cb06a778a66…` |
 | `public/robots.txt` | 26 | `331ea9090db0c9f6…` |
 | `public/vendor/three/addons/OrbitControls.js` | 29,868 | `5a44a9e86a2a0fb1…` |
 | `public/vendor/three/three.module.min.js` | 670,681 | `3e690ac7d180b0aa…` |
-| `README.md` | 10,613 | `be508a614d2d515f…` |
-| `server.mjs` | 5,949 | `c55b13495db5c6ef…` |
+| `README.md` | 10,751 | `cc511117e16e55d9…` |
+| `server.mjs` | 6,020 | `a9b023bf35bca7b1…` |
 | `SOURCES.md` | 12,533 | `2813fff296a413d8…` |
+| `tests/answer.test.mjs` | 6,607 | `99d182d2d7e3e263…` |
 | `tests/basmala.test.mjs` | 1,682 | `ec860ab122113b12…` |
 | `tests/dense_client.test.mjs` | 2,986 | `9296b113fac6915e…` |
 | `tests/engine.test.mjs` | 18,815 | `b72497f6d9dcead6…` |
@@ -398,9 +423,9 @@ Plans and drafts written before the window. Draft code in `05_EXECUTION/code_dra
 | `05_EXECUTION/code_drafts/rag_answer.js` | 9,636 | `6a07789f81e21c25…` |
 | `05_EXECUTION/code_drafts/tools_router.js` | 4,924 | `05547f5fbc087819…` |
 | `05_EXECUTION/MEMOIRE_PROJET.md` | 2,637 | `a25597c99559be23…` |
-| `05_EXECUTION/PROGRESSION.md` | 3,336 | `37551a5e238b21ae…` |
+| `05_EXECUTION/PROGRESSION.md` | 4,805 | `0cbaf910f13d561a…` |
 | `05_EXECUTION/REGLES.md` | 2,972 | `6b1d1804f73a2f20…` |
-| `05_EXECUTION/TACHES.md` | 4,720 | `68ae2e5242dfa480…` |
+| `05_EXECUTION/TACHES.md` | 4,773 | `53384ff624fd2ecd…` |
 
 ## 3. Work during 4–6 October 2026 (evaluated)
 Recorded in `CHANGELOG.md` and in dated git commits after the tag `baseline-2026-10-03` (`git log baseline-2026-10-03..HEAD`).
