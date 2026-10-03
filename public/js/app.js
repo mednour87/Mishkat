@@ -9,6 +9,7 @@ import { PALETTE } from './galaxy.js';
 import { createPanels } from './panels.js';
 import { createToolPanels, S as TOOL_S } from './toolpanels.js';
 import { loadPrefs, savePrefs } from './prefs.js';
+import { decodeRead, encodeRead, markRead, isRead, surasRead, ymd } from './khatma.js';
 
 // Three moments, one current verse (body[data-mode]):
 //   home    — the galaxy alone, with a suggestion card in the middle (can be closed);
@@ -357,14 +358,37 @@ async function run(query, mode = 'auto') {
   setMode('answers');
   renderSide();
   // the answer on the map: its surahs light up in their colours, with a label each
-  const list = [...new Set([...(res.wordHits || []), ...res.verses.filter(v => !v.closestOnly).map(v => v.idx)])];
-  const shown = list.length > 400 ? [] : list;
-  state.galaxy.highlightVerses(shown, (v) => state.colorOf.get(state.engine.suraOf[v]) || 1);
+  const shown = answerVerses();
+  applyHighlight();
   state.galaxy.setGroups(answerGroups(res));
   state.galaxy.setFocusVerse(null);
   markHits();
   if (shown.length) state.galaxy.fitVerses(shown);
   else state.galaxy.home();
+}
+
+// What the galaxy lights up: the completed surahs in green while the khatma panel is open (Settings may turn it
+// off), otherwise the verses of the current answer. Hover-dwell (T050) borrows the highlight and calls this
+// again to give it back.
+function answerVerses() {
+  const res = state.result;
+  if (!res) return [];
+  const list = [...new Set([...(res.wordHits || []), ...res.verses.filter(v => !v.closestOnly).map(v => v.idx)])];
+  return list.length > 400 ? [] : list;
+}
+function greenVerses() {
+  // body[data-panel] (set by onOpen, cleared by onClose) and not panels.current, which still names the old
+  // panel while it collapses when another one is opened
+  if (document.body.dataset.panel !== 'khatma' || !state.prefs.showReadOnGalaxy) return null;
+  const out = [];
+  for (const n of surasRead(decodeRead(state.prefs.read), state.core.suras)) { const S = state.core.suras[n - 1]; for (let k = 0; k < S.ayas; k++) out.push(S.first + k); }
+  return out;
+}
+function applyHighlight() {
+  if (!state.galaxy) return;
+  const green = greenVerses();
+  if (green) state.galaxy.highlightVerses(green, () => 2);           // PALETTE[1], green
+  else state.galaxy.highlightVerses(answerVerses(), (v) => state.colorOf.get(state.engine.suraOf[v]) || 1);
 }
 
 // one colour per surah of the answer, in the order of the answer (same colours on the map and in the list)
@@ -386,7 +410,7 @@ const colorVar = (sn) => { const k = state.colorOf.get(sn); return k ? ` style="
 function clearResults() {
   state.result = null;
   state.colorOf = new Map();
-  state.galaxy.highlightVerses([]);
+  applyHighlight();
   state.galaxy.setGroups([]);
   markHits();
   const url = new URL(location.href); url.searchParams.delete('q'); history.replaceState(null, '', url);
@@ -1205,6 +1229,7 @@ async function play(i, fromUser = false) {
     if (state.audio !== au) return;
     const S = state.core.suras[s - 1];
     stopAudio(true);
+    markRecited(i);
     if (state.repeatLeft > 1) { state.repeatLeft--; play(i); return; }       // تكرار
     state.repeatLeft = state.repeat || 1;
     if (state.continuous && i + 1 < S.first + S.ayas) { selectVerse(i + 1, { scroll: true, fly: false, keepAudio: true }); play(i + 1); }
@@ -1243,26 +1268,54 @@ const DOCK_ICON = {
   settings: 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',
 };
 const TS = () => TOOL_S[state.lang] || TOOL_S.ar;
+const isPhone = () => matchMedia('(max-width: 860px)').matches;
+let metaP = null;
 function setupTools() {
   state.tools = createToolPanels({
     lang: () => state.lang, core: state.core,
     get prefs() { return state.prefs; },
     save: () => savePrefs(state.prefs),
     replace: (p) => { state.prefs = p; savePrefs(p); },
-    onReadChange: () => {},
+    // Tanzil page boundaries of the Madina Mushaf (604 pages), for the khatma plan
+    meta: () => (metaP = metaP || getJSON('data/mushaf_meta.json')),
+    // on a phone the sheet would hide the Mushaf: it closes; on a computer the drawer stays beside it
+    openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); },
+    readerVerse: () => (state.mode === 'study' && state.reader.sura ? state.reader.cur : null),
+    onReadChange: () => applyHighlight(),
     status: alertNote,
   });
-  const renderers = { settings: (body) => state.tools.settings(body) };
+  const renderers = {
+    khatma: (body, args) => state.tools.khatma(body, args),
+    settings: (body) => state.tools.settings(body),
+  };
   const ids = DOCK.filter(id => renderers[id]);
   $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
   $('#dock').hidden = !ids.length;
   state.panels = createPanels({
     dock: $('#dock'), tray: $('#tray'), renderers,
     titles: Object.fromEntries(DOCK.map(id => [id, () => TS()[id]])), closeLabel: () => TS().close,
-    onOpen: (id) => { document.body.dataset.panel = id; },
-    onClose: () => { delete document.body.dataset.panel; },
+    onOpen: (id) => { document.body.dataset.panel = id; if (id === 'khatma') applyHighlight(); },
+    onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma') applyHighlight(); },
   });
   labelDock();
+}
+// a verse recited to its end in the reader counts as read (Settings: «count a verse as read…»), in this browser only
+function markRecited(i) {
+  const P = state.prefs;
+  if (!P.autoMark) return;
+  const bits = decodeRead(P.read);
+  if (isRead(bits, i)) return;
+  const before = surasRead(bits, state.core.suras).length;
+  markRead(bits, i);
+  P.read = encodeRead(bits);
+  const day = ymd(new Date());
+  P.log = P.log || {}; P.log[day] = (P.log[day] || 0) + 1;
+  savePrefs(P);
+  if (state.panels.current === 'khatma') {
+    const body = $('#p-khatma .p-body'), top = body.scrollTop;
+    state.tools.khatma(body).then(() => { body.scrollTop = top; });
+  }
+  if (surasRead(bits, state.core.suras).length !== before) applyHighlight();   // a surah just turned green
 }
 function labelDock() {
   $('#dock').setAttribute('aria-label', TS().dock);

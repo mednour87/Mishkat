@@ -6,25 +6,37 @@ import { N_PAGES, todayPortion, pagesRead, countRead, markRead, unmarkRead, enco
 import { exportPrefs, importPrefs, resetPrefs, DEFAULTS } from './prefs.js';
 
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const arDigits = (n) => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+// Arabic counted noun: 1 and 2 by the noun alone, 3–10 plural, 11–99 singular accusative, 100… singular
+// («يوم واحد، يومان، ٧ أيام، ٣٠ يومًا، ١٠٠ يوم»). n: a number or Arabic-Indic digits.
+export function arCount(n, [one, two, few, many, sing]) {
+  const k = +String(n).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)), r = k % 100, d = arDigits(n);
+  if (k === 1) return one;
+  if (k === 2) return two;
+  if (r >= 3 && r <= 10) return `${d} ${few}`;
+  if (r >= 11) return `${d} ${many}`;
+  return `${d} ${sing}`;
+}
+const DAYS = ['يوم واحد', 'يومان', 'أيام', 'يومًا', 'يوم'], PAGES = ['صفحة واحدة', 'صفحتان', 'صفحات', 'صفحة', 'صفحة'], AYAS = ['آية واحدة', 'آيتان', 'آيات', 'آية', 'آية'];
 
 export const S = {
   ar: {
     dock: 'الأدوات', khatma: 'الختمة', hijri: 'التقويم الهجري', links: 'روابط مفيدة', settings: 'الإعدادات', close: 'إغلاق',
     // khatma
     kIntro: 'خطة شخصية لختم القرآن: تُقسَّم صفحات المصحف (٦٠٤ صفحات) على الأيام التي تختارها وعلى أوقاتك، ويُعاد توزيع الباقي تلقائيًا إذا فاتك يوم.',
-    kDays: 'المدة', kDaysN: (n) => `${n} يومًا`, kCustom: 'عدد آخر من الأيام', kStart: 'تاريخ البدء', kMoments: 'أوقات القراءة',
+    kDays: 'المدة', kDaysN: (n) => arCount(n, DAYS), kCustom: 'عدد آخر من الأيام', kStart: 'تاريخ البدء', kMoments: 'أوقات القراءة',
     kMoment: { fajr: 'بعد الفجر', morning: 'في الصباح', noon: 'بعد الظهر', asr: 'بعد العصر', maghrib: 'بعد المغرب', night: 'قبل النوم', other: 'وقت آخر' },
     kAddMoment: '+ وقت آخر', kRemove: 'حذف', kBegin: 'ابدأ الختمة', kDay: (k, n) => `اليوم ${k} من ${n}`,
     kToday: 'وِرد اليوم', kPages: (a, b) => a === b ? `صفحة ${a}` : `الصفحات ${a}–${b}`, kRead: 'اقرأ', kDone: '✓ قرأته', kUndo: 'تراجع',
-    kProgress: (p, n) => `${p} من ${n} صفحة`, kBehind: (n) => `فاتك ${n} صفحة: وُزِّع الباقي على الأيام المتبقية.`, kFinished: 'أتممت الختمة — تقبّل الله منك. يمكنك بدء ختمة جديدة.',
+    kProgress: (p, n) => `${p} من ${n} صفحة`, kBehind: (n) => `فاتك ${arCount(n, PAGES)}: وُزِّع الباقي على الأيام المتبقية.`, kFinished: 'أتممت الختمة — تقبّل الله منك. يمكنك بدء ختمة جديدة.',
     kStats: 'إحصاءات', kVerses: 'آيات مقروءة', kWords: 'كلمات مقروءة', kSuras: 'سور أتممتها', kStreak: 'أيام متتالية', kSurasList: 'السور المكتملة (خضراء في المجرّة):',
     kIcs: 'تذكيرات في التقويم (.ics)', kIcsHelp: 'ملف تفتحه في تقويم هاتفك أو حاسوبك: تذكير في كل وقت من أوقاتك بوِرد ذلك اليوم.',
-    kMarkHere: (r) => `علّم حتى الآية المفتوحة (${r}) كمقروءة`, kStop: 'إلغاء الخطة', kStopQ: 'إلغاء الخطة؟ تبقى الآيات المقروءة محفوظة.', kGalaxy: 'أظهر السور المكتملة في المجرّة',
+    kMarkHere: (r) => `علّم حتى الآية المفتوحة (${r}) كمقروءة`, kMarkHereQ: (r, n) => `تعليم كل الآيات من أول المصحف حتى ${r} (${arCount(n, AYAS)}) كمقروءة؟`, kStop: 'إلغاء الخطة', kStopQ: 'إلغاء الخطة؟ تبقى الآيات المقروءة محفوظة.', kGalaxy: 'أظهر السور المكتملة في المجرّة',
     kAutoNote: 'تُحسب الآية مقروءة عند الاستماع إلى تلاوتها كاملة في المصحف، أو عند الضغط على «قرأته».',
     kIcsTitle: 'مشكاة — وِرد الختمة', kIcsPart: (p) => `${p.moment.label}: ${p.from === p.to ? 'صفحة ' + p.from : 'الصفحات ' + p.from + '–' + p.to} (اليوم ${p.day})`,
     // hijri
     hToday: 'اليوم', hConv: 'تحويل التاريخ', hToH: 'ميلادي ← هجري', hToG: 'هجري ← ميلادي', hDay: 'اليوم', hMonth: 'الشهر', hYear: 'السنة', hConvert: 'حوّل',
-    hNoDay: 'هذا اليوم غير موجود في تقويم أم القرى.', hUpcoming: 'أيام فاضلة قادمة', hIn: (n) => n === 0 ? 'اليوم' : n === 1 ? 'غدًا' : `بعد ${n} يومًا`, hOngoing: 'جارٍ الآن',
+    hNoDay: 'هذا اليوم غير موجود في تقويم أم القرى.', hUpcoming: 'أيام فاضلة قادمة', hIn: (n) => n === 0 ? 'اليوم' : n === 1 ? 'غدًا' : n === 2 ? 'بعد يومين' : `بعد ${arCount(n, DAYS)}`, hOngoing: 'جارٍ الآن',
     hEvidence: 'الدليل', hVerses: 'من القرآن الكريم', hHadith: 'من السنة النبوية (HadeethEnc)', hGrade: 'الدرجة', hOpen: 'افتح الحديث في موسوعة الأحاديث النبوية',
     hNoEn: 'هذا الحديث غير متوفر بالإنجليزية في الموسوعة؛ نعرضه بالعربية.',
     hNote: 'التاريخ محسوب بتقويم أم القرى في متصفحك. بداية الشهر تتبع رؤية الهلال التي تعلنها الجهات الرسمية في بلدك؛ يمكنك ضبط الفرق (± يومان) في الإعدادات.',
@@ -44,10 +56,10 @@ export const S = {
     kMoment: { fajr: 'After Fajr', morning: 'Morning', noon: 'After Dhuhr', asr: 'After Asr', maghrib: 'After Maghrib', night: 'Before sleeping', other: 'Other time' },
     kAddMoment: '+ another moment', kRemove: 'Remove', kBegin: 'Start the khatma', kDay: (k, n) => `Day ${k} of ${n}`,
     kToday: 'Today’s portion', kPages: (a, b) => a === b ? `Page ${a}` : `Pages ${a}–${b}`, kRead: 'Read', kDone: '✓ Done', kUndo: 'Undo',
-    kProgress: (p, n) => `${p} of ${n} pages`, kBehind: (n) => `${n} pages behind: the rest is spread over the days left.`, kFinished: 'Khatma completed — may Allah accept it from you. You can start a new one.',
+    kProgress: (p, n) => `${p} of ${n} pages`, kBehind: (n) => `${n} ${+n === 1 ? 'page' : 'pages'} behind: the rest is spread over the days left.`, kFinished: 'Khatma completed — may Allah accept it from you. You can start a new one.',
     kStats: 'Statistics', kVerses: 'Verses read', kWords: 'Words read', kSuras: 'Surahs completed', kStreak: 'Days in a row', kSurasList: 'Completed surahs (green on the galaxy):',
     kIcs: 'Calendar reminders (.ics)', kIcsHelp: 'A file to open in your phone or computer calendar: a reminder at each of your moments with that day’s portion.',
-    kMarkHere: (r) => `Mark up to the open verse (${r}) as read`, kStop: 'Cancel the plan', kStopQ: 'Cancel the plan? The verses read stay saved.', kGalaxy: 'Show completed surahs on the galaxy',
+    kMarkHere: (r) => `Mark up to the open verse (${r}) as read`, kMarkHereQ: (r, n) => `Mark every verse from the start of the Mushaf up to ${r} (${n} verses) as read?`, kStop: 'Cancel the plan', kStopQ: 'Cancel the plan? The verses read stay saved.', kGalaxy: 'Show completed surahs on the galaxy',
     kAutoNote: 'A verse counts as read when you listen to its full recitation in the Mushaf, or when you press “Done”.',
     kIcsTitle: 'Mishkat — khatma portion', kIcsPart: (p) => `${p.moment.label}: ${p.from === p.to ? 'page ' + p.from : 'pages ' + p.from + '–' + p.to} (day ${p.day})`,
     hToday: 'Today', hConv: 'Convert a date', hToH: 'Gregorian → Hijri', hToG: 'Hijri → Gregorian', hDay: 'Day', hMonth: 'Month', hYear: 'Year', hConvert: 'Convert',
@@ -99,7 +111,12 @@ export function createToolPanels(ctx) {
   const download = (name, text, type) => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500); };
   let wordsPerVerse = null;
   const wordCount = (bits) => {
-    if (!wordsPerVerse) wordsPerVerse = ctx.core.verses.map(v => v.split(/\s+/).filter(w => /[ء-يٱ]/.test(w)).length);
+    // the basmala Tanzil writes before verse 1 of each surah (but al-Fatiha and at-Tawba) is not counted:
+    // the whole Quran then has 77,433 words, as in the galaxy
+    if (!wordsPerVerse) {
+      const firsts = new Set(ctx.core.suras.filter(s => s.n !== 1 && s.n !== 9).map(s => s.first));
+      wordsPerVerse = ctx.core.verses.map((v, i) => v.split(/\s+/).filter(w => /[ء-يٱ]/.test(w)).length - (firsts.has(i) ? 4 : 0));
+    }
     let n = 0; for (let i = 0; i < wordsPerVerse.length; i++) if ((bits[i >> 3] >> (i & 7)) & 1) n += wordsPerVerse[i];
     return n;
   };
@@ -169,7 +186,7 @@ export function createToolPanels(ctx) {
     const mark = (a, b, on) => { const B = decodeRead(P.read); const before = countRead(B); (on ? markRead : unmarkRead)(B, a, b); P.read = encodeRead(B); const k = ymd(new Date()); P.log = P.log || {}; P.log[k] = Math.max(0, (P.log[k] || 0) + countRead(B) - before); ctx.save(); ctx.onReadChange(); khatma(body); };
     body.querySelectorAll('[data-go]').forEach(b => b.onclick = () => ctx.openVerse(+b.dataset.go));
     body.querySelectorAll('[data-mark]').forEach(b => b.onclick = () => { const p = tp.parts[+b.dataset.mark]; const all = countRead(bits, p.verses[0], p.verses[1]) === p.verses[1] - p.verses[0] + 1; mark(p.verses[0], p.verses[1], !all); });
-    const kh = body.querySelector('#kHere'); if (kh) kh.onclick = () => mark(0, here, true);
+    const kh = body.querySelector('#kHere'); if (kh) kh.onclick = () => { if (confirm(t.kMarkHereQ(refOf(here).label, num(here + 1)))) mark(0, here, true); };
     body.querySelector('#kGal').onchange = (ev) => { P.showReadOnGalaxy = ev.target.checked; ctx.save(); ctx.onReadChange(); };
     body.querySelector('#kIcs').onclick = () => download('mishkat-khatma.ics', planToIcs(plan, pages, { title: t.kIcsTitle, describe: (p) => t.kIcsPart(p), url: location.origin + location.pathname }), 'text/calendar');
     body.querySelector('#kStop').onclick = () => { if (confirm(t.kStopQ)) { P.khatma = { ...P.khatma, active: false }; ctx.save(); ctx.onReadChange(); khatma(body); } };
