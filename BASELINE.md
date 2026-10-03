@@ -2,7 +2,7 @@
 
 The challenge rules allow pre-existing work if its baseline is disclosed before 4 October 2026; only work done during the challenge (4 October 09:00 – 6 October 23:59, Riyadh time) is evaluated. This file documents, honestly and with fingerprints, **everything** that existed before the window.
 
-**Last commit before this disclosure: `1b256d2`**; the git tag `baseline-2026-10-03` is placed on the commit that adds this file. Every commit after that tag is challenge work.
+**Last commit before this disclosure: `5ac0a96`**; the git tag `baseline-2026-10-03` is placed on the commit that adds this file. Every commit after that tag is challenge work.
 
 ## 1. Pre-existing project: “Quran Cartography” (author’s own, July–August 2026)
 - A letter- and word-level database of the Quran (`quran.db`: 6,236 verses, 77,433 words, 326,159 letters) built from the Tanzil text, with a semantic colour layer (names of Allah, prophets, angels, Satan).
@@ -14,9 +14,9 @@ The challenge rules allow pre-existing work if its baseline is disclosed before 
 For full transparency: this repository was written and deployed (private preview) **before** the window, while preparing the application and after its acceptance. All of it is part of the declared baseline and is not presented as challenge work:
 - 28–29 Sep: engine (routing, BM25, guard, closed-list AI selection, quote verifier), WebGL galaxy, reader with synchronised recitation, tests, evaluation, documentation (v2).
 - 1–2 Oct: v3–v8 interface (three moments, Mushaf + tafsir study, logo), spoken queries, reference-pack integration (answer levels A–D, Quranpedia subject index, glossary), Web Worker search, published fatwas (binbaz.org.sa), Sunnah section (HadeethEnc), hybrid semantic search (bge-m3), Qur'an QA 2023 benchmark, deck, OpenRouter provider, private deployment on Cloudflare Pages.
-- 3 Oct: audit of errors (`01_PLAN/CARTOGRAPHIE_ERREURS_ET_AMELIORATIONS.md`), plan v5, execution files and code drafts (`05_EXECUTION/`), and the first corrections of that audit (tasks T010–T020: AI selection always runs, status questions without «هل», over-refusal bench, short answer only when AI-confirmed, circuit breakers, semantic ranking moved to the browser, sensitivity levels, spelling suggestions, Origin check, single confidence badge).
+- 3 Oct: audit of errors (`01_PLAN/CARTOGRAPHIE_ERREURS_ET_AMELIORATIONS.md`), plan v5, execution files and code drafts (`05_EXECUTION/`), and the first corrections of that audit (tasks T010–T020: AI selection always runs, status questions without «هل», over-refusal bench, short answer only when AI-confirmed, circuit breakers, semantic ranking moved to the browser, sensitivity levels, spelling suggestions, Origin check, single confidence badge); later the same day, at the author's request: the **extractive evidence-bound short answer (RAG)** — closed list of tafsir/hadith sentences, `/api/answer` composer + judge, verbatim display; tool modules not yet wired into the page (Hijri calendar, khatma plan with .ics, panels, local preferences); bootstrap confidence intervals of the public benchmark; the benefit-measurement kit (blind rating sheet vs a general chatbot, automatic check of chatbot quotations, user-test protocol with SUS).
 
-### 2.1 Dated commits before the window (43)
+### 2.1 Dated commits before the window (44)
 | Commit | Date | Message |
 |---|---|---|
 | `f0b1b80` | 2026-09-29 | Mishkat v2 — declared baseline before the challenge window (29 Sep 2026) |
@@ -62,12 +62,13 @@ For full transparency: this repository was written and deployed (private preview
 | `97be32e` | 2026-10-03 | WIP (pre-window, declared): tool modules — router, Hijri calendar (Intl Umm al-Qura), khatma plan + .ics, exclusive panels, local prefs, panel rendering ar/en; Tanzil page/juz metadata. Not wired into the page yet. |
 | `7184ac0` | 2026-10-03 | RAG v5 (pre-window, declared): extractive evidence-bound short answer — closed list of numbered tafsir/hadith sentences built in the browser, /api/answer composer (gpt-oss-120b) returns sentence IDs per concept, independent judg… |
 | `1b256d2` | 2026-10-03 | Honest figures and benefit measurement (pre-window, declared): bootstrap 95% CIs on Qur'an QA 2023 (MRR 0.609 [0.485-0.725], comparable to the published best, not better; dense gain not significant); blind A/B rating kit Mishkat… |
+| `5ac0a96` | 2026-10-03 | Baseline disclosure regenerated: everything up to 3 October 2026 (including tool modules, extractive RAG, confidence intervals and the measurement kit) |
 
 ### 2.2 Repository files at the baseline commit (339 files, snapshot 2026-10-03)
 | File | Bytes | SHA-256 (prefix) |
 |---|---|---|
 | `CHANGELOG.md` | 2,924 | `10993f9cda82c6e0…` |
-| `data_build/baseline_snapshot.py` | 5,477 | `5ea3ba59bb1b7ae1…` |
+| `data_build/baseline_snapshot.py` | 5,973 | `e25a825aa21bb4db…` |
 | `data_build/build_data.py` | 11,923 | `beccc50f574d6b7a…` |
 | `data_build/build_hadeeth.py` | 2,650 | `fc7cade2b0475cf3…` |
 | `data_build/build_latin_index.py` | 2,143 | `87955a6ffbbced35…` |
