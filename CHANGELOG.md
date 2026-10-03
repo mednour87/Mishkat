@@ -21,6 +21,7 @@ Audit of 3 October (`01_PLAN/CARTOGRAPHIE_ERREURS_ET_AMELIORATIONS.md`) and firs
 ## Preparation after the baseline tag (declared, not challenge work) — evening of 3 October 2026
 Done at the author's request before the window opens; commits after the tag `baseline-2026-10-03`, dated 3 October, declared in `BASELINE.md` §2.4. They wire the tool modules written earlier that day (`public/js/tools.js`, `hijri.js`, `khatma.js`, `panels.js`, `prefs.js`, `toolpanels.js`, all in the baseline).
 - T060 (E0): dock of tool icons under the search bar; exclusive panels (one open at a time, a second click or Escape closes, Escape no longer also closes the reader while a panel is open); drawer over the side column on a computer (the galaxy stays visible, its toolbar reachable), bottom sheet on a phone; height/opacity animation off with `prefers-reduced-motion`; a search closes the open panel. Reuses `panels.js` and the strings of `toolpanels.js`.
+- T061 (E1, part): «الإعدادات / Settings» panel — Hijri day difference (± 2), count a verse as read when its recitation is heard to the end, show completed surahs on the galaxy; the visitor's data (settings, khatma, verses read) kept in this browser only, with download / restore / erase. Reuses `prefs.js` and `toolpanels.js`. Test `tests/prefs.test.mjs` (round trip, foreign file refused, blocked storage).
 
 ## Challenge — 4 October 2026
 - (to be filled with the work done during the challenge window)

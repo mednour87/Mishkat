@@ -7,7 +7,8 @@ import { listen, stopListening, cancelListening, voiceSupported } from './voice.
 import { createSpeaker } from './speech.js';
 import { PALETTE } from './galaxy.js';
 import { createPanels } from './panels.js';
-import { S as TOOL_S } from './toolpanels.js';
+import { createToolPanels, S as TOOL_S } from './toolpanels.js';
+import { loadPrefs, savePrefs } from './prefs.js';
 
 // Three moments, one current verse (body[data-mode]):
 //   home    — the galaxy alone, with a suggestion card in the middle (can be closed);
@@ -39,7 +40,7 @@ const state = {
   qs: +store.get('qs', '1') || 1, ts: +store.get('ts', '1') || 1,
   showTranslit: store.get('tl', '1') === '1', showTr: store.get('tr', '1') === '1',
   pane: 'r', tts: false, mode: 'home', playMode: 'one', suggestClosed: false, colorOf: new Map(),
-  panels: null, tools: null,
+  panels: null, tools: null, prefs: loadPrefs(),     // prefs + khatma: this browser only (js/prefs.js)
 };
 
 // ------------------------------------------------------------------ i18n
@@ -1243,7 +1244,15 @@ const DOCK_ICON = {
 };
 const TS = () => TOOL_S[state.lang] || TOOL_S.ar;
 function setupTools() {
-  const renderers = {};
+  state.tools = createToolPanels({
+    lang: () => state.lang, core: state.core,
+    get prefs() { return state.prefs; },
+    save: () => savePrefs(state.prefs),
+    replace: (p) => { state.prefs = p; savePrefs(p); },
+    onReadChange: () => {},
+    status: alertNote,
+  });
+  const renderers = { settings: (body) => state.tools.settings(body) };
   const ids = DOCK.filter(id => renderers[id]);
   $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
   $('#dock').hidden = !ids.length;
