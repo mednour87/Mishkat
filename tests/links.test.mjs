@@ -4,7 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { LINKS } from '../public/js/toolpanels.js';
 
-const REVIEWED = ['quranenc.com', 'quranpedia.net', 'dorar.net', 'tanzil.net', 'qurancomplex.gov.sa', 'hadeethenc.com', 'shamela.ws', 'binbaz.org.sa', 'alifta.gov.sa', 'bayenat.net', 'dawa.center'];
+const REVIEWED = ['quranenc.com', 'quranpedia.net', 'dorar.net', 'tanzil.net', 'qurancomplex.gov.sa', 'hadeethenc.com', 'shamela.ws', 'alifta.gov.sa', 'bayenat.net', 'dawa.center', 'islamic-content.com'];
 
 test('links: reviewed sites only, https, Arabic and English names', () => {
   let n = 0;

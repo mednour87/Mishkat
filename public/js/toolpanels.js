@@ -101,12 +101,12 @@ export const LINKS = [
     ['https://hadeethenc.com', 'موسوعة الأحاديث النبوية المترجمة', 'HadeethEnc — translated hadith encyclopedia'],
     ['https://shamela.ws', 'المكتبة الشاملة', 'Al-Maktaba al-Shamela'] ] },
   { cat: { ar: 'الفتوى', en: 'Fatwa' }, items: [
-    ['https://binbaz.org.sa', 'الموقع الرسمي لسماحة الشيخ ابن باز', 'Official site of Sheikh Ibn Baz'],
     ['https://alifta.gov.sa', 'الرئاسة العامة للبحوث العلمية والإفتاء', 'General Presidency of Scholarly Research and Ifta'],
     ['https://dorar.net/feqhia', 'الموسوعة الفقهية — الدرر السنية', 'Fiqh encyclopedia — Dorar'] ] },
   { cat: { ar: 'الرد على الشبهات والدعوة', en: 'Answering objections and da‘wah' }, items: [
     ['https://bayenat.net/ar', 'بيّنات: أسئلة وأجوبة عن الإسلام', 'Bayyinat: questions and answers about Islam'],
-    ['https://dawa.center', 'المستودع الدعوي الرقمي', 'Digital Da‘wah Repository'] ] },
+    ['https://dawa.center', 'المستودع الدعوي الرقمي', 'Digital Da‘wah Repository'],
+    ['https://islamic-content.com', 'موسوعة الجمهرة — مفردات المحتوى الإسلامي', 'Al-Jamhara — Islamic content encyclopedia'] ] },
 ];
 
 const PRESETS = [7, 10, 15, 20, 30, 40, 60];
