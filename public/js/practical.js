@@ -431,5 +431,8 @@ export function createPractical(ctx) {
     }
   }, 5000);
 
-  return { prayer, qibla, mosques, stop: () => { gen++; clearInterval(timer); if (ctx.scene) ctx.scene(null); if (orient) { window.removeEventListener('deviceorientationabsolute', orient); window.removeEventListener('deviceorientation', orient); orient = null; } } };
+  // T098: the same place picker in the first-visit step (before the presentation film), and the chosen place for others
+  const pickPlace = async (el, done) => { await restorePlace(); picker(el, done); };
+  const current = () => place();
+  return { prayer, qibla, mosques, pickPlace, place: current, placeName: () => placeName(place()), stop: () => { gen++; clearInterval(timer); if (ctx.scene) ctx.scene(null); if (orient) { window.removeEventListener('deviceorientationabsolute', orient); window.removeEventListener('deviceorientation', orient); orient = null; } } };
 }

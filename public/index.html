@@ -7,8 +7,15 @@
 <meta name="description" content="Mishkat — ask the Quran galaxy: every answer quoted from vetted tafsir, every verse from the Tanzil text, synchronised recitation, abstains when unsure. Arabic · English.">
 <meta name="theme-color" content="#05070d">
 <link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="مشكاة">
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/features.css">
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 </head>
 <body>
@@ -27,7 +34,10 @@
     </button>
   </form>
   <div class="hright">
+    <button type="button" id="khCount" class="khc" hidden></button>
     <nav id="dock" hidden></nav>
+    <button type="button" id="engBtn" class="hbtn engb"><canvas width="30" height="30" aria-hidden="true"></canvas></button>
+    <button type="button" id="btnInstall" class="hbtn" hidden><span aria-hidden="true">⤓</span> <span class="hl" data-i18n="installApp">ثبّت</span></button>
     <button id="btnMenu" class="hbtn" data-i18n-title="menuTitle"><span aria-hidden="true">✦</span> <span class="hl" data-i18n="menu">اهتماماتي</span></button>
     <button id="btnAbout" class="hbtn" data-i18n-title="about"><span aria-hidden="true">ⓘ</span> <span class="hl" data-i18n="about">عن مشكاة</span></button>
     <button id="themeBtn" class="icon" data-i18n-aria="themeLabel">☾</button>
@@ -56,6 +66,7 @@
       <aside id="lampDock" aria-live="off">
         <div id="lampSlot"></div>
         <div id="lampRef"></div>
+        <div id="hud" hidden></div>
       </aside>
       <div id="gtools" role="toolbar" data-i18n-aria="gTools">
         <button id="gHome" data-i18n-title="home" data-i18n-aria="home">⌂</button>

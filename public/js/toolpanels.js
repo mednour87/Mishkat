@@ -54,6 +54,10 @@ export const S = {
     sReading: 'القراءة والتلاوة', sSpeed: 'سرعة التلاوة', sFont: 'حجم خط المصحف', sSmaller: 'أصغر', sLarger: 'أكبر',
     sScroll: 'احسب الآية مقروءة عند قراءتها بالتمرير (تبقى عند سطر القراءة وقتًا كافيًا ثم تتجاوزها)',
     sKhatmaSec: 'الختمة', sOpenKhatma: 'افتح الختمة', sHijriSec: 'التقويم الهجري', sOpenHijri: 'افتح التقويم والتحويل',
+    sYou: 'أنت', sAge: 'العمر', sChild: 'أقل من ١٨ سنة', sAdult: '١٨ سنة فأكثر', sAgeHelp: 'لمن هو أقل من ١٨ سنة: لا تُعرض فتاوى، ويقترح عليك «مشكاة» حفظ سورة وفهم معانيها.',
+    sIntro: 'شاهد فيلم التعريف بمشكاة', sInstall: 'ثبّت التطبيق على هذا الجهاز',
+    kProposal: (n, p) => `خطة مقترحة: ختمة في ${arCount(n, DAYS)}، نحو ${arCount(p, PAGES)} كل يوم، موزّعة على أوقاتك. عدّل المدة والأوقات حسب التزاماتك ثم اضغط «ابدأ الختمة».`,
+    kProposalActive: 'لديك خطة ختمة جارية؛ هذا تقدّمك. يمكنك إلغاؤها وبدء خطة جديدة بمدة أخرى تناسب التزاماتك.',
   },
   en: {
     dock: 'Tools', khatma: 'Khatma', hijri: 'Hijri calendar', links: 'Useful links', settings: 'Settings', close: 'Close',
@@ -84,6 +88,10 @@ export const S = {
     sDisplay: 'Display', sLang: 'Language', sTheme: 'Theme', sDark: 'Dark', sLight: 'Light', sNames: 'Surah names on the galaxy', sRotate: 'Galaxy turns by itself',
     sReading: 'Reading and recitation', sSpeed: 'Recitation speed', sFont: 'Mushaf text size', sSmaller: 'Smaller', sLarger: 'Larger',
     sScroll: 'Count a verse as read when read by scrolling (it stays at the reading line long enough, then you scroll on)',
+    sYou: 'You', sAge: 'Age', sChild: 'Under 18', sAdult: '18 or over', sAgeHelp: 'Under 18: no fatwas are shown, and Mishkat suggests memorising a surah and understanding its meanings.',
+    sIntro: 'Watch the Mishkat presentation film', sInstall: 'Install the app on this device',
+    kProposal: (n, p) => `A proposed plan: the whole Quran in ${n} days, about ${p} pages a day, spread over your reading times. Change the length and times to fit your commitments, then press “Start the khatma”.`,
+    kProposalActive: 'You already have a khatma plan running; here is your progress. You can cancel it and start a new plan of another length that fits your commitments.',
     sKhatmaSec: 'Khatma', sOpenKhatma: 'Open the khatma', sHijriSec: 'Hijri calendar', sOpenHijri: 'Open the calendar and converter',
   },
 };
@@ -141,7 +149,8 @@ export function createToolPanels(ctx) {
     if (!kp.active) {
       const days = args.days || kp.days || 30;
       const moments = kp.moments && kp.moments.length ? kp.moments : DEFAULTS.khatma.moments;
-      body.innerHTML = `<p class="p-lead">${esc(t.kIntro)}</p>
+      const prop = args.days ? `<p class="k-proposal">${esc(t.kProposal(num(days), num(Math.ceil(N_PAGES / days))))}</p>` : '';
+      body.innerHTML = `${prop}<p class="p-lead">${esc(t.kIntro)}</p>
         <fieldset class="p-field"><legend>${esc(t.kDays)}</legend><div class="chips">${PRESETS.map(n => `<label class="chip"><input type="radio" name="kd" value="${n}" ${n === days ? 'checked' : ''}> ${esc(t.kDaysN(num(n)))}</label>`).join('')}</div>
           <label class="p-row">${esc(t.kCustom)} <input type="number" id="kdN" min="1" max="1000" value="${PRESETS.includes(days) ? '' : days}" inputmode="numeric"></label></fieldset>
         <label class="p-row">${esc(t.kStart)} <input type="date" id="kStart" value="${ymd(new Date())}"></label>
@@ -171,7 +180,7 @@ export function createToolPanels(ctx) {
     const done = pagesRead(bits, pages), nRead = countRead(bits);
     const greens = surasRead(bits, ctx.core.suras);
     const here = ctx.readerVerse();
-    let h = `<div class="k-prog" role="progressbar" aria-valuemin="0" aria-valuemax="${N_PAGES}" aria-valuenow="${done}"><span style="width:${(100 * done / N_PAGES).toFixed(1)}%"></span></div>
+    let h = (args.days ? `<p class="k-proposal">${esc(t.kProposalActive)}</p>` : '') + `<div class="k-prog" role="progressbar" aria-valuemin="0" aria-valuemax="${N_PAGES}" aria-valuenow="${done}"><span style="width:${(100 * done / N_PAGES).toFixed(1)}%"></span></div>
       <p class="p-row k-sum"><b>${esc(t.kProgress(num(done), num(N_PAGES)))}</b> · ${esc(t.kDay(num(Math.max(1, tp.day)), num(kp.days)))}</p>`;
     if (tp.finished) h += `<p class="k-ok">${esc(t.kFinished)}</p>`;
     else {
@@ -278,6 +287,8 @@ export function createToolPanels(ctx) {
         `<div class="s-line"><span>${esc(t.sSpeed)}</span>${seg('sSpeed', [0.75, 1, 1.25, 1.5].map(x => [String(x), '×' + x]), String(U.speed()))}</div>
         <div class="s-line"><span>${esc(t.sFont)}</span><div class="seg" role="group"><button type="button" id="sFm">A− ${esc(t.sSmaller)}</button><button type="button" id="sFp">A+ ${esc(t.sLarger)}</button></div></div>
         ${check('sAuto', P.autoMark, t.sAuto)}${check('sScroll', P.scrollMark, t.sScroll)}${check('sWelcome', P.welcomeVoice !== false, t.sWelcome)}`) : sec(t.sReading, check('sAuto', P.autoMark, t.sAuto) + check('sScroll', P.scrollMark, t.sScroll)))
+      + (U && U.age ? sec(t.sYou, `<div class="s-line"><span>${esc(t.sAge)}</span>${seg('sAge', [['child', t.sChild], ['adult', t.sAdult]], U.age() || '')}</div><p class="p-small">${esc(t.sAgeHelp)}</p>
+        <div class="k-btns"><button type="button" class="mini" id="sIntro">▶ ${esc(t.sIntro)}</button><button type="button" class="mini gold" id="sInst">⤓ ${esc(t.sInstall)}</button></div>`) : '')
       + sec(t.sKhatmaSec, `${check('sGal', P.showReadOnGalaxy, t.sGalaxy)}${U ? `<button type="button" class="mini gold" id="sGoK">${esc(t.sOpenKhatma)}</button>` : ''}`)
       + sec(t.sHijriSec, `<label class="p-row">${esc(t.hAdj)} <select id="sHj">${[-2, -1, 0, 1, 2].map(n => `<option value="${n}" ${n === (+P.hijriAdjust || 0) ? 'selected' : ''}>${esc(t.hAdjN(n))}</option>`).join('')}</select></label>
         <p class="p-small">${esc(t.sHijriHelp)}</p>${U ? `<button type="button" class="mini gold" id="sGoH">${esc(t.sOpenHijri)}</button>` : ''}`)
@@ -291,6 +302,7 @@ export function createToolPanels(ctx) {
       segOn('sLang', (v) => U.setLang(v));                 // the page redraws this panel in the new language
       segOn('sTheme', (v) => U.setTheme(v));
       segOn('sSpeed', (v) => U.setSpeed(+v));
+      if (U.age) { segOn('sAge', (v) => U.setAge(v)); $b('#sIntro').onclick = () => U.replayIntro(); $b('#sInst').onclick = () => U.install(); }
       $b('#sNames').onchange = (ev) => U.setNames(ev.target.checked);
       const sw = $b('#sWelcome'); if (sw) sw.onchange = (ev) => { P.welcomeVoice = ev.target.checked; ctx.save(); };
       $b('#sRot').onchange = (ev) => U.setRotate(ev.target.checked);

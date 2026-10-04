@@ -1,4 +1,4 @@
-import { createEngine, detectLang, guardCheck, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens } from './engine.js';
+import { createEngine, detectLang, guardCheck, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens, isCrisis, isSensitiveText } from './engine.js';
 import { routeTool } from './tools.js';
 import { wordFacts } from './dwell.js';
 import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
@@ -13,9 +13,40 @@ import { createToolPanels, S as TOOL_S } from './toolpanels.js';
 import { loadPrefs, savePrefs } from './prefs.js';
 import { decodeRead, encodeRead, markRead, isRead, surasRead, ymd } from './khatma.js';
 import { miniLamp, openLampMap, progressOf } from './lampmap.js';
-import { createPractical, PS as PRACT_S } from './practical.js';
+import { createPractical, PS as PRACT_S, qiblaBearing } from './practical.js';
 import { createAthkar, AS as ATHKAR_S } from './athkar.js';
 import qrcode from '../vendor/qrcode/qrcode.js';
+import { mapQuestion, islamicRest, normQ, SCOPE_S } from './scope.js';
+import { noteRead, checkKhatma, rollMonth, monthPct, weekly, rewardScore, engagement, hifzProgress } from './progress.js';
+import { createTekrar, TK } from './tekrar.js';
+import { createStats, ST } from './stats.js';
+import { drawMini, animateMini, EG } from './engage3d.js';
+import { setupPWA, openInstall, canPrompt, isStandalone, onInstallChange, PW } from './pwa.js';
+import { toHijri, formatHijri } from './hijri.js';
+import { colourToken, tokenOffsets, GROUPS as TJ_GROUPS, TJ_S } from './tajweed.js';
+
+// strings of the features added on 4 October (T090–T098), Arabic + English
+const X = {
+  ar: {
+    childTitle: 'سؤال جميل — بارك الله فيك', child: 'ما زلت صغيرًا، والفتوى يتولّاها العلماء الذين ختموا القرآن وتعلّموا تفسيره وأحكامه. «مشكاة» تساعدك الآن على أن تحفظ القرآن وتفهم معانيه خطوة بخطوة.',
+    childAsk: 'أيّ سورة تحبّ أن تحفظ؟', childGo: 'ابدأ الحفظ', childKhatma: 'أو ابدأ خطة ختمة', childParent: 'ويمكنك أن تسأل والديك أو معلّمك عن هذا السؤال.',
+    khatmaDone: (n) => `مبارك! أتممت ختم القرآن الكريم — هذه ختمتك رقم ${n}. تقبّل الله منك، والختمة الجديدة تبدأ الآن.`, khCount: (n) => `${n} ختمة`, khTitle: 'عدد الختمات',
+    hudRead: 'قراءة الشهر', hudHifz: 'حفظ الشهر', hudWeek: (r, g, a, h) => `هذا الأسبوع — قراءة: ${r} من ${g} آية · تكرار: ${a} من ${h} آية`, hudOpen: 'افتح خريطة التزامك',
+    placeTitle: 'أين أنت؟', placeLead: 'اختر بلدك ومدينتك، أو اسمح باستعمال موقعك، ليُضبط التقويم ومواقيت الصلاة والمساجد القريبة والتذكير. يُحفظ في متصفحك فقط.', placeLater: 'لاحقًا', placeOk: (p) => `تم: ${p}`,
+    svcTitle: 'خدمات مشكاة لهذه السورة:', svcTekrar: '↻ احفظها بالتكرار', svcStats: '📊 إحصاءاتها',
+    engBtn: 'مستوى التزامك', install: 'ثبّت', age: 'العمر', childAge: 'أقل من ١٨', adultAge: '١٨ فأكثر',
+  },
+  en: {
+    childTitle: 'A lovely question — may Allah bless you', child: 'You are still young, and fatwas belong to scholars who completed the Quran and learned its explanation and rulings. Mishkat helps you now to memorise the Quran and understand its meanings step by step.',
+    childAsk: 'Which surah would you like to memorise?', childGo: 'Start memorising', childKhatma: 'or start a khatma plan', childParent: 'You can also ask your parents or your teacher about this question.',
+    khatmaDone: (n) => `Mabrook! You completed the whole Quran — this is your khatma number ${n}. May Allah accept it from you; the new khatma starts now.`, khCount: (n) => `${n} khatma${n === 1 ? '' : 's'}`, khTitle: 'Khatmas',
+    hudRead: 'read this month', hudHifz: 'memorised', hudWeek: (r, g, a, h) => `This week — reading: ${r} of ${g} verses · repetition: ${a} of ${h} verses`, hudOpen: 'Open your engagement map',
+    placeTitle: 'Where are you?', placeLead: 'Choose your country and city, or allow your location, to set the calendar, prayer times, nearby mosques and reminders. Kept in your browser only.', placeLater: 'Later', placeOk: (p) => `Done: ${p}`,
+    svcTitle: 'Mishkat services for this surah:', svcTekrar: '↻ Memorise it by repetition', svcStats: '📊 Its statistics',
+    engBtn: 'Your engagement level', install: 'Install', age: 'Age', childAge: 'Under 18', adultAge: '18 or over',
+  },
+};
+const XS = () => X[state.lang] || X.ar;
 
 // Three moments, one current verse (body[data-mode]):
 //   home    — the galaxy alone, with a suggestion card in the middle (can be closed);
@@ -49,6 +80,7 @@ const state = {
   pane: 'r', tts: false, mode: 'home', playMode: 'one', suggestClosed: false, colorOf: new Map(),
   panels: null, tools: null, prefs: loadPrefs(),     // prefs + khatma: this browser only (js/prefs.js)
   dwell: null,                                        // hover-dwell on a word of the galaxy (D1)
+  tjOn: store.get('tj', '0') === '1', tajweedData: new Map(),   // T099 tajweed colours in the reader
 };
 
 // ------------------------------------------------------------------ i18n
@@ -82,6 +114,7 @@ function applyLang(lang) {
   $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice()));
   $('#aiBadge').textContent = t.ai(state.llmModel);
   labelDock();
+  if (state.core) refreshHud();
   if (state.panels) state.panels.refresh();
   if (!$('#welcome').hidden && state.core) openWelcome();
   if (state.engine) {
@@ -160,6 +193,8 @@ async function askEngine(query, opts) {
 function setLoad(i) { $('#loadMsg').textContent = T().loading[i]; }
 
 async function boot() {
+  setupPWA();
+  applyChild();
   applyLang(pickLang());
   setLoad(0);
   const [core, searchAr] = await Promise.all([getJSON('data/core.json'), getJSON('data/search_ar.json')]);
@@ -243,6 +278,8 @@ async function boot() {
   $('#lampSlot').innerHTML = lampSVG({ size: 132, word: true, title: 'Mishkat' });
   refreshMiniLamp();
   $('#lampSlot').onclick = () => openKhatmaMap();
+  refreshHud();
+  setupHeaderExtras();
   { const sh = store.get('shape', 'galaxy'), od = store.get('order', 'mushaf'); if (sh !== 'galaxy' || od !== 'mushaf') setView(sh, od, { quiet: true }); }
   setNames(store.get('names', '1') === '1');
   const sp = new URL(location.href).searchParams;
@@ -257,7 +294,7 @@ async function boot() {
   } else if (!sp.get('q')) {
     // the reference view once the galaxy zone has its final size (the first one used a provisional size)
     state.galaxy.home();
-    if (store.get('welcomed') !== '1' && !sp.get('tool')) openWelcome();
+    if (!sp.get('tool')) onboarding();
   }
   // a link to a tool (the QR code of the qibla on a computer opens the qibla on the phone)
   if (sp.get('tool') && state.panels && (state.toolIds || []).includes(sp.get('tool'))) state.panels.open(sp.get('tool'));
@@ -377,9 +414,20 @@ function openVoice() {
 // ------------------------------------------------------------ search
 async function run(query, mode = 'auto') {
   const t = T();
+  // T091–T093: the question is mapped before any search (js/scope.js) — a person in crisis always reaches the engine
+  if (mode === 'auto' && !isCrisis(query)) {
+    if (state.prefs.age === 'child' && childBlocked(query)) return showCard(query, childCard());
+    const m = mapQuestion(query);
+    if (m && m.kind === 'now') return showCard(query, nowCard());
+    if (m && m.kind === 'offtopic') return showCard(query, offCard(query, m.topic));
+    if (m && m.kind === 'feature') return openFeature(m, query);
+  }
   // a practical request («متى رمضان», «خطة لختم القرآن في شهر», "hijri date") opens its tool, never the AI;
   // the guard runs first, so «ما حكم صيام يوم عرفة» stays a question (js/tools.js)
   const tool = mode === 'auto' && state.panels ? routeTool(query, { available: state.toolIds, guard: guardCheck }) : null;
+  // a khatma plan asked in the search bar: the khatma service opens with a proposed plan (30 days unless said) that
+  // the visitor adapts to their commitments
+  if (tool && tool.tool === 'khatma') tool.args = { ...tool.args, days: tool.args.days || 30 };
   if (tool) { state.panels.open(tool.tool, tool.args); return; }
   if (state.panels) state.panels.close();          // the answers take the place of the open tool panel
   $('#status').textContent = t.thinking; $('#status').classList.add('on');
@@ -405,6 +453,83 @@ async function run(query, mode = 'auto') {
   else state.galaxy.home();
 }
 
+// ------------------------------------------------------------ T091–T093: answers that are not a search
+const dig = (n) => { let d = 'arab'; try { d = JSON.parse(localStorage.getItem('mishkat.digits') || '"arab"'); } catch (e) { /* default */ } return state.lang === 'ar' && d === 'arab' ? arNum(n) : String(n); };
+const pctTxt = (x) => dig(x > 0 && x < 10 ? x.toFixed(1) : Math.round(x)) + (state.lang === 'ar' ? '٪' : '%');
+// a child (under 18) gets no fatwa: rulings, takfir, penalties and other sensitive questions get a kind redirection
+function childBlocked(q) { const g = guardCheck(q); return g === 'ruling' || g === 'takfir' || isSensitiveText(q) || /فتو[ىي]|مفتي|\bfatwa\b/i.test(q); }
+function showCard(query, card) {
+  if (state.panels) state.panels.close();
+  state.result = { type: 'card', query, lang: detectLang(query, state.lang), card, verses: [], answer: [], suras: [] };
+  const url = new URL(location.href); url.searchParams.set('q', query); url.searchParams.delete('s'); url.searchParams.delete('a'); history.replaceState(null, '', url);
+  stopAudio(true); stopSpeech();
+  state.colorOf = new Map();
+  setMode('answers');
+  renderSide();
+  applyHighlight();
+  state.galaxy.setGroups([]); state.galaxy.setFocusVerse(null); markHits(); state.galaxy.home();
+}
+const SHORT_SURAS = [1, 112, 113, 114, 108, 103, 97, 67];
+function childCard() {
+  const x = XS(), name = (n) => suraName(n);
+  return { kind: 'child', html: `<section class="kidbox"><h3>${esc(x.childTitle)}</h3><p>${esc(x.child)}</p><p class="kid-q"><b>${esc(x.childAsk)}</b></p>
+      <div class="chips">${SHORT_SURAS.map(n => `<button type="button" class="mini" data-kid="${n}">${esc(name(n))}</button>`).join('')}</div>
+      <div class="p-row"><select id="kidSel" aria-label="${esc(x.childAsk)}">${suraOptions(67)}</select><button type="button" class="btn gold" id="kidGo">${esc(x.childGo)}</button></div>
+      <p><button type="button" class="mini" id="kidKh">📖 ${esc(x.childKhatma)}</button></p><p class="note">${esc(x.childParent)}</p></section>`,
+    wire: (v) => {
+      v.querySelectorAll('[data-kid]').forEach(b => b.onclick = () => state.panels.open('tekrar', { sura: +b.dataset.kid }));
+      v.querySelector('#kidGo').onclick = () => state.panels.open('tekrar', { sura: +v.querySelector('#kidSel').value });
+      v.querySelector('#kidKh').onclick = () => state.panels.open('khatma', { days: 60 });
+    } };
+}
+function nowCard() {
+  const S = SCOPE_S[state.lang] || SCOPE_S.ar, ar = state.lang === 'ar', now = new Date();
+  const loc = ar ? (dig(1) === '1' ? 'ar-u-nu-latn' : 'ar-u-nu-arab') : 'en-GB';
+  const g = now.toLocaleDateString(loc, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const tm = now.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
+  const h = formatHijri(toHijri(now, +state.prefs.hijriAdjust || 0), state.lang);
+  return { kind: 'now', html: `<section class="nowbox"><div class="now-d">${esc(g)}</div><div class="now-h">${esc(h)} <small>${esc(S.nowHijri)}</small></div>
+      <div class="now-t"><small>${esc(S.nowTime)}</small> <b dir="ltr">${esc(tm)}</b></div>
+      <div class="p-row"><button type="button" class="mini gold" data-tool="prayer">🕌 ${esc(S.openPrayer)}</button><button type="button" class="mini" data-tool="hijri">🗓 ${esc(S.openCal)}</button></div></section>`,
+    wire: (v) => v.querySelectorAll('[data-tool]').forEach(b => b.onclick = () => state.panels.open(b.dataset.tool)) };
+}
+function offCard(query, topic) {
+  const S = SCOPE_S[state.lang] || SCOPE_S.ar, rest = islamicRest(query);
+  const acts = ['search', 'read', 'tekrar', 'khatma', 'prayer'];
+  return { kind: 'off', html: `<section class="offbox"><h3>${esc(S.offTitle)}</h3><p><b>${esc(S.off[topic] || '')}</b> ${esc(S.offWhy)}</p>
+      ${rest ? `<p><button type="button" class="btn gold" id="offRest">${esc(S.offSearch(rest))}</button></p>` : ''}
+      <p class="off-can">${esc(S.offCan)}</p><ul class="off-list">${S.can.map((c, k) => `<li><button type="button" class="mini" data-act="${acts[k]}">${esc(c)}</button></li>`).join('')}</ul></section>`,
+    wire: (v) => {
+      const r = v.querySelector('#offRest'); if (r) r.onclick = () => { $('#q').value = rest; run(rest, 'topic'); };
+      v.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
+        const a = b.dataset.act;
+        if (a === 'search') { $('#q').value = ''; $('#q').focus(); }
+        else if (a === 'read') openReader(lastSura(), null, { pane: 'r' });
+        else state.panels.open(a, a === 'khatma' ? { days: 30 } : {});
+      });
+    } };
+}
+// a surah named in the request («احفظ سورة الملك», "stats of surah al-kahf")
+function suraFromText(q) {
+  const n = ' ' + normQ(q) + ' ';
+  let best = null;
+  for (const S of state.core.suras) {
+    const names = [normQ(S.ar), normQ(S.tr).replace(/^(al|an|ar|as|at|ad|adh|az|ash|ath)[- ]/, '').replace(/-/g, ' '), normQ(S.tr).replace(/-/g, ' ')];
+    for (const nm of names) {
+      if (nm.length < 2) continue;
+      if (n.includes(' ' + nm + ' ') && (!best || nm.length > best.len)) best = { n: S.n, len: nm.length };
+    }
+  }
+  return best && best.n;
+}
+function openFeature(m, query) {
+  const sura = m.sura || suraFromText(query);
+  if (m.feature === 'tekrar') return state.panels.open('tekrar', sura ? { sura } : {});
+  if (m.feature === 'stats') return state.panels.open('stats', { sura: sura || null, word: m.word || null });
+  if (m.feature === 'engage') return openEngage();
+  if (m.feature === 'install') return openInstall(state.lang);
+}
+
 // What the galaxy lights up: the completed surahs in green while the khatma panel is open (Settings may turn it
 // off), otherwise the verses of the current answer. Hover-dwell (T050) borrows the highlight and calls this
 // again to give it back.
@@ -422,10 +547,18 @@ function greenVerses() {
   for (const n of surasRead(decodeRead(state.prefs.read), state.core.suras)) { const S = state.core.suras[n - 1]; for (let k = 0; k < S.ayas; k++) out.push(S.first + k); }
   return out;
 }
+// T095: while the repetition panel is open, the verses repeated to the end light up in blue (PALETTE[2])
+function blueVerses() {
+  if (document.body.dataset.panel !== 'tekrar') return null;
+  const b = decodeRead(state.prefs.hifz), out = [];
+  for (let i = 0; i < state.core.verses.length; i++) if (isRead(b, i)) out.push(i);
+  return out;
+}
 function applyHighlight() {
   if (!state.galaxy) return;
-  const green = greenVerses();
-  if (green) state.galaxy.highlightVerses(green, () => 2);           // PALETTE[1], green
+  const green = greenVerses(), blue = green ? null : blueVerses();
+  if (blue) state.galaxy.highlightVerses(blue, () => 3);
+  else if (green) state.galaxy.highlightVerses(green, () => 2);           // PALETTE[1], green
   else state.galaxy.highlightVerses(answerVerses(), (v) => state.colorOf.get(state.engine.suraOf[v]) || 1);
 }
 
@@ -496,6 +629,15 @@ function renderSide() {
 function renderResults() {
   const res = state.result, t = T(), e = state.engine;
   if (!res) return;
+  // T092: a ruling reached by another way still never shows a fatwa to a child
+  if (res.type !== 'card' && state.prefs.age === 'child' && (isRulingRes(res) || res.type === 'khilaf' || ['takfir', 'personal'].includes(res.reason) || res.polemic)) res.card = childCard(), res.type = 'card';
+  if (res.type === 'card') {
+    const v = $('#viewRes');
+    v.innerHTML = `<p class="qline" dir="auto">«${esc(res.query)}»</p>` + res.card.html;
+    v.scrollTop = 0;
+    if (res.card.wire) res.card.wire(v);
+    return;
+  }
   const dir = res.lang === 'ar' ? 'rtl' : 'ltr';
   let h = `<p class="qline" dir="auto">«${esc(res.query)}»</p>` + levelBadge(res) + badgeFor(res);
   // T081: sensitive questions open with a red banner (and, for a ruling, the approved encyclopedia's statement)
@@ -583,6 +725,11 @@ function renderResults() {
   }
   // published fatwas of a recognised scholar on the same question (verbatim, linked) — never a ruling by Mishkat
   if (res.bayenat && res.bayenat.length) h += `<section class="bay"><h3 class="sec">${esc(t.bayTitle)}</h3><ul>${res.bayenat.map(b => `<li><a href="${esc(b.url)}" target="_blank" rel="noopener" dir="rtl">${esc(b.q)}</a> <small>${esc(b.cat || '')}</small></li>`).join('')}</ul><p class="note">${esc(t.bayNote)}</p></section>`;
+  // T093: the services of Mishkat linked to the answer (memorise this surah, its statistics)
+  if (['sura', 'verse', 'range'].includes(res.type) && res.verses.length) {
+    const s0 = e.suraOf[res.verses[0].idx], a0 = e.ayaOf[res.verses[0].idx];
+    h += `<div class="svc"><span>${esc(XS().svcTitle)}</span><button class="mini gold" data-svc="tekrar" data-s="${s0}" data-a="${res.type === 'sura' ? 1 : a0}">${esc(XS().svcTekrar)}</button><button class="mini" data-svc="stats" data-s="${s0}">${esc(XS().svcStats)}</button></div>`;
+  }
   if (res.type !== 'empty') h += `<p class="disclose">${esc(t.disclosure)}</p>`;
   const v = $('#viewRes');
   v.innerHTML = h;
@@ -590,6 +737,7 @@ function renderResults() {
   v.querySelectorAll('.cite').forEach(el => el.onclick = (ev) => { ev.stopPropagation(); goVerse(+el.dataset.idx, { pane: 'r' }); });
   v.querySelectorAll('[data-sq]').forEach(b => b.onclick = () => { $('#q').value = b.dataset.sq; run(b.dataset.sq); });
   v.querySelectorAll('[data-sq-raw]').forEach(b => b.onclick = () => run(b.dataset.sqRaw, 'raw'));
+  v.querySelectorAll('[data-svc]').forEach(b => b.onclick = () => state.panels.open(b.dataset.svc, { sura: +b.dataset.s, from: +b.dataset.a || 1 }));
   v.querySelectorAll('[data-ctx]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); toggleContext(b); });
   v.querySelectorAll('.vcardx').forEach(c => c.onclick = (ev) => { if (ev.target.closest('button,a,.ctxbox')) return; goVerse(+c.dataset.idx, { pane: 'r' }); });
   v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playv, { play: 'one', pane: 'r' }); });
@@ -916,9 +1064,20 @@ function setMode(m) {
   $('#suggest').hidden = m !== 'home' || state.suggestClosed;
   $('#sgOpen').hidden = m !== 'home' || !state.suggestClosed;
   $('#szone').hidden = m === 'home' || !state.result;
+  document.body.classList.toggle('has-res', !!state.result);
   $('#mtabs [data-pane=s]').hidden = !state.result;
   if (m === 'study' && !['r', 't', 's'].includes(state.pane)) showPane('r');
   if (m === 'study' && state.pane === 's' && !state.result) showPane('r');
+}
+// T090: the tafsir zone can be closed (✕ in its bar) and reopened (📖 in the Mushaf bar). On a computer the answers,
+// or the Mushaf and the galaxy when there are no answers, take its place; on a phone the Mushaf tab is shown.
+function setTafsirOpen(on) {
+  state.tafClosed = !on;
+  document.body.classList.toggle('taf-closed', !on);
+  document.body.classList.toggle('has-res', !!state.result);
+  if (!on) { stopSpeech(); if (state.pane === 't') showPane('r'); }
+  else { if (isPhone()) showPane('t'); if (state.reader.cur != null && state.taf.idx !== state.reader.cur) renderTafsir(state.reader.cur); }
+  if (state.galaxy && state.galaxy.resize) setTimeout(() => state.galaxy.resize(), 520);
 }
 // in the study view: unfold the answers (the tafsir folds), or fold them back
 function openAnswers(on) {
@@ -989,14 +1148,22 @@ function verseTokens(i) {
   return { skip, toks };
 }
 // words of one verse as numbered spans (the basmala Tanzil prefixes to verse 1 is shown apart)
+// T099: with the tajweed colours on, each word is drawn in coloured runs (the text itself is unchanged)
 function verseWordsHtml(i) {
   const { skip, toks } = verseTokens(i);
+  const e = state.engine, tjFile = state.tjOn ? state.tajweedData.get(e.suraOf[i]) : null;
+  const ann = tjFile ? tjFile[e.ayaOf[i] - 1] : null, offs = ann ? tokenOffsets(e.verses[i]) : null;
+  const show = (tok, k) => ann ? colourToken(tok, offs[k], ann) : esc(tok);
   let w = 0, html = '';
   toks.forEach((tok, k) => {
     if (k < skip) return;
-    if (HAS_LETTER.test(tok)) { w++; html += `<span class="w" data-w="${w}">${esc(tok)}</span> `; } else html += `${esc(tok)} `;
+    if (HAS_LETTER.test(tok)) { w++; html += `<span class="w" data-w="${w}">${show(tok, k)}</span> `; } else html += `${esc(tok)} `;
   });
   return html;
+}
+function tajweedLegend() {
+  const L = state.lang === 'ar' ? 'ar' : 'en';
+  return `<div class="tj-legend" id="tjLegend"><b>${esc(TJ_S[L].legend)}</b>${TJ_GROUPS.map(g => `<span class="tj tj-${g.id}">■</span> ${esc(g[L])}`).join(' · ')}<p class="p-small">${esc(TJ_S[L].src)}</p></div>`;
 }
 
 const SPEEDS = [0.75, 1, 1.25, 1.5];
@@ -1027,6 +1194,7 @@ function renderReader() {
       <span class="rd-meta">${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</span>
       <label class="rd-aya">${esc(t.ayaN)} <select id="rSel">${Array.from({ length: S.ayas }, (_, k) => `<option value="${S.first + k}">${k + 1}</option>`).join('')}</select></label>
       <button class="mini" id="rInfo" aria-expanded="false">ℹ ${esc(t.aboutSura)}</button>
+      <button class="mini" id="rTaf" title="${esc(t.openTafsir)}">📖 ${esc(t.zTafsir)}</button>
       <button class="icon" id="rClose" title="${esc(t.closeReader)}" aria-label="${esc(t.closeReader)}">✕</button>
     </div>
     <div class="rd-ctrl" role="toolbar" aria-label="${esc(t.listen)}">
@@ -1039,11 +1207,12 @@ function renderReader() {
       <label class="btn rep" title="${esc(t.speed)}">${esc(t.speed)} <select id="rSpeed" aria-label="${esc(t.speed)}">${SPEEDS.map(x => `<option value="${x}"${x === state.speed ? ' selected' : ''}>×${x}</option>`).join('')}</select></label>
       <span class="grp"><button class="btn icon-b sm" id="rFm" aria-label="${esc(t.fontSmaller)}" title="${esc(t.fontSmaller)}">A−</button><button class="btn icon-b sm" id="rFp" aria-label="${esc(t.fontLarger)}" title="${esc(t.fontLarger)}">A+</button></span>
       ${en ? `<button class="btn ${state.showTranslit ? 'on' : ''}" id="rTl" aria-pressed="${state.showTranslit}">${esc(t.translit)}</button><button class="btn ${state.showTr ? 'on' : ''}" id="rTr" aria-pressed="${state.showTr}">${esc(t.translationBtn)}</button>` : ''}
+      <button class="btn ${state.tjOn ? 'on' : ''}" id="rTj" aria-pressed="${!!state.tjOn}" title="${esc(TJ_S[state.lang === 'ar' ? 'ar' : 'en'].btn)}">🎨 ${esc(TJ_S[state.lang === 'ar' ? 'ar' : 'en'].btn)}</button>
       <button class="btn icon-b" id="rCopy" title="${esc(t.copyVerse)}" aria-label="${esc(t.copyVerse)}">⧉</button>
       <button class="btn icon-b" id="rShare" title="${esc(t.shareVerse)}" aria-label="${esc(t.shareVerse)}">🔗</button>
     </div></div>
     <div class="rd-body" id="rdBody">
-      <section class="sinfo" id="sInfo" hidden></section>
+      <section class="sinfo" id="sInfo" hidden></section>${state.tjOn ? tajweedLegend() : ''}
       <div class="mushaf${en ? ' en' : ''}" id="mushaf">${basmala}${body}</div>
       ${en && state.showTr && trSrc ? `<p class="rd-src">${esc(trSrc.title)} · QuranEnc.com</p>` : ''}
     </div>`;
@@ -1054,6 +1223,10 @@ function renderReader() {
   $('#rPlayAll').onclick = () => togglePlay('all');
   $('#rFirst').onclick = () => { const was = state.playing; selectVerse(S.first, { scroll: true, keepAudio: true }); if (was) play(S.first, true); };
   $('#rClose').onclick = closeReader;
+  $('#rTaf').onclick = () => setTafsirOpen(true);
+  $('#rTj').onclick = () => { state.tjOn = !state.tjOn; store.set('tj', state.tjOn ? '1' : '0'); rerenderReader(); };
+  // the colours of this surah load once, then the page is drawn again with them
+  if (state.tjOn && !state.tajweedData.has(sura)) getJSON(`data/tajweed/${sura}.json`).then(d => { state.tajweedData.set(sura, d); if (state.reader.sura === sura && state.tjOn) rerenderReader(); }).catch(() => {});
   playButtons();
   $('#rRep').onchange = (ev) => { const n = +ev.target.value; state.repeat = n || Infinity; state.repeatLeft = state.repeat; };
   $('#rSpeed').onchange = (ev) => { state.speed = +ev.target.value; store.set('speed', state.speed); if (state.audio) state.audio.playbackRate = state.speed; };
@@ -1207,7 +1380,7 @@ function renderTafsir(i) {
   state.taf.idx = i; state.taf.text = ''; state.taf.lang = BOOKS[book].lang; state.taf.ref = null;
   const prev = lang === 'ar' ? '›' : '‹', next = lang === 'ar' ? '‹' : '›';
   $('#viewTaf').innerHTML = `<div class="zhead tz-head"><h2>${esc(t.zTafsir)}</h2><span class="tz-ref">${esc(refLabel(i))}</span>
-      <span class="tz-nav"><button class="icon" id="tPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${prev}</button><button class="icon" id="tNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${next}</button></span></div>
+      <span class="tz-nav"><button class="icon" id="tPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${prev}</button><button class="icon" id="tNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${next}</button><button class="icon tz-x" id="tClose" aria-label="${esc(t.closeTafsir)}" title="${esc(t.closeTafsir)}">✕</button></span></div>
     <div class="tz-books" role="tablist" aria-label="${esc(t.zTafsir)}">${books.map(id => `<button role="tab" data-book="${id}" aria-selected="${id === book}"${BOOKS[id].kind === 'live' ? ' class="live"' : ''}>${esc(t.srcNames[id] || id)}</button>`).join('')}</div>
     <div class="tz-tools">
       <button class="btn tts" id="tTts" aria-pressed="false">🔊 ${esc(t.readTafsir)}</button>
@@ -1221,6 +1394,7 @@ function renderTafsir(i) {
   $('#tzone').style.setProperty('--ts', state.ts);
   $('#tPrev').onclick = (ev) => { ev.stopPropagation(); step(-1); };
   $('#tNext').onclick = (ev) => { ev.stopPropagation(); step(1); };
+  $('#tClose').onclick = (ev) => { ev.stopPropagation(); setTafsirOpen(false); };
   $('#viewTaf .tz-head').onclick = () => { if (document.body.classList.contains('ans-open')) openAnswers(false); };
   $('#viewTaf').querySelectorAll('[data-book]').forEach(b => b.onclick = () => { state.taf.book = b.dataset.book; store.set('book', b.dataset.book); renderTafsir(i); });
   const tfont = (d) => { state.ts = Math.round(Math.min(1.8, Math.max(0.7, state.ts + d)) * 10) / 10; store.set('ts', state.ts); $('#tzone').style.setProperty('--ts', state.ts); };
@@ -1454,8 +1628,10 @@ function setupLongPress() {
 // ------------------------------------------------------------- tools: dock + exclusive panels
 // A dock of icon buttons under the search bar opens the tool panels (js/panels.js): one panel at a time,
 // a second click or Escape closes it, the galaxy stays visible. Contents: js/toolpanels.js (ar + en).
-const DOCK = ['athkar', 'prayer', 'qibla', 'mosques', 'khatma', 'hijri', 'links', 'settings'];
+const DOCK = ['athkar', 'prayer', 'qibla', 'mosques', 'khatma', 'tekrar', 'stats', 'hijri', 'links', 'settings'];
 const DOCK_ICON = {
+  tekrar: 'M4 12a8 8 0 0 1 14-5.3M20 4v4h-4M20 12a8 8 0 0 1-14 5.3M4 20v-4h4M10 9.5l4 2.5-4 2.5z',
+  stats: 'M4 20V11M10 20V5M16 20v-6M21 20H3',
   khatma: 'M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z',
   hijri: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
   prayer: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2',
@@ -1466,6 +1642,8 @@ const DOCK_ICON = {
   settings: 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',
 };
 const TS = () => TOOL_S[state.lang] || TOOL_S.ar;
+const toolTitle = (id) => id === 'tekrar' ? (TK[state.lang] || TK.ar).title : id === 'stats' ? (ST[state.lang] || ST.ar).title
+  : TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id] || (id === 'athkar' ? (ATHKAR_S[state.lang] || ATHKAR_S.ar).title : id);
 const isPhone = () => matchMedia('(max-width: 860px)').matches;
 let metaP = null;
 function setupTools() {
@@ -1479,7 +1657,7 @@ function setupTools() {
     // on a phone the sheet would hide the Mushaf: it closes; on a computer the drawer stays beside it
     openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); },
     readerVerse: () => (state.mode === 'study' && state.reader.sura ? state.reader.cur : null),
-    onReadChange: () => { applyHighlight(); refreshMiniLamp(); },
+    onReadChange: () => { if (checkKhatma(state.prefs)) { savePrefs(state.prefs); celebrateKhatma(); } applyHighlight(); refreshMiniLamp(); refreshHud(); },
     openLampMap: () => openKhatmaMap(),
     // hadiths of the remarkable days, by HadeethEnc id, verbatim from the local files (search worker)
     hadiths: (ids, lang) => workerCall({ op: 'hadiths', ids, lang }),
@@ -1494,6 +1672,8 @@ function setupTools() {
       setSpeed: (v) => { state.speed = v; store.set('speed', v); if (state.audio) state.audio.playbackRate = v; const s = $('#rSpeed'); if (s) s.value = v; },
       font: (d) => { state.qs = Math.round(Math.min(1.8, Math.max(0.7, state.qs + d)) * 10) / 10; store.set('qs', state.qs); $('#rzone').style.setProperty('--qs', state.qs); },
       open: (id) => state.panels.open(id),
+      age: () => state.prefs.age, setAge: (v) => { state.prefs.age = v; savePrefs(state.prefs); applyChild(); },
+      replayIntro: () => { state.panels.close(); runIntro(); }, install: () => openInstall(state.lang),
     },
   });
   const renderers = {
@@ -1508,7 +1688,17 @@ function setupTools() {
     mosques: (body) => state.practical.mosques(body),
     // T062: adhkar with a known grade (HadeethEnc; Hisn al-Muslim checked on Dorar)
     athkar: (body, args) => state.athkar(body, args || {}),
+    // T095 repetition, T094 statistics
+    tekrar: (body, args) => state.tekrar.render(body, args || {}),
+    stats: (body, args) => state.stats.render(body, args || {}),
   };
+  state.tekrar = createTekrar({ lang: () => state.lang, core: state.core, get prefs() { return state.prefs; }, save: () => savePrefs(state.prefs),
+    timing: (s) => suraFile('timing', s), audioBase: AUDIO_BASE, digits: dig,
+    onProgress: () => { applyHighlight(); refreshHud(); refreshMiniLamp(); },
+    focus: (i) => { try { state.galaxy.setFocusVerse(i); } catch (e) { /* ignore */ } } });
+  state.stats = createStats({ lang: () => state.lang, core: state.core, digits: dig,
+    plain: () => (state.plainP = state.plainP || getJSON('data/search_ar.json')), meta: () => (metaP = metaP || getJSON('data/mushaf_meta.json')),
+    openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); }, search: (q) => { $('#q').value = q; run(q, 'topic'); } });
   state.athkar = createAthkar({ lang: () => state.lang });
   state.practical = createPractical({ lang: () => state.lang, qrcode, scene: (k, o) => state.galaxy && state.galaxy.setScene && state.galaxy.setScene(k, o) });
   const ids = state.toolIds = DOCK.filter(id => renderers[id]);     // also what the search bar may open (T032)
@@ -1516,9 +1706,9 @@ function setupTools() {
   $('#dock').hidden = !ids.length;
   state.panels = createPanels({
     dock: $('#dock'), tray: $('#tray'), renderers,
-    titles: Object.fromEntries(DOCK.map(id => [id, () => TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id] || (id === 'athkar' ? (ATHKAR_S[state.lang] || ATHKAR_S.ar).title : id)])), closeLabel: () => TS().close,
-    onOpen: (id) => { document.body.dataset.panel = id; if (id === 'khatma') applyHighlight(); },
-    onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma') applyHighlight(); state.practical.stop(); },
+    titles: Object.fromEntries(DOCK.map(id => [id, () => toolTitle(id)])), closeLabel: () => TS().close,
+    onOpen: (id) => { document.body.dataset.panel = id; if (id === 'khatma' || id === 'tekrar') applyHighlight(); },
+    onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma' || id === 'tekrar') applyHighlight(); if (id === 'tekrar') state.tekrar.stop(); state.practical.stop(); },
   });
   labelDock();
 }
@@ -1533,7 +1723,11 @@ function markRecited(i, how = 'audio') {
   P.read = encodeRead(bits);
   const day = ymd(new Date());
   P.log = P.log || {}; P.log[day] = (P.log[day] || 0) + 1;
+  noteRead(P, i);                                    // this month's percentage (reader mode)
+  const finished = checkKhatma(P);                   // the whole Quran read: one more khatma
   savePrefs(P);
+  refreshHud();
+  if (finished) celebrateKhatma();
   if (state.panels.current === 'khatma') {
     const body = $('#p-khatma .p-body'), top = body.scrollTop;
     state.tools.khatma(body).then(() => { body.scrollTop = top; });
@@ -1631,13 +1825,15 @@ function refreshMiniLamp() {
 function openKhatmaMap() {
   if (!state.core) return;
   const prog = progressOf(decodeRead(state.prefs.read), state.core.suras, isRead);
+  const P = state.prefs, m = monthPct(P), x = XS();
   openLampMap({ core: state.core, prog, lang: state.lang, order: store.get('kmapOrder', 'mushaf'), strings: T().lm,
+    hifz: hifzProgress(P, state.core.suras), extra: `${x.hudRead} ${pctTxt(m.read)} · ${x.hudHifz} ${pctTxt(m.hifz)} · ${x.khTitle}: ${dig(P.khatmas || 0)}`,
     onPick: (n) => openReader(n, null, { pane: 'r' }),
     onOrder: (o) => { store.set('kmapOrder', o); refreshMiniLamp(); } });
 }
 function labelDock() {
   $('#dock').setAttribute('aria-label', TS().dock);
-  document.querySelectorAll('#dock [data-panel]').forEach(b => { const id = b.dataset.panel; const s = TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id] || (id === 'athkar' ? (ATHKAR_S[state.lang] || ATHKAR_S.ar).title : id); b.setAttribute('aria-label', s); b.title = s; });
+  document.querySelectorAll('#dock [data-panel]').forEach(b => { const s = toolTitle(b.dataset.panel); b.setAttribute('aria-label', s); b.title = s; });
 }
 
 // ------------------------------------------------------------- galaxy toolbar
@@ -1779,8 +1975,8 @@ function interests() {
 }
 
 const WPREF = {
-  ar: { theme: 'المظهر', dark: 'داكن', light: 'فاتح', digits: 'الأرقام', voice: 'الترحيب الصوتي', on: 'نعم', off: 'لا' },
-  en: { theme: 'Theme', dark: 'Dark', light: 'Light', digits: 'Digits', voice: 'Spoken welcome', on: 'On', off: 'Off' },
+  ar: { theme: 'المظهر', dark: 'داكن', light: 'فاتح', digits: 'الأرقام', voice: 'الترحيب الصوتي', on: 'نعم', off: 'لا', age: 'العمر', child: 'أقل من ١٨', adult: '١٨ فأكثر' },
+  en: { theme: 'Theme', dark: 'Dark', light: 'Light', digits: 'Digits', voice: 'Spoken welcome', on: 'On', off: 'Off', age: 'Age', child: 'Under 18', adult: '18 or over' },
 };
 function openWelcome() {
   const I = INTEREST[state.lang], w = $('#welcome'), chosen = new Set(interests());
@@ -1796,13 +1992,15 @@ function openWelcome() {
   const seg = (k, opts) => `<span class="seg" role="group" aria-label="${esc(P0[k])}">${opts.map(([v, label, on]) => `<button type="button" data-wp="${k}" data-v="${v}" aria-pressed="${on}">${esc(label)}</button>`).join('')}</span>`;
   $('#wPrefs').innerHTML = `<span class="wp"><span>${esc(P0.theme)}</span>${seg('theme', [['dark', P0.dark, dark], ['light', P0.light, !dark]])}</span>` +
     (state.lang === 'ar' ? `<span class="wp"><span>${esc(P0.digits)}</span>${seg('digits', [['arab', '١٢٣', dg === 'arab'], ['latn', '123', dg !== 'arab']])}</span>` : '') +
-    `<span class="wp"><span>${esc(P0.voice)}</span>${seg('voice', [['1', P0.on, state.prefs.welcomeVoice !== false], ['0', P0.off, state.prefs.welcomeVoice === false]])}</span>`;
+    `<span class="wp"><span>${esc(P0.voice)}</span>${seg('voice', [['1', P0.on, state.prefs.welcomeVoice !== false], ['0', P0.off, state.prefs.welcomeVoice === false]])}</span>` +
+    `<span class="wp"><span>${esc(P0.age)}</span>${seg('age', [['child', P0.child, state.prefs.age === 'child'], ['adult', P0.adult, state.prefs.age === 'adult']])}</span>`;
   $('#wPrefs').querySelectorAll('[data-wp]').forEach(b => b.onclick = () => {
     const k = b.dataset.wp, v = b.dataset.v;
     b.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
     if (k === 'theme') setTheme(v);
     if (k === 'digits') { try { localStorage.setItem('mishkat.digits', JSON.stringify(v)); } catch (e) { /* private mode */ } }
     if (k === 'voice') { state.prefs.welcomeVoice = v === '1'; savePrefs(state.prefs); }
+    if (k === 'age') { state.prefs.age = v; savePrefs(state.prefs); applyChild(); }
   });
   w.hidden = false;
   $('#wGo').onclick = () => {
@@ -1814,7 +2012,110 @@ function openWelcome() {
   w.onkeydown = (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); closeWelcome(); renderSide(); } };
   setTimeout(() => { const first = w.querySelector('.wtile'); if (first) first.focus(); }, 50);
 }
-function closeWelcome() { $('#welcome').hidden = true; store.set('welcomed', '1'); }
+function closeWelcome() { $('#welcome').hidden = true; store.set('welcomed', '1'); remindEngagement(); }
+
+// ------------------------------------------------------------ T098 first visit: place → presentation film → welcome
+async function onboarding() {
+  const P = state.prefs;
+  if (!P.intro) {
+    if (state.practical && !state.practical.place()) await placeStep();
+    await runIntro();
+    P.intro = true; savePrefs(P);
+  }
+  if (store.get('welcomed') !== '1') openWelcome(); else remindEngagement();
+}
+function placeStep() {
+  return new Promise(resolve => {
+    const x = XS(), d = document.createElement('div');
+    d.id = 'placeStep'; d.className = 'onb'; d.setAttribute('role', 'dialog'); d.setAttribute('aria-modal', 'true'); d.setAttribute('aria-labelledby', 'psT');
+    d.innerHTML = `<div class="wbox"><header class="w-head"><div class="ob-lamp">${lampSVG({ size: 72, title: 'Mishkat' })}</div><div><h2 id="psT">${esc(x.placeTitle)}</h2><p>${esc(x.placeLead)}</p></div></header>
+      <div class="ob-pick"></div><div class="wfoot"><button type="button" class="btn ghost" data-later>${esc(x.placeLater)}</button></div></div>`;
+    document.body.appendChild(d);
+    const end = () => { d.remove(); resolve(); };
+    d.querySelector('[data-later]').onclick = end;
+    d.onkeydown = (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); end(); } };
+    state.practical.pickPlace(d.querySelector('.ob-pick'), () => {
+      d.querySelector('.ob-pick').innerHTML = `<p class="k-ok">${esc(x.placeOk(state.practical.placeName()))}</p>`;
+      setTimeout(end, 900);
+    });
+    setTimeout(() => { const f = d.querySelector('[data-pos]'); if (f) f.focus(); }, 60);
+  });
+}
+async function runIntro() {
+  const { playIntro } = await import('./intro.js');
+  const before = { shape: store.get('shape', 'galaxy'), order: store.get('order', 'mushaf') };
+  return new Promise(resolve => playIntro({
+    lang: () => state.lang, core: state.core, galaxy: state.galaxy, audioBase: AUDIO_BASE, timing: suraFile('timing', 24),
+    placeName: () => (state.practical ? state.practical.placeName() : ''),
+    setView: (sh, od) => setView(sh, od, { quiet: true }),
+    qibla: () => { const pl = state.practical && state.practical.place(); return pl ? qiblaBearing(pl.lat, pl.lon) : null; },
+    onDone: () => { setView(before.shape, before.order, { quiet: true }); resolve(); },
+  }));
+}
+
+// ------------------------------------------------------------ T092 child mode, T095–T096 progress in the page
+function applyChild() { document.body.classList.toggle('child', state.prefs.age === 'child'); }
+function refreshHud() {
+  const box = $('#hud');
+  if (!box || !state.core) return;
+  const P = state.prefs, x = XS();
+  if (rollMonth(P)) savePrefs(P);
+  const m = monthPct(P), w = weekly(P);
+  const wk = x.hudWeek(dig(w.read), dig(w.readGoal), dig(w.ayas), dig(w.tkGoal));
+  box.innerHTML = `<button type="button" class="hud-in" title="${esc(wk + ' — ' + x.hudOpen)}" aria-label="${esc(wk + ' — ' + x.hudOpen)}">
+      <span class="hud-m"><span><b>${esc(pctTxt(m.read))}</b><small>${esc(x.hudRead)}</small></span><span class="hz"><b>${esc(pctTxt(m.hifz))}</b><small>${esc(x.hudHifz)}</small></span></span>
+      <span class="hud-w"><i style="--f:${w.readF.toFixed(3)}"></i><i class="tk" style="--f:${w.tkF.toFixed(3)}"></i></span></button>`;
+  box.hidden = false;
+  box.querySelector('button').onclick = () => openEngage();
+  const k = $('#khCount');
+  if (k) { const n = P.khatmas || 0; k.hidden = !n; k.textContent = `✦ ${x.khCount(dig(n))}`; k.title = x.khTitle; }
+}
+function celebrateKhatma() {
+  const x = XS(), n = state.prefs.khatmas || 1;
+  const d = document.createElement('dialog');
+  d.className = 'kh-done'; d.dir = T().dir;
+  d.innerHTML = `<div class="kh-lamp">${lampSVG({ size: 120, title: 'Mishkat' })}</div><h3>${esc(x.khatmaDone(dig(n)))}</h3><form method="dialog"><button class="btn gold">${esc(T().close)}</button></form>`;
+  document.body.appendChild(d); d.addEventListener('close', () => d.remove()); d.showModal();
+  refreshHud(); refreshMiniLamp();
+}
+async function openEngage() {
+  const { openEngageMap } = await import('./engage3d.js');
+  const P = state.prefs;
+  openEngageMap({ lang: state.lang, digits: dig, info: { eng: engagement(P), score: rewardScore(P).score, month: monthPct(P), khatmas: P.khatmas || 0, week: weekly(P) } });
+}
+// once a day, a small reminder of the visitor's level (always positive), with a tiny 3D-like picture
+function remindEngagement() {
+  const P = state.prefs, today = ymd(new Date());
+  if (P.remindDay === today || !$('#gate').hidden || document.getElementById('intro')) return;
+  P.remindDay = today; savePrefs(P);
+  const eng = engagement(P), E = EG[state.lang] || EG.ar;
+  const name = (state.lang === 'ar' ? ['غَرْسة مباركة', 'زيتونة مباركة', 'كوكب دُرّي'] : ['Blessed sapling', 'Blessed olive tree', 'Shining star'])[eng.level - 1];
+  const el = document.createElement('div');
+  el.id = 'engToast'; el.setAttribute('role', 'status');
+  el.innerHTML = `<canvas width="56" height="56" aria-hidden="true"></canvas><div><b>${esc(E.remind(name))}</b><button type="button" class="mini gold">${esc(E.open)}</button></div><button type="button" class="icon et-x" aria-label="${esc(T().close)}">✕</button>`;
+  document.body.appendChild(el);
+  const stop = animateMini(el.querySelector('canvas'), () => eng);
+  const close = () => { stop(); el.classList.add('leaving'); setTimeout(() => el.remove(), 400); };
+  el.querySelector('.mini').onclick = () => { close(); openEngage(); };
+  el.querySelector('.et-x').onclick = close;
+  setTimeout(close, 10000);
+}
+// the top bar: the khatma count, the engagement button (a tiny 3D picture of the level), the install button
+function setupHeaderExtras() {
+  const x = XS(), eb = $('#engBtn');
+  if (eb) {
+    eb.title = x.engBtn; eb.setAttribute('aria-label', x.engBtn); eb.onclick = () => openEngage();
+    const draw = () => drawMini(eb.querySelector('canvas'), engagement(state.prefs), 0);
+    draw(); state.drawEngBtn = draw;
+  }
+  const ib = $('#btnInstall');
+  if (ib) {
+    const show = () => { ib.hidden = isStandalone() || !(canPrompt() || /iPhone|iPad|iPod/.test(navigator.userAgent)); };
+    ib.onclick = () => openInstall(state.lang).then(show);
+    onInstallChange(show); show();
+  }
+  const kc = $('#khCount'); if (kc) kc.onclick = () => openKhatmaMap();
+}
 
 // home of the answers zone: the verse of the lamp, a short guide, suggestions
 function renderHome() {

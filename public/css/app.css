@@ -992,3 +992,18 @@ html[data-theme=light] .v-modes button[aria-pressed=true] { background: #e3f0fb;
 #lampMap .lm-ctrl { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 6px 12px 0; }
 #lampMap .lm-ctrl button { min-width: 44px; height: 40px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, .06); color: var(--txt); font-size: 15px; }
 #lampMap .lm-ctrl button b { color: var(--gold); font-size: 13px; }
+
+/* ================================================================ T090: tafsir closed / reopened */
+#rTaf { display: none; }
+body.taf-closed #rTaf { display: inline-flex; }
+.tz-x { margin-inline-start: 4px; }
+@media (min-width: 861px) {
+  body[data-mode=study].taf-closed #tzone, body[data-mode=study].taf-closed #splitSide { display: none; }
+  body[data-mode=study].taf-closed.has-res .col-side { grid-template-rows: minmax(0, 1fr) 0 0; }
+  body[data-mode=study].taf-closed.has-res #viewRes { display: block; }
+  body[data-mode=study].taf-closed:not(.has-res) #work { grid-template-columns: minmax(0, 1fr) 0; column-gap: 0; }
+  body[data-mode=study].taf-closed:not(.has-res) .col-side { visibility: hidden; }
+}
+@media (max-width: 860px) {
+  body[data-mode=study].taf-closed #mtabs [data-pane=t] { display: none; }
+}
