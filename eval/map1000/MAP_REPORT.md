@@ -1,6 +1,6 @@
 # Map of 1,000 questions through Mishkat (engine without AI)
 
-2026-10-03T17:42:13.058Z · phase A: deterministic engine, no AI call, no cost. Phase B (AI sample, Groq free tier) in `AI_SAMPLE.md`.
+2026-10-04T11:16:15.231Z · phase A: deterministic engine, no AI call, no cost. Phase B (AI sample, Groq free tier) in `AI_SAMPLE.md`.
 
 ## Summary
 
@@ -45,23 +45,24 @@
   "abstain/ruling": 41,
   "abstain/personal": 11,
   "abstain/dream": 7,
-  "topic": 516,
+  "topic": 510,
   "notfound": 217,
+  "story": 6,
   "empty": 1,
   "abstain/takfir": 2,
   "term": 1,
   "hadith": 7
  },
  "byLevel": {
-  "A": 203,
+  "A": 209,
   "C": 93,
   "D": 61,
-  "B": 462,
+  "B": 456,
   "—": 181
  },
  "byVouch": {
-  "nobody": 690,
-  "index": 281,
+  "nobody": 685,
+  "index": 286,
   "context": 29
  },
  "expectations": {
@@ -105,10 +106,10 @@ ar (547)
         level A (1)
           by nobody (1)
   spoken_topic (62)
-    topic (57)
-      topic (54)
-        level B (53)
-          by nobody (40)
+    topic (55)
+      topic (52)
+        level B (51)
+          by nobody (38)
           by index (13)
         level C (1)
           by index (1)
@@ -119,6 +120,10 @@ ar (547)
       topic (4)
         level B (4)
           by context (4)
+    story (2)
+      story (2)
+        level A (2)
+          by index (2)
     verify+topic (1)
       verify (1)
         level A (1)
@@ -134,13 +139,17 @@ ar (547)
         level A (30)
           by nobody (30)
   topic_ar (27)
-    topic (25)
-      topic (25)
-        level B (20)
+    topic (24)
+      topic (24)
+        level B (19)
           by index (14)
-          by nobody (6)
+          by nobody (5)
         level C (5)
           by index (5)
+    story (1)
+      story (1)
+        level A (1)
+          by index (1)
     verify (1)
       verify (1)
         level A (1)
@@ -334,28 +343,36 @@ en (453)
         level B (1)
           by nobody (1)
   spoken_topic (47)
-    topic (45)
-      topic (44)
-        level B (42)
-          by index (23)
-          by nobody (19)
+    topic (43)
+      topic (42)
+        level B (40)
+          by index (22)
+          by nobody (18)
         level C (2)
           by index (2)
       notfound (1)
         level — (1)
           by nobody (1)
+    story (2)
+      story (2)
+        level A (2)
+          by index (2)
     comfort (2)
       topic (2)
         level B (2)
           by context (2)
   topic_en (30)
-    topic (29)
-      topic (29)
-        level B (26)
+    topic (28)
+      topic (28)
+        level B (25)
           by index (19)
-          by nobody (7)
+          by nobody (6)
         level C (3)
           by index (3)
+    story (1)
+      story (1)
+        level A (1)
+          by index (1)
     reference (1)
       sura (1)
         level A (1)
@@ -525,13 +542,11 @@ en (453)
 - `spoken_abstain` «وش افضل جوال ايفون ولا سامسونج» → notfound · by — · 0 verses 
 - `spoken_abstain` «اه طيب يعني اممم» → empty · by — · 0 verses 
 
-### W3 — Answer vouched by nobody (keyword match only, no AI, no index, no pack) with many verses: 112
+### W3 — Answer vouched by nobody (keyword match only, no AI, no index, no pack) with many verses: 108
 
 *These rely on the AI in production; without AI they are shown as «keyword search». Candidates for index/thesaurus entries.*
 
 - `topic_ar` «الصيام» → topic · by — · 6 verses 2:184 2:183 2:187 58:4 2:196
-- `topic_ar` «قصة يوسف» → topic · by — · 8 verses 12:7 12:29 12:90 12:85 12:11
-- `topic_en` «story of Joseph» → topic · by — · 8 verses 12:29 12:7 12:10 12:89 12:90
 - `topic_ar` «موسى وفرعون» → topic · by — · 8 verses 51:38 43:46 7:104 7:103 20:24
 - `topic_en` «Moses and Pharaoh» → topic · by — · 8 verses 28:3 20:49 7:104 40:37 51:38
 - `topic_en` «Jesus son of Mary» → topic · by — · 8 verses 3:45 19:34 5:72 9:31 5:17
@@ -544,6 +559,8 @@ en (453)
 - `spoken_topic` «يا شيخ ايش يقول ربنا عن اللي يغتاب الناس» → topic · by — · 7 verses 104:1 68:11 68:12 68:10 68:13
 - `spoken_topic` «وش قصة يوسف عليه السلام» → topic · by — · 8 verses 12:7 12:29 12:90 12:85 12:11
 - `spoken_topic` «احكيلي قصة سيدنا موسى مع فرعون» → topic · by — · 8 verses 51:38 43:46 7:104 7:103 20:24
+- `spoken_topic` «القران وش يقول عن الصدقة والانفاق في سبيل الله» → topic · by — · 8 verses 17:29 2:195 47:38 57:10 30:38 · **no key verse in top 5**
+- `spoken_topic` «وش قال ربي عن الظلم والظالمين» → topic · by — · 8 verses 43:76 62:7 11:116 21:14 7:162 · **no key verse in top 5**
 
 ### W4 — Spelling suggestion on a question that is probably valid: 0
 
@@ -585,10 +602,11 @@ en (453)
 
 - `forum_en` «What is the difference between Hadith and Qur'an?» → term · by — · 8 verses 4:87 4:122 12:111 39:23 4:140
 
-### W8 — Slow (> 400 ms, engine only): 0
+### W8 — Slow (> 400 ms, engine only): 1
 
 *Profile; precompute.*
 
+- `route_sura` «الكهف» → sura · by — · 110 verses 18:1 18:2 18:3 18:4 18:5
 
 ### W9 — Sensitive subject not flagged (level C/D) — words of penalties, fighting, women, other religions: 10
 
