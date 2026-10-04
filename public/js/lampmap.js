@@ -87,6 +87,13 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
       <div class="lm-orders" role="radiogroup" aria-label="${esc(T.orderLabel)}">${ORDERS.map(o => `<button type="button" role="radio" data-order="${o}" aria-checked="${o === order}">${esc(T.orders[o])}</button>`).join('')}</div>
       <button type="button" class="lm-close" aria-label="${esc(T.close)}">✕</button></div>
     <canvas class="lm-canvas" tabindex="0" aria-label="${esc(T.canvas)}"></canvas>
+    <div class="lm-ctrl" role="toolbar" aria-label="${esc(T.controls)}">
+      <button type="button" data-c="speed" title="${esc(T.speed)}" aria-label="${esc(T.speed)}">⏩ <b>×1</b></button>
+      <button type="button" data-c="up" title="${esc(T.up)}" aria-label="${esc(T.up)}">▲</button>
+      <button type="button" data-c="down" title="${esc(T.down)}" aria-label="${esc(T.down)}">▼</button>
+      <button type="button" data-c="in" title="${esc(T.zoomIn)}" aria-label="${esc(T.zoomIn)}">＋</button>
+      <button type="button" data-c="out" title="${esc(T.zoomOut)}" aria-label="${esc(T.zoomOut)}">－</button>
+      <button type="button" data-c="reset" title="${esc(T.reset)}" aria-label="${esc(T.reset)}">⟲</button></div>
     <div class="lm-tip" hidden></div>
     <p class="lm-legend"><span class="lg on"></span>${esc(T.read)} <span class="lg part"></span>${esc(T.partly)} <span class="lg off"></span>${esc(T.unread)} · ${esc(T.hint)}</p>`;
   document.body.appendChild(root);
@@ -94,13 +101,18 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
   const ctx2 = cv.getContext('2d');
   let ord = orderSuras(core.suras, order), pos = layout(ord.length);
   let rot = 0, tilt = 0.18, auto = !matchMedia('(prefers-reduced-motion: reduce)').matches, drag = null, raf = 0, hover = -1, alive = true;
-  let W = 0, H = 0, S = 1, CX = 0, CY = 0, DPR = 1, pts = [];
+  let W = 0, H = 0, S = 1, CX = 0, CY = 0, DPR = 1, pts = [], hits = [];
+  // speed of the turn (0 = still), zoom, and a pause while the pointer is over a surah (a moving target was
+  // the cause of clicks opening the neighbour)
+  const SPEEDS = [1, 2, 4, 0];
+  let speedK = 0, zoom = 1, over = false, panY = 0;
+  const pinch = new Map();
   const resize = () => {
     DPR = Math.min(2, window.devicePixelRatio || 1);
     const r = cv.getBoundingClientRect();
     W = r.width; H = r.height;
     cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
-    S = Math.min(W / 50, H / 66); CX = W / 2; CY = H / 2;   // the glass centre (y 51 in the logo) in the middle
+    S = Math.min(W / 50, H / 66) * zoom; CX = W / 2; CY = H / 2 + panY;   // the glass centre (y 51 in the logo) in the middle
   };
   const proj = (x, y, z) => {
     // rotate about the vertical axis, then tilt
@@ -113,7 +125,7 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
   };
   const draw = () => {
     if (!alive) return;
-    if (auto && !drag) rot += 0.0035;
+    if (auto && !drag && !over) rot += 0.0035 * SPEEDS[speedK];
     ctx2.setTransform(DPR, 0, 0, DPR, 0, 0);
     ctx2.clearRect(0, 0, W, H);
     // halo of the lamp («نور على نور»)
@@ -141,6 +153,7 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
     ctx2.strokeStyle = 'rgba(142,197,240,.16)'; ctx2.stroke();
     // lights, back to front
     const sorted = pts.slice().sort((a, b) => a.z - b.z);
+    hits = [];
     ctx2.textAlign = 'center'; ctx2.textBaseline = 'middle';
     for (const q of sorted) {
       const depth = (q.z + 25) / 50, on = q.f >= 1, part = q.f > 0 && !on;
@@ -153,6 +166,7 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
       ctx2.beginPath(); ctx2.arc(q.x, q.y, rad, 0, 7);
       ctx2.fillStyle = on ? '#fffbe6' : part ? `rgba(255,214,107,${0.45 + 0.5 * q.f})` : `rgba(160,175,205,${0.25 + 0.35 * depth})`;
       ctx2.fill();
+      hits.push({ n: q.n, z: q.z, x0: q.x - rad - 5, x1: q.x + rad + 5, y0: q.y - rad - 5, y1: q.y + rad + 5, k: q });
       if (part) { ctx2.beginPath(); ctx2.arc(q.x, q.y, rad + 2, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * q.f); ctx2.strokeStyle = '#ffd66b'; ctx2.lineWidth = 1.4; ctx2.stroke(); }
       // names: front half, or always for read surahs and the hovered one
       if (q.z > 3 || (on && q.z > -12) || q.n === hover) {
@@ -160,16 +174,19 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
         const fs = Math.max(9, Math.min(15, 10.5 * q.p * S / 7));
         ctx2.font = `${on ? 600 : 400} ${fs}px Amiri, 'Noto Naskh Arabic', serif`;
         ctx2.fillStyle = on ? `rgba(255,236,170,${0.6 + 0.4 * depth})` : `rgba(220,228,245,${0.25 + 0.55 * depth})`;
-        ctx2.fillText(lang === 'ar' ? s.ar : s.tr, q.x, q.y - rad - fs * 0.75);
+        const label = lang === 'ar' ? s.ar : s.tr, ly = q.y - rad - fs * 0.75, lw = ctx2.measureText(label).width;
+        ctx2.fillText(label, q.x, ly);
+        // the name belongs to its own light: clicking the name opens that surah, not the closest dot
+        hits.push({ n: q.n, z: q.z + 0.01, x0: q.x - lw / 2 - 2, x1: q.x + lw / 2 + 2, y0: ly - fs * 0.6, y1: ly + fs * 0.6, k: q });
       }
     }
     raf = requestAnimationFrame(draw);
   };
+  // what is under the pointer: the last thing drawn there (front-most light or name), as it was drawn
   const at = (ev) => {
     const r = cv.getBoundingClientRect(), x = ev.clientX - r.left, y = ev.clientY - r.top;
-    let best = null, bd = 18 * 18;
-    for (const q of pts) { const d = (q.x - x) ** 2 + (q.y - y) ** 2; if (d < bd && q.z > -30) { bd = d; best = q; } }
-    return best;
+    for (let i = hits.length - 1; i >= 0; i--) { const h = hits[i]; if (x >= h.x0 && x <= h.x1 && y >= h.y0 && y <= h.y1) return h.k; }
+    return null;
   };
   const showTip = (q, ev) => {
     if (!q) { tip.hidden = true; hover = -1; return; }
@@ -181,22 +198,50 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
     tip.style.top = Math.max(8, ev.clientY - r.top - 36) + 'px';
     tip.hidden = false;
   };
-  cv.addEventListener('pointerdown', (ev) => { drag = { x: ev.clientX, y: ev.clientY, rot, tilt, moved: false }; cv.setPointerCapture(ev.pointerId); });
+  const setZoom = (z) => { zoom = Math.max(0.6, Math.min(3.5, z)); resize(); };
+  cv.addEventListener('pointerdown', (ev) => {
+    pinch.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    drag = { x: ev.clientX, y: ev.clientY, rot, tilt, moved: pinch.size > 1, pick: at(ev) };
+    cv.setPointerCapture(ev.pointerId);
+  });
   cv.addEventListener('pointermove', (ev) => {
+    if (pinch.has(ev.pointerId) && pinch.size === 2) {
+      const [a, b] = [...pinch.values()], d0 = Math.hypot(a.x - b.x, a.y - b.y);
+      pinch.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      const [c, e] = [...pinch.values()], d1 = Math.hypot(c.x - e.x, c.y - e.y);
+      if (d0 > 0) setZoom(zoom * d1 / d0);
+      if (drag) drag.moved = true;
+      return;
+    }
     if (drag) {
       const dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
       if (Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true;
       rot = drag.rot + dx * 0.01; tilt = Math.max(-0.7, Math.min(0.9, drag.tilt + dy * 0.006));
-    } else showTip(at(ev), ev);
+    } else { const q = at(ev); over = !!q; showTip(q, ev); }
   });
   cv.addEventListener('pointerup', (ev) => {
+    pinch.delete(ev.pointerId);
     const d = drag; drag = null;
     if (ev.pointerType !== 'mouse') showTip(null);
-    if (d && !d.moved) { const q = at(ev); if (q) { close(); onPick && onPick(q.n); } }
+    // the surah under the finger when it went DOWN (the lamp may have turned a little since)
+    if (d && !d.moved) { const q = d.pick || at(ev); if (q) { close(); onPick && onPick(q.n); } }
   });
-  cv.addEventListener('pointerleave', () => showTip(null));
+  cv.addEventListener('pointercancel', (ev) => { pinch.delete(ev.pointerId); drag = null; });
+  cv.addEventListener('pointerleave', () => { over = false; showTip(null); });
+  cv.addEventListener('wheel', (ev) => { ev.preventDefault(); setZoom(zoom * (ev.deltaY < 0 ? 1.12 : 1 / 1.12)); }, { passive: false });
+  root.querySelectorAll('[data-c]').forEach(b => b.onclick = () => {
+    const c = b.dataset.c;
+    if (c === 'speed') { speedK = (speedK + 1) % SPEEDS.length; auto = true; b.querySelector('b').textContent = SPEEDS[speedK] ? '×' + SPEEDS[speedK] : '⏸'; }
+    else if (c === 'up') tilt = Math.max(-0.7, tilt - 0.15);
+    else if (c === 'down') tilt = Math.min(0.9, tilt + 0.15);
+    else if (c === 'in') setZoom(zoom * 1.25);
+    else if (c === 'out') setZoom(zoom / 1.25);
+    else { zoom = 1; tilt = 0.18; rot = 0; panY = 0; resize(); }
+  });
   cv.addEventListener('keydown', (ev) => {
     if (ev.key === 'ArrowLeft') rot -= 0.2; else if (ev.key === 'ArrowRight') rot += 0.2;
+    else if (ev.key === 'ArrowUp') tilt = Math.max(-0.7, tilt - 0.15); else if (ev.key === 'ArrowDown') tilt = Math.min(0.9, tilt + 0.15);
+    else if (ev.key === '+' || ev.key === '=') setZoom(zoom * 1.25); else if (ev.key === '-') setZoom(zoom / 1.25);
     else if (ev.key === ' ') { auto = !auto; ev.preventDefault(); }
   });
   root.querySelectorAll('[data-order]').forEach(b => b.onclick = () => {

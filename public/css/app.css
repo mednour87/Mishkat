@@ -980,3 +980,7 @@ html[data-theme=light] .ak-item { background: #fff; }
 .v-modes button[aria-pressed=true] { background: rgba(142, 197, 240, .16); color: var(--blue); font-weight: 600; }
 #voice[data-mode=recite] .v-langs { display: none; }
 html[data-theme=light] .v-modes button[aria-pressed=true] { background: #e3f0fb; color: #1d5b8f; }
+#lampMap { grid-template-rows: auto 1fr auto auto; }
+#lampMap .lm-ctrl { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; padding: 6px 12px 0; }
+#lampMap .lm-ctrl button { min-width: 44px; height: 40px; border-radius: 12px; border: 1px solid var(--line); background: rgba(255, 255, 255, .06); color: var(--txt); font-size: 15px; }
+#lampMap .lm-ctrl button b { color: var(--gold); font-size: 13px; }
