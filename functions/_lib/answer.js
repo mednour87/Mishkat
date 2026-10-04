@@ -10,8 +10,9 @@
 // source. A concept without evidence is returned as «uncovered» and shown as such, never filled in.
 //
 // Item ids: V:2:153 (the verse, Tanzil) · Q:2:153#1 (tafsir sentence) · H:4196#t1 / #e1 (hadith text /
-// explanation, HadeethEnc, graded) · F:1234#q / #a1 (question / answer paragraph of a fatwa published
-// by Sheikh Ibn Baz). A ruling question gets only F items; every other question gets no F item.
+// explanation, HadeethEnc, graded) · F:1234#q / #a1 (question / answer paragraph of a published ruling text of an
+// approved source). A ruling question gets only F items; every other question gets no F item. Since T081 (4 Oct)
+// the page shows rulings from the Fiqh Encyclopedia of Dorar (functions/_lib/fiqh.js) and sends no F item here.
 // POST /api/answer {query, lang, qtype, sentences:[{sid, text}] ≤ 48}
 //   → {ok, answerable:'yes'|'partial'|'no', concepts, points:[{concept, sids}], uncovered, model, judge}
 import { providers, callOpenAICompat, cooling, trip, DATA_NOTE } from './selector.js';
@@ -21,7 +22,7 @@ const MAX = 48, TEXT_MAX = 650;
 export const QTYPES = ['ruling', 'comfort', 'virtue', 'howto', 'why', 'definition', 'story', 'topic'];
 // what a good answer looks like for each kind of question (passed to both models)
 const HOW = {
-  ruling: 'The visitor asks for a RULING. Only F items (a fatwa published by Sheikh Ibn Baz) may be used. A fatwa answers the question when its own question (F:id#q) asks for the ruling of the SAME act or thing — it may describe the asker\'s personal situation, that is fine. Reject a fatwa about a different act or thing, or about a special case that changes the ruling (accidental vs deliberate killing; a birthday vs Christmas, since «عيد الميلاد» means both; «الفوائد» as benefits vs bank interest). Select the fatwa question F:id#q and the 1–2 answer paragraphs that state the ruling. If no fatwa is about the same act: answerable "no".',
+  ruling: 'The visitor asks for a RULING. Only F items (a published ruling text of an approved source) may be used. A fatwa answers the question when its own question (F:id#q) asks for the ruling of the SAME act or thing — it may describe the asker\'s personal situation, that is fine. Reject a fatwa about a different act or thing, or about a special case that changes the ruling (accidental vs deliberate killing; a birthday vs Christmas, since «عيد الميلاد» means both; «الفوائد» as benefits vs bank interest). Select the fatwa question F:id#q and the 1–2 answer paragraphs that state the ruling. If no fatwa is about the same act: answerable "no".',
   comfort: 'The visitor is distressed. Choose passages of hope, mercy, patience, remembrance of Allah, relief after hardship and practical guidance; never passages about punishment, Hell or the fate of disbelievers.',
   virtue: 'The visitor asks about a virtue or reward: choose passages that state the reward or merit itself.',
   howto: 'The visitor asks how to do something: choose passages that state what to do (guidance, steps, words to say).',
@@ -32,7 +33,7 @@ const HOW = {
 };
 
 const SYS_COMPOSE = `You select evidence for a Quran and Sunnah search engine. You NEVER write explanations, rulings, translations or any religious text. Output JSON only.
-Input: a question, its type, and a numbered list of passages (a hadith passage is preceded by its subject «[hadith on: …]», given by its publisher, to tell you what the hadith is about) taken word for word from the sources of truth: the Quran itself "V:sura:aya", the vetted tafsir of a verse "Q:sura:aya#n", an authentic hadith "H:id#t1" and its explanation "H:id#e1", a fatwa published by Sheikh Ibn Baz "F:id#q" (its question) and "F:id#a1" (its answer paragraphs).
+Input: a question, its type, and a numbered list of passages (a hadith passage is preceded by its subject «[hadith on: …]», given by its publisher, to tell you what the hadith is about) taken word for word from the sources of truth: the Quran itself "V:sura:aya", the vetted tafsir of a verse "Q:sura:aya#n", an authentic hadith "H:id#t1" and its explanation "H:id#e1", a published ruling text "F:id#q" (its question) and "F:id#a1" (its answer paragraphs).
 Passages are listed with the most relevant verses first. When you select a verse text (V:s:a), ALSO select in the same point the tafsir sentence of that same verse (Q:s:a#n) that explains it, so that the verse is never shown without its vetted explanation.
 1. concepts: the 1 to 3 distinct things the question asks about, as short nouns in the language of the question (e.g. «الصبر», «الشكر»; "patience", "gratitude").
 2. answerable: "yes" if sentences of the list directly answer the question, "partial" if they answer only some of the concepts, "no" otherwise.

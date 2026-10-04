@@ -686,7 +686,7 @@ details.more-ex { margin: 6px 0 10px; }
 details.more-ex > summary { cursor: pointer; color: var(--gold2); font-size: 13.5px; padding: 6px 0; }
 html[data-theme=light] .suggest-box { background: #eef6fd; }
 
-/* published fatwas (binbaz.org.sa) */
+/* rulings: statements of the Fiqh Encyclopedia (dorar.net/feqhia) */
 .fbox .flist { padding-inline-start: 22px; margin: 6px 0; display: grid; gap: 8px; }
 .fbox .flist li { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; background: var(--panel2); }
 .fbox .f-snip { font-size: 13px; opacity: .8; margin-top: 3px; }

@@ -3,7 +3,8 @@
 // Golden rule: the AI never writes. This module builds a CLOSED list of numbered passages copied
 // from the sources of truth the page already holds — the Quran (Tanzil text), the vetted tafsir
 // (Al-Muyassar in Arabic, Al-Mukhtasar in English), authentic hadiths (HadeethEnc, graded صحيح/حسن),
-// and, for questions of ruling (أحكام), fatwas PUBLISHED by Sheikh Ibn Baz (official site) — sends
+// and, for questions of ruling (أحكام), published ruling texts (none sent since T081: rulings are shown from
+// the Fiqh Encyclopedia of Dorar, outside this pipeline) — sends
 // ids + texts to /api/answer (composer + independent judge, functions/_lib/answer.js), then checks
 // the returned ids again with fixed rules (below) and returns the passages VERBATIM with their source.
 //

@@ -142,7 +142,7 @@ async function ragFor(e, res, hadIds = [], fatwas = []) {
   const qtype = questionTypeOf(res);
   let verses = [], hadiths = [];
   if (qtype === 'ruling') {
-    // أحكام: only fatwas published by Sheikh Ibn Baz (fetched in full by the page), never a tafsir sentence
+    // أحكام: only published ruling texts sent by the page (none since T081: rulings come from dorar.net/feqhia), never a tafsir sentence
     if (!fatwas.length) return null;
   } else {
     if (!['topic', 'term'].includes(res.type) || !(res.confirmedBy === 'ai' || (res.pack && res.pack !== 'crisis'))) return null;

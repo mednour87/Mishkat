@@ -514,7 +514,7 @@ function renderResults() {
   //     of the verses that answer (each with its verse), never generated
   const ragOn = ragWanted(res);
   if (res.term || ragOn || (res.brief && res.brief.items.length)) {
-    h += `<section class="brief" id="briefBox" dir="${dir}"><h3 class="sec">${esc(isRulingRes(res) ? t.ragFatwaTitle : t.briefTitle)} <button type="button" class="mini" id="ansTts" title="${esc(t.listenAnswer)}" aria-label="${esc(t.listenAnswer)}">🔊</button></h3>`;
+    h += `<section class="brief" id="briefBox" dir="${dir}"><h3 class="sec">${esc(t.briefTitle)} <button type="button" class="mini" id="ansTts" title="${esc(t.listenAnswer)}" aria-label="${esc(t.listenAnswer)}">🔊</button></h3>`;
     if (res.term) h += termCard(res.term);
     if (ragOn) h += `<div id="ragBox" aria-live="polite"><p class="note rag-wait">${esc(t.ragLoading)}</p></div>`;
     else if (res.brief && res.brief.items.length) {
@@ -697,7 +697,7 @@ async function loadSunnah(res) {
 }
 // «الجواب باختصار» v5 (extractive, evidence-bound, public/js/rag.js): the worker builds a closed list of
 // passages from the sources of truth — verse text (Tanzil), tafsir, authentic hadiths, and for a ruling
-// question only the fatwas published by Sheikh Ibn Baz —, the server's composer and independent judge return
+// question only published ruling texts (rulings are shown from the Fiqh Encyclopedia of Dorar since T081) —, the server's composer and independent judge return
 // passage IDs only, fixed rules check them again, and the passages are shown verbatim with their source.
 // A concept of the question with no evidence is said so. If the service fails: the previous short answer.
 // a story («قصة يوسف») is answered by its verses in order, not by two sentences
@@ -737,7 +737,7 @@ async function loadRag(res, fatwas = []) {
     // a published fatwa: its question, then the paragraphs that state the answer, verbatim, with the link
     box.innerHTML = b.points.map(p => { const f = p.items[0];
       return `<blockquote class="rag-fatwa" dir="rtl">${p.items.map(x => ragItem(x, res, t)).join(' ')}
-        <footer><small>${esc(f.mufti || '')} — <a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.title || f.source || 'binbaz.org.sa')}</a></small></footer></blockquote>`; }).join('')
+        <footer><small>${esc(f.mufti || '')} — <a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.title || f.source || 'dorar.net/feqhia')}</a></small></footer></blockquote>`; }).join('')
       + `<p class="note rag-gap">${esc(t.ragFatwaNote)}${res.lang === 'en' ? ' ' + esc(t.ragFatwaArabicOnly) : ''}</p>`;
   } else {
     const srcs = [...new Set(b.points.flatMap(p => p.items.map(x => x.kind === 'tafsir' ? x.sourceTitle : x.kind === 'quran' ? t.ragQuranSrc : t.ragHadithSrc)))].filter(Boolean);
