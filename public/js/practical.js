@@ -248,15 +248,23 @@ export function createPractical(ctx) {
   async function loadMonth(p, method, school, date = new Date()) {
     const y = date.getFullYear(), m = date.getMonth() + 1;
     const key = `${p.lat.toFixed(3)},${p.lon.toFixed(3)},${method},${school},${y}-${m}`;
-    const c = store.get('prayerCache', null);
-    if (c && c.key === key && Array.isArray(c.days)) return c.days;
+    // two months kept (this one and, at the end of a month, the next): the rollover no longer evicts this month
+    const cached = monthsCached().find(c => c.key === key);
+    if (cached) return cached.days;
     const r = await doFetch(`https://api.aladhan.com/v1/calendar/${y}/${m}?latitude=${p.lat}&longitude=${p.lon}&method=${method}&school=${school}&iso8601=true`);
     if (!r.ok) throw new Error('aladhan ' + r.status);
     const days = parseCalendar(await r.json());
-    store.set('prayerCache', { key, days });
+    store.set('prayerCache', { months: [{ key, days }, ...monthsCached().filter(c => c.key !== key)].slice(0, 2) });
     return days;
   }
-  let lastTone = 0;
+  function monthsCached() {
+    const c = store.get('prayerCache', null);
+    if (!c) return [];
+    if (Array.isArray(c.months)) return c.months.filter(x => x && Array.isArray(x.days));
+    return c.key && Array.isArray(c.days) ? [{ key: c.key, days: c.days }] : [];   // format before 4 Oct
+  }
+  // prayer times already past when the page opened are never announced
+  let lastTone = Date.now();
   let adhanAudio = null;
   function adhan(toggle = false) {
     if (adhanAudio && !adhanAudio.paused) { adhanAudio.pause(); if (toggle) return; }
@@ -414,11 +422,12 @@ export function createPractical(ctx) {
   setInterval(() => {
     const mode = store.get('prayerSound', store.get('prayerTone', false) ? 'tone' : 'none');
     if (mode === 'none') return;
-    const c = store.get('prayerCache', null), now = Date.now();
-    if (!c || !Array.isArray(c.days)) return;
-    for (const d of c.days) for (const k of PRAYERS) {
+    const now = Date.now();
+    // within 2 minutes after the time: a tab in the background has its timers slowed to about once a minute
+    // (with 15 s the adhan was usually missed there)
+    for (const c of monthsCached()) for (const d of c.days) for (const k of PRAYERS) {
       const at = d.times[k];
-      if (at <= now && now - at < 15000 && at > lastTone) { lastTone = at; mode === 'adhan' ? adhan() : tone(); return; }
+      if (at <= now && now - at < 120000 && at > lastTone) { lastTone = at; mode === 'adhan' ? adhan() : tone(); return; }
     }
   }, 5000);
 

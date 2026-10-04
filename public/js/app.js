@@ -1576,21 +1576,18 @@ function answerText() {
 // voice may read, T018): used when the browser has no voice for the language
 const TTS_BOOK_IDS = ['muyassar_ar', 'mukhtasar_ar', 'mukhtasar_en'];
 async function answerPassages(lang) {
-  const out = [], seen = new Set(), picks = [];
+  const seen = new Set(), picks = [];
   // the verses the short answer cites, then the key verse cards (with the tafsir book shown on them)
   for (const b of document.querySelectorAll('#briefBox .cite[data-idx]')) picks.push({ i: +b.dataset.idx, book: null });
   for (const c of document.querySelectorAll('#view article.vcardx:not(.ctx)')) picks.push({ i: +c.dataset.idx, book: c.dataset.src });
-  for (const p of picks) {
-    if (out.length >= 3 || seen.has(p.i) || !Number.isInteger(p.i)) continue;
-    seen.add(p.i);
-    const i = p.i, book = TTS_BOOK_IDS.includes(p.book) ? p.book : (lang === 'en' ? 'mukhtasar_en' : 'muyassar_ar');
-    const [s, a] = state.engine.ref(i).split(':').map(Number);
-    try {
-      const units = await (await fetch(`data/tts/${book}/${s}.json`)).json();
-      if (units[a - 1]) out.push({ text: units[a - 1], ref: { book, s, a } });
-    } catch (e) { /* skipped */ }
-  }
-  return out;
+  const chosen = picks.filter(p => Number.isInteger(p.i) && !seen.has(p.i) && seen.add(p.i)).slice(0, 3).map(p => {
+    const book = TTS_BOOK_IDS.includes(p.book) ? p.book : (lang === 'en' ? 'mukhtasar_en' : 'muyassar_ar');
+    const [s, a] = state.engine.ref(p.i).split(':').map(Number);
+    return { book, s, a };
+  });
+  // the files are fetched together (one per surah), the order of the answer is kept
+  const units = await Promise.all(chosen.map(c => fetch(`data/tts/${c.book}/${c.s}.json`).then(r => r.json()).catch(() => null)));
+  return chosen.map((c, k) => units[k] && units[k][c.a - 1] ? { text: units[k][c.a - 1], ref: c } : null).filter(Boolean);
 }
 // a one-line status under the title of the short answer
 function toastMsg(msg) {

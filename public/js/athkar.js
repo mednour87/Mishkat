@@ -24,7 +24,7 @@ const THEME_WORDS = [
   ['distress', /الكرب|الهم|الحزن|المرض|المريض|المصيبه|الخوف|الغضب|distress|anxiety|grief|illness|sick|fear|anger|calamity/],
   ['istighfar', /الاستغفار|التسبيح|التهليل|forgiveness|istighfar|tasbih/],
 ];
-const STOP = new Set(['اذكار', 'الاذكار', 'ذكر', 'دعاء', 'ادعيه', 'الدعاء', 'ماذا', 'اقول', 'يقال', 'ما', 'في', 'عند', 'قبل', 'بعد', 'what', 'to', 'say', 'when', 'before', 'after', 'adhkar', 'azkar', 'dhikr', 'dua', 'duas', 'supplication', 'of', 'the', 'for', 'i', 'do', 'should', 'remembrance', 'words']);
+const STOP = new Set(['اذكار', 'الاذكار', 'ذكر', 'دعاء', 'دعا', 'الدعا', 'ادعيه', 'الدعاء', 'ماذا', 'اقول', 'يقال', 'ما', 'في', 'عند', 'قبل', 'بعد', 'what', 'to', 'say', 'when', 'before', 'after', 'adhkar', 'azkar', 'dhikr', 'dua', 'duas', 'supplication', 'of', 'the', 'for', 'i', 'do', 'should', 'remembrance', 'words']);
 export function athkarQuery(q) {
   const n = (normAr(String(q || '')) + ' ' + String(q || '').toLowerCase().replace(/[^a-z\s]/g, ' ')).replace(/\s+/g, ' ').trim();
   const theme = (THEME_WORDS.find(([, re]) => re.test(n)) || [null])[0];
@@ -35,12 +35,15 @@ export function athkarQuery(q) {
 export function filterAthkar(items, { theme = null, words = [] } = {}) {
   let list = theme ? items.filter(x => x.theme === theme) : items.slice();
   if (words.length) {
-    const hay = (x) => normAr([x.chapter, x.title, x.text, (x.cats || []).join(' ')].join(' '));
+    const hay = (x) => normAr([x.chapter, x.title, x.text, (x.cats || []).join(' ')].join(' ')) + ' ' + [x.en && x.en.title, x.en && x.en.text].filter(Boolean).join(' ').toLowerCase();
     const W = words.map(w => normAr(w).replace(/^ال/, ''));
     const hit = list.filter(x => W.some(w => hay(x).includes(w)));
     // the chapter or title that names it first («التشهد» → the tashahhud before the supplications after it)
     const head = (x) => normAr([x.chapter, x.title].join(' '));
     if (hit.length) list = hit.map((x, i) => [x, i, W.some(w => head(x).includes(w)) ? 0 : 1]).sort((a, b) => a[2] - b[2] || a[1] - b[1]).map(a => a[0]);
+    // words that match nothing: the theme they named stays (e.g. "dua before sleeping"); without a theme,
+    // nothing is shown rather than unrelated remembrances (the «none» message)
+    else if (!theme) list = [];
   }
   return list;
 }

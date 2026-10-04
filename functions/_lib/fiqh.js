@@ -117,15 +117,18 @@ export async function fiqhSearch(body, env, fetchImpl = fetch) {
   if (!qs.length) return { ok: false, error: 'query too short' };
   let items = [];
   const seen = new Set();
-  for (const q of qs) {
-    const { text } = await getText(`${DORAR}/feqhia/search?q=${encodeURIComponent(q)}`, fetchImpl);
-    for (const x of parseDorarSearch(text).slice(0, 10)) if (!seen.has(x.id)) { seen.add(x.id); items.push(x); }
+  // the searches run together; one that fails (HTTP error, challenge page) no longer discards the others
+  const pages = await Promise.allSettled(qs.map(q => getText(`${DORAR}/feqhia/search?q=${encodeURIComponent(q)}`, fetchImpl)));
+  if (pages.every(p => p.status === 'rejected')) throw pages[0].reason;
+  for (const p of pages) {
+    if (p.status !== 'fulfilled') continue;
+    for (const x of parseDorarSearch(p.value.text).slice(0, 10)) if (!seen.has(x.id)) { seen.add(x.id); items.push(x); }
   }
   // a hit inside a footnote or an example is not the section's subject: the words of the question (or of one
   // search term) must be in the section's path, or in the heading the search returned — with or without AI
   // (before: «ما حكم الموسيقى» got the section on dancing, whose footnote mentions music)
   const wordsOf = (q) => bare(q).split(' ').filter(w => w.length > 2).map(w => w.replace(/^(ال|وال|بال)/, ''));
-  const heading = (x) => /^(المطلب|المبحث|الفصل|الباب|الفرع|المساله|المسأله|كتاب)/.test(bare(x.snippet)) ? x.snippet : '';
+  const heading = (x) => /^(المطلب|المبحث|الفصل|الباب|الفرع|المساله|كتاب)/.test(bare(x.snippet)) ? x.snippet : '';
   items = items.filter(x => qs.some(q => { const w = wordsOf(q); return w.length && w.every(v => bare(x.path + ' ' + heading(x)).includes(v)); })).slice(0, 12);
   let by = 'search';
   if (items.length > 1 && body.ai !== false) {

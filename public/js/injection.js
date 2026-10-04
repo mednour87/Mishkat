@@ -10,7 +10,7 @@ const ar = (s) => String(s || '').replace(AR_MARKS, '').replace(/[أإآ]/g, 'ا
 
 const INJECTION = [
   // English: override / reveal / role-play / fake chat roles
-  /\b(ignore|disregard|forget|override|bypass|drop)\b[^.?!]{0,40}\b(previous|prior|above|earlier|all|any|your|the|these|system)\b[^.?!]{0,30}\b(instructions?|rules?|prompts?|guidelines|constraints|restrictions|directives)\b/i,
+  /\b(ignore|disregard|forget|override|bypass|drop)\b[^.?!]{0,40}\b(previous|prior|above|earlier|all|any|your|the|these|system)\b[^.?!]{0,30}\b(instructions?|rules?|prompts?|guidelines|constraints|restrictions|directives)\b(?!\s+of\s+(tajw[ei]e?d|recitation|reading|grammar|arabic|fiqh|islam|prayer|sal[aā]h|fasting|inheritance|hajj|zakat|the (quran|prayer|fast|mosque)))/i,
   /\b(system prompt|developer mode|dev mode|jailbreak|do anything now|\bDAN\b|god mode|unfiltered mode)\b/i,
   /\b(you are now|from now on,? you|pretend (to be|you are|that you)|role-?play as|you must now)\b|(^|\b(you|please|now)\s+)act as (a|an|my|if)\b/i,
   /\b(reveal|print|show|repeat|output|tell me|display|leak)\b[^.?!]{0,30}\b(your|the|system|hidden|initial)\b[^.?!]{0,20}\b(prompt|instructions|rules|guidelines|configuration)\b/i,
@@ -35,7 +35,11 @@ const FABRICATE = [
   /\b([eé]cris|invente|compose|g[eé]n[eè]re)\b[^.?!]{0,25}\b(un |une |des )?(verset|sourate|hadith|fatwa)\b/i,
 ];
 const FABRICATE_AR = [
-  /(اكتب|اكتبي|اخترع|اختلق|ولد|انشئ|اصنع|ركب|زور)\s+(لي\s+|لنا\s+)?(اية|ايه|ايات|سوره|سورة|حديثا|حديث|احاديث|فتوي|فتوى)(\s|$)/,
+  // a NAMED passage («اكتب آية الكرسي», «اكتب لي سورة الإخلاص», «اكتب سورة يس», «اكتب الآية 255») is a request to
+  // show it, not to compose one: only «اكتب (لي) آية/حديثا/فتوى» without a name is refused
+  /(اكتب|اكتبي)\s+(لي\s+|لنا\s+)?(اية|ايه|ايات|سوره|سورة)(?!\s+(ال\S|يس|طه|ص|ق|ن|رقم|[0-9٠-٩]))(\s|$)/,
+  /(اكتب|اكتبي)\s+(لي\s+|لنا\s+)?(حديثا|حديث|احاديث|فتوي|فتوى)(\s|$)/,
+  /(اخترع|اختلق|ولد|انشئ|اصنع|ركب|زور)\s+(لي\s+|لنا\s+)?(اية|ايه|ايات|سوره|سورة|حديثا|حديث|احاديث|فتوي|فتوى)(\s|$)/,
   /(ألّف|ألِّف|الّف)\s+(لي\s+)?(اية|آية|سورة|حديثا|حديث|فتوى)/,
 ];
 

@@ -27,7 +27,7 @@ test('the gate accepts the basmala only once', () => {
 
 test('answer read by the server voice: only tafsir books shipped in public/data/tts, never a verse text', () => {
   const fn = app.slice(app.indexOf('async function answerPassages'), app.indexOf('let ansRun'));
-  assert.match(fn, /data\/tts\/\$\{book\}/);
+  assert.match(fn, /data\/tts\/\$\{c\.book\}/);
   assert.match(app, /const TTS_BOOK_IDS = \['muyassar_ar', 'mukhtasar_ar', 'mukhtasar_en'\]/);
   assert.doesNotMatch(fn, /e\.verses|engine\.verses/);
   for (const b of ['muyassar_ar', 'mukhtasar_ar', 'mukhtasar_en']) assert.ok(statSync(new URL(`../public/data/tts/${b}/1.json`, import.meta.url)).size > 0);
