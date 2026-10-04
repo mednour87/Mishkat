@@ -73,6 +73,7 @@ export function createSpeaker({ server = () => false, onState = () => {} } = {})
     return URL.createObjectURL(await r.blob());
   };
   // ref: { book, s, a } of a tafsir unit shipped with Mishkat — the only texts the server voice reads (T018)
+  // resolves 'done' when everything was read (not stopped, no error)
   async function speak(text, lang, ref = null) {
     stop();
     const my = ++run;
@@ -87,8 +88,9 @@ export function createSpeaker({ server = () => false, onState = () => {} } = {})
     if (voice) {
       // the browser's own voice, sentence by sentence (long utterances get cut in Chromium)
       onState('speaking', { trimmed, via: 'browser' });
+      let ok = true;
       for (const p of parts) {
-        const ok = await new Promise(res => {
+        ok = await new Promise(res => {
           const u = new SpeechSynthesisUtterance(p);
           u.voice = voice; u.lang = voice.lang; u.rate = lang === 'ar' ? 0.92 : 1;
           u.onend = () => res(true); u.onerror = () => res(false);
@@ -97,7 +99,7 @@ export function createSpeaker({ server = () => false, onState = () => {} } = {})
         if (my !== run) return;
         if (!ok) break;
       }
-      if (my === run) onState('idle');
+      if (my === run) { onState('idle'); return ok ? 'done' : undefined; }
       return;
     }
     if (!server() || !ref || trimmed) { onState('error', 'novoice'); return; }
@@ -117,7 +119,7 @@ export function createSpeaker({ server = () => false, onState = () => {} } = {})
         });
         if (my !== run) return;
       }
-      if (my === run) { audio = null; onState('idle'); }
+      if (my === run) { audio = null; onState('idle'); return 'done'; }
     } catch (e) {
       if (my === run) { stop(); onState('error', e.code || 'failed'); }
     }

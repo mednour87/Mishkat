@@ -24,6 +24,8 @@ const dv = fileURLToPath(new URL('./.dev.vars', import.meta.url));
 if (existsSync(dv)) for (const line of readFileSync(dv, 'utf8').split(/\r?\n/)) {
   const m = line.match(/^\s*([A-Z_]+)\s*=\s*"?(.*?)"?\s*$/); if (m) env[m[1]] = m[2];
 }
+// FREE_ONLY=1 (evaluations): the paid provider is removed, only Groq's free tier is called
+if (process.env.FREE_ONLY === '1') for (const k of ['PRIMARY_URL', 'PRIMARY_KEY', 'PRIMARY_MODELS']) delete env[k];
 // static files for functions that read them (Cloudflare's env.ASSETS)
 env.ASSETS = { fetch: async (req) => { const f = ROOT + decodeURIComponent(new URL(req.url).pathname).replace(/^\/+/, ''); return existsSync(f) ? new Response(readFileSync(f)) : new Response('', { status: 404 }); } };
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',

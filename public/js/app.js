@@ -274,7 +274,10 @@ function gate() {
   document.body.classList.add('gated');
   setTimeout(() => $('#gateInput').focus(), 50);
   return new Promise(resolve => {
+    let accepted = false;   // typing the last letter accepts, and Enter would accept a second time (welcome heard twice)
     const accept = () => {
+      if (accepted) return;
+      accepted = true;
       store.set('bismillah', '1');
       welcomeVoice();
       $('#gateMsg').textContent = t().gateOk; $('#gateMsg').className = 'gmsg ok';
@@ -808,7 +811,7 @@ async function fillSuraInfo(el, n, short = false) {
 function verseCard(q, lang) {
   const t = T(), e = state.engine, i = q.idx, dir = lang === 'ar' ? 'rtl' : 'ltr';
   const tr = lang === 'en' ? e.translation('en', i).replace(/\[\d+\]/g, '') : '';
-  return `<article class="vcardx${q.role === 'context' ? ' ctx' : ''}" data-idx="${i}"${colorVar(e.suraOf[i])}>
+  return `<article class="vcardx${q.role === 'context' ? ' ctx' : ''}" data-idx="${i}" data-src="${esc(q.source || '')}"${colorVar(e.suraOf[i])}>
     <header><button class="cite" data-idx="${i}">${esc(refLabel(i, lang))}</button>
       <span class="vc-btns"><button class="mini" data-playv="${i}" aria-label="${esc(t.listen)}">▶</button><button class="mini" data-ctx="${i}" aria-expanded="false">${esc(t.ctxBtn)}</button><button class="mini" data-open="${i}">${esc(t.readHere)}</button></span></header>
     <div class="ayah">${esc(e.verses[i])}</div>
@@ -1543,15 +1546,24 @@ function markRecited(i, how = 'audio') {
 // T042: the voice of the application — a short welcome after the basmala (the visitor's gesture allows sound),
 // and the short answer read aloud on request; both with the BROWSER's voice (free, local), and never the Quran:
 // verse texts are left out of what is read (the Quran is only recited by a human reciter).
+// Arabic: the hand-written welcome sentence, generated once with Groq Orpheus (tools/make_welcome_audio.py) and
+// shipped as audio/welcome_ar.mp3, so it is heard even where the browser has no Arabic voice; English: the
+// browser's voice.
 async function welcomeVoice() {
-  if (!state.prefs.welcomeVoice || !window.speechSynthesis) return;
-  try {
-    const lang = state.lang === 'en' ? 'en' : 'ar', v = await browserVoice(lang);
+  if (!state.prefs.welcomeVoice) return;
+  const lang = state.lang === 'en' ? 'en' : 'ar';
+  const byBrowser = async () => {
+    if (!window.speechSynthesis) return;
+    const v = await browserVoice(lang);
     if (!v) return;
     const u = new SpeechSynthesisUtterance(T().welcomeSpoken);
     u.voice = v; u.lang = v.lang; u.rate = lang === 'ar' ? 0.95 : 1;
     speechSynthesis.speak(u);
-  } catch (e) { /* no voice */ }
+  };
+  try {
+    if (lang === 'ar') { const au = new Audio('audio/welcome_ar.mp3'); au.volume = 0.9; await au.play(); return; }
+  } catch (e) { /* blocked or missing: the browser's voice */ }
+  try { await byBrowser(); } catch (e) { /* no voice */ }
 }
 function answerText() {
   const box = $('#briefBox');
@@ -1560,11 +1572,53 @@ function answerText() {
   c.querySelectorAll('h3, .cite, .rag-q, .ayah-in, .note, button, a.cite').forEach(x => x.remove());
   return c.textContent.replace(/\s+/g, ' ').trim();
 }
-function speakAnswer(lang) {
-  const text = answerText();
-  if (!text) return;
+// the tafsir units of the key verses of the answer, as shipped in public/data/tts (the only texts the server
+// voice may read, T018): used when the browser has no voice for the language
+const TTS_BOOK_IDS = ['muyassar_ar', 'mukhtasar_ar', 'mukhtasar_en'];
+async function answerPassages(lang) {
+  const out = [], seen = new Set(), picks = [];
+  // the verses the short answer cites, then the key verse cards (with the tafsir book shown on them)
+  for (const b of document.querySelectorAll('#briefBox .cite[data-idx]')) picks.push({ i: +b.dataset.idx, book: null });
+  for (const c of document.querySelectorAll('#view article.vcardx:not(.ctx)')) picks.push({ i: +c.dataset.idx, book: c.dataset.src });
+  for (const p of picks) {
+    if (out.length >= 3 || seen.has(p.i) || !Number.isInteger(p.i)) continue;
+    seen.add(p.i);
+    const i = p.i, book = TTS_BOOK_IDS.includes(p.book) ? p.book : (lang === 'en' ? 'mukhtasar_en' : 'muyassar_ar');
+    const [s, a] = state.engine.ref(i).split(':').map(Number);
+    try {
+      const units = await (await fetch(`data/tts/${book}/${s}.json`)).json();
+      if (units[a - 1]) out.push({ text: units[a - 1], ref: { book, s, a } });
+    } catch (e) { /* skipped */ }
+  }
+  return out;
+}
+// a one-line status under the title of the short answer
+function toastMsg(msg) {
+  const box = $('#briefBox');
+  if (!box || !msg) return;
+  let p = box.querySelector('.ans-voice');
+  if (!p) { p = document.createElement('p'); p.className = 'note ans-voice'; p.setAttribute('role', 'status'); box.querySelector('h3')?.after(p); }
+  p.textContent = msg;
+}
+let ansRun = 0;
+async function speakAnswer(lang) {
+  const b = $('#ansTts');
+  if (b && b.classList.contains('on')) { ansRun++; speaker.stop(); b.classList.remove('on'); return; }
+  lang = lang === 'en' ? 'en' : 'ar';
+  const my = ++ansRun;
   stopAudio(true);
-  speaker.speak(text, lang === 'en' ? 'en' : 'ar', null);   // no passage reference: the browser's voice only
+  if (b) b.classList.add('on');
+  try {
+    if (await browserVoice(lang)) { const text = answerText(); if (text) await speaker.speak(text, lang, null); return; }
+    // no voice for this language in the browser: the server voice reads the tafsir of the key verses
+    const items = state.tts ? await answerPassages(lang) : [];
+    if (!items.length) { toastMsg(T().ansNoVoice); return; }
+    toastMsg(T().ansServerVoice);
+    for (const it of items) {
+      if (my !== ansRun) break;
+      if (await speaker.speak(it.text, lang, it.ref) !== 'done') break;
+    }
+  } finally { if (my === ansRun && b) b.classList.remove('on'); }
 }
 function refreshMiniLamp() {
   const slot = $('#lampSlot');
