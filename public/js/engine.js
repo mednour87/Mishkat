@@ -97,7 +97,9 @@ export function tokens(text, lang, { stem = true, stop = true } = {}) {
 }
 
 export function detectLang(q, uiLang = 'ar') {
-  // Mishkat speaks Arabic and English: any text without Arabic letters is searched in English
+  // Mishkat speaks Arabic and English: any text without Arabic letters is searched in English; a text without
+  // any letter («2:255», «18 10») answers in the language of the interface (it said «Verse 2:255» in Arabic)
+  if (!/\p{L}/u.test(q)) return uiLang === 'en' ? 'en' : 'ar';
   return AR_RANGE.test(q) ? 'ar' : 'en';
 }
 

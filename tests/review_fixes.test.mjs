@@ -46,3 +46,11 @@ test('prayer sound: a 2-minute window, two months kept, nothing announced for ti
   assert.match(src, /let lastTone = Date\.now\(\);/);
   assert.match(src, /\.slice\(0, 2\) \}\);/);
 });
+
+test('a reference without letters answers in the language of the interface', async () => {
+  const { engine: E } = loadEngine();
+  const r = await E.ask('2:255', { uiLang: 'ar' });
+  assert.equal(r.lang, 'ar');
+  assert.match(r.answer[0].text, /الآية/);
+  assert.equal((await E.ask('2:255', { uiLang: 'en' })).lang, 'en');
+});
