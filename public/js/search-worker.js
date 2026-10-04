@@ -19,6 +19,7 @@ function engine() {
     await Promise.all([
       getJSON('../data/qp_topics.json').then(d => e.addTopicIndex(d)).catch(() => {}),
       getJSON('../data/bayenat_index.json').then(d => e.addBayenat(d)).catch(() => {}),
+      getJSON('../data/surah_sciences.json').then(d => e.addSurahSciences(d)).catch(() => {}),
     ]);
     return e;
   })();

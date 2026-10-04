@@ -867,3 +867,15 @@ html[data-theme=light] .p-body select option { background: #fff; color: #1d2433;
   .panel { border-radius: 18px 18px 0 0; border-bottom: 0; }
   .p-body { padding: 10px 14px calc(16px + env(safe-area-inset-bottom)); }
 }
+
+/* story of a prophet (Al-Jamhara summary + episodes) */
+.story { margin: 6px 0 12px; }
+.story .st-intro, .story .st-aims { font-family: 'Amiri', var(--ui); font-size: 18px; line-height: 1.9; margin: 6px 0; }
+.story .ayah-in { font-family: 'Amiri', var(--ui); color: var(--gold); }
+.st-eps { margin: 6px 0; padding-inline-start: 22px; display: grid; gap: 6px; }
+.st-eps li { border-inline-start: 3px solid var(--sc, var(--gold2)); padding: 4px 8px; background: var(--panel2); border-radius: 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.st-eps .st-t { font-family: 'Amiri', var(--ui); font-size: 17px; flex: 1 1 60%; }
+.st-eps small { color: var(--mut); }
+.st-eps .st-b { display: inline-flex; gap: 4px; }
+.st-tag { font-size: 11px; color: var(--mut); border: 1px solid var(--line); border-radius: 999px; padding: 0 6px; margin-inline-start: 6px; }
+.st-tag.named { color: var(--gold); border-color: rgba(255, 214, 107, .4); }

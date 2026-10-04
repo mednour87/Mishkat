@@ -178,7 +178,7 @@ test('topic search: expected key verses appear (ar/en)', async () => {
     ['بر الوالدين', ['17:23', '31:14', '46:15', '6:151']], ['parents', ['31:14', '17:23', '46:15']]];
   for (const [q, refs] of cases) {
     const r = await ask(q, { uiLang: 'en' });
-    assert.ok(['topic', 'sura'].includes(r.type), q + ' ' + r.type);
+    assert.ok(['topic', 'sura', 'story'].includes(r.type), q + ' ' + r.type);   // «قصة يوسف»: story route (T080)
     const got = new Set(r.verses.map(v => v.ref));
     assert.ok(refs.some(x => got.has(x)), `${q}: none of ${refs} in ${[...got].slice(0, 12)}`);
     assertGrounded(r);

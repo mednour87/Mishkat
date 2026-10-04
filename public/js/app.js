@@ -514,6 +514,7 @@ function renderResults() {
     }).join('') + '</ul>';
   }
   for (const a of texts) h += `<p class="lead" dir="${dir}">${esc(a.text)}</p>`;
+  if (res.story) h += storyBox(res);
   if (res.verdict === 'near' && res.diffWords && res.diffWords.length) {
     const diff = new Set(res.diffWords);
     const words = (res.checked || res.query).split(/\s+/).map(w => diff.has(normAr(w)) ? `<mark class="diff">${esc(w)}</mark>` : esc(w)).join(' ');
@@ -538,7 +539,7 @@ function renderResults() {
   if (res.alt && res.alt.mode === 'sura') h += `<p><button class="btn alt" id="altBtn">${esc(t.asSura(res.alt.name))}</button></p>`;
 
   // surahs ranked by relevance (topics) / verse list (verification)
-  if (res.suras && res.suras.length && (res.type === 'topic' || res.verdict === 'notverse')) {
+  if (res.suras && res.suras.length && (res.type === 'topic' || res.type === 'story' || res.verdict === 'notverse')) {
     // the other verses, surah by surah — those already explained above are not repeated
     const rest = res.suras.map(g => ({ ...g, verses: g.verses.filter(i => !shownIdx.has(i)) })).filter(g => g.verses.length);
     if (rest.length) h += `<h3 class="sec">${esc(shownIdx.size ? t.otherVerses : t.surasTitle)}</h3><p class="sc-note">${esc(t.surasNote)}</p>` + rest.map((g, k) => suraCard(g, k)).join('');
@@ -573,6 +574,7 @@ function renderResults() {
   v.querySelectorAll('.vcardx').forEach(c => c.onclick = (ev) => { if (ev.target.closest('button,a,.ctxbox')) return; goVerse(+c.dataset.idx, { pane: 'r' }); });
   v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playv, { play: 'one', pane: 'r' }); });
   v.querySelectorAll('[data-open]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.open, { pane: 'r' }); });
+  v.querySelectorAll('[data-playfrom]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playfrom, { play: 'all', pane: 'r' }); });
   if (res.sensitive) { const first = v.querySelector('[data-ctx]'); if (first) toggleContext(first); }
   v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => goVerse(+li.dataset.idx, { pane: 'r' }));
   v.querySelectorAll('.sc-v').forEach(li => li.onclick = () => goVerse(+li.dataset.idx, { pane: 'r' }));
@@ -816,6 +818,37 @@ function markTerms(text, lang, terms) {
 }
 
 // one card per surah, listing ITS verses from the results, so the link with the search is visible
+// the story of a prophet: an approved summary (Al-Jamhara, verbatim), the episodes with their verse ranges,
+// Quran quotations of the source shown from Tanzil ({{Q:s:a}} markers)
+function withQuran(text) {
+  const e = state.engine;
+  return esc(text).replace(/\{\{Q:(\d+):(\d+)\}\}/g, (m, s0, a0) => {
+    const i = e.idxOf(+s0, +a0);
+    return i < 0 ? '' : `<span class="ayah-in">﴿${esc(e.verses[i])}﴾</span> <button class="cite" data-idx="${i}">(${esc(refLabel(i))})</button>`;
+  });
+}
+function storyBox(res) {
+  const t = T(), st = res.story, e = state.engine;
+  let h = `<section class="story" dir="rtl">`;
+  if (st.summary) {
+    const S = state.core.suras[st.summary.sura - 1];
+    h += `<h3 class="sec">${esc(t.storySummary)}</h3>${res.lang === 'en' ? `<p class="note" dir="ltr">${esc(t.storyArabicOnly)}</p>` : ''}
+      <p class="st-intro">${withQuran(st.summary.intro)}</p>
+      ${st.summary.aims.map(p => `<p class="st-aims">${withQuran(p)}</p>`).join('')}
+      <p class="note">${esc(st.summary.aimsCite)}${st.summary.aimsCite ? ' — ' : ''}<a href="${esc(st.summary.url)}" target="_blank" rel="noopener">${esc(t.storySrc(S.ar))}</a></p>`;
+  }
+  if (st.episodes.length) {
+    h += `<h3 class="sec">${esc(t.storyEpisodes(st.episodes.length))}</h3><ol class="st-eps">` + st.episodes.map(ep => {
+      const S = state.core.suras[ep.sura - 1];
+      const rg = ep.ranges.map(([a, b]) => a === b ? `${a}` : `${a}–${b}`).join('، ');
+      const first = e.idxOf(ep.sura, ep.ranges[0][0]);
+      return `<li${colorVar(ep.sura)}><span class="st-t">${esc(ep.title)}</span> <small>${esc(S.ar)} ${esc(rg)}</small>
+        <span class="st-b"><button class="mini" data-open="${first}">${esc(t.readHere)}</button><button class="mini" data-playfrom="${first}" aria-label="${esc(t.listen)}">▶</button></span></li>`;
+    }).join('') + `</ol><p class="note">${esc([...new Set(st.episodes.map(x => x.cite).filter(Boolean))].join(' · '))} — ${esc(t.storyEpSrc)}</p>`;
+  }
+  if (!st.summary && !st.episodes.length) h += `<p class="note">${esc(t.storyNoSummary)}</p>`;
+  return h + `</section>`;
+}
 function suraCard(g, k) {
   const t = T(), S = state.core.suras[g.sura - 1], e = state.engine, res = state.result;
   const terms = new Set(res.terms || []), qLang = res.lang;
@@ -825,7 +858,9 @@ function suraCard(g, k) {
     const tr = state.lang === 'en' ? e.translation('en', i).replace(/\[\d+\]/g, '') : '';
     const ar = qLang === 'ar' ? markTerms(e.verses[i], 'ar', terms) : esc(e.verses[i]);
     const trH = tr ? (qLang === 'en' ? markTerms(tr, 'en', terms) : esc(tr)) : '';
-    return `<li class="sc-v" data-idx="${i}"${n >= SHOW ? ' hidden' : ''}><div class="li-head"><button class="cite" data-idx="${i}">${esc(S.ar)} ${S.n}:${e.ayaOf[i]}</button>
+    const sv = res.story ? (res.verses || []).find(v => v.idx === i) : null;
+    const stag = sv ? `<small class="st-tag${sv.named ? ' named' : ''}">${esc(sv.named ? t.storyNamed : t.storyIndexed)}</small>` : '';
+    return `<li class="sc-v" data-idx="${i}"${n >= SHOW ? ' hidden' : ''}><div class="li-head"><button class="cite" data-idx="${i}">${esc(S.ar)} ${S.n}:${e.ayaOf[i]}</button>${stag}
       <span><button class="mini" data-playv="${i}" aria-label="${esc(t.listen)}">▶</button> <button class="mini" data-open="${i}">${esc(t.readHere)}</button></span></div>
       <div class="ayah">${ar}</div>${trH ? `<div class="tr">${trH}</div>` : ''}</li>`;
   };

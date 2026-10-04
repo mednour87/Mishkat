@@ -13,6 +13,7 @@
 //   6. Reference-pack sources (subject index, glossary, Dorar, Bayenat) only
 //      select or point; their text is shown as published, with its source.
 import { GLOSSARY, TERM_CUE, termFor, isBareTerm } from './glossary.js';
+import { storyQuery, storyOf } from './stories.js';
 
 // ---------------------------------------------------------------- text utils
 const AR_MARKS = /[ؐ-ًؚ-ٰٟۖ-ۭ࣓-ࣿـ]/g;
@@ -297,6 +298,8 @@ export const MSG = {
     invalidRef: (s, n) => `سورة ${s} عدد آياتها ${n} فقط؛ هذا الرقم غير موجود.`,
     invalidSura: 'رقم السورة يجب أن يكون بين 1 و114.',
     empty: 'اكتب فكرة أو سؤالًا أو اسم سورة أو رقم آية أو جزءًا من آية.',
+    story: (name, nNamed, nIdx) => `قصة ${name} كما وردت في القرآن الكريم: ملخّص منقول بحروفه من موسوعة الجمهرة، ثم مراحل القصة بآياتها. ذُكر اسمه في ${arCount(nNamed, 'آية واحدة', 'آيتين', 'آيات', 'آية')}${nIdx ? `، ووردت الإشارة إليه دون ذكر اسمه في ${arCount(nIdx, 'آية أخرى', 'آيتين أخريين', 'آيات أخرى', 'آية أخرى')} بحسب الفهرس الموضوعي للموسوعة القرآنية` : ''}.`,
+    storyNote: 'لا يُكتب شيء من القصة بالذكاء الاصطناعي: الملخّص والمراحل منقولة من مرجع معتمد، والآيات من نص المصحف.',
     lowConf: 'نتائج بحث لفظي (ثقة منخفضة) — تحقّق من السياق.',
     personalNote: 'هذه آيات عامة في الموضوع؛ أما حالتك الخاصة فاعرضها على عالم أو مختص.',
     topicLexical: (n, q, s = 1) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ورد فيها لفظ «${q}» في ${arCount(s, 'سورة واحدة', 'سورتين', 'سور', 'سورة')} (بحث لفظي). الآيات مرتّبة أدناه حسب السورة:`,
@@ -338,6 +341,8 @@ export const MSG = {
     invalidRef: (s, n) => `Surah ${s} has only ${n} verses; this verse number does not exist.`,
     invalidSura: 'The surah number must be between 1 and 114.',
     empty: 'Type an idea, a question, a surah name, a verse number or part of a verse.',
+    story: (name, nNamed, nIdx) => `The story of ${name} as told in the Quran: a summary quoted word for word from the Al-Jamhara encyclopedia (Arabic), then the episodes of the story with their verses. He is named in ${nNamed} verse${nNamed === 1 ? '' : 's'}${nIdx ? `, and spoken of without his name in ${nIdx} more according to the subject index of Quranpedia` : ''}.`,
+    storyNote: 'No part of the story is written by AI: the summary and the episodes are quoted from an approved reference, the verses from the Mushaf.',
     lowConf: 'Keyword results (low confidence) — check the context.',
     personalNote: 'These are general verses on the subject; for your own situation, please consult a scholar or specialist.',
     topicLexical: (n, q, s = 1) => `I found ${n} verse${n === 1 ? '' : 's'} containing the words of “${q}” in ${s} surah${s === 1 ? '' : 's'} (keyword search). They are listed below, surah by surah:`,
@@ -1076,8 +1081,11 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const kids = new Map(), byKey = new Map();
     for (const t of list) if (t.parent) { if (!kids.has(t.parent)) kids.set(t.parent, []); kids.get(t.parent).push(t); }
     for (const t of list) if (t.toks.length) { const k = t.toks.join(' '); if (!byKey.has(k)) byKey.set(k, []); byKey.get(k).push(t); }
-    TOPICS = { list, kids, byKey, size: new Map(), source: data.source, url: data.url, version: data.version };
+    TOPICS = { list, kids, byKey, size: new Map(), source: data.source, url: data.url, version: data.version, raw: data };
   }
+  // «علوم السور» of Al-Jamhara (stories of the prophets)
+  let SCI = null;
+  function addSurahSciences(data) { SCI = data && Array.isArray(data.suras) ? data : null; }
   function topicTree(roots, cap) {
     const groups = [], seen = new Set(), visited = new Set();
     const walk = (t, depth) => {
@@ -1175,7 +1183,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   function levelOf(res) {
     if (res.type === 'abstain') return 'D';
     if (res.type === 'khilaf' || res.polemic || res.sensitive) return 'C';
-    if (['verse', 'range', 'sura', 'verify', 'invalid_ref', 'hadith'].includes(res.type)) return 'A';
+    if (['verse', 'range', 'sura', 'verify', 'invalid_ref', 'hadith', 'story'].includes(res.type)) return 'A';
     if (res.type === 'topic' || res.type === 'term') return 'B';
     return null;
   }
@@ -1585,6 +1593,21 @@ export function createEngine({ core, searchAr, sources = {} }) {
       return { ...base, type: vs.length === 1 ? 'verse' : 'range', answer, verses: vs, focus: vs[0].idx, suras: groupBySura(vs.map(v => v.idx)) };
     }
 
+    // 0b. the story of a prophet («قصة يوسف», "story of Moses", «النبي يونس»): an approved summary, the
+    //     episodes with their verse ranges, the verses that name him and those that speak of him (index)
+    const prophet = mode === 'topic' ? null : (storyQuery(q) || (sp.changed && !sp.empty ? storyQuery(sp.display) : null));
+    if (prophet) {
+      base.meta.route = 'story';
+      const st = storyOf(prophet, { sci: SCI, topics: TOPICS && TOPICS.raw, searchAr, idxOf });
+      const named = new Set(st.named);
+      const order = [...new Set([...st.named, ...st.indexed])].sort((a, b) => a - b);
+      const vs = order.map(i => verseResult(i, named.has(i) ? { named: true } : { indexed: true }));
+      const name = lang === 'ar' ? prophet.ar : prophet.en;
+      return { ...base, type: 'story', story: st, answer: [{ kind: 'text', text: M.story(name, st.named.length, st.indexed.length) }, { kind: 'note', text: M.storyNote }],
+        verses: vs, focus: vs.length ? vs[0].idx : null, suras: groupBySura(order, (i) => named.has(i) ? 1 : 0.5).sort((a, b) => a.sura - b.sura),
+        confirmedBy: 'index', aiConfirmed: false, sensitive: false, polemic: false };
+    }
+
     // 1. references & surah names
     const r = mode === 'topic' ? null : (parseReference(q) || (refLike ? parseReference(sp.display) : null));
     let altSura = null;
@@ -1923,7 +1946,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   return {
     ask, ref, idxOf, suraOf, ayaOf, suras, verses, sources: src, cardOf, wordLookup, suggestWords, addLatinIndex, wordPositions,
     warm() { vx(); wordIndex(); for (const n of ['quran', ...Object.keys(src)]) field(n); },
-    addTopicIndex, addBayenat, topicIndexFor, bayenatFor, hasTopics: () => !!TOPICS, hasBayenat: () => !!BAY,
+    addTopicIndex, addBayenat, addSurahSciences, hasSurahSciences: () => !!SCI, topicIndexFor, bayenatFor, hasTopics: () => !!TOPICS, hasBayenat: () => !!BAY,
     addSource(id, payload) { src[id] = payload; fields.delete(id); },
     hasSource: (id) => !!src[id],
     topicSearch, verifyText, parseReference, findSura, sentencePool, context,

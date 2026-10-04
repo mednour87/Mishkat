@@ -25,3 +25,6 @@ eval/human/rating_key.json
 eval/human/rater*.csv
 !eval/qqa23/bootstrap_ci.py
 !eval/qqa23/ci_test.json
+data_build/cache/jamhara/
+data_build/cache/dorar/
+data_build/cache/*.xml
