@@ -42,6 +42,7 @@ Done at the author's request before the window opens; commits after the tag `bas
 - T018 (part 2) — `/api/tts` reads only a known passage (book + surah + verse + chunk) from the site's own files; free text refused (audit I3).
 - T051 — scenes at the centre of the galaxy while a tool is open: the Kaaba with a gold arrow to the qibla, the five prayers as beams of light on a 24-hour ring.
 - Sources registry and tools inventory updated (S24–S28).
+- Evening (author's requests): the lamp map opens exactly the surah clicked (names are targets, front-most first), with speed, tilt and zoom controls; country → city picker (GeoNames, CC BY 4.0), the city and country remembered in a cookie (never coordinates), Western or Arabic-Indic digits, an openly licensed adhan (Wikimedia Commons, CC BY-SA 4.0) or a tone at prayer time, all nearby mosques in Google Maps; agent skills for the project in `.claude/skills/` (S29–S30).
 
 ## Challenge — 5 October 2026
 -
