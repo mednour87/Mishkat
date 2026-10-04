@@ -245,7 +245,7 @@ s = slide("Public benchmark: Qur'an QA 2023, Task A", 'معيار علمي عا�
 stat(s, inch(0.6), inch(1.6), inch(3.9), f3(qm['mrr10']), f"MRR@10 · 95 % CI {f3(qm['mrr10_ci'][0])}–{f3(qm['mrr10_ci'][1])}")
 stat(s, inch(4.7), inch(1.6), inch(3.9), f3(qm['map10']), f"MAP@10 · 95 % CI {f3(qm['map10_ci'][0])}–{f3(qm['map10_ci'][1])}", BLUE)
 stat(s, inch(8.8), inch(1.6), inch(3.9), f"{f3(pb['mrr10'])} · {f3(pb['map10'])}", f"best published MRR · MAP ({pb['source']})", MUT, 32)
-text(s, [f"Deployed pipeline, {qm['n_runs']} run{'s' if qm['n_runs'] > 1 else ''} on Groq’s free tier only (4 Oct 2026), mean per question; official scorer (pytrec_eval), {qq['questions']} scored test questions; bootstrap 2,000 × seed 42. Run-to-run spread: MRR {f3(qm['mrr10_spread'][0])}–{f3(qm['mrr10_spread'][1])}.",
+text(s, [f"Deployed pipeline, {qm['n_runs']} run{'s' if qm['n_runs'] > 1 else ''} on Groq’s free tier only (4 Oct 2026), mean per question; official scorer (pytrec_eval), {qq['questions']} scored test questions; bootstrap 2,000 × seed 42. Run-to-run spread: MRR {f3(qm['mrr10_spread'][0])}–{f3(qm['mrr10_spread'][1])} (understated: identical AI requests are cached, as in production).",
          'Reading: comparable to the best published fine-tuned systems — their scores lie inside our intervals; we do not claim to be better. No training on this data; every verse from the verified text; few verses shown on purpose (lower MAP).',
          'Limits: the test questions were seen during development (no tuning on them, but not a blind test); one public benchmark, Arabic only.'],
      inch(0.6), inch(3.65), inch(12.1), inch(3.2), 15, space=10)
