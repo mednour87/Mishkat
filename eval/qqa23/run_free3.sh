@@ -12,5 +12,5 @@ for k in ${RUNS:-1 2 3}; do
   export CF_AI_TOKEN=$(grep '^oauth_token' "$APPDATA/xdg.config/.wrangler/config/default.toml" | sed 's/.*= *"\(.*\)"/\1/')
   node eval/run_qqa23.mjs ai_dense test 2>&1 | tail -1 | tee eval/qqa23/runs/free3/run$k.log
   cp eval/qqa23/runs/test/Mishkat_aidense.tsv eval/qqa23/runs/free3/run$k.tsv
-  [ "$k" != 3 ] && sleep 300
+  if [ "$k" != 3 ]; then sleep 300; fi
 done

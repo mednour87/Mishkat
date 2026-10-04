@@ -85,14 +85,14 @@ Hosting: Cloudflare Pages + Functions (free plan). Identical questions are cache
 ### Measured results (honest figures)
 | Measure | Result | Where |
 |---|---|---|
-| Qur'an QA 2023 Task A (public benchmark, 52 test questions, official scorer), deployed pipeline | QQA_RESULT_LINE | [eval/qqa23/RESULTS.md](eval/qqa23/RESULTS.md) |
+| Qur'an QA 2023 Task A (public benchmark, official scorer, 51 scored test questions), deployed pipeline on Groq's free tier, mean of 3 runs (4 Oct) | MRR@10 **0.616** [0.490–0.742] · MAP@10 **0.300** [0.210–0.402] — best published 0.576 / 0.313 lies inside: **comparable, not better** | [eval/qqa23/RESULTS.md](eval/qqa23/RESULTS.md) |
 | Over-refusal: 50 legitimate questions that look sensitive | 50/50 answered (none refused) | `eval/overrefusal.json`, `tests/fixes_v5.test.mjs` |
 | Map of 1,000 questions, engine without AI (4 Oct) | 630/671 known expectations met; median 1 ms | [eval/map1000/MAP_REPORT.md](eval/map1000/MAP_REPORT.md) |
 | Plain chatbot (same model, no retrieval) asked the same 60 questions | of 121 Arabic quotations it presented as Quran (﴿…﴾), only 26 are exact; 14 altered, 3 merged, 72 match no verse (Mishkat: 0 by construction) | `eval/human/auto_metrics.json` |
-| Tests | 189 automated tests (data integrity, routing, guards, hostile-AI, RAG rules, security, tools) | `npm test` |
+| Tests | 197 automated tests (data integrity, routing, guards, hostile-AI, RAG rules, security, tools) | `npm test` |
 | Human blind rating (2 raters) and user test with SUS | protocol and sheets ready, **not yet done** — no figure claimed | [eval/human/PROTOCOL.md](eval/human/PROTOCOL.md) |
 
-We do **not** claim to beat the state of the art: on 52 questions the differences with the best published systems are inside the 95 % confidence intervals.
+We do **not** claim to beat the state of the art: on 51 scored questions the differences with the best published systems are inside the 95 % confidence intervals.
 
 ### Run it
 ```bash

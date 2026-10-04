@@ -1,0 +1,82 @@
+{
+ "date": "2026-10-04",
+ "split": "test",
+ "questions": 51,
+ "provider": "Groq free tier only (FREE_ONLY=1)",
+ "bootstrap": 2000,
+ "seed": 42,
+ "runs": {
+  "run1": {
+   "map10": 0.295,
+   "map10_ci": [
+    0.207,
+    0.398
+   ],
+   "mrr10": 0.62,
+   "mrr10_ci": [
+    0.493,
+    0.747
+   ],
+   "abstentions": 5,
+   "failed_ai_calls": 0
+  },
+  "run2": {
+   "map10": 0.295,
+   "map10_ci": [
+    0.207,
+    0.398
+   ],
+   "mrr10": 0.62,
+   "mrr10_ci": [
+    0.493,
+    0.747
+   ],
+   "abstentions": 5,
+   "failed_ai_calls": 0
+  },
+  "run3": {
+   "map10": 0.31,
+   "map10_ci": [
+    0.22,
+    0.415
+   ],
+   "mrr10": 0.609,
+   "mrr10_ci": [
+    0.48,
+    0.739
+   ],
+   "abstentions": 5,
+   "failed_ai_calls": 1
+  }
+ },
+ "published_best": {
+  "map10": 0.3128,
+  "mrr10": 0.5763,
+  "source": "arXiv 2412.11431"
+ },
+ "mean_of_runs": {
+  "n_runs": 3,
+  "map10": 0.3,
+  "map10_ci": [
+   0.21,
+   0.402
+  ],
+  "mrr10": 0.616,
+  "mrr10_ci": [
+   0.49,
+   0.742
+  ],
+  "map10_spread": [
+   0.295,
+   0.31
+  ],
+  "mrr10_spread": [
+   0.609,
+   0.62
+  ],
+  "published_best_inside_ci": {
+   "map10": true,
+   "mrr10": true
+  }
+ }
+}
