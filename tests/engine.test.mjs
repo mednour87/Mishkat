@@ -163,7 +163,7 @@ test('rulings, personal cases and dreams → abstention (ar/en)', async () => {
     if (reason === 'ruling') {
       // no ruling given: only related verses explicitly labelled "not a fatwa" + official links
       assert.ok(r.verses.every(v => v.relatedOnly), q);
-      assert.ok(r.links && r.links.some(l => l.id === 'binbaz'), q);
+      assert.ok(r.links && r.links.some(l => l.id === 'alifta') && r.links.some(l => l.id === 'dorarFiqh'), q);
       assert.ok(!r.answer.some(a => a.kind === 'quote'), q);
     } else assert.equal(r.verses.length, 0, q);
   }

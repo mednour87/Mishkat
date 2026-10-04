@@ -479,6 +479,8 @@ function renderResults() {
   if (!res) return;
   const dir = res.lang === 'ar' ? 'rtl' : 'ltr';
   let h = `<p class="qline" dir="auto">«${esc(res.query)}»</p>` + levelBadge(res) + badgeFor(res);
+  // T081: sensitive questions open with a red banner (and, for a ruling, the approved encyclopedia's statement)
+  if (isRulingRes(res) || res.sensitive || res.polemic || res.type === 'khilaf' || ['takfir', 'personal'].includes(res.reason)) h += sensitiveBanner(res);
   // a person in crisis: where to find help, first, before anything else
   if (res.crisis) h += `<p class="crisis-help"><a href="https://findahelpline.com" target="_blank" rel="noopener">findahelpline.com</a> — ${esc(t.crisisLink)}</p>`;
   const texts = res.answer.filter(a => a.kind === 'text');
@@ -561,7 +563,6 @@ function renderResults() {
     h += `<div class="links">${res.links.map(l => `<a class="btn gold" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(t.links[l.id] || l.id)}</a>`).join('')}</div>`;
   }
   // published fatwas of a recognised scholar on the same question (verbatim, linked) — never a ruling by Mishkat
-  if (res.reason === 'ruling' && !res.blood && (/[؀-ۿ]/.test(res.query || '') || state.llm)) h += `<section class="hbox fbox" id="fatwaBox" aria-live="polite"></section>`;
   if (res.bayenat && res.bayenat.length) h += `<section class="bay"><h3 class="sec">${esc(t.bayTitle)}</h3><ul>${res.bayenat.map(b => `<li><a href="${esc(b.url)}" target="_blank" rel="noopener" dir="rtl">${esc(b.q)}</a> <small>${esc(b.cat || '')}</small></li>`).join('')}</ul><p class="note">${esc(t.bayNote)}</p></section>`;
   if (res.type !== 'empty') h += `<p class="disclose">${esc(t.disclosure)}</p>`;
   const v = $('#viewRes');
@@ -588,8 +589,12 @@ function renderResults() {
   v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx));
   v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
   if ((res.type === 'topic' || res.type === 'term') && state.worker) loadSunnah(res).finally(() => loadRag(res));
-  if (res.reason === 'ruling' && !res.blood && /[؀-ۿ]/.test(res.query || '')) loadFatwas(res.query);
-  else if (res.reason === 'ruling' && !res.blood && state.llm && state.worker) workerCall({ op: 'kw', query: res.query, lang: res.lang }).catch(() => []).then(kw => loadFatwas(res.query, kw || []));
+  // the AI's Arabic fiqh search terms (never shown) when available; else the words of an Arabic question
+  if (isRulingRes(res) && res.reason === 'ruling') {
+    if (state.llm && state.worker) workerCall({ op: 'kw', query: res.query, lang: res.lang }).catch(() => []).then(kw => loadFiqh(res.query, kw || []));
+    else if (/[؀-ۿ]/.test(res.query || '')) loadFiqh(res.query);
+    else { const fb = $('#fiqhBox'); if (fb) fb.innerHTML = `<p class="note">${esc(t.fiqhNeedAi)}</p>`; }
+  }
   if (res.type === 'hadith' || res.hadithCheck) loadHadith(res.type === 'hadith' ? res.hadith.q : res.hadithCheck, res.type !== 'hadith');
   markCurrentInResults();
 }
@@ -677,8 +682,7 @@ const STORY_Q = /^(قصة|قصه)\s|\bstory of\b/i;
 const isRulingRes = (res) => res.type === 'abstain' && res.reason === 'ruling';
 function ragWanted(res) {
   if (!(state.llm && state.llm.answer && state.worker)) return false;
-  if (res.crisis || res.blood) return false;          // fixed support message / no fatwa extract on blood
-  if (isRulingRes(res)) return true;
+  if (res.crisis || isRulingRes(res)) return false;    // fixed support message / rulings: the encyclopedia's own statement (T081)
   return ['topic', 'term'].includes(res.type) && (res.confirmedBy === 'ai' || !!res.pack) && !STORY_Q.test(res.query || '');
 }
 function ragItem(x, res, t) {
@@ -720,44 +724,47 @@ async function loadRag(res, fatwas = []) {
   }
   box.querySelectorAll('button.cite').forEach(el => el.onclick = (ev) => { ev.stopPropagation(); goVerse(+el.dataset.idx, { pane: 'r' }); });
 }
-// Published fatwas (binbaz.org.sa, official site of Sheikh Ibn Baz): titles chosen among the site's own
-// search results (the AI may only filter that closed list), each opened in full on demand, verbatim.
-async function loadFatwas(q, kw = []) {
-  const box = $('#fatwaBox'), t = T();
+// Rulings (T081): only the statement of the ruling in the Fiqh Encyclopedia of Ad-Durar As-Saniyyah
+// (dorar.net/feqhia, an approved reference of the challenge pack), verbatim with its link, a flag when the
+// encyclopedia reports a consensus or a difference of opinion, and the Saudi official bodies it names.
+// The AI may only filter the encyclopedia's own search results (closed list); it never writes the ruling.
+const postJSON = (u, body) => fetch(u, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+  .then(r => r.ok ? r.json() : null).catch(() => null);
+function fiqhCard(f, t) {
+  const tags = [];
+  if (f.consensus) tags.push(`<span class="fq-tag fq-${esc(f.consensus)}">${esc(t.fiqhCons[f.consensus])}</span>`);
+  for (const a of f.authorities || []) tags.push(`<span class="fq-tag fq-auth">${esc(t.fiqhAuth[a] || a)}</span>`);
+  return `<article class="fiqh" dir="rtl"><h4>${esc(f.title)}</h4>${f.path && f.path.length ? `<p class="fq-path">${esc(f.path.join(' › '))}</p>` : ''}
+    ${tags.length ? `<p class="fq-tags">${tags.join(' ')}</p>` : ''}
+    ${f.ruling.map(p => `<p class="fq-r">${esc(p)}</p>`).join('')}
+    ${f.consensus === 'khilaf' ? `<p class="note" dir="${state.lang === 'ar' ? 'rtl' : 'ltr'}">${esc(t.fiqhKhilafNote)}</p>` : ''}
+    <footer><small><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(t.fiqhRead)}</a> · ${esc(state.lang === 'ar' ? f.source : f.sourceEn || f.source)}</small></footer></article>`;
+}
+async function loadFiqh(q, kw = []) {
+  const box = $('#fiqhBox'), t = T();
   if (!box) return;
-  const head = `<h3 class="sec">${esc(t.fatwaTitle)}</h3><p class="note">${esc(t.fatwaNote)}</p>`;
-  box.innerHTML = head + `<p class="note">${esc(t.fatwaLoading)}</p>`;
-  let j = null;
-  try {
-    const r = await fetch('api/fatwa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(kw.length ? { q, kw } : { q }) });
-    j = r.ok ? await r.json() : null;
-  } catch (e) { j = null; }
-  if (box !== $('#fatwaBox')) return;
-  const more = `https://binbaz.org.sa/search?q=${encodeURIComponent(q)}`;
-  if (!j || !j.ok || !j.items.length) { const rb = $('#ragBox'); if (rb) rb.innerHTML = '<p class="note">' + esc(t.ragNoFatwa) + '</p>'; box.innerHTML = head + `<p class="lead">${esc(j && j.ok ? t.fatwaNone : t.fatwaFail)}</p><p><a class="mini" href="${esc(j && j.url || more)}" target="_blank" rel="noopener">${esc(t.fatwaOpen)}</a></p>`; return; }
-  box.innerHTML = head + `<ol class="flist">${j.items.map(x => `<li><b dir="rtl">${esc(x.title)}</b>${x.snippet ? `<div class="f-snip" dir="rtl">${esc(x.snippet)}…</div>` : ''}
-      <div class="f-act"><button class="mini" data-fatwa="${+x.id}">${esc(t.fatwaRead)}</button> <a class="mini" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(t.fatwaSite)}</a></div><div class="f-full"></div></li>`).join('')}</ol>
-    <p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fatwaOpen)}</a> · <small>${esc(j.source)}${j.by === 'ai' ? ' · ' + esc(t.fatwaByAi) : ''}</small></p>`;
-  if (state.result && isRulingRes(state.result) && ragWanted(state.result)) {
-    const res0 = state.result;
-    Promise.all(j.items.slice(0, 3).map(x => fetch('api/fatwa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: +x.id }) })
-      .then(r => r.ok ? r.json() : null).catch(() => null)))
-      .then(fs => loadRag(res0, fs.filter(f => f && f.ok).map(f => ({ id: f.id, title: f.title, question: f.question, answer: f.answer, url: f.url, mufti: f.mufti, source: f.source }))));
+  box.innerHTML = `<p class="note">${esc(t.fiqhLoading)}</p>`;
+  const j = await postJSON('api/fatwa', kw.length ? { q, kw } : { q });
+  if (box !== $('#fiqhBox')) return;
+  const more = `https://dorar.net/feqhia/search?q=${encodeURIComponent(q)}`;
+  if (!j || !j.ok || !j.items.length) {
+    box.innerHTML = `<p class="lead">${esc(j && j.ok ? t.fiqhNone : t.fiqhFail)}</p><p><a class="mini" href="${esc(j && j.url || more)}" target="_blank" rel="noopener">${esc(t.fiqhSearchSite)}</a></p>`;
+    return;
   }
-  box.querySelectorAll('[data-fatwa]').forEach(b => b.onclick = async () => {
-    const out = b.closest('li').querySelector('.f-full');
-    if (out.dataset.done) { out.hidden = !out.hidden; return; }
-    b.disabled = true; out.innerHTML = `<p class="note">${esc(t.fatwaLoading)}</p>`;
-    let f = null;
-    try { const r = await fetch('api/fatwa', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ id: +b.dataset.fatwa }) }); f = r.ok ? await r.json() : null; } catch (e) { f = null; }
-    b.disabled = false;
-    if (!f || !f.ok) { out.innerHTML = `<p class="note">${esc(t.fatwaFail)}</p>`; return; }
-    out.dataset.done = '1';
-    out.innerHTML = `<div class="fatwa-doc" dir="rtl">${f.question ? `<p class="f-q"><small>${esc(t.fatwaQ)}</small> ${esc(f.question)}</p>` : ''}
-      <div class="f-a"><small>${esc(t.fatwaA)}</small>${f.answer.map(p => `<p>${esc(p)}</p>`).join('')}</div>
-      ${f.audio ? `<audio controls preload="none" src="${esc(f.audio)}"></audio>` : ''}
-      <p class="f-src"><small>${esc(f.mufti)} — <a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(f.source)}</a></small></p></div>`;
-  });
+  const docs = (await Promise.all(j.items.slice(0, 2).map(x => postJSON('api/fatwa', { id: +x.id })))).filter(f => f && f.ok);
+  if (box !== $('#fiqhBox')) return;
+  if (!docs.length) { box.innerHTML = `<p class="lead">${esc(t.fiqhFail)}</p><p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fiqhSearchSite)}</a></p>`; return; }
+  box.innerHTML = (state.lang === 'en' ? `<p class="note">${esc(t.fiqhArabicOnly)}</p>` : '') + docs.map(f => fiqhCard(f, t)).join('')
+    + `<p class="note">${j.by === 'ai' ? esc(t.fiqhByAi) + ' · ' : ''}<a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fiqhSearchSite)}</a></p>`;
+}
+// the red banner of sensitive questions: rulings, matters of life and blood, disputed or hostile subjects
+function sensitiveBanner(res) {
+  const t = T(), ruling = isRulingRes(res);
+  const fiqh = ruling && res.reason === 'ruling';
+  return `<section class="sens" role="note" dir="${state.lang === 'ar' ? 'rtl' : 'ltr'}"><h3>⚠ ${esc(t.sensTitle)}</h3>
+    <p>${esc(ruling ? (res.blood ? t.sensBlood : t.sensRuling) : t.sensOther)}</p>
+    ${fiqh ? `<h4 class="fq-h">${esc(t.fiqhTitle)}</h4><div id="fiqhBox" aria-live="polite"></div>` : ''}
+    ${(res.links || []).some(l => l.id === 'alifta') ? '' : `<p class="sens-refer"><a href="https://alifta.gov.sa/ar/home" target="_blank" rel="noopener">${esc(t.links.alifta)}</a></p>`}</section>`;
 }
 // Quranpedia surah information (Arabic): introduction, topics, purposes
 async function suraInfo(n) {

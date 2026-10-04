@@ -1,5 +1,6 @@
-// Cloudflare Pages Function: POST /api/fatwa  {q} → published fatwas (titles, links) · {id} → one fatwa in full
-import { fatwaSearch } from '../_lib/fatwa.js';
+// Cloudflare Pages Function: POST /api/fatwa  {q, kw?} → sections of the Fiqh Encyclopedia (dorar.net/feqhia)
+// · {id} → one section's statement of the ruling, verbatim (T081: approved source of the challenge pack)
+import { fiqhSearch } from '../_lib/fiqh.js';
 import { makeHandler } from '../_lib/handler.js';
 
-export const onRequestPost = makeHandler(fatwaSearch, 'fatwa');
+export const onRequestPost = makeHandler(fiqhSearch, 'fatwa');

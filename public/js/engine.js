@@ -289,10 +289,10 @@ export const MSG = {
     closest: 'أقرب الآيات لفظًا (للاستئناس فقط، وليست مطابقة):',
     topic: (n, q, s = 1) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ذات صلة بـ«${q}» في ${arCount(s, 'سورة واحدة', 'سورتين', 'سور', 'سورة')}. وهذا بيان أبرزها من التفسير المعتمد، ثم السور التي وردت فيها:`,
     noTopic: 'لم أجد مرجعًا كافيًا لهذا السؤال في الآيات والتفاسير المعتمدة لديّ، فأمتنع عن الإجابة حتى لا أنسب إلى القرآن ما ليس فيه. جرّب كلمة مفتاحية أوضح (مثل: الصبر، الوالدين، موسى).',
-    ruling: 'هذا سؤال عن حكم شرعي، والفتوى لأهل العلم؛ فلا تُصدر «مشكاة» أحكامًا. تجد أدناه روابط مصادر الفتوى الرسمية، وآيات ذات صلة بالموضوع للاطلاع (وليست فتوى).',
+    ruling: 'هذا سؤال عن حكم شرعي، والفتوى لأهل العلم؛ فلا تُصدر «مشكاة» أحكامًا. يُعرض أعلاه الحكم كما نصّت عليه «الموسوعة الفقهية» في الدرر السنية — من المراجع المعتمدة في التحدي — بحروفه ورابطه إن وُجد، وأدناه آيات ذات صلة للاطلاع (وليست فتوى).',
     crisis: 'إن كنت تفكّر في إنهاء حياتك أو إيذاء نفسك فلست وحدك، وحياتك غالية عند الله. تحدّث الآن إلى شخص تثق به، أو اتصل بخدمة الطوارئ في بلدك أو بخط للمساندة النفسية (تجد خطوط المساعدة المجانية والسرية في كل بلد على موقع findahelpline.com). وهذه آيات من كتاب الله تذكّر برحمته، مع تفسيرها كاملًا:',
     comfort: 'آيات من كتاب الله فيها السكينة والطمأنينة، مع تفسيرها كاملًا (اختيار مراجَع يُعرض حين يتعذّر تأكيد الآيات الخاصة بسؤالك):',
-    blood: 'هذه مسألة تتعلّق بالدماء والأنفس؛ وتطبيق أحكامها من شأن القضاء الشرعي وولي الأمر، والفتوى فيها لأهل العلم، فلا تعرض «مشكاة» مقتطفات فتاوى فيها. وهذه آيات في حرمة النفس مع تفسيرها كاملًا، والروابط أعلاه إلى جهات الإفتاء الرسمية.',
+    blood: 'هذه مسألة تتعلّق بالدماء والأنفس؛ وتطبيق أحكامها من شأن القضاء الشرعي وولي الأمر وحده، والفتوى فيها لأهل العلم. ما يُعرض أعلاه من «الموسوعة الفقهية» نصٌّ علمي منقول بحروفه للبيان لا للتطبيق، وهذه آيات في حرمة النفس مع تفسيرها كاملًا.',
     personal: 'هذه مسألة شخصية تحتاج إلى عالم أو مختص يسمع تفاصيلها. لا تقدّم «مشكاة» نصائح أو أحكامًا في الحالات الخاصة. يمكنك البحث عن موضوع عام (مثل: الصبر، بر الوالدين).',
     dream: 'تعبير الرؤى لا يدخل في عمل «مشكاة»، ولا يُبنى على آلة. يمكنك البحث عن ذكر الرؤيا في القرآن بكلمة «الرؤيا».',
     invalidRef: (s, n) => `سورة ${s} عدد آياتها ${n} فقط؛ هذا الرقم غير موجود.`,
@@ -332,10 +332,10 @@ export const MSG = {
     closest: 'Closest verses by wording (for reference only, not a match):',
     topic: (n, q, s = 1) => `I found ${n} verse${n === 1 ? '' : 's'} related to “${q}” in ${s} surah${s === 1 ? '' : 's'}. Here is the explanation of the main ones from vetted tafsir, then the surahs where they occur:`,
     noTopic: 'I could not find sufficient evidence for this in the vetted verses and tafsir I hold, so I abstain rather than attribute to the Quran what is not in it. Try a clearer keyword (e.g. patience, parents, Moses).',
-    ruling: 'This asks for a religious ruling, which belongs to qualified scholars; Mishkat does not issue rulings. Below are links to official fatwa sources, and related verses for reading (not a fatwa).',
+    ruling: 'This asks for a religious ruling, which belongs to qualified scholars; Mishkat does not issue rulings. Above is the ruling as stated by the Fiqh Encyclopedia of Ad-Durar As-Saniyyah — an approved reference of the challenge — quoted word for word with its link when it exists (Arabic); below are related verses for reading (not a fatwa).',
     crisis: 'If you are thinking of ending your life or harming yourself, you are not alone, and your life is precious to Allah. Please speak now to someone you trust, or call the emergency services of your country or a support line (findahelpline.com lists free, confidential lines in every country). Here are verses of the Book of Allah reminding of His mercy, with their full tafsir:',
     comfort: 'Verses of tranquillity from the Book of Allah, with their full tafsir (a reviewed selection, shown when the verses for your exact question could not be confirmed):',
-    blood: 'This question concerns life and blood. Such rulings are applied only by the courts and those in authority, and fatwas on them belong to scholars: Mishkat shows no extract of a fatwa here. Below are the verses on the sanctity of life, with their full tafsir; the links above lead to the official fatwa authorities.',
+    blood: 'This question concerns life and blood. Such rulings are applied only by the courts and those in authority, and fatwas on them belong to scholars. The text of the Fiqh Encyclopedia shown above is quoted word for word to inform, not to be applied; below are the verses on the sanctity of life, with their full tafsir.',
     personal: 'This is a personal matter that needs a scholar or specialist who can hear the details. Mishkat gives no advice or rulings on individual cases. You can search a general topic instead (e.g. patience, parents).',
     dream: 'Dream interpretation is outside Mishkat’s scope and should not be done by a machine. You can search for dreams mentioned in the Quran with the word “dream”.',
     invalidRef: (s, n) => `Surah ${s} has only ${n} verses; this verse number does not exist.`,
@@ -591,7 +591,8 @@ const RULING_WORDS = /(ما\s+حكم|حكم|هل\s+يجوز|يجوز|هل|حلا
 export function fatwaLinks(q) {
   const enc = encodeURIComponent(q.trim().slice(0, 80));
   return [
-    { id: 'binbaz', url: `https://binbaz.org.sa/search?q=${enc}` },
+    // only sources of the challenge's reference pack and the official Saudi authority for fatwas (T081)
+    { id: 'dorarFiqh', url: `https://dorar.net/feqhia/search?q=${enc}` },
     { id: 'alifta', url: 'https://alifta.gov.sa/ar/home' },
   ];
 }

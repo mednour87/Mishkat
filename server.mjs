@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 import { select, expand, health, transcribe } from './functions/_lib/selector.js';
 import { hadithSearch, tafsirPages } from './functions/_lib/sources.js';
-import { fatwaSearch } from './functions/_lib/fatwa.js';
+import { fiqhSearch } from './functions/_lib/fiqh.js';
 import { pick } from './functions/api/pick.js';
 import { embedQuery } from './functions/_lib/dense.js';
 import { answer } from './functions/_lib/answer.js';
@@ -67,7 +67,7 @@ createServer(async (req, res) => {
       const key = name + body.toString('utf8');
       if (cache.has(key)) return send(res, 200, cache.get(key), '.json');
       try {
-        const fn = { select, expand, hadith: hadithSearch, fatwa: fatwaSearch, pick, answer, dense: embedQuery, tafsir: tafsirPages }[name];
+        const fn = { select, expand, hadith: hadithSearch, fatwa: fiqhSearch, pick, answer, dense: embedQuery, tafsir: tafsirPages }[name];
         const out = JSON.stringify(await fn(JSON.parse(body.toString('utf8')), env));
         if (JSON.parse(out).ok) cache.set(key, out);
         return send(res, 200, out, '.json');

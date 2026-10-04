@@ -6,7 +6,7 @@ import { readFileSync } from 'node:fs';
 import { loadEngine } from '../tests/load.mjs';
 import { select, expand, pickRelevant } from '../functions/_lib/selector.js';
 import { answer } from '../functions/_lib/answer.js';
-import { fatwaSearch } from '../functions/_lib/fatwa.js';
+import { fiqhSearch as fatwaSearch } from '../functions/_lib/fiqh.js';
 import { buildClosedList, applyAnswer, questionTypeOf, forModels } from '../public/js/rag.js';
 
 export const env = {};
