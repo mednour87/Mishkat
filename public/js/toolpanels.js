@@ -31,7 +31,7 @@ export const S = {
     kProgress: (p, n) => `${p} من ${n} صفحة`, kBehind: (n) => `فاتك ${arCount(n, PAGES)}: وُزِّع الباقي على الأيام المتبقية.`, kFinished: 'أتممت الختمة — تقبّل الله منك. يمكنك بدء ختمة جديدة.',
     kStats: 'إحصاءات', kVerses: 'آيات مقروءة', kWords: 'كلمات مقروءة', kSuras: 'سور أتممتها', kStreak: 'أيام متتالية', kSurasList: 'السور المكتملة (خضراء في المجرّة):',
     kIcs: 'تذكيرات في التقويم (.ics)', kIcsHelp: 'ملف تفتحه في تقويم هاتفك أو حاسوبك: تذكير في كل وقت من أوقاتك بوِرد ذلك اليوم.',
-    kMarkHere: (r) => `علّم حتى الآية المفتوحة (${r}) كمقروءة`, kMarkHereQ: (r, n) => `تعليم كل الآيات من أول المصحف حتى ${r} (${arCount(n, AYAS)}) كمقروءة؟`, kStop: 'إلغاء الخطة', kStopQ: 'إلغاء الخطة؟ تبقى الآيات المقروءة محفوظة.', kGalaxy: 'أظهر السور المكتملة في المجرّة',
+    kMarkHere: (r) => `علّم حتى الآية المفتوحة (${r}) كمقروءة`, kMarkHereQ: (r, n) => `تعليم كل الآيات من أول المصحف حتى ${r} (${arCount(n, AYAS)}) كمقروءة؟`, kStop: 'إلغاء الخطة', kStopQ: 'إلغاء الخطة؟ تبقى الآيات المقروءة محفوظة.', kGalaxy: 'أظهر السور المكتملة في المجرّة', kMap: 'خريطة الختمة في المشكاة (السور المقروءة مضيئة)',
     kAutoNote: 'تُحسب الآية مقروءة عند الاستماع إلى تلاوتها كاملة، أو عند قراءتها بالتمرير في المصحف (تبقى عند سطر القراءة وقتًا كافيًا ثم تتجاوزها)، أو عند الضغط على «قرأته». يمكن تغيير ذلك في الإعدادات.',
     kIcsTitle: 'مشكاة — وِرد الختمة', kIcsPart: (p) => `${p.moment.label}: ${p.from === p.to ? 'صفحة ' + p.from : 'الصفحات ' + p.from + '–' + p.to} (اليوم ${p.day})`,
     // hijri
@@ -65,7 +65,7 @@ export const S = {
     kProgress: (p, n) => `${p} of ${n} pages`, kBehind: (n) => `${n} ${+n === 1 ? 'page' : 'pages'} behind: the rest is spread over the days left.`, kFinished: 'Khatma completed — may Allah accept it from you. You can start a new one.',
     kStats: 'Statistics', kVerses: 'Verses read', kWords: 'Words read', kSuras: 'Surahs completed', kStreak: 'Days in a row', kSurasList: 'Completed surahs (green on the galaxy):',
     kIcs: 'Calendar reminders (.ics)', kIcsHelp: 'A file to open in your phone or computer calendar: a reminder at each of your moments with that day’s portion.',
-    kMarkHere: (r) => `Mark up to the open verse (${r}) as read`, kMarkHereQ: (r, n) => `Mark every verse from the start of the Mushaf up to ${r} (${n} verses) as read?`, kStop: 'Cancel the plan', kStopQ: 'Cancel the plan? The verses read stay saved.', kGalaxy: 'Show completed surahs on the galaxy',
+    kMarkHere: (r) => `Mark up to the open verse (${r}) as read`, kMarkHereQ: (r, n) => `Mark every verse from the start of the Mushaf up to ${r} (${n} verses) as read?`, kStop: 'Cancel the plan', kStopQ: 'Cancel the plan? The verses read stay saved.', kGalaxy: 'Show completed surahs on the galaxy', kMap: 'Khatma map inside the lamp (surahs read light up)',
     kAutoNote: 'A verse counts as read when you listen to its full recitation, when you read it by scrolling the Mushaf (it stays at the reading line long enough, then you scroll on), or when you press “Done”. This can be changed in Settings.',
     kIcsTitle: 'Mishkat — khatma portion', kIcsPart: (p) => `${p.moment.label}: ${p.from === p.to ? 'page ' + p.from : 'pages ' + p.from + '–' + p.to} (day ${p.day})`,
     hToday: 'Today', hConv: 'Convert a date', hToH: 'Gregorian → Hijri', hToG: 'Hijri → Gregorian', hDay: 'Day', hMonth: 'Month', hYear: 'Year', hConvert: 'Convert',
@@ -191,6 +191,7 @@ export function createToolPanels(ctx) {
       <div><dt>${esc(t.kSuras)}</dt><dd>${esc(num(greens.length))} / ${esc(num(114))}</dd></div>
       <div><dt>${esc(t.kStreak)}</dt><dd>${esc(num(streak(P.log || {})))}</dd></div></dl>`;
     if (greens.length) h += `<p class="p-small">${esc(t.kSurasList)}</p><div class="chips">${greens.map(n => { const s = ctx.core.suras[n - 1]; return `<button type="button" class="chip green" data-go="${s.first}">${esc(ar() ? s.ar : s.tr)}</button>`; }).join('')}</div>`;
+    h += `<p><button type="button" class="mini gold" id="kMap">✦ ${esc(t.kMap)}</button></p>`;
     h += `<label class="p-row"><input type="checkbox" id="kGal" ${P.showReadOnGalaxy ? 'checked' : ''}> ${esc(t.kGalaxy)}</label>
       <h3 class="p-sub">${esc(t.kIcs)}</h3><p class="p-small">${esc(t.kIcsHelp)}</p><button type="button" class="mini gold" id="kIcs">⤓ ${esc(t.kIcs)}</button>
       <p><button type="button" class="mini danger" id="kStop">${esc(t.kStop)}</button></p>`;
@@ -200,6 +201,7 @@ export function createToolPanels(ctx) {
     body.querySelectorAll('[data-mark]').forEach(b => b.onclick = () => { const p = tp.parts[+b.dataset.mark]; const all = countRead(bits, p.verses[0], p.verses[1]) === p.verses[1] - p.verses[0] + 1; mark(p.verses[0], p.verses[1], !all); });
     const kh = body.querySelector('#kHere'); if (kh) kh.onclick = () => { if (confirm(t.kMarkHereQ(refOf(here).label, num(here + 1)))) mark(0, here, true); };
     body.querySelector('#kGal').onchange = (ev) => { P.showReadOnGalaxy = ev.target.checked; ctx.save(); ctx.onReadChange(); };
+    const km = body.querySelector('#kMap'); if (km) km.onclick = () => ctx.openLampMap && ctx.openLampMap();
     body.querySelector('#kIcs').onclick = () => download('mishkat-khatma.ics', planToIcs(plan, pages, { title: t.kIcsTitle, describe: (p) => t.kIcsPart(p), url: location.origin + location.pathname }), 'text/calendar');
     body.querySelector('#kStop').onclick = () => { if (confirm(t.kStopQ)) { P.khatma = { ...P.khatma, active: false }; ctx.save(); ctx.onReadChange(); khatma(body); } };
   }

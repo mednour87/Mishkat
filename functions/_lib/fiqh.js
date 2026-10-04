@@ -29,6 +29,9 @@ export function fatwaQuery(q) {
 }
 
 const linkOf = (id) => `${DORAR}/feqhia/${id}`;
+export const FIQH_TERMS = { 'الموسيقى': 'المعازف', 'موسيقى': 'المعازف', 'الأغاني': 'الغناء', 'الاغاني': 'الغناء', 'التدخين': 'التبغ', 'الدخان': 'التبغ',
+  'السجائر': 'التبغ', 'الشيشة': 'التبغ', 'فوائد البنوك': 'الربا', 'الفوائد البنكية': 'الربا', 'الفائدة البنكية': 'الربا', 'القروض': 'القرض',
+  'الكحول': 'الخمر', 'المخدرات': 'المخدرات', 'الحشيش': 'المخدرات', 'التأمين': 'التأمين', 'الوشم': 'الوشم', 'الحجاب': 'الحجاب' };
 
 // search page → [{id, title, path, snippet}] (one per article)
 export function parseDorarSearch(html) {
@@ -107,28 +110,28 @@ export async function fiqhSearch(body, env, fetchImpl = fetch) {
   const q0 = String(body && body.q || '').slice(0, 300);
   // the AI's Arabic fiqh search terms (2–4 words, Arabic letters only): search terms, never displayed
   const kw = Array.isArray(body && body.kw) ? body.kw.map(w => String(w).replace(/[^؀-ۿ\s]/g, ' ').replace(/\s+/g, ' ').trim()).filter(w => w && w.length <= 30).slice(0, 4) : [];
-  const qs = [...new Set([/[؀-ۿ]/.test(q0) ? fatwaQuery(q0) : '', ...kw].filter(s => s.replace(/\s/g, '').length >= 3))].slice(0, 4);
+  const base = [/[؀-ۿ]/.test(q0) ? fatwaQuery(q0) : '', ...kw];
+  // reviewed equivalents in the vocabulary of fiqh books (the encyclopedia titles «المعازف», not «الموسيقى»)
+  const extra = base.flatMap(t => Object.entries(FIQH_TERMS).filter(([k]) => bare(t).includes(bare(k))).map(([, v]) => v));
+  const qs = [...new Set([...base, ...extra].filter(s => s.replace(/\s/g, '').length >= 3))].slice(0, 5);
   if (!qs.length) return { ok: false, error: 'query too short' };
   let items = [];
   const seen = new Set();
   for (const q of qs) {
     const { text } = await getText(`${DORAR}/feqhia/search?q=${encodeURIComponent(q)}`, fetchImpl);
-    for (const x of parseDorarSearch(text)) if (!seen.has(x.id)) { seen.add(x.id); items.push(x); }
-    if (items.length >= 12) break;
+    for (const x of parseDorarSearch(text).slice(0, 10)) if (!seen.has(x.id)) { seen.add(x.id); items.push(x); }
   }
-  items = items.slice(0, 12);
+  // a hit inside a footnote or an example is not the section's subject: the words of the question (or of one
+  // search term) must be in the section's path, or in the heading the search returned — with or without AI
+  // (before: «ما حكم الموسيقى» got the section on dancing, whose footnote mentions music)
+  const wordsOf = (q) => bare(q).split(' ').filter(w => w.length > 2).map(w => w.replace(/^(ال|وال|بال)/, ''));
+  const heading = (x) => /^(المطلب|المبحث|الفصل|الباب|الفرع|المساله|المسأله|كتاب)/.test(bare(x.snippet)) ? x.snippet : '';
+  items = items.filter(x => qs.some(q => { const w = wordsOf(q); return w.length && w.every(v => bare(x.path + ' ' + heading(x)).includes(v)); })).slice(0, 12);
   let by = 'search';
   if (items.length > 1 && body.ai !== false) {
     const keep = await pickRelevant(q0, items.map(x => `${x.path} — ${x.snippet}`), env, { max: 3, what: 'fiqh encyclopedia section', fetchImpl }).catch(() => null);
     if (keep) { items = keep.map(i => items[i]); by = 'ai'; }
   }
-  if (by === 'search') {
-    // without the AI: only sections whose path or text holds every word of the question
-    const wordsOf = (q) => bare(q).split(' ').filter(w => w.length > 2).map(w => w.replace(/^(ال|وال|بال)/, ''));
-    // (a hit inside a footnote or an example is not the section's subject: the words must be in the section's
-    // path, or in a heading that the search returned)
-    const heading = (x) => /^(المطلب|المبحث|الفصل|الباب|الفرع|المساله|المسأله|كتاب)/.test(bare(x.snippet)) ? x.snippet : '';
-    items = items.filter(x => qs.some(q => { const w = wordsOf(q); return w.length && w.every(v => bare(x.path + ' ' + heading(x)).includes(v)); })).slice(0, 3);
-  }
+  if (by === 'search') items = items.slice(0, 3);
   return { ok: true, q: qs[0], items, by, source: FIQH_SOURCE, sourceEn: FIQH_SOURCE_EN, url: `${DORAR}/feqhia/search?q=${encodeURIComponent(qs[0])}` };
 }

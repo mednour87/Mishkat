@@ -12,6 +12,7 @@ import { createPanels } from './panels.js';
 import { createToolPanels, S as TOOL_S } from './toolpanels.js';
 import { loadPrefs, savePrefs } from './prefs.js';
 import { decodeRead, encodeRead, markRead, isRead, surasRead, ymd } from './khatma.js';
+import { miniLamp, openLampMap, progressOf } from './lampmap.js';
 
 // Three moments, one current verse (body[data-mode]):
 //   home    — the galaxy alone, with a suggestion card in the middle (can be closed);
@@ -237,6 +238,8 @@ async function boot() {
   $('#aiBadge').textContent = T().ai(state.llmModel);
   await gateDone;
   $('#lampSlot').innerHTML = lampSVG({ size: 132, word: true, title: 'Mishkat' });
+  refreshMiniLamp();
+  $('#lampSlot').onclick = () => openKhatmaMap();
   { const sh = store.get('shape', 'galaxy'), od = store.get('order', 'mushaf'); if (sh !== 'galaxy' || od !== 'mushaf') setView(sh, od, { quiet: true }); }
   setNames(store.get('names', '1') === '1');
   const sp = new URL(location.href).searchParams;
@@ -1451,7 +1454,8 @@ function setupTools() {
     // on a phone the sheet would hide the Mushaf: it closes; on a computer the drawer stays beside it
     openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); },
     readerVerse: () => (state.mode === 'study' && state.reader.sura ? state.reader.cur : null),
-    onReadChange: () => applyHighlight(),
+    onReadChange: () => { applyHighlight(); refreshMiniLamp(); },
+    openLampMap: () => openKhatmaMap(),
     // hadiths of the remarkable days, by HadeethEnc id, verbatim from the local files (search worker)
     hadiths: (ids, lang) => workerCall({ op: 'hadiths', ids, lang }),
     status: alertNote,
@@ -1501,6 +1505,27 @@ function markRecited(i, how = 'audio') {
     state.tools.khatma(body).then(() => { body.scrollTop = top; });
   }
   if (surasRead(bits, state.core.suras).length !== before) applyHighlight();   // a surah just turned green
+  refreshMiniLamp();
+}
+// T069: the khatma inside the logo — the surahs read light up in the glass of the lamp (mini view) and in a
+// 3D map of the 114 surahs with their names (Mushaf / revelation / length / Meccan-Medinan order)
+function refreshMiniLamp() {
+  const slot = $('#lampSlot');
+  if (!slot || !state.core) return;
+  const prog = progressOf(decodeRead(state.prefs.read), state.core.suras, isRead);
+  slot.querySelector('.kmini')?.remove();
+  slot.insertAdjacentHTML('beforeend', miniLamp(prog, state.core.suras, store.get('kmapOrder', 'mushaf')));
+  const n = prog.filter(f => f >= 1).length;
+  slot.title = T().lm.slotTitle(n);
+  slot.setAttribute('role', 'button'); slot.tabIndex = 0; slot.setAttribute('aria-label', T().lm.slotTitle(n));
+  slot.onkeydown = (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openKhatmaMap(); } };
+}
+function openKhatmaMap() {
+  if (!state.core) return;
+  const prog = progressOf(decodeRead(state.prefs.read), state.core.suras, isRead);
+  openLampMap({ core: state.core, prog, lang: state.lang, order: store.get('kmapOrder', 'mushaf'), strings: T().lm,
+    onPick: (n) => openReader(n, null, { pane: 'r' }),
+    onOrder: (o) => { store.set('kmapOrder', o); refreshMiniLamp(); } });
 }
 function labelDock() {
   $('#dock').setAttribute('aria-label', TS().dock);
