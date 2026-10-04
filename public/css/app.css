@@ -861,7 +861,13 @@ html[data-theme=light] .p-body select option { background: #fff; color: #1d2433;
   #dock button svg { width: 16px; height: 16px; }
   /* the top bar holds the tools too: logo without its name, tighter buttons (it overflowed by 66 px at 375 px) */
   .brand .bt { display: none; }
-  .hright { gap: 4px; }
+  .hright { gap: 4px; min-width: 0; flex: 1 1 auto; justify-content: flex-end; }
+  /* nine tools no longer fit beside the fixed buttons at 375 px: the dock scrolls sideways, the language,
+     theme and «about» buttons always stay on screen (the language switch was pushed 69 px off screen) */
+  #dock { min-width: 0; flex: 0 1 auto; overflow-x: auto; scrollbar-width: none; overscroll-behavior-x: contain; }
+  #dock::-webkit-scrollbar { display: none; }
+  #dock button { flex: 0 0 auto; }
+  .hright > :not(#dock) { flex: 0 0 auto; }
   .hbtn { padding: 5px 8px; min-height: 32px; }
   #themeBtn { width: 30px; height: 30px; }
   .langs { padding: 2px; } .langs button { padding: 4px 7px; }

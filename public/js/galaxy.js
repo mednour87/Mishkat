@@ -222,10 +222,22 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   const put = (el, x, y) => { el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`; };
   const tmpV = new THREE.Vector3();
 
+  // the controls drawn over the galaxy (toolbar, camera pad, lamp): labels keep out of them (on a phone the
+  // toolbar covers the bottom third of the zone, and answer labels showed through its buttons)
+  let obstacles = [], obstAt = 0;
+  function controlBoxes() {
+    const now = performance.now();
+    if (now - obstAt < 500) return obstacles;
+    obstAt = now;
+    const zone = canvas.parentElement, c = canvas.getBoundingClientRect();
+    obstacles = zone ? [...zone.querySelectorAll(':scope > #gtools, :scope > #gcam, :scope > #lampDock')].filter(e => !e.hidden && e.offsetWidth)
+      .map(e => { const r = e.getBoundingClientRect(); return { x: r.left - c.left + r.width / 2, y: r.top - c.top + r.height / 2, w: r.width + 6, h: r.height + 6 }; }) : [];
+    return obstacles;
+  }
   function placeLabels(dt) {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     let n = 0;
-    const boxes = [];
+    const boxes = [...controlBoxes()];
     const free = (x, y, bw, bh, edge = true) => {
       if (edge && (x - bw / 2 < 2 || x + bw / 2 > w - 2 || y - bh / 2 < 2 || y + bh / 2 > h - 2)) return false;
       for (const b of boxes) if (Math.abs(b.x - x) * 2 < b.w + bw && Math.abs(b.y - y) * 2 < b.h + bh) return false;
@@ -257,10 +269,12 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
         const p = screen(tmpV, w, h);
         if (!p) { g.el.hidden = true; continue; }
         const bw = g.el.offsetWidth || 140, bh = g.el.offsetHeight || 34;
-        let y = p.y;
-        for (let t = 0; t < 6 && !free(p.x, y, bw, bh, false); t++) y += bh + 4;
-        g.el.hidden = false;
-        put(g.el, Math.min(w - bw / 2 - 4, Math.max(bw / 2 + 4, p.x)), Math.min(h - bh / 2 - 4, Math.max(bh / 2 + 4, y)));
+        const x = Math.min(w - bw / 2 - 4, Math.max(bw / 2 + 4, p.x)), clampY = (y) => Math.min(h - bh / 2 - 4, Math.max(bh / 2 + 4, y));
+        // the nearest free place below or above the surah, else the label is not shown (never over a control)
+        let y = null;
+        for (let t = 0; t < 7 && y == null; t++) for (const sgn of t ? [1, -1] : [1]) { const yy = clampY(p.y + sgn * t * (bh + 4)); if (free(x, yy, bw, bh, false)) { y = yy; break; } }
+        g.el.hidden = y == null;
+        if (y != null) put(g.el, x, y);
       }
       // 3. the words of the focused verse, beside their stars (close views)
       if (focusV != null && vStart[focusV] >= 0 && d < WORDS_DIST) {
