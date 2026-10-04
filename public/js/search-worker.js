@@ -151,7 +151,9 @@ async function ragFor(e, res, hadIds = [], fatwas = []) {
     const ordered = vs.filter(v => !v.aiRelated).concat(vs.filter(v => v.aiRelated));
     // the reviewed context pack (trap questions, sensitive subjects) is evidence too, placed first
     const ctx = (res.verses || []).filter(v => v.ctx && !v.ai);
-    verses = ctx.concat(ordered).map(v => { const c = e.cardOf(lang, v.idx, 'answer'); return c && { idx: v.idx, ref: e.ref(v.idx), direct: !v.aiRelated, ctx: !!v.ctx, verseText: e.verses[v.idx], text: c.text, source: c.source, sourceTitle: c.sourceTitle }; }).filter(Boolean);
+    // grouped: the tafsir explains this verse together with a neighbour (the same unit is repeated under each)
+    const same = (i, c) => { const o = i >= 0 && i < e.verses.length && e.suraOf[i] === e.suraOf[c.idx] ? e.cardOf(lang, i, 'answer') : null; return !!(o && o.text === c.text); };
+    verses = ctx.concat(ordered).map(v => { const c = e.cardOf(lang, v.idx, 'answer'); return c && { idx: v.idx, ref: e.ref(v.idx), direct: !v.aiRelated, ctx: !!v.ctx, verseText: e.verses[v.idx], text: c.text, source: c.source, sourceTitle: c.sourceTitle, grouped: same(v.idx - 1, { ...c, idx: v.idx }) || same(v.idx + 1, { ...c, idx: v.idx }) }; }).filter(Boolean);
     if (hadIds.length) { try { hadiths = (await hadithsById(lang, hadIds)).filter(h => GOOD.test(h.grade || '') && !WEAK.test(h.grade || '')); } catch (err) { hadiths = []; } }
   }
   const list = buildClosedList({ verses, hadiths, fatwas, qtype });

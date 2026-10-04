@@ -108,7 +108,12 @@ export function buildClosedList({ verses = [], hadiths = [], fatwas = [], qtype 
     const base = { idx: v.idx, ref: v.ref, direct: !!(v.direct || v.ctx), ctx: !!v.ctx };
     if (v.direct && v.verseText && v.verseText.length <= LIMITS.verseChars && list.filter(x => x.kind === 'quran').length < LIMITS.quranTexts)
       list.push({ ...base, sid: `V:${v.ref}`, kind: 'quran', text: v.verseText, source: 'tanzil', sourceTitle: v.quranTitle || 'Tanzil' });
-    units(v.text).slice(0, LIMITS.perVerse).forEach((s, k) => list.push({ ...base, sid: `Q:${v.ref}#${k + 1}`, kind: 'tafsir', text: s, source: v.source, sourceTitle: v.sourceTitle }));
+    // R13: a tafsir unit shared by several verses («grouped») explains each of them in its own sentences: under
+    // this verse only the sentences that share a word with ITS text (35:34 «أذهب عنا الحزن» — not the sentence on
+    // the bracelets of Paradise, which explains 35:33)
+    const own = v.grouped && v.verseText ? (s) => sharesWord(s, v.verseText) : () => true;
+    units(v.text).slice(0, LIMITS.perVerse + (v.grouped ? 4 : 0)).filter(own).slice(0, LIMITS.perVerse)
+      .forEach((s, k) => list.push({ ...base, sid: `Q:${v.ref}#${k + 1}`, kind: 'tafsir', text: s, source: v.source, sourceTitle: v.sourceTitle }));
   }
   for (const h of hadiths.slice(0, LIMITS.hadiths)) {
     const base = { kind: 'hadith', id: String(h.id), grade: h.grade || '', by: h.by || '', lang: h.lang, about: String(h.title || '').slice(0, 160) };
@@ -121,6 +126,11 @@ export function buildClosedList({ verses = [], hadiths = [], fatwas = [], qtype 
 // ---------------------------------------------------------------- rules after the models
 const bare = (w) => w.replace(/^(و|ف)?(بال|كال|لل|ال)/, '').replace(/ة$/, 'ه');
 const words = (x) => { const ar = /[؀-ۿ]/.test(x); return (ar ? normAr(x) : normLatin(x)).split(' ').filter(Boolean).map(w => ar ? bare(w) : w.replace(/s$/, '')); };
+const VSTOP = new Set(['ذي', 'ذين', 'تي', 'من', 'في', 'علي', 'الي', 'ان', 'ما', 'لا', 'هو', 'هم', 'له', 'ه', 'لهم', 'كان', 'قد', 'عن', 'او', 'ثم', 'اذا', 'هذا', 'ذلك', 'كل']);
+export function sharesWord(sentence, verseText) {   // R13
+  const v = new Set(words(verseText).filter(w => w.length >= 3 && !VSTOP.has(w)));
+  return words(sentence).some(w => w.length >= 3 && !VSTOP.has(w) && v.has(w));
+}
 export function inQuery(concept, query) {          // R7
   const q = new Set(words(query)), c = words(concept);
   return c.length > 0 && c.every(w => q.has(w));
