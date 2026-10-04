@@ -1,25 +1,45 @@
 # Tools & components inventory
 
+## AI models and providers (order of use)
+| Component | Version / tier | Role | Licence / terms |
+|---|---|---|---|
+| **Groq API** — `openai/gpt-oss-120b` | free tier, tried **first** | verse selection from a closed list, RAG composer (sentence IDs), independent judge | Groq terms; open-weight model (Apache-2.0) |
+| **Groq API** — `openai/gpt-oss-20b` | free tier (separate quota) | light tasks: intent + retrieval keywords (`expand`), hadith/encyclopedia result filter (`pick`) | same |
+| **Groq API** — `qwen/qwen3.8-27b` | free tier | last free fallback | model licence |
+| **OpenRouter API** — `openai/gpt-oss-120b`, `openai/gpt-oss-20b` | pay per token, prepaid; **backup only** (Groq 429 / failure); `max_price` 0.2 / 0.8 $ per million tokens, `data_collection: deny`, JSON mode | same tasks as above | OpenRouter terms |
+| **Groq `whisper-large-v3-turbo`** | free tier | speech to text (question, recitation to find a verse); audio not kept | Groq terms |
+| **Groq Orpheus** `canopylabs/orpheus-arabic-saudi` | Groq (terms accepted by the account owner on 4 Oct 2026) | reads a tafsir unit shipped with Mishkat when the browser has no Arabic voice (`/api/tts`, known passages only); the Arabic spoken welcome, generated once (`tools/make_welcome_audio.py` → `public/audio/welcome_ar.mp3`) | Groq terms |
+| `canopylabs/orpheus-v1-english` | not enabled on the account | English is read by the browser's voice | — |
+| Azure Speech (`ar-SA-HamedNeural`, `en-US-AndrewNeural`) | code ready (`functions/_lib/tts.js`), **not used**: no key (the Azure subscription could not be opened) | — | — |
+| **Cloudflare Workers AI** — `@cf/baai/bge-m3` | free daily allocation | meaning vectors of the verses (once) and of each question (live, projected to 256 d; ranking in the browser) | Workers AI terms; model MIT |
+| ALLaM-2-7B (SDAIA) | Groq free tier | benchmarked, rejected for selection (context too short) — `eval/results/bench_llm.json` | model licence |
+| Browser Web Speech (speechSynthesis / SpeechRecognition) | — | English welcome, answer read aloud when the browser has a voice; voice input fallback — never the Quran | — |
+
+The AI never writes text shown to the visitor: it returns IDs (verses, sentences, hadiths, encyclopedia sections) from closed lists, checked on the server and again in the browser.
+
+## Public services called by the browser
+| Service | Role | Terms |
+|---|---|---|
+| Aladhan API v1 | prayer times (method and authority shown) | free public API |
+| Overpass API (overpass-api.de, mirror kumi.systems) / Nominatim | nearby mosques, city search | ODbL data, OSM usage policies |
+| verses.quran.com | Alafasy recitation audio (streamed) | Quran.com |
+
+## Software
 | Component | Version | Role | Licence |
 |---|---|---|---|
-| **OpenRouter API** (paid, pay per token, prepaid credits) — `openai/gpt-oss-120b` (primary), `openai/gpt-oss-20b`; fastest hosts first (e.g. Cerebras), JSON mode required, `data_collection: deny` | ≈ $0.04 in / $0.18 out per million tokens | same role as below: intent, retrieval keywords, closed-list selection only — the AI never writes religious text | OpenRouter terms; open-weight models (Apache-2.0) |
-| **Cloudflare Workers AI — `@cf/baai/bge-m3`** | free daily allocation (10,000 neurons) | meaning vectors of the verses (once) and of each question (live) for the semantic candidates | Workers AI terms; model MIT |
-| **Groq API** — `openai/gpt-oss-120b` (primary), `qwen/qwen3.8-27b`, `openai/gpt-oss-20b` (fallbacks) | free tier — backup LLM, speech-to-text (Whisper), tafsir voice (Orpheus) | intent classification, retrieval keywords, closed-list selection of verse ids and tafsir-sentence ids | Groq terms; open-weight models (Apache-2.0 / model licences) |
-| ALLaM-2-7B (SDAIA) | free tier on Groq | benchmarked; rejected for the selection step (context too short for the payload) — see `eval/results/bench_llm.json` | model licence |
-| three.js | 0.160.0 (vendored in `public/vendor/three/`) | WebGL galaxy | MIT |
-| Google Fonts: Amiri Quran, Amiri, Inter | — | Quran and UI typography | SIL OFL 1.1 |
-| qrcode-generator (Kazuhiko Arase) | 1.4.4 (vendored in `public/vendor/qrcode/`, ES-module export added) | QR code of the qibla page on a computer | MIT |
-| Aladhan API | v1 | prayer times (browser → api.aladhan.com) | free public API |
-| Overpass API / Nominatim (OpenStreetMap) | — | nearby mosques, city search (browser → OSM services) | ODbL data, OSM usage policies |
-| Groq `whisper-large-v3-turbo` | free tier | speech to text (question / recitation), audio not kept | Groq terms |
-| Browser Web Speech (speechSynthesis) | — | spoken welcome and answer read aloud (never the Quran) | — |
+| three.js | 0.160.0 (vendored, `public/vendor/three/`) | WebGL galaxy, lamp map, 3D scenes | MIT |
+| qrcode-generator (Kazuhiko Arase) | 1.4.4 (vendored, ES-module export added) | QR code of the qibla page on a computer | MIT |
+| Fonts: Amiri Quran, Amiri, Inter (self-hosted) | — | typography | SIL OFL 1.1 |
 | Node.js | ≥ 18 | tests, evaluation, local server (no npm dependencies) | MIT |
-| Python 3 + `requests`, `numpy` | 3.13 | data download & build scripts | PSF / Apache-2.0 / BSD |
-| Cloudflare Pages + Pages Functions | free plan | hosting + serverless API (key kept as a secret) | Cloudflare terms |
-| Claude (Anthropic) — AI coding assistant | — | assisted the author in writing code, tests and documentation during development (disclosed per the challenge’s transparency rules) | — |
+| Python 3 + `requests`, `numpy`, `lameenc` (MP3 of the welcome) ; `pandas`, `pytrec-eval-terrier` (official Qur'an QA scorer) | 3.13 | data build, evaluation | PSF / BSD / LGPL / MIT |
+| Cloudflare Pages + Pages Functions, Wrangler | free plan | hosting, serverless API (keys kept as secrets) | Cloudflare terms |
+| python-pptx | — | presentation (`docs/make_deck.py`) | MIT |
+| Claude (Anthropic) — AI coding assistant | — | assisted the author with code, tests and documentation (disclosed per the challenge's transparency rules); not part of the product | — |
 
-## Running costs
-- Hosting: Cloudflare Pages free plan (static + Functions, 100k requests/day).
-- LLM: Groq free tier — per model ≈ 1,000 requests/day and 200k tokens/day; each AI-augmented query uses 2 calls (~0.4k + ~2k tokens). Identical queries are cached at the edge for 7 days. When quotas are exhausted the engine silently uses the deterministic path (still grounded, still abstaining).
-- Since 2 October 2026 a paid provider (OpenRouter, pay per token, prepaid) is tried first; Groq free stays as automatic backup (Groq's paid tier was closed to new sign-ups that day).
-- Other upgrade paths: Groq paid tier (≈ $0.15–0.75 per million tokens for these models) or any OpenAI-compatible endpoint via `FALLBACK_URL/FALLBACK_KEY/FALLBACK_MODEL`.
+## Running costs (measured)
+- **Hosting**: Cloudflare Pages free plan (static + Functions).
+- **AI, normal case: 0** — Groq's free tier first for every task (measured quotas: about 1,000 requests/day and 8,000 tokens/min per model; the light tasks use a second model with its own quota).
+- **AI, backup**: OpenRouter pay per token only when Groq refuses (429) or fails: ≈ **$0.0014 per question** measured (`eval/cost_per_question.mjs`), price cap per token, daily ceiling of paid calls per server instance (`DAILY_AI_CALLS`, default 1,500), credit limit on the key. Prepaid balance 6.99 $ on 3 Oct 2026.
+- **Caching**: identical AI requests and speech are cached at the edge (Cache API, 7–30 days); ~140 frequent questions are pre-computed in `public/data/llm_cache.json` and re-verified like live answers.
+- **Without AI**: the deterministic engine answers (subject index, keywords, verification, guards), still grounded and abstaining.
+- **Evaluations**: always `FREE_ONLY=1` (the paid key is removed), cost 0.
