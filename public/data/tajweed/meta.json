@@ -1,0 +1,32 @@
+{
+ "rules": [
+  "ghunnah",
+  "idghaam_ghunnah",
+  "idghaam_no_ghunnah",
+  "idghaam_mutajanisayn",
+  "idghaam_mutaqaribayn",
+  "idghaam_shafawi",
+  "ikhfa",
+  "ikhfa_shafawi",
+  "iqlab",
+  "madd_2",
+  "madd_246",
+  "madd_munfasil",
+  "madd_muttasil",
+  "madd_6",
+  "qalqalah",
+  "hamzat_wasl",
+  "lam_shamsiyyah",
+  "silent"
+ ],
+ "coverage": {
+  "verses": 6236,
+  "annotations": 60057,
+  "verses_ok": 5942,
+  "annotations_ok": 55555,
+  "verses_dropped": 294
+ },
+ "source": "https://github.com/cpfair/quran-tajweed (tajweed.hafs.uthmani-pause-sajdah.json)",
+ "license": "CC BY 4.0 (annotations); Tanzil.net terms (text)",
+ "check": "each annotation must start on a letter its rule can start on; a verse with one misfit keeps no colour"
+}
