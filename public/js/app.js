@@ -6,7 +6,7 @@ import { SHAPES, ORDERS, buildLayout } from './layouts.js';
 import { isBasmala } from './basmala.js';
 import { lampSVG, setLampWord } from './lamp.js';
 import { listen, stopListening, cancelListening, voiceSupported } from './voice.js';
-import { createSpeaker } from './speech.js';
+import { createSpeaker, browserVoice } from './speech.js';
 import { PALETTE } from './galaxy.js';
 import { createPanels } from './panels.js';
 import { createToolPanels, S as TOOL_S } from './toolpanels.js';
@@ -276,6 +276,7 @@ function gate() {
   return new Promise(resolve => {
     const accept = () => {
       store.set('bismillah', '1');
+      welcomeVoice();
       $('#gateMsg').textContent = t().gateOk; $('#gateMsg').className = 'gmsg ok';
       g.classList.add('leaving');
       setTimeout(() => { g.hidden = true; g.classList.remove('leaving'); document.body.classList.remove('gated'); resolve(); }, 750);
@@ -510,7 +511,7 @@ function renderResults() {
   //     of the verses that answer (each with its verse), never generated
   const ragOn = ragWanted(res);
   if (res.term || ragOn || (res.brief && res.brief.items.length)) {
-    h += `<section class="brief" id="briefBox" dir="${dir}"><h3 class="sec">${esc(isRulingRes(res) ? t.ragFatwaTitle : t.briefTitle)}</h3>`;
+    h += `<section class="brief" id="briefBox" dir="${dir}"><h3 class="sec">${esc(isRulingRes(res) ? t.ragFatwaTitle : t.briefTitle)} <button type="button" class="mini" id="ansTts" title="${esc(t.listenAnswer)}" aria-label="${esc(t.listenAnswer)}">🔊</button></h3>`;
     if (res.term) h += termCard(res.term);
     if (ragOn) h += `<div id="ragBox" aria-live="polite"><p class="note rag-wait">${esc(t.ragLoading)}</p></div>`;
     else if (res.brief && res.brief.items.length) {
@@ -590,6 +591,7 @@ function renderResults() {
   v.querySelectorAll('.vcardx').forEach(c => c.onclick = (ev) => { if (ev.target.closest('button,a,.ctxbox')) return; goVerse(+c.dataset.idx, { pane: 'r' }); });
   v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playv, { play: 'one', pane: 'r' }); });
   v.querySelectorAll('[data-open]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.open, { pane: 'r' }); });
+  const at = $('#ansTts'); if (at) at.onclick = () => speakAnswer(res.lang);
   v.querySelectorAll('[data-playfrom]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playfrom, { play: 'all', pane: 'r' }); });
   if (res.sensitive) { const first = v.querySelector('[data-ctx]'); if (first) toggleContext(first); }
   v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => goVerse(+li.dataset.idx, { pane: 'r' }));
@@ -1196,7 +1198,7 @@ function renderTafsir(i) {
   const book = books.includes(state.taf.book) ? state.taf.book : books[0];
   const s = e.suraOf[i], a = e.ayaOf[i];
   const tok = ++state.taf.tok;
-  state.taf.idx = i; state.taf.text = ''; state.taf.lang = BOOKS[book].lang;
+  state.taf.idx = i; state.taf.text = ''; state.taf.lang = BOOKS[book].lang; state.taf.ref = null;
   const prev = lang === 'ar' ? '›' : '‹', next = lang === 'ar' ? '‹' : '›';
   $('#viewTaf').innerHTML = `<div class="zhead tz-head"><h2>${esc(t.zTafsir)}</h2><span class="tz-ref">${esc(refLabel(i))}</span>
       <span class="tz-nav"><button class="icon" id="tPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${prev}</button><button class="icon" id="tNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${next}</button></span></div>
@@ -1218,7 +1220,7 @@ function renderTafsir(i) {
   const tfont = (d) => { state.ts = Math.round(Math.min(1.8, Math.max(0.7, state.ts + d)) * 10) / 10; store.set('ts', state.ts); $('#tzone').style.setProperty('--ts', state.ts); };
   $('#tFm').onclick = () => tfont(-0.1);
   $('#tFp').onclick = () => tfont(0.1);
-  $('#tTts').onclick = () => { if ($('#tTts').getAttribute('aria-pressed') === 'true') { speaker.stop(); ttsState('idle'); } else if (state.taf.text) { stopAudio(true); speaker.speak(state.taf.text, state.taf.lang); } };
+  $('#tTts').onclick = () => { if ($('#tTts').getAttribute('aria-pressed') === 'true') { speaker.stop(); ttsState('idle'); } else if (state.taf.text) { stopAudio(true); speaker.speak(state.taf.text, state.taf.lang, state.taf.ref); } };
   $('#tCopy').onclick = async () => { if (!state.taf.text) return; try { await navigator.clipboard.writeText(`${state.taf.text}\n— ${state.taf.src || ''} [${refLabel(i, 'ar')}]`); alertNote(t.copied); } catch (err) { /* blocked */ } };
   loadTafsir(book, i, tok);
 }
@@ -1233,6 +1235,7 @@ async function loadTafsir(book, i, tok) {
       text = (so.text[i] || '').replace(/^\d+\.\s*/, '');
       paras = text ? [{ t: text }] : [];
       src = `${t.bookAbout[book] || so.title} · QuranEnc.com`;
+      state.taf.ref = ['muyassar_ar', 'mukhtasar_ar', 'mukhtasar_en'].includes(book) ? { book, s, a } : null;
     } else if (B.kind === 'saadi') {
       const f = await suraFile('saadi', s);
       let k = a - 1;
@@ -1501,7 +1504,7 @@ function setupTools() {
     athkar: (body, args) => state.athkar(body, args || {}),
   };
   state.athkar = createAthkar({ lang: () => state.lang });
-  state.practical = createPractical({ lang: () => state.lang, qrcode });
+  state.practical = createPractical({ lang: () => state.lang, qrcode, scene: (k, o) => state.galaxy && state.galaxy.setScene && state.galaxy.setScene(k, o) });
   const ids = state.toolIds = DOCK.filter(id => renderers[id]);     // also what the search bar may open (T032)
   $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
   $('#dock').hidden = !ids.length;
@@ -1534,6 +1537,32 @@ function markRecited(i, how = 'audio') {
 }
 // T069: the khatma inside the logo — the surahs read light up in the glass of the lamp (mini view) and in a
 // 3D map of the 114 surahs with their names (Mushaf / revelation / length / Meccan-Medinan order)
+// T042: the voice of the application — a short welcome after the basmala (the visitor's gesture allows sound),
+// and the short answer read aloud on request; both with the BROWSER's voice (free, local), and never the Quran:
+// verse texts are left out of what is read (the Quran is only recited by a human reciter).
+async function welcomeVoice() {
+  if (!state.prefs.welcomeVoice || !window.speechSynthesis) return;
+  try {
+    const lang = state.lang === 'en' ? 'en' : 'ar', v = await browserVoice(lang);
+    if (!v) return;
+    const u = new SpeechSynthesisUtterance(T().welcomeSpoken);
+    u.voice = v; u.lang = v.lang; u.rate = lang === 'ar' ? 0.95 : 1;
+    speechSynthesis.speak(u);
+  } catch (e) { /* no voice */ }
+}
+function answerText() {
+  const box = $('#briefBox');
+  if (!box) return '';
+  const c = box.cloneNode(true);
+  c.querySelectorAll('h3, .cite, .rag-q, .ayah-in, .note, button, a.cite').forEach(x => x.remove());
+  return c.textContent.replace(/\s+/g, ' ').trim();
+}
+function speakAnswer(lang) {
+  const text = answerText();
+  if (!text) return;
+  stopAudio(true);
+  speaker.speak(text, lang === 'en' ? 'en' : 'ar', null);   // no passage reference: the browser's voice only
+}
 function refreshMiniLamp() {
   const slot = $('#lampSlot');
   if (!slot || !state.core) return;
@@ -1554,7 +1583,7 @@ function openKhatmaMap() {
 }
 function labelDock() {
   $('#dock').setAttribute('aria-label', TS().dock);
-  document.querySelectorAll('#dock [data-panel]').forEach(b => { const s = TS()[b.dataset.panel]; b.setAttribute('aria-label', s); b.title = s; });
+  document.querySelectorAll('#dock [data-panel]').forEach(b => { const id = b.dataset.panel; const s = TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id] || (id === 'athkar' ? (ATHKAR_S[state.lang] || ATHKAR_S.ar).title : id); b.setAttribute('aria-label', s); b.title = s; });
 }
 
 // ------------------------------------------------------------- galaxy toolbar

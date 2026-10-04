@@ -12,6 +12,7 @@ export const DEFAULTS = {
   autoMark: true,                           // a verse recited to its end in the reader counts as read
   scrollMark: true,                         // a verse read by scrolling (it stayed at the reading line long enough) counts as read
   showReadOnGalaxy: true,
+  welcomeVoice: true,                       // a short spoken welcome after the basmala (browser voice; never a verse)
 };
 
 const clone = (x) => JSON.parse(JSON.stringify(x));

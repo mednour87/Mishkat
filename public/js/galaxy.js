@@ -161,6 +161,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   const ring = new THREE.Mesh(new THREE.RingGeometry(5.2, 5.6, 64),
     new THREE.MeshBasicMaterial({ color: 0xffe08a, transparent: true, opacity: 0.55, side: THREE.DoubleSide, depthWrite: false }));
   ring.visible = false; scene.add(ring);
+  let sceneGroup = null;   // T051: Kaaba / prayer beams while a tool panel is open
   // glowing sprite on the word being recited
   const glowTex = (() => {
     const c = document.createElement('canvas'); c.width = c.height = 64;
@@ -636,6 +637,51 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     setAutoRotate(v) { controls.autoRotate = v; },
     wordsOfVerse: (v) => [vStart[v], vEnd[v]],
     wordVerse,
+    // T051: a scene at the centre of the galaxy while a tool panel is open —
+    //   'qibla'  { bearing }: the Kaaba (black cube, gold band) and a gold arrow along the galaxy's plane
+    //            pointing to the computed bearing (north = the far side of the view)
+    //   'prayer' { times: [{name, frac}], now }: a 24-hour ring with a beam of light at each prayer time and
+    //            a marker for now (frac = fraction of the day)
+    //   null: removed
+    setScene(kind, opts = {}) {
+      if (sceneGroup) { scene.remove(sceneGroup); sceneGroup.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); }); sceneGroup = null; }
+      if (!kind) return;
+      if (!points.geometry.boundingSphere) points.geometry.computeBoundingSphere();
+      const R = Math.max(40, points.geometry.boundingSphere.radius * 0.18);
+      const g = new THREE.Group();
+      const gold = new THREE.MeshBasicMaterial({ color: 0xffd66b, transparent: true, opacity: 0.95 });
+      if (kind === 'qibla') {
+        const s = R * 0.35;
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(s, s * 1.12, s), new THREE.MeshBasicMaterial({ color: 0x0b0b0e }));
+        cube.position.y = s * 0.56; g.add(cube);
+        const band = new THREE.Mesh(new THREE.BoxGeometry(s * 1.02, s * 0.1, s * 1.02), gold);
+        band.position.y = s * 0.82; g.add(band);
+        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(cube.geometry), new THREE.LineBasicMaterial({ color: 0xffd66b, transparent: true, opacity: 0.6 }));
+        edges.position.copy(cube.position); g.add(edges);
+        const b = (opts.bearing || 0) * Math.PI / 180;
+        const arrow = new THREE.Group();
+        const shaft = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.025, R * 0.025, R * 1.6, 12), gold);
+        shaft.rotation.x = Math.PI / 2; shaft.position.z = -R * 0.8 - s * 0.7; arrow.add(shaft);
+        const head = new THREE.Mesh(new THREE.ConeGeometry(R * 0.09, R * 0.28, 16), gold);
+        head.rotation.x = -Math.PI / 2; head.position.z = -R * 1.6 - s * 0.7 - R * 0.14; arrow.add(head);
+        arrow.rotation.y = -b; arrow.position.y = s * 0.2;
+        g.add(arrow);
+      } else if (kind === 'prayer') {
+        const ring = new THREE.Mesh(new THREE.RingGeometry(R * 1.55, R * 1.6, 128), new THREE.MeshBasicMaterial({ color: 0xffe08a, transparent: true, opacity: 0.35, side: THREE.DoubleSide, depthWrite: false }));
+        ring.rotation.x = -Math.PI / 2; g.add(ring);
+        const at = (f, r) => new THREE.Vector3(Math.sin(f * 2 * Math.PI) * r, 0, -Math.cos(f * 2 * Math.PI) * r);
+        for (const t of opts.times || []) {
+          const beam = new THREE.Mesh(new THREE.CylinderGeometry(R * 0.035, R * 0.035, R * 1.4, 10),
+            new THREE.MeshBasicMaterial({ color: t.next ? 0xfff3c4 : 0xffc861, transparent: true, opacity: t.next ? 0.95 : 0.55, depthWrite: false }));
+          beam.position.copy(at(t.frac, R * 1.575)); beam.position.y = R * 0.7; g.add(beam);
+        }
+        if (opts.now != null) {
+          const dot = new THREE.Mesh(new THREE.SphereGeometry(R * 0.07, 16, 12), new THREE.MeshBasicMaterial({ color: 0x8ec5f0 }));
+          dot.position.copy(at(opts.now, R * 1.575)); g.add(dot);
+        }
+      }
+      sceneGroup = g; scene.add(g);
+    },
     // long press on a touch screen (hover-dwell): the word under a point, and no click when the finger lifts
     pickAt: (x, y) => pick({ clientX: x, clientY: y }),
     cancelPick() { downAt = null; },

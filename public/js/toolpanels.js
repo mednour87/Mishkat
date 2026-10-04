@@ -31,7 +31,7 @@ export const S = {
     kProgress: (p, n) => `${p} من ${n} صفحة`, kBehind: (n) => `فاتك ${arCount(n, PAGES)}: وُزِّع الباقي على الأيام المتبقية.`, kFinished: 'أتممت الختمة — تقبّل الله منك. يمكنك بدء ختمة جديدة.',
     kStats: 'إحصاءات', kVerses: 'آيات مقروءة', kWords: 'كلمات مقروءة', kSuras: 'سور أتممتها', kStreak: 'أيام متتالية', kSurasList: 'السور المكتملة (خضراء في المجرّة):',
     kIcs: 'تذكيرات في التقويم (.ics)', kIcsHelp: 'ملف تفتحه في تقويم هاتفك أو حاسوبك: تذكير في كل وقت من أوقاتك بوِرد ذلك اليوم.',
-    kMarkHere: (r) => `علّم حتى الآية المفتوحة (${r}) كمقروءة`, kMarkHereQ: (r, n) => `تعليم كل الآيات من أول المصحف حتى ${r} (${arCount(n, AYAS)}) كمقروءة؟`, kStop: 'إلغاء الخطة', kStopQ: 'إلغاء الخطة؟ تبقى الآيات المقروءة محفوظة.', kGalaxy: 'أظهر السور المكتملة في المجرّة', kMap: 'خريطة الختمة في المشكاة (السور المقروءة مضيئة)',
+    kMarkHere: (r) => `علّم حتى الآية المفتوحة (${r}) كمقروءة`, kMarkHereQ: (r, n) => `تعليم كل الآيات من أول المصحف حتى ${r} (${arCount(n, AYAS)}) كمقروءة؟`, kStop: 'إلغاء الخطة', kStopQ: 'إلغاء الخطة؟ تبقى الآيات المقروءة محفوظة.', sWelcome: 'تحية صوتية قصيرة عند الدخول (صوت المتصفح)', kGalaxy: 'أظهر السور المكتملة في المجرّة', kMap: 'خريطة الختمة في المشكاة (السور المقروءة مضيئة)',
     kAutoNote: 'تُحسب الآية مقروءة عند الاستماع إلى تلاوتها كاملة، أو عند قراءتها بالتمرير في المصحف (تبقى عند سطر القراءة وقتًا كافيًا ثم تتجاوزها)، أو عند الضغط على «قرأته». يمكن تغيير ذلك في الإعدادات.',
     kIcsTitle: 'مشكاة — وِرد الختمة', kIcsPart: (p) => `${p.moment.label}: ${p.from === p.to ? 'صفحة ' + p.from : 'الصفحات ' + p.from + '–' + p.to} (اليوم ${p.day})`,
     // hijri
@@ -65,7 +65,7 @@ export const S = {
     kProgress: (p, n) => `${p} of ${n} pages`, kBehind: (n) => `${n} ${+n === 1 ? 'page' : 'pages'} behind: the rest is spread over the days left.`, kFinished: 'Khatma completed — may Allah accept it from you. You can start a new one.',
     kStats: 'Statistics', kVerses: 'Verses read', kWords: 'Words read', kSuras: 'Surahs completed', kStreak: 'Days in a row', kSurasList: 'Completed surahs (green on the galaxy):',
     kIcs: 'Calendar reminders (.ics)', kIcsHelp: 'A file to open in your phone or computer calendar: a reminder at each of your moments with that day’s portion.',
-    kMarkHere: (r) => `Mark up to the open verse (${r}) as read`, kMarkHereQ: (r, n) => `Mark every verse from the start of the Mushaf up to ${r} (${n} verses) as read?`, kStop: 'Cancel the plan', kStopQ: 'Cancel the plan? The verses read stay saved.', kGalaxy: 'Show completed surahs on the galaxy', kMap: 'Khatma map inside the lamp (surahs read light up)',
+    kMarkHere: (r) => `Mark up to the open verse (${r}) as read`, kMarkHereQ: (r, n) => `Mark every verse from the start of the Mushaf up to ${r} (${n} verses) as read?`, kStop: 'Cancel the plan', kStopQ: 'Cancel the plan? The verses read stay saved.', sWelcome: 'A short spoken welcome on entering (browser voice)', kGalaxy: 'Show completed surahs on the galaxy', kMap: 'Khatma map inside the lamp (surahs read light up)',
     kAutoNote: 'A verse counts as read when you listen to its full recitation, when you read it by scrolling the Mushaf (it stays at the reading line long enough, then you scroll on), or when you press “Done”. This can be changed in Settings.',
     kIcsTitle: 'Mishkat — khatma portion', kIcsPart: (p) => `${p.moment.label}: ${p.from === p.to ? 'page ' + p.from : 'pages ' + p.from + '–' + p.to} (day ${p.day})`,
     hToday: 'Today', hConv: 'Convert a date', hToH: 'Gregorian → Hijri', hToG: 'Hijri → Gregorian', hDay: 'Day', hMonth: 'Month', hYear: 'Year', hConvert: 'Convert',
@@ -277,7 +277,7 @@ export function createToolPanels(ctx) {
       + sec(t.sReading,
         `<div class="s-line"><span>${esc(t.sSpeed)}</span>${seg('sSpeed', [0.75, 1, 1.25, 1.5].map(x => [String(x), '×' + x]), String(U.speed()))}</div>
         <div class="s-line"><span>${esc(t.sFont)}</span><div class="seg" role="group"><button type="button" id="sFm">A− ${esc(t.sSmaller)}</button><button type="button" id="sFp">A+ ${esc(t.sLarger)}</button></div></div>
-        ${check('sAuto', P.autoMark, t.sAuto)}${check('sScroll', P.scrollMark, t.sScroll)}`) : sec(t.sReading, check('sAuto', P.autoMark, t.sAuto) + check('sScroll', P.scrollMark, t.sScroll)))
+        ${check('sAuto', P.autoMark, t.sAuto)}${check('sScroll', P.scrollMark, t.sScroll)}${check('sWelcome', P.welcomeVoice !== false, t.sWelcome)}`) : sec(t.sReading, check('sAuto', P.autoMark, t.sAuto) + check('sScroll', P.scrollMark, t.sScroll)))
       + sec(t.sKhatmaSec, `${check('sGal', P.showReadOnGalaxy, t.sGalaxy)}${U ? `<button type="button" class="mini gold" id="sGoK">${esc(t.sOpenKhatma)}</button>` : ''}`)
       + sec(t.sHijriSec, `<label class="p-row">${esc(t.hAdj)} <select id="sHj">${[-2, -1, 0, 1, 2].map(n => `<option value="${n}" ${n === (+P.hijriAdjust || 0) ? 'selected' : ''}>${esc(t.hAdjN(n))}</option>`).join('')}</select></label>
         <p class="p-small">${esc(t.sHijriHelp)}</p>${U ? `<button type="button" class="mini gold" id="sGoH">${esc(t.sOpenHijri)}</button>` : ''}`)
@@ -292,6 +292,7 @@ export function createToolPanels(ctx) {
       segOn('sTheme', (v) => U.setTheme(v));
       segOn('sSpeed', (v) => U.setSpeed(+v));
       $b('#sNames').onchange = (ev) => U.setNames(ev.target.checked);
+      const sw = $b('#sWelcome'); if (sw) sw.onchange = (ev) => { P.welcomeVoice = ev.target.checked; ctx.save(); };
       $b('#sRot').onchange = (ev) => U.setRotate(ev.target.checked);
       $b('#sFm').onclick = () => U.font(-0.1);
       $b('#sFp').onclick = () => U.font(0.1);

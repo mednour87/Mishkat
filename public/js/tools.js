@@ -48,6 +48,10 @@ const RULES = [
   // practical tools of the next lot (their panels exist only once their data source is integrated)
   ['prayer', [/(كم\s+(بقي|باقي)|متي|وقت|مواقيت|اوقات|موعد)\s+(علي\s+)?(ال)?(صلاه|اذان|الفجر|الظهر|العصر|المغرب|العشاء)/, /(الصلاه)\s+(القادمه|التاليه|الجايه)/, /\b(next prayer|prayer times?|when is (fajr|dhuhr|zuhr|asr|maghrib|isha))\b/, /\b(time|how long|how much time) (left )?(until|till|to|for) (fajr|dhuhr|zuhr|asr|maghrib|isha)\b/],
     (q) => { const m = q.match(/الفجر|الظهر|العصر|المغرب|العشاء|fajr|dhuhr|zuhr|asr|maghrib|isha/); return m ? { prayer: { 'الفجر': 'Fajr', 'الظهر': 'Dhuhr', 'العصر': 'Asr', 'المغرب': 'Maghrib', 'العشاء': 'Isha', fajr: 'Fajr', dhuhr: 'Dhuhr', zuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' }[m[0]] } : {}; }],
+  // adhkar: «أذكار النوم», «ماذا أقول في التشهد», «دعاء السفر», "morning adhkar", "what to say before sleeping"
+  ['athkar', [/^(ال)?(اذكار|اذكار\s+\S+|ادعيه\s+\S+)(\s+\S+)?$/, /(ماذا|ما\s+الذي|وش|ايش|شو)\s+(اقول|يقال|نقول|يقول)\s+(في|عند|قبل|بعد|اذا|حين)\s+\S+/, /^دعاء\s+(السفر|النوم|الاستيقاظ|الكرب|الهم|الاستفتاح|القنوت|الاستخاره|دخول|الخروج|الركوب|الطعام|المريض|المسجد|الخلاء|المنزل)/,
+    /\b(morning|evening|sleep|sleeping|bedtime|travel|prayer)\s+(adhkar|azkar|dhikr|duas?|supplications?|remembrances?)\b/, /\b(adhkar|azkar|duas?) (for|of|before|after) \w+/, /\bwhat (should i|do i|to) say (in|when|before|after|during|at) \w+/],
+    (q) => ({ q })],
   ['qibla', [/(اتجاه|جهه|وين|اين)\s+(ال)?قبله/, /\bqiblah?\b/], () => ({})],
   ['mosques', [/(اقرب|قريب)\s+(ال)?(مسجد|مساجد|جامع)/, /\b(nearest|nearby|closest) (mosque|masjid)s?\b/], () => ({})],
 ];

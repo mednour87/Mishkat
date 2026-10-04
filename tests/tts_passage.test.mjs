@@ -28,3 +28,16 @@ test('tts: a passage is the tafsir unit shipped with Mishkat, read chunk by chun
   const none = await speakPassage({ book: 'muyassar_ar', s: 2, a: 255, n: 59 }, { GROQ_API_KEY: 'k' }, load, fake);
   assert.equal(none.ok, false, 'no such chunk');
 });
+
+test('tts: Azure Speech first when its key is set (neural ar-SA voice, SSML escaped), the passage rule unchanged', async () => {
+  const sent = [];
+  const fake = async (url, init) => { sent.push({ url, init }); return { ok: true, arrayBuffer: async () => new ArrayBuffer(4) }; };
+  const out = await speakPassage({ book: 'muyassar_ar', s: 112, a: 1, n: 0 }, { AZURE_TTS_KEY: 'k', AZURE_TTS_REGION: 'westeurope' }, load, fake);
+  assert.equal(out.ok, true);
+  assert.equal(out.type, 'audio/mpeg');
+  assert.equal(sent[0].url, 'https://westeurope.tts.speech.microsoft.com/cognitiveservices/v1');
+  assert.match(sent[0].init.body, /ar-SA-HamedNeural/);
+  assert.doesNotMatch(sent[0].init.body, /<(?!\/?(speak|voice|prosody))/, 'no markup from the text');
+  const free = await speakPassage({ text: 'x' }, { AZURE_TTS_KEY: 'k', AZURE_TTS_REGION: 'westeurope' }, load, fake);
+  assert.equal(free.ok, false);
+});

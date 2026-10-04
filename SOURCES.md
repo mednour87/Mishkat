@@ -27,7 +27,7 @@ The pack «المرجعية والحزمة العلمية والبيانات» (
 | S15 | Objections (الشبهات) | **موسوعة بينات — Osoul Center** (bayenat.net) | links to the reviewed answer for objection-type questions | 933 question **titles + URLs** collected from the category pages, 10 s between requests (robots.txt) | public site; only titles/links stored | no answer text copied; matching calibrated on the pack’s test questions (exact question first, weak overlaps refused) |
 | S16 | Terminology | Pack glossary (10 terms, p. 8) + **الجمهرة** (islamic-content.com) for «الاجتهاد» | term card: Arabic term, approved English equivalent, usage rule | `public/js/glossary.js` | copied word for word | no French equivalent invented; link to the Jamhara entry |
 
-Also linked (not ingested): **موسوعة التفسير — Dorar** (`dorar.net/tafseer/{surah}`, organised by sections, not verses), **binbaz.org.sa** and **alifta.gov.sa** (fatwa referral), **shamela.ws** (no public API).
+Also linked (not ingested): **موسوعة التفسير — Dorar** (`dorar.net/tafseer/{surah}`, organised by sections, not verses), **alifta.gov.sa** (referral for a personal fatwa), **shamela.ws** (no public API). (binbaz.org.sa was linked until 4 Oct 2026; removed: not in the reference pack.)
 
 ### Added 1–2 Oct 2026 (preparation, declared baseline)
 
@@ -46,11 +46,23 @@ Also linked (not ingested): **موسوعة التفسير — Dorar** (`dorar.ne
 | S22 | Semantic index | **bge-m3** (BAAI, MIT licence) via **Cloudflare Workers AI** — vectors of «verse (S7) — Al-Mukhtasar (S3)» for the 6,236 verses, int8 | candidates for the AI's closed-list selection; second check of AI-proposed references | `data_build/build_vectors.py` → `public/data/vec/` (read by the API only); question embedded live, `POST /api/dense` | model MIT; Workers AI terms | returns verse **references** only; never decides alone what is shown |
 | S23 | Evaluation only | **Qur'an QA 2023, Task A** (bigIR, Qatar University): questions, thematic passages, gold answers, official scorer | public benchmark of the search (MAP@10, MRR@10) — `eval/run_qqa23.mjs`, results in `eval/qqa23/RESULTS.md` | `eval/qqa23/get_data.sh` (downloaded, not committed) | CC BY-NC-ND 4.0 — used unmodified, not redistributed | — |
 
+### Added 4 October 2026 (challenge window)
+
+| # | Kind | Source | Used for | Access | Licence / terms | Integrity rule |
+|---|---|---|---|---|---|---|
+| S24 | Rulings (fiqh) | **الموسوعة الفقهية — الدرر السنية** (dorar.net/feqhia), named by the challenge's reference pack for general fiqh | «الحكم كما نصّت عليه الموسوعة الفقهية» under every ruling question, in the red «سؤال حساس» banner | live, `POST /api/fatwa` → the encyclopedia's search page, then the section page (cached 7 days) | public site; each section shown with its link | the encyclopedia's own statement of the ruling, verbatim, footnotes apart; consensus / difference / majority flags read from its own words; the AI may only filter the encyclopedia's search results; a section is kept only if its path or heading names the subject; nothing found → no ruling shown, referral to alifta.gov.sa. **Replaces S20 (binbaz.org.sa, not in the reference pack), removed on 4 Oct 2026.** |
+| S25 | Stories of the prophets, surah topics | **موسوعة الجمهرة — علوم السور** (islamic-content.com/t/15…128), named by the reference pack | «قصة يوسف», «story of Moses»…: the summary of a surah that narrates a whole story, the topics («موضوعاتها») with verse ranges, the aims («مقاصدها») | built once: `data_build/build_surah_sciences.py` → `public/data/surah_sciences.json` (robots.txt allows /t/; 3 s between requests) | public site, quoted with its link | verbatim; Quran quotations replaced by the Tanzil text of the verse; with Quranpedia's subject index (S-index) for the verses that speak of a prophet without naming him |
+| S26 | Adhkar | **HadeethEnc** (S21) adhkar and supplication categories, grade صحيح/حسن without reservation; **حصن المسلم** (hisnmuslim.com/api, ar + en + audio) — each dhikr kept only if the **Hadith Encyclopedia of Dorar** gives a صحيح/حسن verdict for its wording | «الأذكار» panel by theme with counters; «أذكار النوم», «ماذا أقول في التشهد» | built once: `data_build/build_athkar.py` → `public/data/athkar.json` (excluded items listed in `data_build/cache/athkar_excluded.json`) | public APIs | Hisn al-Muslim has no takhrij in its API: the Dorar verdict (muhaddith, book, number) is stored and shown with each dhikr; no verdict → excluded |
+| S27 | Prayer times | **Aladhan API** (api.aladhan.com), calculation methods named (Tunisia = 18 …) | «مواقيت الصلاة», «كم بقي على صلاة العصر» | called by the browser, month cached in the browser | free public API | the method and authority are shown; «astronomical approximation, the official calendar of your country prevails»; the «holidays» field is never used |
+| S28 | Mosques | **OpenStreetMap** via **Overpass** (overpass-api.de, mirror overpass.kumi.systems); city search via **Nominatim** | «المساجد القريبة», choosing a city | called by the browser after a click | © OpenStreetMap contributors, ODbL (attribution shown) | the position never goes to Mishkat's server |
+
 ## What is deliberately NOT used
 - No machine translation of the Quran or of tafsir, ever.
 - No hadith text is ever produced or chosen by the machine: hadith only appear as Dorar search results, verbatim, with the muhaddith’s verdict.
 - No answer text from Bayyinat is copied: only question titles and links.
 - No numerology / “numerical miracle” claims from the baseline project.
+- No recorded adhan yet: the openly licensed recordings found (Wikimedia Commons, CC0 / CC BY-SA) could not be checked by ear by the author; a soft tone is used instead until one is approved.
+- No text written by the AI is read aloud by the server: `/api/tts` reads only a tafsir unit shipped with Mishkat (book + surah + verse + chunk); the Quran is never synthesised.
 - No user data: the benchmark is 100 % synthetic (`eval/make_golden.mjs`, seeded); queries are not stored.
 
 ## Answer levels (defined by the challenge’s reference pack) and behaviour

@@ -13,7 +13,25 @@ export const TTS_MODELS = {
 export const TTS_MAX = 200;
 
 export function ttsReady(env) {
-  return !!(env.TTS_KEY || env.GROQ_API_KEY) && env.TTS_OFF !== '1';
+  return !!(env.AZURE_TTS_KEY || env.TTS_KEY || env.GROQ_API_KEY) && env.TTS_OFF !== '1';
+}
+
+// Azure Speech (free tier F0, 500,000 characters a month), tried first when its key is set: neural voices
+// ar-SA / en-US. Same rule: only a known passage reaches this function.
+export const AZURE_VOICES = { ar: 'ar-SA-HamedNeural', en: 'en-US-AndrewNeural' };
+const xmlEsc = (s) => s.replace(/[<>&'"]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;' }[c]));
+export async function azureSpeak(text, lang, env, fetchImpl = fetch) {
+  const region = String(env.AZURE_TTS_REGION || '').replace(/[^a-z0-9]/gi, '');
+  if (!env.AZURE_TTS_KEY || !region) return null;
+  const voice = (lang === 'en' ? env.AZURE_VOICE_EN : env.AZURE_VOICE_AR) || AZURE_VOICES[lang];
+  const ssml = `<speak version="1.0" xml:lang="${lang === 'en' ? 'en-US' : 'ar-SA'}"><voice name="${xmlEsc(voice)}"><prosody rate="${lang === 'en' ? '0%' : '-8%'}">${xmlEsc(text)}</prosody></voice></speak>`;
+  const r = await fetchImpl(`https://${region}.tts.speech.microsoft.com/cognitiveservices/v1`, {
+    method: 'POST',
+    headers: { 'Ocp-Apim-Subscription-Key': env.AZURE_TTS_KEY, 'Content-Type': 'application/ssml+xml', 'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3', 'User-Agent': 'Mishkat' },
+    body: ssml,
+  });
+  if (!r.ok) return { ok: false, error: `azure HTTP ${r.status}`, code: r.status === 429 ? 'quota' : 'failed' };
+  return { ok: true, audio: await r.arrayBuffer(), type: 'audio/mpeg' };
 }
 
 // Plain text to read: no footnote marks, no brackets around verse quotes.
@@ -79,8 +97,13 @@ export async function speak(body, env, fetchImpl = fetch) {
   const text = ttsClean(body && body.text);
   if (!text) return { ok: false, error: 'empty text', code: 'bad' };
   if (text.length > TTS_MAX) return { ok: false, error: 'text too long', code: 'bad' };
-  const key = env.TTS_KEY || env.GROQ_API_KEY;
   if (!ttsReady(env)) return { ok: false, error: 'no tts key', code: 'off' };
+  if (env.AZURE_TTS_KEY) {
+    const az = await azureSpeak(text, lang, env, fetchImpl).catch(() => null);
+    if (az && az.ok) return az;
+    if (!(env.TTS_KEY || env.GROQ_API_KEY)) return az || { ok: false, error: 'azure failed', code: 'failed' };
+  }
+  const key = env.TTS_KEY || env.GROQ_API_KEY;
   const M = TTS_MODELS[lang];
   const wanted = (lang === 'ar' ? env.TTS_VOICE_AR : env.TTS_VOICE_EN) || '';
   const voices = [...new Set([wanted, ...M.voices].filter(Boolean))];

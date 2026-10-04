@@ -57,11 +57,11 @@ createServer(async (req, res) => {
           let out;
           try { out = await speakPassage(JSON.parse(k), env, async (book, s) => JSON.parse(await readFile(join(ROOT, 'data', 'tts', book, `${s}.json`), 'utf8'))); } catch (e) { out = { ok: false, error: 'bad request', code: 'bad' }; }
           if (!out.ok) return send(res, 200, JSON.stringify(out), '.json');
-          hit = Buffer.from(out.audio);
+          hit = Object.assign(Buffer.from(out.audio), { mime: out.type || 'audio/wav' });
           ttsCache.set(k, hit);
           if (ttsCache.size > 300) ttsCache.delete(ttsCache.keys().next().value);
         }
-        res.writeHead(200, { ...SECURITY_HEADERS, 'content-type': 'audio/wav', 'cache-control': 'no-store' });
+        res.writeHead(200, { ...SECURITY_HEADERS, 'content-type': hit.mime || 'audio/wav', 'cache-control': 'no-store' });
         return res.end(hit);
       }
       const key = name + body.toString('utf8');

@@ -261,6 +261,11 @@ export function createPractical(ctx) {
       <label class="p-row"><input type="checkbox" data-tone ${store.get('prayerTone', false) ? 'checked' : ''}> ${esc(t.tone)}</label><p class="p-small">${esc(t.toneNote)}</p>
       <p class="p-small">${esc(t.cached)} · <a href="https://aladhan.com/calculation-methods" target="_blank" rel="noopener">aladhan.com</a></p>`;
     const nx0 = nextPrayer(days);
+    // T051: the five prayers as beams of light on a 24-hour ring around the galaxy (times of the place)
+    if (ctx.scene) {
+      const frac = (ms) => { const [h, m] = new Date(ms).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: tz }).split(':').map(Number); return ((h % 24) * 60 + m) / 1440; };
+      ctx.scene('prayer', { times: PRAYERS.map(k => ({ name: k, frac: frac(today.times[k]), next: !!(nx0 && nx0.next.name === k && nx0.next.date === today.date) })), now: frac(Date.now()) });
+    }
     if (nx0) { const row = body.querySelector(`tr[data-k="${nx0.next.name}"]`); if (row && nx0.next.date === today.date) row.classList.add('on'); }
     body.querySelector('[data-change]').onclick = () => picker(body, () => prayer(body));
     body.querySelector('[data-method]').onchange = (ev) => { store.set('prayerPrefs', { ...pr, method: +ev.target.value }); prayer(body); };
@@ -278,6 +283,7 @@ export function createPractical(ctx) {
     if (orient) { window.removeEventListener('deviceorientationabsolute', orient); window.removeEventListener('deviceorientation', orient); orient = null; }
     if (!p) { picker(body, () => qibla(body)); return; }
     const b = qiblaBearing(p.lat, p.lon), km = Math.round(distanceKm(p, KAABA));
+    if (ctx.scene) ctx.scene('qibla', { bearing: b });
     const touch = matchMedia('(pointer: coarse)').matches;
     body.innerHTML = placeLine(p) + `<div class="qb-wrap"><svg class="qb-dial" viewBox="0 0 200 200" role="img" aria-label="${esc(t.qDeg(Math.round(b)))}">
         <g class="qb-rose"><circle cx="100" cy="100" r="92" fill="none" stroke="rgba(255,214,107,.35)" stroke-width="1.5"/>
@@ -340,5 +346,5 @@ export function createPractical(ctx) {
     };
   }
 
-  return { prayer, qibla, mosques, stop: () => { clearInterval(timer); if (orient) { window.removeEventListener('deviceorientationabsolute', orient); window.removeEventListener('deviceorientation', orient); orient = null; } } };
+  return { prayer, qibla, mosques, stop: () => { clearInterval(timer); if (ctx.scene) ctx.scene(null); if (orient) { window.removeEventListener('deviceorientationabsolute', orient); window.removeEventListener('deviceorientation', orient); orient = null; } } };
 }

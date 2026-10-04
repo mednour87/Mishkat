@@ -8,6 +8,11 @@
 | ALLaM-2-7B (SDAIA) | free tier on Groq | benchmarked; rejected for the selection step (context too short for the payload) — see `eval/results/bench_llm.json` | model licence |
 | three.js | 0.160.0 (vendored in `public/vendor/three/`) | WebGL galaxy | MIT |
 | Google Fonts: Amiri Quran, Amiri, Inter | — | Quran and UI typography | SIL OFL 1.1 |
+| qrcode-generator (Kazuhiko Arase) | 1.4.4 (vendored in `public/vendor/qrcode/`, ES-module export added) | QR code of the qibla page on a computer | MIT |
+| Aladhan API | v1 | prayer times (browser → api.aladhan.com) | free public API |
+| Overpass API / Nominatim (OpenStreetMap) | — | nearby mosques, city search (browser → OSM services) | ODbL data, OSM usage policies |
+| Groq `whisper-large-v3-turbo` | free tier | speech to text (question / recitation), audio not kept | Groq terms |
+| Browser Web Speech (speechSynthesis) | — | spoken welcome and answer read aloud (never the Quran) | — |
 | Node.js | ≥ 18 | tests, evaluation, local server (no npm dependencies) | MIT |
 | Python 3 + `requests`, `numpy` | 3.13 | data download & build scripts | PSF / Apache-2.0 / BSD |
 | Cloudflare Pages + Pages Functions | free plan | hosting + serverless API (key kept as a secret) | Cloudflare terms |
