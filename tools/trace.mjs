@@ -114,6 +114,21 @@ const HOSTS = {
   'www.w3.org': { name: 'W3C SVG namespace', ar: 'فضاء أسماء SVG', ref: '—', role: 'xmlns attribute of the Mishkat lamp SVG (public/js/lamp.js, img/logo.svg) — an identifier, never fetched', licence: '—' },
   'api.stackexchange.com': { name: 'Stack Exchange API (Islam Stack Exchange)', ar: 'Islam Stack Exchange', ref: 'eval', role: 'evaluation only: public question titles for eval/forum_questions.json (eval/collect_forum.py); never used by the app', licence: 'CC BY-SA 4.0 — titles only, no user names or bodies' },
   'islamicaich.org': { name: 'Islamic AI Challenge', ar: 'تحدي الذكاء الاصطناعي الإسلامي', ref: 'pack', role: 'challenge organiser / reference pack', licence: 'link only' },
+  'api.aladhan.com': { name: 'Aladhan API v1', ar: 'مواقيت الصلاة — Aladhan', ref: 'S27', role: 'prayer times called by the browser (month cached locally); method and authority shown; the holidays field is never used', licence: 'free public API' },
+  'aladhan.com': { name: 'Aladhan', ar: 'Aladhan', ref: 'S27', role: 'link to the calculation methods of the prayer-time service', licence: 'public site' },
+  'overpass-api.de': { name: 'Overpass API (OpenStreetMap)', ar: 'خريطة الشارع المفتوحة', ref: 'S28', role: 'nearby mosques, called by the browser after a click; the position never reaches Mishkat', licence: 'ODbL data, OSM usage policy' },
+  'overpass.kumi.systems': { name: 'Overpass mirror (kumi.systems)', ar: 'خريطة الشارع المفتوحة', ref: 'S28', role: 'mirror of Overpass when the main instance is busy', licence: 'ODbL data' },
+  'nominatim.openstreetmap.org': { name: 'Nominatim (OpenStreetMap)', ar: 'خريطة الشارع المفتوحة', ref: 'S28', role: 'city search for prayer / qibla / mosques', licence: 'ODbL data, Nominatim usage policy' },
+  'www.openstreetmap.org': { name: 'OpenStreetMap', ar: 'خريطة الشارع المفتوحة', ref: 'S28', role: 'attribution link of the mosque map', licence: 'ODbL' },
+  'www.geonames.org': { name: 'GeoNames', ar: 'GeoNames', ref: 'S29', role: 'build: cities15000 → public/data/places.json (country → city picker); attribution link', licence: 'CC BY 4.0' },
+  'www.hisnmuslim.com': { name: 'Hisn al-Muslim API', ar: 'حصن المسلم', ref: 'S26', role: 'build: adhkar ar/en + audio; each dhikr kept only with a Dorar صحيح/حسن verdict', licence: 'public API' },
+  'commons.wikimedia.org': { name: 'Wikimedia Commons', ar: 'ويكيميديا كومنز', ref: 'S30', role: 'source of the optional adhan recording (public/audio/adhan.mp3)', licence: 'CC BY-SA 4.0' },
+  'www.google.com': { name: 'Google Maps (links)', ar: 'خرائط Google', ref: 'S28', role: 'links that open the nearby mosques in Google Maps (no API call, nothing sent by Mishkat)', licence: 'link only' },
+  'dawa.center': { name: 'Digital Da‘wah Repository', ar: 'المستودع الدعوي الرقمي', ref: 'reference pack', role: 'useful links panel', licence: 'link only' },
+  'findahelpline.com': { name: 'Find A Helpline', ar: 'Find A Helpline', ref: 'crisis route', role: 'link shown first to a visitor in crisis', licence: 'link only' },
+  'qurancomplex.gov.sa': { name: 'King Fahd Glorious Quran Printing Complex', ar: 'مجمع الملك فهد لطباعة المصحف الشريف', ref: 'S2', role: 'publisher of At-Tafsir Al-Muyassar; attribution link', licence: 'link only' },
+  'shamela.ws': { name: 'Al-Maktaba Ash-Shamila', ar: 'المكتبة الشاملة', ref: 'reference pack', role: 'useful links panel (no public API, not ingested)', licence: 'link only' },
+  'quranpedia': { name: 'Quranpedia (short form in code comments)', ar: 'قرآنبيديا', ref: 'S11–S13', role: 'same as quranpedia.net', licence: 'see S11' },
 };
 const PLACEHOLDER = (h) => /[${}<>]/.test(h) || ['x', 'localhost', '127.0.0.1', '0.0.0.0', 'example.com'].includes(h);
 const SCAN_SCOPES = [
