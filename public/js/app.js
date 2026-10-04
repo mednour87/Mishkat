@@ -13,6 +13,8 @@ import { createToolPanels, S as TOOL_S } from './toolpanels.js';
 import { loadPrefs, savePrefs } from './prefs.js';
 import { decodeRead, encodeRead, markRead, isRead, surasRead, ymd } from './khatma.js';
 import { miniLamp, openLampMap, progressOf } from './lampmap.js';
+import { createPractical, PS as PRACT_S } from './practical.js';
+import qrcode from '../vendor/qrcode/qrcode.js';
 
 // Three moments, one current verse (body[data-mode]):
 //   home    — the galaxy alone, with a suggestion card in the middle (can be closed);
@@ -254,8 +256,10 @@ async function boot() {
   } else if (!sp.get('q')) {
     // the reference view once the galaxy zone has its final size (the first one used a provisional size)
     state.galaxy.home();
-    if (store.get('welcomed') !== '1') openWelcome();
+    if (store.get('welcomed') !== '1' && !sp.get('tool')) openWelcome();
   }
+  // a link to a tool (the QR code of the qibla on a computer opens the qibla on the phone)
+  if (sp.get('tool') && state.panels && (state.toolIds || []).includes(sp.get('tool'))) state.panels.open(sp.get('tool'));
 }
 
 // ------------------------------------------------------------ entry gate
@@ -1433,10 +1437,13 @@ function setupLongPress() {
 // ------------------------------------------------------------- tools: dock + exclusive panels
 // A dock of icon buttons under the search bar opens the tool panels (js/panels.js): one panel at a time,
 // a second click or Escape closes it, the galaxy stays visible. Contents: js/toolpanels.js (ar + en).
-const DOCK = ['khatma', 'hijri', 'links', 'settings'];
+const DOCK = ['prayer', 'qibla', 'mosques', 'khatma', 'hijri', 'links', 'settings'];
 const DOCK_ICON = {
   khatma: 'M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z',
   hijri: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
+  prayer: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2',
+  qibla: 'M12 2l3 7h-6zM12 2v20M5 12h14M8 18h8v4H8z',
+  mosques: 'M4 21V11a8 8 0 0 1 16 0v10zM12 3v2M9 21v-5a3 3 0 0 1 6 0v5M2 21h20',
   links: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
   settings: 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',
 };
@@ -1476,15 +1483,21 @@ function setupTools() {
     hijri: (body, args) => state.tools.hijri(body, args),
     links: (body) => state.tools.links(body),
     settings: (body) => state.tools.settings(body),
+    // T064–T066: prayer times (Aladhan), qibla (computed here), nearby mosques (OpenStreetMap) — the position
+    // stays in the browser and goes only to those public services, never to Mishkat's server
+    prayer: (body, args) => state.practical.prayer(body, args),
+    qibla: (body) => state.practical.qibla(body),
+    mosques: (body) => state.practical.mosques(body),
   };
+  state.practical = createPractical({ lang: () => state.lang, qrcode });
   const ids = state.toolIds = DOCK.filter(id => renderers[id]);     // also what the search bar may open (T032)
   $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
   $('#dock').hidden = !ids.length;
   state.panels = createPanels({
     dock: $('#dock'), tray: $('#tray'), renderers,
-    titles: Object.fromEntries(DOCK.map(id => [id, () => TS()[id]])), closeLabel: () => TS().close,
+    titles: Object.fromEntries(DOCK.map(id => [id, () => TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id]])), closeLabel: () => TS().close,
     onOpen: (id) => { document.body.dataset.panel = id; if (id === 'khatma') applyHighlight(); },
-    onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma') applyHighlight(); },
+    onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma') applyHighlight(); state.practical.stop(); },
   });
   labelDock();
 }

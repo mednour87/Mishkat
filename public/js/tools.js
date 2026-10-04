@@ -46,7 +46,8 @@ const RULES = [
   ['links', [/(روابط|مواقع)\s+(مفيده|اسلاميه|موثوقه)/, /\b(useful|islamic|trusted) (links|websites|sites)\b/], () => ({})],
   ['settings', [/^(الاعدادات|الاعدادات|التفضيلات|اعدادات)$/, /^(settings|preferences)$/], () => ({})],
   // practical tools of the next lot (their panels exist only once their data source is integrated)
-  ['prayer', [/(كم\s+(بقي|باقي)|متي|وقت|مواقيت|اوقات|موعد)\s+(علي\s+)?(ال)?(صلاه|اذان|الفجر|الظهر|العصر|المغرب|العشاء)/, /(الصلاه)\s+(القادمه|التاليه|الجايه)/, /\b(next prayer|prayer times?|when is (fajr|dhuhr|zuhr|asr|maghrib|isha))\b/], () => ({})],
+  ['prayer', [/(كم\s+(بقي|باقي)|متي|وقت|مواقيت|اوقات|موعد)\s+(علي\s+)?(ال)?(صلاه|اذان|الفجر|الظهر|العصر|المغرب|العشاء)/, /(الصلاه)\s+(القادمه|التاليه|الجايه)/, /\b(next prayer|prayer times?|when is (fajr|dhuhr|zuhr|asr|maghrib|isha))\b/, /\b(time|how long|how much time) (left )?(until|till|to|for) (fajr|dhuhr|zuhr|asr|maghrib|isha)\b/],
+    (q) => { const m = q.match(/الفجر|الظهر|العصر|المغرب|العشاء|fajr|dhuhr|zuhr|asr|maghrib|isha/); return m ? { prayer: { 'الفجر': 'Fajr', 'الظهر': 'Dhuhr', 'العصر': 'Asr', 'المغرب': 'Maghrib', 'العشاء': 'Isha', fajr: 'Fajr', dhuhr: 'Dhuhr', zuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' }[m[0]] } : {}; }],
   ['qibla', [/(اتجاه|جهه|وين|اين)\s+(ال)?قبله/, /\bqiblah?\b/], () => ({})],
   ['mosques', [/(اقرب|قريب)\s+(ال)?(مسجد|مساجد|جامع)/, /\b(nearest|nearby|closest) (mosque|masjid)s?\b/], () => ({})],
 ];
