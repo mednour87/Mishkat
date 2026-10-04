@@ -1781,6 +1781,10 @@ function interests() {
   try { return (JSON.parse(store.get('interests', '[]')) || []).filter(k => INTERESTS.includes(k)); } catch (e) { return []; }
 }
 
+const WPREF = {
+  ar: { theme: 'المظهر', dark: 'داكن', light: 'فاتح', digits: 'الأرقام', voice: 'الترحيب الصوتي', on: 'نعم', off: 'لا' },
+  en: { theme: 'Theme', dark: 'Dark', light: 'Light', digits: 'Digits', voice: 'Spoken welcome', on: 'On', off: 'Off' },
+};
 function openWelcome() {
   const I = INTEREST[state.lang], w = $('#welcome'), chosen = new Set(interests());
   $('#wLamp').innerHTML = lampSVG({ size: 92, title: 'Mishkat' });
@@ -1789,6 +1793,20 @@ function openWelcome() {
   const count = () => { const n = w.querySelectorAll('.wtile[aria-pressed=true]').length; $('#wCount').textContent = n ? `(${n})` : ''; };
   w.querySelectorAll('.wtile').forEach(b => b.onclick = () => { b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') !== 'true'); count(); });
   count();
+  // T061: the first preferences, here at the first visit (all of them stay in Settings): theme, digits, spoken welcome
+  const P0 = WPREF[state.lang] || WPREF.ar, dark = document.documentElement.dataset.theme !== 'light';
+  let dg = 'arab'; try { dg = JSON.parse(localStorage.getItem('mishkat.digits') || '"arab"'); } catch (e) { /* default */ }
+  const seg = (k, opts) => `<span class="seg" role="group" aria-label="${esc(P0[k])}">${opts.map(([v, label, on]) => `<button type="button" data-wp="${k}" data-v="${v}" aria-pressed="${on}">${esc(label)}</button>`).join('')}</span>`;
+  $('#wPrefs').innerHTML = `<span class="wp"><span>${esc(P0.theme)}</span>${seg('theme', [['dark', P0.dark, dark], ['light', P0.light, !dark]])}</span>` +
+    (state.lang === 'ar' ? `<span class="wp"><span>${esc(P0.digits)}</span>${seg('digits', [['arab', '١٢٣', dg === 'arab'], ['latn', '123', dg !== 'arab']])}</span>` : '') +
+    `<span class="wp"><span>${esc(P0.voice)}</span>${seg('voice', [['1', P0.on, state.prefs.welcomeVoice !== false], ['0', P0.off, state.prefs.welcomeVoice === false]])}</span>`;
+  $('#wPrefs').querySelectorAll('[data-wp]').forEach(b => b.onclick = () => {
+    const k = b.dataset.wp, v = b.dataset.v;
+    b.parentElement.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    if (k === 'theme') setTheme(v);
+    if (k === 'digits') { try { localStorage.setItem('mishkat.digits', JSON.stringify(v)); } catch (e) { /* private mode */ } }
+    if (k === 'voice') { state.prefs.welcomeVoice = v === '1'; savePrefs(state.prefs); }
+  });
   w.hidden = false;
   $('#wGo').onclick = () => {
     const ks = [...w.querySelectorAll('.wtile[aria-pressed=true]')].map(b => b.dataset.k);

@@ -32,3 +32,12 @@ test('answer read by the server voice: only tafsir books shipped in public/data/
   assert.doesNotMatch(fn, /e\.verses|engine\.verses/);
   for (const b of ['muyassar_ar', 'mukhtasar_ar', 'mukhtasar_en']) assert.ok(statSync(new URL(`../public/data/tts/${b}/1.json`, import.meta.url)).size > 0);
 });
+
+test('T061: first preferences at the first visit (theme, digits, spoken welcome) in ar and en', () => {
+  const html = R('public/index.html').toString();
+  assert.match(html, /id="wPrefs"/);
+  const block = app.slice(app.indexOf('const WPREF'), app.indexOf('function openWelcome'));
+  for (const k of ['theme', 'dark', 'light', 'digits', 'voice', 'on', 'off']) {
+    assert.match(block, new RegExp(`ar: \\{[^}]*\\b${k}: '`)); assert.match(block, new RegExp(`en: \\{[^}]*\\b${k}: '`));
+  }
+});
