@@ -3,6 +3,7 @@
 //  - per-IP rate limit (sliding 1-minute window, per isolate)
 //  - request size limit
 import { injectionKind } from '../../public/js/injection.js';
+import { mapQuestion } from '../../public/js/scope.js';
 
 const buckets = new Map();
 
@@ -43,7 +44,10 @@ export const LIMITS = { expand: 40, select: 40, transcribe: 12, hadith: 30, fatw
 const TEXT_ROUTES = new Set(['expand', 'select', 'pick', 'answer', 'fatwa', 'dense']);
 export function refusedText(name, body) {
   if (!TEXT_ROUTES.has(name) || !body || typeof body !== 'object') return null;
-  return injectionKind([body.query, body.q, body.question].filter(x => typeof x === 'string').join(' \n '));
+  const text = [body.query, body.q, body.question].filter(x => typeof x === 'string').join(' \n ');
+  // T091: a request outside Mishkat's subject (recipe, prices, code, essays…) never reaches a model, even from a script
+  const m = mapQuestion(text);
+  return injectionKind(text) || (m && m.kind === 'offtopic' ? 'offtopic' : null);
 }
 
 export function deny(status, error) {
