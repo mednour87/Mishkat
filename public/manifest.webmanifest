@@ -1,0 +1,27 @@
+{
+  "name": "مِشكاة — دليل مجرّة القرآن الذكي · Mishkat",
+  "short_name": "مشكاة",
+  "description": "Mishkat — ask the Quran galaxy: verses from the Tanzil text, vetted tafsir, synchronised recitation, khatma, memorising, prayer times. Arabic · English.",
+  "id": "./",
+  "start_url": "./?source=app",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#05070d",
+  "theme_color": "#05070d",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["education", "books", "lifestyle"],
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "img/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "التكرار والحفظ", "short_name": "التكرار", "url": "./?tool=tekrar", "icons": [{ "src": "img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "الختمة", "short_name": "الختمة", "url": "./?tool=khatma", "icons": [{ "src": "img/icon-192.png", "sizes": "192x192" }] },
+    { "name": "مواقيت الصلاة", "short_name": "الصلاة", "url": "./?tool=prayer", "icons": [{ "src": "img/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

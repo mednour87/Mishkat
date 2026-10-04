@@ -30,7 +30,7 @@ if (process.env.FREE_ONLY === '1') for (const k of ['PRIMARY_URL', 'PRIMARY_KEY'
 env.ASSETS = { fetch: async (req) => { const f = ROOT + decodeURIComponent(new URL(req.url).pathname).replace(/^\/+/, ''); return existsSync(f) ? new Response(readFileSync(f)) : new Response('', { status: 404 }); } };
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8', '.bin': 'application/octet-stream', '.svg': 'image/svg+xml', '.png': 'image/png',
-  '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8' };
+  '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8', '.webmanifest': 'application/manifest+json; charset=utf-8', '.mp3': 'audio/mpeg' };
 const cache = new Map(), ttsCache = new Map();
 
 createServer(async (req, res) => {
