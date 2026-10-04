@@ -71,7 +71,9 @@ export function miniLamp(prog, suras, order = 'mushaf') {
 }
 
 // ------------------------------------------------------------------ the 3D view
-export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings, onPick, onOrder, onClose }) {
+// hifz: fraction of each surah repeated to the end in the tekrar mode (blue ring); extra: a line under the title
+// (this month's percentages and the number of khatmas)
+export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', order = 'mushaf', strings, onPick, onOrder, onClose }) {
   const T = strings;
   const old = document.getElementById('lampMap');
   if (old) old.remove();
@@ -83,7 +85,7 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
   root.dir = lang === 'ar' ? 'rtl' : 'ltr';
   const nRead = prog.filter(f => f >= 1).length, nPart = prog.filter(f => f > 0 && f < 1).length;
   root.innerHTML = `<div class="lm-head"><h2>${esc(T.title)}</h2>
-      <p class="lm-sum">${esc(T.summary(nRead, nPart))}</p>
+      <p class="lm-sum">${esc(T.summary(nRead, nPart))}</p>${extra ? `<p class="lm-sum lm-extra">${esc(extra)}</p>` : ''}
       <div class="lm-orders" role="radiogroup" aria-label="${esc(T.orderLabel)}">${ORDERS.map(o => `<button type="button" role="radio" data-order="${o}" aria-checked="${o === order}">${esc(T.orders[o])}</button>`).join('')}</div>
       <button type="button" class="lm-close" aria-label="${esc(T.close)}">✕</button></div>
     <canvas class="lm-canvas" tabindex="0" aria-label="${esc(T.canvas)}"></canvas>
@@ -95,7 +97,7 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
       <button type="button" data-c="out" title="${esc(T.zoomOut)}" aria-label="${esc(T.zoomOut)}">－</button>
       <button type="button" data-c="reset" title="${esc(T.reset)}" aria-label="${esc(T.reset)}">⟲</button></div>
     <div class="lm-tip" hidden></div>
-    <p class="lm-legend"><span class="lg on"></span>${esc(T.read)} <span class="lg part"></span>${esc(T.partly)} <span class="lg off"></span>${esc(T.unread)} · ${esc(T.hint)}</p>`;
+    <p class="lm-legend"><span class="lg on"></span>${esc(T.read)} <span class="lg part"></span>${esc(T.partly)} <span class="lg off"></span>${esc(T.unread)}${hifz ? ` <span class="lg hz"></span>${esc(T.hifz || '')}` : ''} · ${esc(T.hint)}</p>`;
   document.body.appendChild(root);
   const cv = root.querySelector('canvas'), tip = root.querySelector('.lm-tip');
   const ctx2 = cv.getContext('2d');
@@ -168,6 +170,12 @@ export function openLampMap({ core, prog, lang = 'ar', order = 'mushaf', strings
       ctx2.fill();
       hits.push({ n: q.n, z: q.z, x0: q.x - rad - 5, x1: q.x + rad + 5, y0: q.y - rad - 5, y1: q.y + rad + 5, k: q });
       if (part) { ctx2.beginPath(); ctx2.arc(q.x, q.y, rad + 2, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * q.f); ctx2.strokeStyle = '#ffd66b'; ctx2.lineWidth = 1.4; ctx2.stroke(); }
+      // T095: repeated in the tekrar mode — a blue ring (full when the whole surah was repeated)
+      const hf = hifz ? hifz[q.n - 1] || 0 : 0;
+      if (hf > 0) {
+        if (hf >= 1) { const gb = ctx2.createRadialGradient(q.x, q.y, 0, q.x, q.y, rad * 3); gb.addColorStop(0, 'rgba(143,211,255,.45)'); gb.addColorStop(1, 'rgba(143,211,255,0)'); ctx2.fillStyle = gb; ctx2.beginPath(); ctx2.arc(q.x, q.y, rad * 3, 0, 7); ctx2.fill(); }
+        ctx2.beginPath(); ctx2.arc(q.x, q.y, rad + 3.6, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * Math.min(1, hf)); ctx2.strokeStyle = '#8FD3FF'; ctx2.lineWidth = hf >= 1 ? 2 : 1.3; ctx2.stroke();
+      }
       // names: front half, or always for read surahs and the hovered one
       if (q.z > 3 || (on && q.z > -12) || q.n === hover) {
         const s = core.suras[q.n - 1];
