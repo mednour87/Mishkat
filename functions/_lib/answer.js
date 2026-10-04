@@ -14,7 +14,7 @@
 // by Sheikh Ibn Baz). A ruling question gets only F items; every other question gets no F item.
 // POST /api/answer {query, lang, qtype, sentences:[{sid, text}] ≤ 48}
 //   → {ok, answerable:'yes'|'partial'|'no', concepts, points:[{concept, sids}], uncovered, model, judge}
-import { providers, callOpenAICompat, cooling, trip } from './selector.js';
+import { providers, callOpenAICompat, cooling, trip, DATA_NOTE } from './selector.js';
 
 const SID = /^(V:\d{1,3}:\d{1,3}|Q:\d{1,3}:\d{1,3}#\d{1,2}|H:\d{1,7}#[te]\d|F:\d{1,7}#(q|a\d{1,2}))$/;
 const MAX = 48, TEXT_MAX = 650;
@@ -107,7 +107,7 @@ export async function answer(body, env, fetchImpl = fetch) {
     const left = 7000 - (Date.now() - t0);
     if (left < 1500) break;
     try {
-      comp = validateCompose(await callJSON(pr, [{ role: 'system', content: SYS_COMPOSE }, { role: 'user', content: `Question (${p.lang}): ${p.query}${nl}Question type: ${p.qtype} — ${HOW[p.qtype]}${sensitive ? ' This is a sensitive subject: the FIRST point must use passages marked (reviewed context), which state the general principle; other passages may follow only if they answer the question too.' : ''}${nl}${nl}Passages:${nl}${numbered}` }], Math.min(4500, left), fetchImpl), p.sentences);
+      comp = validateCompose(await callJSON(pr, [{ role: 'system', content: SYS_COMPOSE + DATA_NOTE }, { role: 'user', content: `Question (${p.lang}): ${p.query}${nl}Question type: ${p.qtype} — ${HOW[p.qtype]}${sensitive ? ' This is a sensitive subject: the FIRST point must use passages marked (reviewed context), which state the general principle; other passages may follow only if they answer the question too.' : ''}${nl}${nl}Passages:${nl}${numbered}` }], Math.min(4500, left), fetchImpl), p.sentences);
       model = pr.model; via = pr.name; break;
     } catch (e) { trip(pr, e); }
   }
@@ -124,7 +124,7 @@ export async function answer(body, env, fetchImpl = fetch) {
   let keep = null, judge = null;
   for (const pr of judges) {
     try {
-      const j = await callJSON(pr, [{ role: 'system', content: SYS_JUDGE }, { role: 'user', content: `Question: ${p.query}${nl}Question type: ${p.qtype}${nl}${nl}` + flat.map((sid, k) => `[${k + 1}] ${byId.get(sid)}`).join(nl) }], 3500, fetchImpl);
+      const j = await callJSON(pr, [{ role: 'system', content: SYS_JUDGE + DATA_NOTE }, { role: 'user', content: `Question: ${p.query}${nl}Question type: ${p.qtype}${nl}${nl}` + flat.map((sid, k) => `[${k + 1}] ${byId.get(sid)}`).join(nl) }], 3500, fetchImpl);
       const k = new Set((Array.isArray(j && j.keep) ? j.keep : []).map(Number).filter(n => Number.isInteger(n) && n >= 1 && n <= flat.length));
       keep = new Set(flat.filter((_, i) => k.has(i + 1)));
       judge = pr.model; break;

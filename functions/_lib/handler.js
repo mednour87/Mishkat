@@ -1,7 +1,7 @@
 // Shared Cloudflare Pages Function handler: JSON in, JSON out, edge cache for
 // identical requests (saves free-tier quota and makes answers stable),
 // same-origin check, per-IP rate limit and size limit.
-import { rateLimited, foreignOrigin, LIMITS, deny, dailyCapReached } from './guard.js';
+import { rateLimited, foreignOrigin, LIMITS, deny, dailyCapReached, refusedText } from './guard.js';
 
 const HEADERS = { 'content-type': 'application/json; charset=utf-8' };
 
@@ -19,6 +19,7 @@ export function makeHandler(fn, name) {
       if (txt.length > LIMITS.maxJsonBytes) return deny(413, 'payload too large');
       body = JSON.parse(txt);
     } catch (e) { return deny(400, 'bad json'); }
+    if (refusedText(name, body)) return deny(400, 'instruction-like text refused');
     const key = await sha256(name + JSON.stringify(body));
     const cache = caches.default;
     const cacheReq = new Request(new URL(`/api/_cache/${name}/${key}`, request.url).toString());

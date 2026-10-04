@@ -14,7 +14,7 @@ import { pick } from './functions/api/pick.js';
 import { embedQuery } from './functions/_lib/dense.js';
 import { answer } from './functions/_lib/answer.js';
 import { speak } from './functions/_lib/tts.js';
-import { rateLimited, foreignOrigin, LIMITS } from './functions/_lib/guard.js';
+import { rateLimited, foreignOrigin, LIMITS, refusedText } from './functions/_lib/guard.js';
 import { SECURITY_HEADERS } from './functions/_lib/csp.js';
 
 const ROOT = fileURLToPath(new URL('./public/', import.meta.url));
@@ -68,7 +68,9 @@ createServer(async (req, res) => {
       if (cache.has(key)) return send(res, 200, cache.get(key), '.json');
       try {
         const fn = { select, expand, hadith: hadithSearch, fatwa: fiqhSearch, pick, answer, dense: embedQuery, tafsir: tafsirPages }[name];
-        const out = JSON.stringify(await fn(JSON.parse(body.toString('utf8')), env));
+        const parsed = JSON.parse(body.toString('utf8'));
+        if (refusedText(name, parsed)) return send(res, 400, JSON.stringify({ ok: false, error: 'instruction-like text refused' }), '.json');
+        const out = JSON.stringify(await fn(parsed, env));
         if (JSON.parse(out).ok) cache.set(key, out);
         return send(res, 200, out, '.json');
       } catch (e) { return send(res, 400, JSON.stringify({ ok: false, error: 'bad request' }), '.json'); }

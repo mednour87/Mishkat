@@ -14,6 +14,7 @@
 //      select or point; their text is shown as published, with its source.
 import { GLOSSARY, TERM_CUE, termFor, isBareTerm } from './glossary.js';
 import { storyQuery, storyOf } from './stories.js';
+import { injectionKind } from './injection.js';
 
 // ---------------------------------------------------------------- text utils
 const AR_MARKS = /[ؐ-ًؚ-ٰٟۖ-ۭ࣓-ࣿـ]/g;
@@ -300,6 +301,8 @@ export const MSG = {
     empty: 'اكتب فكرة أو سؤالًا أو اسم سورة أو رقم آية أو جزءًا من آية.',
     story: (name, nNamed, nIdx) => `قصة ${name} كما وردت في القرآن الكريم: ملخّص منقول بحروفه من موسوعة الجمهرة، ثم مراحل القصة بآياتها. ذُكر اسمه في ${arCount(nNamed, 'آية واحدة', 'آيتين', 'آيات', 'آية')}${nIdx ? `، ووردت الإشارة إليه دون ذكر اسمه في ${arCount(nIdx, 'آية أخرى', 'آيتين أخريين', 'آيات أخرى', 'آية أخرى')} بحسب الفهرس الموضوعي للموسوعة القرآنية` : ''}.`,
     storyNote: 'لا يُكتب شيء من القصة بالذكاء الاصطناعي: الملخّص والمراحل منقولة من مرجع معتمد، والآيات من نص المصحف.',
+    injection: 'هذا الطلب يحاول تغيير طريقة عمل «مشكاة» أو الاطلاع على تعليماتها، فلا يُنفَّذ. «مشكاة» تبحث في القرآن الكريم ومصادره المعتمدة فقط: اكتب سؤالًا أو موضوعًا أو آية.',
+    fabricate: '«مشكاة» لا تكتب آية ولا حديثًا ولا فتوى ولا تنسب إلى الشرع نصًّا من عندها؛ تعرض النصوص من مصادرها كما هي. ابحث عن موضوعك لتجد الآيات والأحاديث الثابتة فيه.',
     lowConf: 'نتائج بحث لفظي (ثقة منخفضة) — تحقّق من السياق.',
     personalNote: 'هذه آيات عامة في الموضوع؛ أما حالتك الخاصة فاعرضها على عالم أو مختص.',
     topicLexical: (n, q, s = 1) => `وجدتُ ${arCount(n, 'آية واحدة', 'آيتين', 'آيات', 'آية')} ورد فيها لفظ «${q}» في ${arCount(s, 'سورة واحدة', 'سورتين', 'سور', 'سورة')} (بحث لفظي). الآيات مرتّبة أدناه حسب السورة:`,
@@ -343,6 +346,8 @@ export const MSG = {
     empty: 'Type an idea, a question, a surah name, a verse number or part of a verse.',
     story: (name, nNamed, nIdx) => `The story of ${name} as told in the Quran: a summary quoted word for word from the Al-Jamhara encyclopedia (Arabic), then the episodes of the story with their verses. He is named in ${nNamed} verse${nNamed === 1 ? '' : 's'}${nIdx ? `, and spoken of without his name in ${nIdx} more according to the subject index of Quranpedia` : ''}.`,
     storyNote: 'No part of the story is written by AI: the summary and the episodes are quoted from an approved reference, the verses from the Mushaf.',
+    injection: 'This request tries to change how Mishkat works or to see its instructions, so it is not carried out. Mishkat only searches the Quran and its approved sources: type a question, a topic or a verse.',
+    fabricate: 'Mishkat never writes a verse, a hadith or a fatwa, and never attributes its own text to the religion; it shows texts from their sources as they are. Search your subject to find the established verses and hadiths about it.',
     lowConf: 'Keyword results (low confidence) — check the context.',
     personalNote: 'These are general verses on the subject; for your own situation, please consult a scholar or specialist.',
     topicLexical: (n, q, s = 1) => `I found ${n} verse${n === 1 ? '' : 's'} containing the words of “${q}” in ${s} surah${s === 1 ? '' : 's'} (keyword search). They are listed below, surah by surah:`,
@@ -1182,7 +1187,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
   // A: stable sourced information · B: explanation from approved material ·
   // C: disputed / highly sensitive · D: fatwa or personal case (referral).
   function levelOf(res) {
-    if (res.type === 'abstain') return 'D';
+    if (res.type === 'abstain') return ['injection', 'fabricate'].includes(res.reason) ? null : 'D';
     if (res.type === 'khilaf' || res.polemic || res.sensitive) return 'C';
     if (['verse', 'range', 'sura', 'verify', 'invalid_ref', 'hadith', 'story'].includes(res.type)) return 'A';
     if (res.type === 'topic' || res.type === 'term') return 'B';
@@ -1571,6 +1576,9 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const M = MSG[lang];
     const base = { query: q, lang, meta: { route: null, llm: { used: false } } };
     if (!q) return { ...base, type: 'empty', answer: [{ kind: 'text', text: MSG[uiLang].empty }], verses: [], focus: null };
+    // T082: an attempt to change how Mishkat works, or a request to WRITE a verse/hadith/fatwa: fixed answer, no AI
+    const inj = injectionKind(q);
+    if (inj) { base.meta.route = 'guard'; return { ...base, type: 'abstain', reason: inj, answer: [{ kind: 'text', text: M[inj] }], verses: [], focus: null }; }
     // spoken question (voice search): fillers, politeness and question frames are set aside for the search
     const sp = cleanSpoken(q, lang);
     if (sp.changed) base.meta.spoken = sp.display;

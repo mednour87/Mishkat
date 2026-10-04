@@ -2,6 +2,8 @@
 //  - same-origin only (another website cannot spend our AI quota with our key)
 //  - per-IP rate limit (sliding 1-minute window, per isolate)
 //  - request size limit
+import { injectionKind } from '../../public/js/injection.js';
+
 const buckets = new Map();
 
 export function rateLimited(ip, key, max, windowMs = 60000) {
@@ -35,6 +37,14 @@ export function dailyCapReached(name, env = {}, now = new Date()) {
 }
 
 export const LIMITS = { expand: 40, select: 40, transcribe: 12, hadith: 30, fatwa: 30, pick: 40, answer: 30, dense: 40, tafsir: 60, tts: 40, maxJsonBytes: 64 * 1024, maxAudioBytes: 4 * 1024 * 1024 };
+
+// T082: the routes that put the visitor's text in a model prompt refuse instruction-like text even when a
+// script calls them directly (the page never sends it: the engine answers it without AI)
+const TEXT_ROUTES = new Set(['expand', 'select', 'pick', 'answer', 'fatwa', 'dense']);
+export function refusedText(name, body) {
+  if (!TEXT_ROUTES.has(name) || !body || typeof body !== 'object') return null;
+  return injectionKind([body.query, body.q, body.question].filter(x => typeof x === 'string').join(' \n '));
+}
 
 export function deny(status, error) {
   return new Response(JSON.stringify({ ok: false, error }), { status, headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' } });
