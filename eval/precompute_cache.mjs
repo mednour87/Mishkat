@@ -5,6 +5,8 @@
 //   FREE_ONLY=1 REGEN=1 node eval/precompute_cache.mjs
 // FREE_ONLY=1: Groq's free tier only (the paid provider is removed) · REGEN=1: start from an empty cache (the
 // engine changed since the last run, old keyword lists would be stale) · Arabic and English only.
+// Without REGEN the run is incremental: only missing entries are asked (Groq's free tier allows 200,000 tokens a
+// day per model, so a full regeneration may need two days).
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { loadEngine } from '../tests/load.mjs';
 import { select, expand, providers } from '../functions/_lib/selector.js';

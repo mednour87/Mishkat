@@ -38,7 +38,7 @@ The AI never writes text shown to the visitor: it returns IDs (verses, sentences
 
 ## Running costs (measured)
 - **Hosting**: Cloudflare Pages free plan (static + Functions).
-- **AI, normal case: 0** — Groq's free tier first for every task (measured quotas: about 1,000 requests/day and 8,000 tokens/min per model; the light tasks use a second model with its own quota).
+- **AI, normal case: 0** — Groq's free tier first for every task. Measured quotas per model: 1,000 requests/day, 8,000 tokens/min and — the real bound — **200,000 tokens/day** (seen on 4 Oct: a selection request is ≈ 3,500 tokens, so the free 120b model serves a few dozen full answers a day); the light tasks use a second model with its own quota. Beyond that the paid backup answers.
 - **AI, backup**: OpenRouter pay per token only when Groq refuses (429) or fails: ≈ **$0.0014 per question** measured (`eval/cost_per_question.mjs`), price cap per token, daily ceiling of paid calls per server instance (`DAILY_AI_CALLS`, default 1,500), credit limit on the key. Prepaid balance 6.99 $ on 3 Oct 2026.
 - **Caching**: identical AI requests and speech are cached at the edge (Cache API, 7–30 days); ~140 frequent questions are pre-computed in `public/data/llm_cache.json` and re-verified like live answers.
 - **Without AI**: the deterministic engine answers (subject index, keywords, verification, guards), still grounded and abstaining.

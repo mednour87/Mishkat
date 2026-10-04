@@ -117,7 +117,7 @@ Deployment (Cloudflare Pages + Functions): [DEPLOY.md](DEPLOY.md).
 
 ### Known limits
 - Thematic search can miss a passage worded differently; English questions without AI reach fewer verses (193 of the 1,000-question map get none without AI).
-- Free AI quotas are limited (Groq: about 1,000 requests a day per model); beyond them the paid backup or the deterministic engine answers.
+- Free AI quotas are limited (Groq: 200,000 tokens a day per model, a few dozen full answers on the large model); beyond them the paid backup (OpenRouter, capped) or the deterministic engine answers.
 - Rulings appear only when the Fiqh Encyclopedia has a section naming the subject; otherwise none is shown (referral only).
 - Prayer times are astronomical calculations (method shown); the official calendar of your country prevails.
 - As-Sa‘di comments some verses in groups; 6 verses have no word-level recitation timing.
