@@ -1577,7 +1577,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const base = { query: q, lang, meta: { route: null, llm: { used: false } } };
     if (!q) return { ...base, type: 'empty', answer: [{ kind: 'text', text: MSG[uiLang].empty }], verses: [], focus: null };
     // T082: an attempt to change how Mishkat works, or a request to WRITE a verse/hadith/fatwa: fixed answer, no AI
-    const inj = injectionKind(q);
+    const inj = isCrisis(q) ? null : injectionKind(q);   // a person in crisis gets help first (crisis route below)
     if (inj) { base.meta.route = 'guard'; return { ...base, type: 'abstain', reason: inj, answer: [{ kind: 'text', text: M[inj] }], verses: [], focus: null }; }
     // spoken question (voice search): fillers, politeness and question frames are set aside for the search
     const sp = cleanSpoken(q, lang);

@@ -154,7 +154,7 @@ export function createPractical(ctx) {
   const ar = () => ctx.lang() === 'ar';
   const num = (n) => ar() ? String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]) : String(n);
   const doFetch = ctx.fetch || ((...a) => fetch(...a));
-  let timer = 0;
+  let timer = 0, gen = 0;   // gen: bumped by stop(); a render that started before is abandoned
   const place = () => store.get('place', null);
   const setPlace = (p) => store.set('place', p);
   const placeName = (p) => p ? (p.id === 'here' ? L().posHere : (ar() ? p.ar || p.en : p.en || p.ar)) : '';
@@ -220,6 +220,7 @@ export function createPractical(ctx) {
   }
   async function prayer(body, args = {}) {
     clearInterval(timer);
+    const my = ++gen;
     const t = L(), p = place();
     if (!p) { picker(body, () => prayer(body, args)); return; }
     const cc = p.cc || '';
@@ -234,6 +235,7 @@ export function createPractical(ctx) {
       const nx = nextPrayer(days);
       if (!nx) days = days.concat(await loadMonth(p, method, school, new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)));
     } catch (e) { body.innerHTML = placeLine(p) + `<p class="note">${esc(t.fail)}</p>`; body.querySelector('[data-change]').onclick = () => picker(body, () => prayer(body)); return; }
+    if (my !== gen) return;
     const tz = days[0].tz || undefined;
     const fmt = (ms) => new Date(ms).toLocaleTimeString(ar() ? 'ar-u-nu-arab' : 'en-GB', { hour: '2-digit', minute: '2-digit', timeZone: tz });
     const todayKey = new Intl.DateTimeFormat('en-CA', { timeZone: tz }).format(new Date());
@@ -346,5 +348,5 @@ export function createPractical(ctx) {
     };
   }
 
-  return { prayer, qibla, mosques, stop: () => { clearInterval(timer); if (ctx.scene) ctx.scene(null); if (orient) { window.removeEventListener('deviceorientationabsolute', orient); window.removeEventListener('deviceorientation', orient); orient = null; } } };
+  return { prayer, qibla, mosques, stop: () => { gen++; clearInterval(timer); if (ctx.scene) ctx.scene(null); if (orient) { window.removeEventListener('deviceorientationabsolute', orient); window.removeEventListener('deviceorientation', orient); orient = null; } } };
 }

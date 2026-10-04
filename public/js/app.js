@@ -608,7 +608,10 @@ function renderResults() {
   if ((res.type === 'topic' || res.type === 'term') && state.worker) loadSunnah(res).finally(() => loadRag(res));
   // the AI's Arabic fiqh search terms (never shown) when available; else the words of an Arabic question
   if (isRulingRes(res) && res.reason === 'ruling') {
-    if (state.llm && state.worker) workerCall({ op: 'kw', query: res.query, lang: res.lang }).catch(() => []).then(kw => loadFiqh(res.query, kw || []));
+    if (state.llm && state.worker) workerCall({ op: 'kw', query: res.query, lang: res.lang }).catch(() => []).then(kw => {
+      if (!(kw && kw.length) && !/[؀-ۿ]/.test(res.query || '')) { const fb = $('#fiqhBox'); if (fb) fb.innerHTML = `<p class="note">${esc(t.fiqhNeedAi)}</p>`; return; }
+      loadFiqh(res.query, kw || []);
+    });
     else if (/[؀-ۿ]/.test(res.query || '')) loadFiqh(res.query);
     else { const fb = $('#fiqhBox'); if (fb) fb.innerHTML = `<p class="note">${esc(t.fiqhNeedAi)}</p>`; }
   }

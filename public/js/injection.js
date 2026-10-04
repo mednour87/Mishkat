@@ -30,7 +30,8 @@ const INJECTION_AR = [
 
 // asks Mishkat to compose religious text (never done: rule 1 of the project)
 const FABRICATE = [
-  /\b(write|compose|invent|make up|generate|create|fabricate|forge)\b[^.?!]{0,25}\b(a |an |new |some |me a |me an |me some )?(quran(ic)? )?(verse|verses|ayah|ayat|surah|sura|hadith|hadiths|fatwa)\b(?! (in|on) (calligraphy|the wall|a wall|paper))/i,
+  /\b(compose|invent|make up|fabricate|forge)\b[^.?!]{0,25}\b(a |an |new |some |me a |me an |me some )?(quran(ic)? )?(verse|verses|ayah|ayat|surah|sura|hadith|hadiths|fatwa)\b/i,
+  /\b(write|generate|create)\b[^.?!]{0,12}\b(a |an |new |some |me a |me an |me some |your own )(quran(ic)? )?(verse|ayah|surah|sura|hadith|fatwa)\b(?! (in|on) (calligraphy|the wall|a wall|paper))/i,
   /\b([eé]cris|invente|compose|g[eé]n[eè]re)\b[^.?!]{0,25}\b(un |une |des )?(verset|sourate|hadith|fatwa)\b/i,
 ];
 const FABRICATE_AR = [
