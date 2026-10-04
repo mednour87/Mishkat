@@ -13,6 +13,14 @@ export const DEFAULTS = {
   scrollMark: true,                         // a verse read by scrolling (it stayed at the reading line long enough) counts as read
   showReadOnGalaxy: true,
   welcomeVoice: true,                       // a short spoken welcome after the basmala (browser voice; never a verse)
+  age: null,                                // 'child' (under 18) | 'adult' | null (not said): a child gets no fatwa (T092)
+  khatmas: 0,                               // complete readings of the Quran (stays when the month changes)
+  month: '', mRead: '', mHifz: '',          // this month: verses read in the reader, verses repeated in tekrar (bitsets)
+  hifz: '',                                 // all-time: verses repeated to the end in tekrar (surah colours in 3D)
+  tk: { log: {}, last: null },              // tekrar: { 'YYYY-MM-DD': { reps, ayas, sec, units, calm, sessions } }, last settings
+  goals: {},                                // weekly goals { read, tekrar } (defaults from the khatma plan)
+  intro: false,                             // the presentation film was seen (or skipped)
+  remindDay: '',                            // last day the small engagement reminder was shown
 };
 
 const clone = (x) => JSON.parse(JSON.stringify(x));
