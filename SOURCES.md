@@ -55,13 +55,14 @@ Also linked (not ingested): **موسوعة التفسير — Dorar** (`dorar.ne
 | S26 | Adhkar | **HadeethEnc** (S21) adhkar and supplication categories, grade صحيح/حسن without reservation; **حصن المسلم** (hisnmuslim.com/api, ar + en + audio) — each dhikr kept only if the **Hadith Encyclopedia of Dorar** gives a صحيح/حسن verdict for its wording | «الأذكار» panel by theme with counters; «أذكار النوم», «ماذا أقول في التشهد» | built once: `data_build/build_athkar.py` → `public/data/athkar.json` (excluded items listed in `data_build/cache/athkar_excluded.json`) | public APIs | Hisn al-Muslim has no takhrij in its API: the Dorar verdict (muhaddith, book, number) is stored and shown with each dhikr; no verdict → excluded |
 | S27 | Prayer times | **Aladhan API** (api.aladhan.com), calculation methods named (Tunisia = 18 …) | «مواقيت الصلاة», «كم بقي على صلاة العصر» | called by the browser, month cached in the browser | free public API | the method and authority are shown; «astronomical approximation, the official calendar of your country prevails»; the «holidays» field is never used |
 | S28 | Mosques | **OpenStreetMap** via **Overpass** (overpass-api.de, mirror overpass.kumi.systems); city search via **Nominatim** | «المساجد القريبة», choosing a city | called by the browser after a click | © OpenStreetMap contributors, ODbL (attribution shown) | the position never goes to Mishkat's server |
+| S29 | Places | **GeoNames** cities15000 (geonames.org), CC BY 4.0 — 244 countries, capital + regional capitals + main cities, Arabic names when available | country → city picker of prayer / qibla / mosques | built once: `data_build/build_places.py` → `public/data/places.json` | CC BY 4.0, attribution shown in the picker | coordinates of the city centre; country names from the browser (Intl.DisplayNames) |
+| S30 | Adhan recording | **Wikimedia Commons** — «The Adhan - Muslim Call to Prayer - Aaqib Azeez.mp3» (uploader Atcovi, own work) | optional adhan at prayer time (prayer panel) | `public/audio/adhan.mp3`, unchanged | CC BY-SA 4.0, see `public/audio/LICENSE-adhan.txt` | played only when the visitor chooses it; no Saudi-authority recording with an open licence was found |
 
 ## What is deliberately NOT used
 - No machine translation of the Quran or of tafsir, ever.
 - No hadith text is ever produced or chosen by the machine: hadith only appear as Dorar search results, verbatim, with the muhaddith’s verdict.
 - No answer text from Bayyinat is copied: only question titles and links.
 - No numerology / “numerical miracle” claims from the baseline project.
-- No recorded adhan yet: the openly licensed recordings found (Wikimedia Commons, CC0 / CC BY-SA) could not be checked by ear by the author; a soft tone is used instead until one is approved.
 - No text written by the AI is read aloud by the server: `/api/tts` reads only a tafsir unit shipped with Mishkat (book + surah + verse + chunk); the Quran is never synthesised.
 - No user data: the benchmark is 100 % synthetic (`eval/make_golden.mjs`, seeded); queries are not stored.
 

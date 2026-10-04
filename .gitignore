@@ -28,3 +28,4 @@ eval/human/rater*.csv
 data_build/cache/jamhara/
 data_build/cache/dorar/
 data_build/cache/*.xml
+data_build/cache/geonames/
