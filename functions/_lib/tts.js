@@ -47,6 +47,30 @@ export function ttsChunks(text, max = TTS_MAX - 10) {
   return out;
 }
 
+// T018 part 2 (audit I3): the server voice reads only KNOWN passages — a tafsir unit shipped with Mishkat,
+// named by book + surah + verse + chunk number — never a free text (which would let anyone use our key as a
+// free speech service, or make «Mishkat» say anything). Never the Quran: verses are recited by a human reciter.
+export const TTS_BOOKS = { muyassar_ar: 'ar', mukhtasar_ar: 'ar', mukhtasar_en: 'en' };
+export function passageRequest(body) {
+  const b = body || {};
+  if (b.text != null) return { error: 'free text is not read', code: 'bad' };
+  const lang = TTS_BOOKS[b.book];
+  const s = +b.s, a = +b.a, n = +b.n;
+  if (!lang || !Number.isInteger(s) || s < 1 || s > 114 || !Number.isInteger(a) || a < 1 || a > 286 || !Number.isInteger(n) || n < 0 || n > 60) return { error: 'bad passage', code: 'bad' };
+  return { book: b.book, s, a, n, lang };
+}
+// loadSura(book, s) → array of verse units (public/data/tts/{book}/{s}.json)
+export async function speakPassage(body, env, loadSura, fetchImpl = fetch) {
+  const p = passageRequest(body);
+  if (p.error) return { ok: false, error: p.error, code: p.code };
+  const units = await loadSura(p.book, p.s);
+  const unit = Array.isArray(units) ? units[p.a - 1] : null;
+  if (!unit) return { ok: false, error: 'no such passage', code: 'bad' };
+  const chunk = ttsChunks(unit)[p.n];
+  if (!chunk) return { ok: false, error: 'no such chunk', code: 'bad' };
+  return speak({ text: chunk, lang: p.lang }, env, fetchImpl);
+}
+
 const badVoice = new Map(); // lang → index of the voice to use after an "invalid voice" error
 
 // body: { text (≤ 200 chars), lang: 'ar'|'en' } → { ok, audio: ArrayBuffer, type } | { ok:false, error, code }

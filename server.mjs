@@ -13,7 +13,7 @@ import { fiqhSearch } from './functions/_lib/fiqh.js';
 import { pick } from './functions/api/pick.js';
 import { embedQuery } from './functions/_lib/dense.js';
 import { answer } from './functions/_lib/answer.js';
-import { speak } from './functions/_lib/tts.js';
+import { speak, speakPassage } from './functions/_lib/tts.js';
 import { rateLimited, foreignOrigin, LIMITS, refusedText } from './functions/_lib/guard.js';
 import { SECURITY_HEADERS } from './functions/_lib/csp.js';
 
@@ -55,7 +55,7 @@ createServer(async (req, res) => {
         let hit = ttsCache.get(k);
         if (!hit) {
           let out;
-          try { out = await speak(JSON.parse(k), env); } catch (e) { out = { ok: false, error: 'bad request', code: 'bad' }; }
+          try { out = await speakPassage(JSON.parse(k), env, async (book, s) => JSON.parse(await readFile(join(ROOT, 'data', 'tts', book, `${s}.json`), 'utf8'))); } catch (e) { out = { ok: false, error: 'bad request', code: 'bad' }; }
           if (!out.ok) return send(res, 200, JSON.stringify(out), '.json');
           hit = Buffer.from(out.audio);
           ttsCache.set(k, hit);

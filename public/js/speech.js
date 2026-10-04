@@ -62,8 +62,8 @@ export function createSpeaker({ server = () => false, onState = () => {} } = {})
     if (window.speechSynthesis && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
     if (audio) { audio.onended = audio.onerror = null; audio.pause(); URL.revokeObjectURL(audio.src); audio = null; }
   };
-  const fetchChunk = async (text, lang) => {
-    const r = await fetch('api/tts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, lang }) });
+  const fetchChunk = async (ref, n) => {
+    const r = await fetch('api/tts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ book: ref.book, s: ref.s, a: ref.a, n }) });
     const type = r.headers.get('content-type') || '';
     if (!r.ok || type.includes('json')) {
       let code = r.status === 429 ? 'quota' : 'failed';
@@ -72,7 +72,8 @@ export function createSpeaker({ server = () => false, onState = () => {} } = {})
     }
     return URL.createObjectURL(await r.blob());
   };
-  async function speak(text, lang) {
+  // ref: { book, s, a } of a tafsir unit shipped with Mishkat — the only texts the server voice reads (T018)
+  async function speak(text, lang, ref = null) {
     stop();
     const my = ++run;
     const full = cleanForSpeech(text);
@@ -99,13 +100,13 @@ export function createSpeaker({ server = () => false, onState = () => {} } = {})
       if (my === run) onState('idle');
       return;
     }
-    if (!server()) { onState('error', 'novoice'); return; }
+    if (!server() || !ref || trimmed) { onState('error', 'novoice'); return; }
     try {
-      let next = fetchChunk(parts[0], lang);
+      let next = fetchChunk(ref, 0);
       for (let k = 0; k < parts.length; k++) {
         const url = await next;
         if (my !== run) { URL.revokeObjectURL(url); return; }
-        next = k + 1 < parts.length ? fetchChunk(parts[k + 1], lang) : null;
+        next = k + 1 < parts.length ? fetchChunk(ref, k + 1) : null;
         if (next) next.catch(() => {}); // a failure is reported when it is awaited
         if (k === 0) onState('speaking', { trimmed, via: 'server' });
         await new Promise((res, rej) => {
