@@ -183,9 +183,12 @@ export function providersAll(env) {
 // Speech-to-text (Whisper on Groq). Returns the transcription text only.
 // The language is given (short Arabic questions are often mis-detected), a short
 // vocabulary prompt biases the spelling, and text invented on silence is dropped.
+// T040: vocabulary prompts by context — surah names, glossary terms and the words most searched — so that
+// Whisper writes «الكهف», «يس», «التوحيد» rather than look-alike words; «recite»: the reader recites a verse
 const STT_PROMPT = {
-  ar: 'سؤال عن القرآن الكريم: آية، سورة، تفسير، الصبر، بر الوالدين، قصة يوسف، موسى، الصلاة، الزكاة، الصيام.',
-  en: 'A question about the Quran: verse, surah, tafsir, patience, parents, Joseph, Moses, prayer, fasting.',
+  ar: 'سؤال عن القرآن الكريم: آية، سورة، تفسير، الفاتحة، البقرة، آل عمران، الكهف، يس، الرحمن، الملك، مريم، يوسف، الإخلاص، التوحيد، الصبر، بر الوالدين، الصلاة، الزكاة، الصيام، الحج، التوبة، الاستغفار، أذكار، دعاء، قصة موسى، الجنة، النار.',
+  en: 'A question about the Quran: verse, surah, tafsir, Al-Fatiha, Al-Baqarah, Al-Kahf, Yaseen, Ar-Rahman, Al-Mulk, Maryam, Yusuf, tawhid, patience, parents, prayer, zakat, fasting, hajj, repentance, Moses, paradise.',
+  recite: 'بسم الله الرحمن الرحيم. الحمد لله رب العالمين. قرآن كريم يتلى بالعربية الفصحى، آيات بلا تعليق.',
 };
 // phrases Whisper is known to produce on silence or noise (subtitle credits, outros)
 const P = String.raw`[\s\p{P}\p{S}]*`;   // spaces / punctuation only (Unicode-aware: Arabic letters are NOT matched)
@@ -206,7 +209,7 @@ export function cleanTranscript(j, lang) {
   if (!text || echo || STT_GHOSTS.some(re => re.test(text))) return '';
   return text.slice(0, 500);
 }
-export async function transcribe(audioBlob, lang, env, fetchImpl = fetch) {
+export async function transcribe(audioBlob, lang, env, fetchImpl = fetch, mode = 'search') {
   const key = env.STT_KEY || env.GROQ_API_KEY;
   if (!key) return { ok: false, error: 'no stt key' };
   if (!audioBlob || typeof audioBlob === 'string') return { ok: false, error: 'bad audio' };
@@ -214,17 +217,17 @@ export async function transcribe(audioBlob, lang, env, fetchImpl = fetch) {
   const once = async (l) => {
     const fd = new FormData();
     fd.append('file', audioBlob, `speech.${AUDIO_EXT[type] || 'webm'}`);
-    fd.append('model', env.STT_MODEL || 'whisper-large-v3');
-    if (l) { fd.append('language', l); fd.append('prompt', STT_PROMPT[l]); }
+    fd.append('model', env.STT_MODEL || 'whisper-large-v3-turbo');
+    if (l) { fd.append('language', l); fd.append('prompt', mode === 'recite' ? STT_PROMPT.recite : STT_PROMPT[l]); }
     fd.append('response_format', 'verbose_json');
     fd.append('temperature', '0');
     const r = await fetchImpl(env.STT_URL || 'https://api.groq.com/openai/v1/audio/transcriptions', {
       method: 'POST', headers: { authorization: `Bearer ${key}` }, body: fd });
     if (!r.ok) return { ok: false, error: `stt HTTP ${r.status}` };
     const j = await r.json();
-    return { ok: true, text: cleanTranscript(j, l), raw: String(j.text || '').trim() };
+    return { ok: true, text: cleanTranscript(j, mode === 'recite' ? 'recite' : l), raw: String(j.text || '').trim() };
   };
-  const l = ['ar', 'en'].includes(lang) ? lang : '';
+  const l = mode === 'recite' ? 'ar' : ['ar', 'en'].includes(lang) ? lang : '';
   let out = await once(l);
   // speech was heard but did not fit the chosen language (e.g. English spoken, Arabic selected): auto-detect once
   if (out.ok && !out.text && out.raw && l) out = await once('');

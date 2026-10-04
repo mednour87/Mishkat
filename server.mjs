@@ -47,7 +47,7 @@ createServer(async (req, res) => {
       const body = Buffer.concat(chunks);
       if (name === 'transcribe') {
         const form = await new Request('http://x/', { method: 'POST', headers: { 'content-type': req.headers['content-type'] || '' }, body }).formData();
-        const out = await transcribe(form.get('audio'), String(form.get('lang') || '').slice(0, 2), env);
+        const out = await transcribe(form.get('audio'), String(form.get('lang') || '').slice(0, 2), env, fetch, form.get('mode') === 'recite' ? 'recite' : 'search');
         return send(res, 200, JSON.stringify(out), '.json');
       }
       if (name === 'tts') {

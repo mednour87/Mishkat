@@ -957,3 +957,26 @@ html[data-theme=light] .pr-place select, html[data-theme=light] .panel select { 
   #hright { min-width: 0; max-width: 100%; overflow-x: auto; scrollbar-width: none; justify-self: end; }
   #hright::-webkit-scrollbar { display: none; }
 }
+
+/* T062: adhkar */
+.ak-themes { display: flex; flex-wrap: wrap; gap: 5px; margin: 4px 0 8px; }
+.ak-themes .chip.on { background: var(--gold); color: #05070d; border-color: var(--gold); }
+.ak-find input { flex: 1; min-width: 0; background: rgba(255, 255, 255, .06); color: var(--txt); border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; }
+.ak-list { list-style: none; padding: 0; margin: 8px 0; display: grid; gap: 10px; }
+.ak-item { padding: 10px 12px; border-radius: 12px; background: var(--panel2); border: 1px solid var(--line); }
+.ak-head { margin: 0 0 4px; color: var(--gold); font-size: 12.5px; }
+.ak-text { margin: 4px 0; font-family: 'Amiri', var(--ui); font-size: 19px; line-height: 1.95; white-space: pre-line; }
+.ak-en { margin: 4px 0; color: var(--mut); font-size: 13.5px; line-height: 1.6; }
+.ak-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 6px 0; }
+.ak-count { display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 4px 12px; border-radius: 999px; border: 1px solid rgba(255, 214, 107, .5); background: rgba(255, 214, 107, .08); color: var(--txt); }
+.ak-count b { font-size: 18px; color: var(--gold); min-width: 1.4em; text-align: center; }
+.ak-count small { color: var(--mut); }
+.ak-count.done { border-color: rgba(155, 231, 165, .6); background: rgba(155, 231, 165, .12); } .ak-count.done b { color: #9be7a5; }
+.ak-src { margin: 4px 0 0; color: var(--mut); font-size: 12px; } .ak-src a { color: var(--gold); }
+html[data-theme=light] .ak-item { background: #fff; }
+/* T041: recite a verse to find it */
+.v-modes { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; padding: 3px; border-radius: 999px; border: 1px solid var(--line); margin: 0 auto 12px; width: fit-content; }
+.v-modes button { background: none; border: 0; border-radius: 999px; padding: 5px 12px; font: inherit; font-size: 13px; color: var(--mut); cursor: pointer; }
+.v-modes button[aria-pressed=true] { background: rgba(142, 197, 240, .16); color: var(--blue); font-weight: 600; }
+#voice[data-mode=recite] .v-langs { display: none; }
+html[data-theme=light] .v-modes button[aria-pressed=true] { background: #e3f0fb; color: #1d5b8f; }

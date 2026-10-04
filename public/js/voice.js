@@ -15,10 +15,10 @@ export function voiceSupported(serverStt) {
 //   onState('listening' | 'processing' | 'idle'), onLevel(0..1), onPartial(text)
 // Errors carry .code: 'denied' | 'nospeech' | 'failed' | 'unsupported'
 export function listen({ lang = 'ar', serverStt = false, onState = () => {}, onLevel = () => {}, onPartial = () => {},
-  maxMs = 15000, silenceMs = 1500, waitMs = 7000 } = {}) {
+  maxMs = 15000, silenceMs = 1500, waitMs = 7000, mode = 'search' } = {}) {
   const getLang = typeof lang === 'function' ? lang : () => lang;
   if (serverStt && typeof MediaRecorder !== 'undefined' && navigator.mediaDevices) {
-    return recordWhisper({ getLang, onState, onLevel, maxMs, silenceMs, waitMs });
+    return recordWhisper({ getLang, onState, onLevel, maxMs, silenceMs, waitMs, mode });
   }
   if (SR) return webSpeech({ getLang, onState, onPartial, maxMs });
   return Promise.reject(err('unsupported'));
@@ -55,7 +55,7 @@ function webSpeech({ getLang, onState, onPartial, maxMs }) {
 
 const MIMES = [['audio/webm;codecs=opus', 'webm'], ['audio/webm', 'webm'], ['audio/ogg;codecs=opus', 'ogg'], ['audio/mp4', 'm4a']];
 
-async function recordWhisper({ getLang, onState, onLevel, maxMs, silenceMs, waitMs }) {
+async function recordWhisper({ getLang, onState, onLevel, maxMs, silenceMs, waitMs, mode = 'search' }) {
   let stream;
   try {
     stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
@@ -114,6 +114,7 @@ async function recordWhisper({ getLang, onState, onLevel, maxMs, silenceMs, wait
     const fd = new FormData();
     fd.append('audio', new Blob(chunks, { type: type.split(';')[0] }), `speech.${ext}`);
     fd.append('lang', getLang());
+    fd.append('mode', mode);
     const r = await fetch('api/transcribe', { method: 'POST', body: fd });
     const j = r.ok ? await r.json() : null;
     if (!j || !j.ok) throw err('failed', (j && j.error) || `HTTP ${r.status}`);

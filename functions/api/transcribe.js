@@ -13,7 +13,8 @@ export async function onRequestPost({ request, env }) {
     const audio = form.get('audio');
     if (!audio || typeof audio === 'string' || audio.size > LIMITS.maxAudioBytes || !/^audio\/|^video\/webm/.test(audio.type || 'audio/webm')) return deny(400, 'bad audio');
     const lang = String(form.get('lang') || '').slice(0, 2);
-    const out = await transcribe(audio, lang, env);
+    const mode = form.get('mode') === 'recite' ? 'recite' : 'search';
+    const out = await transcribe(audio, lang, env, fetch, mode);
     return new Response(JSON.stringify(out), { headers: H });
   } catch (e) {
     return deny(400, 'bad request');

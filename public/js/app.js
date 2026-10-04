@@ -14,6 +14,7 @@ import { loadPrefs, savePrefs } from './prefs.js';
 import { decodeRead, encodeRead, markRead, isRead, surasRead, ymd } from './khatma.js';
 import { miniLamp, openLampMap, progressOf } from './lampmap.js';
 import { createPractical, PS as PRACT_S } from './practical.js';
+import { createAthkar, AS as ATHKAR_S } from './athkar.js';
 import qrcode from '../vendor/qrcode/qrcode.js';
 
 // Three moments, one current verse (body[data-mode]):
@@ -318,14 +319,17 @@ function setupMic() {
 }
 function openVoice() {
   const box = $('#voice'), t = T();
-  let lang = voiceLang();
+  let lang = voiceLang(), mode = store.get('voiceMode', 'search');
+  const markMode = () => { box.querySelectorAll('[data-vm]').forEach(x => x.setAttribute('aria-pressed', x.dataset.vm === mode)); box.dataset.mode = mode; };
+  box.querySelectorAll('[data-vm]').forEach(x => x.onclick = () => { mode = x.dataset.vm; markMode(); store.set('voiceMode', mode); if (box.dataset.st === 'rec') { cancelListening(); start(); } });
+  markMode();
   const markLang = () => box.querySelectorAll('[data-vl]').forEach(x => x.setAttribute('aria-pressed', x.dataset.vl === lang));
   box.querySelectorAll('[data-vl]').forEach(x => x.onclick = () => { lang = x.dataset.vl; markLang(); store.set('voiceLang', lang); });
   markLang();
   const ui = (st, msg) => {
     box.dataset.st = st;
     $('#vTitle').textContent = st === 'rec' ? t.vTitle : st === 'proc' ? t.vProc : st === 'done' ? t.vHeard : st === 'err' ? msg : t.vTitle;
-    $('#vHint').textContent = st === 'rec' ? t.vHint : '';
+    $('#vHint').textContent = st === 'rec' ? (mode === 'recite' ? t.vHintRecite : t.vHint) : '';
     $('#vText').hidden = st !== 'done';
     $('#vMain').textContent = st === 'rec' ? t.vStop : st === 'done' ? t.vSearch : t.vRetry;
     $('#vAlt').textContent = st === 'done' ? t.vRetry : t.vCancel;
@@ -337,7 +341,7 @@ function openVoice() {
     $('#mic').classList.add('rec');
     try {
       const txt = await listen({
-        lang: () => lang, serverStt: state.stt,
+        lang: () => mode === 'recite' ? 'ar' : lang, serverStt: state.stt, mode, maxMs: mode === 'recite' ? 25000 : 15000, silenceMs: mode === 'recite' ? 2200 : 1500,
         onState: (st) => { if (st === 'processing') ui('proc'); },
         onLevel: (v) => box.style.setProperty('--lvl', v.toFixed(3)),
         onPartial: (p) => { $('#vHint').textContent = p; },
@@ -351,7 +355,11 @@ function openVoice() {
       if (!box.hidden) ui('err', e.code === 'denied' ? t.vDenied : e.code === 'nospeech' ? t.vNoSpeech : t.vFail);
     } finally { $('#mic').classList.remove('rec'); }
   };
-  const search = () => { const q = $('#vText').value.trim(); if (!q) return; box.hidden = true; $('#q').value = q; run(q); };
+  // a recited verse is searched as a quotation: the engine checks it word by word against the Mushaf (exact,
+  // close, or not a verse) and the verse found opens in the reader — the transcript itself is never shown as a verse
+  const search = () => { const q = $('#vText').value.trim(); if (!q) return; box.hidden = true;
+    if (mode === 'recite') { const qq = `«${q.replace(/[«»"]/g, '')}»`; $('#q').value = qq; run(qq).then(() => { const r = state.result; if (r && r.type === 'verify' && ['exact', 'near'].includes(r.verdict) && r.verses && r.verses.length) goVerse(r.verses[0].idx, { pane: 'r' }); }); }
+    else { $('#q').value = q; run(q); } };
   $('#vMain').onclick = () => { const st = box.dataset.st; if (st === 'rec') stopListening(); else if (st === 'done') search(); else start(); };
   $('#vAlt').onclick = () => { if (box.dataset.st === 'done') start(); else close(); };
   $('#vText').onkeydown = (ev) => { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); search(); } };
@@ -1437,11 +1445,12 @@ function setupLongPress() {
 // ------------------------------------------------------------- tools: dock + exclusive panels
 // A dock of icon buttons under the search bar opens the tool panels (js/panels.js): one panel at a time,
 // a second click or Escape closes it, the galaxy stays visible. Contents: js/toolpanels.js (ar + en).
-const DOCK = ['prayer', 'qibla', 'mosques', 'khatma', 'hijri', 'links', 'settings'];
+const DOCK = ['athkar', 'prayer', 'qibla', 'mosques', 'khatma', 'hijri', 'links', 'settings'];
 const DOCK_ICON = {
   khatma: 'M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z',
   hijri: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
   prayer: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2',
+  athkar: 'M12 3a2 2 0 1 0 0 .1M7 6a2 2 0 1 0 0 .1M17 6a2 2 0 1 0 0 .1M4.5 11a2 2 0 1 0 0 .1M19.5 11a2 2 0 1 0 0 .1M7 16a2 2 0 1 0 0 .1M17 16a2 2 0 1 0 0 .1M12 19v3',
   qibla: 'M12 2l3 7h-6zM12 2v20M5 12h14M8 18h8v4H8z',
   mosques: 'M4 21V11a8 8 0 0 1 16 0v10zM12 3v2M9 21v-5a3 3 0 0 1 6 0v5M2 21h20',
   links: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
@@ -1488,14 +1497,17 @@ function setupTools() {
     prayer: (body, args) => state.practical.prayer(body, args),
     qibla: (body) => state.practical.qibla(body),
     mosques: (body) => state.practical.mosques(body),
+    // T062: adhkar with a known grade (HadeethEnc; Hisn al-Muslim checked on Dorar)
+    athkar: (body, args) => state.athkar(body, args || {}),
   };
+  state.athkar = createAthkar({ lang: () => state.lang });
   state.practical = createPractical({ lang: () => state.lang, qrcode });
   const ids = state.toolIds = DOCK.filter(id => renderers[id]);     // also what the search bar may open (T032)
   $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
   $('#dock').hidden = !ids.length;
   state.panels = createPanels({
     dock: $('#dock'), tray: $('#tray'), renderers,
-    titles: Object.fromEntries(DOCK.map(id => [id, () => TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id]])), closeLabel: () => TS().close,
+    titles: Object.fromEntries(DOCK.map(id => [id, () => TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id] || (id === 'athkar' ? (ATHKAR_S[state.lang] || ATHKAR_S.ar).title : id)])), closeLabel: () => TS().close,
     onOpen: (id) => { document.body.dataset.panel = id; if (id === 'khatma') applyHighlight(); },
     onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma') applyHighlight(); state.practical.stop(); },
   });
