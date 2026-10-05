@@ -23,7 +23,7 @@ import { createStats, ST } from './stats.js';
 import { drawMini, animateMini, EG } from './engage3d.js';
 import { setupPWA, openInstall, canPrompt, isStandalone, onInstallChange, PW } from './pwa.js';
 import { toHijri, formatHijri } from './hijri.js';
-import { colourToken, tokenOffsets, GROUPS as TJ_GROUPS, TJ_S } from './tajweed.js';
+import { colourToken, tokenOffsets, GROUPS as TJ_GROUPS, TJ_S, RULE_INFO, verseRules } from './tajweed.js';
 
 // strings of the features added on 4 October (T090–T098), Arabic + English
 const X = {
@@ -109,6 +109,7 @@ function applyLang(lang) {
   document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t[el.dataset.i18nAria]); });
   document.querySelectorAll('[data-i18n-title]').forEach(el => { el.title = t[el.dataset.i18nTitle]; });
   document.querySelectorAll('.langs button').forEach(b => b.classList.toggle('on', b.dataset.lang === lang));
+  { const l = $('#themeBtn .tl2'); if (l) l.textContent = t[document.documentElement.dataset.theme === 'light' ? 'themeLight' : 'themeDark']; }
   fillViewPickers();
   $('#legendBox').innerHTML = t.legendItems.map(([c, x]) => `<div><i style="background:${c};color:${c}"></i>${esc(x)}</div>`).join('');
   $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice()));
@@ -211,13 +212,15 @@ async function boot() {
     wordText: (i) => (state.words ? state.words[i] : ''),
     suraLabel: (n) => suraName(n),
   });
+  state.galaxy.setShift(state.mode === 'home' && isPhone() ? 0.2 : 0);
   // the galaxy drawn in the browser (smooth arms, a bulge at the core) replaces the precomputed layouts 0 and 1
   for (const [L, order] of [[0, 'mushaf'], [1, 'nuzul']]) {
-    const lay = await buildLayout({ shape: 'galaxy', order, wordVerse: state.galaxy.wordVerse, suras: core.suras });
+    const lay = await layoutJob('galaxy', order);
     state.galaxy.replaceLayout(L, lay.positions, lay.view, lay.spine);
     layoutNote[`galaxy|${order}`] = lay.note;
   }
   state.wordsP = getJSON('data/words.json').then(w => { state.words = w; return w; });
+  setTimeout(prepareLayouts, 8000);
   setupTools();
   setupLongPress();
   setLoad(3);
@@ -226,7 +229,8 @@ async function boot() {
   // first paint, only for the interface language; a search waits for them if needed and
   // another language loads only when chosen
   (window.requestIdleCallback || setTimeout)(() => { workerCall({ op: 'warm', lang: state.lang }).catch(() => {}); ensureSources(state.lang).then(() => {
-    if (state.reader.sura) { renderReader(); state.taf.idx = null; selectVerse(state.reader.cur, { fly: false, scroll: false, keepAudio: true }); }
+    // redrawn with the translations: the page keeps where the reader was (it jumped back to the first verse)
+    if (state.reader.sura) { renderReader(); state.taf.idx = null; selectVerse(state.reader.cur, { fly: false, scroll: true, keepAudio: true }); }
   }); });
   // AI layer: 1) pre-computed answers for frequent questions (verified again by
   // the engine like any live answer), 2) live API, 3) deterministic fallback.
@@ -1059,9 +1063,11 @@ function setMode(m) {
   state.mode = m;
   document.body.dataset.mode = m;
   if (state.galaxy) state.galaxy.setGroupsVisible(m === 'answers');
+  if (state.galaxy && state.galaxy.setShift) state.galaxy.setShift(m === 'home' && isPhone() ? 0.2 : 0);
   document.body.classList.remove('ans-open', 'ans-peek');
   $('#ansToggle').setAttribute('aria-expanded', m !== 'study');
   $('#suggest').hidden = m !== 'home' || state.suggestClosed;
+  $('#gStats').hidden = m !== 'study';
   $('#sgOpen').hidden = m !== 'home' || !state.suggestClosed;
   $('#szone').hidden = m === 'home' || !state.result;
   document.body.classList.toggle('has-res', !!state.result);
@@ -1161,12 +1167,39 @@ function verseWordsHtml(i) {
   });
   return html;
 }
+// the tajweed box above the Mushaf: the colour key, the rules of the verse being read (with the word of each),
+// the rule of a tapped letter, and all the rules with their «keys» (the letters that trigger them)
 function tajweedLegend() {
-  const L = state.lang === 'ar' ? 'ar' : 'en';
-  return `<div class="tj-legend" id="tjLegend"><b>${esc(TJ_S[L].legend)}</b>${TJ_GROUPS.map(g => `<span class="tj tj-${g.id}">■</span> ${esc(g[L])}`).join(' · ')}<p class="p-small">${esc(TJ_S[L].src)}</p></div>`;
+  const L = state.lang === 'ar' ? 'ar' : 'en', X = TJ_S[L], grp = (r) => (TJ_GROUPS.find(g => g.rules.includes(r)) || {}).id;
+  const rules = RULE_INFO.map((R, r) => `<li><span class="tj tj-${grp(r)} tj-n">${esc(R[L])}</span> <span class="tj-k"><small>${esc(X.keys)}:</small> <b dir="rtl">${esc(L === 'ar' ? R.kar : R.ken)}</b></span><br><small>${esc(L === 'ar' ? R.dar : R.den)}</small></li>`).join('');
+  return `<div class="tj-legend" id="tjLegend">
+    <div class="tj-here"><b>${esc(X.here)}</b> <small class="muted">${esc(X.tap)}</small><div id="tjVerse" class="tj-verse"></div><div id="tjInfo" class="tj-info" hidden></div></div>
+    <details class="tj-all"><summary>${esc(X.legend)} · ${esc(X.rules)}</summary><p class="tj-key">${TJ_GROUPS.map(g => `<span class="tj tj-${g.id}">■</span> ${esc(g[L])}`).join(' · ')}</p><ul>${rules}</ul><p class="p-small">${esc(X.srcRules)}</p><p class="p-small">${esc(X.src)}</p></details></div>`;
+}
+function tjRuleInfo(r) {
+  const L = state.lang === 'ar' ? 'ar' : 'en', R = RULE_INFO[r], X = TJ_S[L], g = (TJ_GROUPS.find(x => x.rules.includes(r)) || {}).id;
+  return `<span class="tj tj-${g} tj-n">${esc(R[L])}</span> — ${esc(L === 'ar' ? R.dar : R.den)} <small>${esc(X.keys)}: <b dir="rtl">${esc(L === 'ar' ? R.kar : R.ken)}</b></small>`;
+}
+// the rules of the verse being read: one line per rule, with the words where it occurs
+function fillTajweedVerse(i) {
+  const box = $('#tjVerse');
+  if (!box) return;
+  const e = state.engine, f = state.tajweedData.get(e.suraOf[i]), ann = f ? f[e.ayaOf[i] - 1] : null, L = state.lang === 'ar' ? 'ar' : 'en';
+  $('#tjInfo').hidden = true;
+  if (!f) { box.innerHTML = ''; return; }
+  if (!ann || !ann.length) { box.innerHTML = `<small class="muted">${esc(TJ_S[L].none)}</small>`; return; }
+  const toks = e.verses[i].split(' '), by = new Map();
+  for (const { r, word } of verseRules(e.verses[i], ann)) { if (!by.has(r)) by.set(r, []); const w = toks[word]; if (!by.get(r).includes(w)) by.get(r).push(w); }
+  box.innerHTML = [...by.entries()].sort((a, b) => a[0] - b[0]).map(([r, ws]) => {
+    const g = (TJ_GROUPS.find(x => x.rules.includes(r)) || {}).id;
+    return `<button type="button" class="tj-chip" data-rule="${r}"><span class="tj tj-${g}">●</span> ${esc(RULE_INFO[r][L])} <span class="tj-ws" dir="rtl">${ws.map(esc).join('، ')}</span></button>`;
+  }).join('');
+  box.querySelectorAll('[data-rule]').forEach(b => b.onclick = () => { const x = $('#tjInfo'); x.innerHTML = tjRuleInfo(+b.dataset.rule); x.hidden = false; });
 }
 
 const SPEEDS = [0.75, 1, 1.25, 1.5];
+// the reading options (⋯): open by default on a computer, folded on a phone; each remembered apart
+const rdMoreOpen = () => store.get(isPhone() ? 'rdMoreM' : 'rdMoreD', isPhone() ? '0' : '1') === '1';
 function renderReader() {
   const t = T(), e = state.engine, { sura } = state.reader, S = state.core.suras[sura - 1];
   if (!sura) return;
@@ -1188,26 +1221,28 @@ function renderReader() {
   }
   const rep = state.repeat || 1;
   const trSrc = TRANSLATION_FOR.en ? e.sources[TRANSLATION_FOR.en] : null;
+  const moreOpen = rdMoreOpen();
   $('#viewRead').innerHTML = `<div class="rd-head">
-    <div class="rd-row">
+    <div class="rd-row rd-main">
+      <button class="btn play rd-p1" id="rPlayOne" title="${esc(t.playOneT)}"></button>
+      <button class="btn play rd-p2" id="rPlayAll" title="${esc(t.playAllT)}"></button>
+      <span class="grp rd-nav"><button class="btn icon-b" id="rPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${state.lang === 'ar' ? '›' : '‹'}</button><button class="btn icon-b" id="rNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${state.lang === 'ar' ? '‹' : '›'}</button></span>
       <label class="rd-sura"><span class="sr">${esc(t.suraPick)}</span><select id="rSura" aria-label="${esc(t.suraPick)}">${state.core.suras.map(x => `<option value="${x.n}"${x.n === sura ? ' selected' : ''}>${x.n}. ${esc(en ? x.tr : x.ar)}</option>`).join('')}</select></label>
+      <label class="rd-aya"><span class="rd-al">${esc(t.ayaN)}</span> <select id="rSel" aria-label="${esc(t.ayaN)}">${Array.from({ length: S.ayas }, (_, k) => `<option value="${S.first + k}">${k + 1}</option>`).join('')}</select></label>
       <span class="rd-meta">${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</span>
-      <label class="rd-aya">${esc(t.ayaN)} <select id="rSel">${Array.from({ length: S.ayas }, (_, k) => `<option value="${S.first + k}">${k + 1}</option>`).join('')}</select></label>
-      <button class="mini" id="rInfo" aria-expanded="false">ℹ ${esc(t.aboutSura)}</button>
       <button class="mini" id="rTaf" title="${esc(t.openTafsir)}">📖 ${esc(t.zTafsir)}</button>
+      <button class="icon rd-more" id="rMore" aria-expanded="${moreOpen}" aria-controls="rOpts" title="${esc(t.readMore)}" aria-label="${esc(t.readMore)}">⋯</button>
       <button class="icon" id="rClose" title="${esc(t.closeReader)}" aria-label="${esc(t.closeReader)}">✕</button>
     </div>
-    <div class="rd-ctrl" role="toolbar" aria-label="${esc(t.listen)}">
+    <div class="rd-ctrl" id="rOpts" role="toolbar" aria-label="${esc(t.readMore)}"${moreOpen ? '' : ' hidden'}>
       <button class="btn icon-b" id="rFirst" title="${esc(t.firstA)}" aria-label="${esc(t.firstA)}">⏮</button>
-      <button class="btn icon-b" id="rPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${state.lang === 'ar' ? '›' : '‹'}</button>
-      <button class="btn play" id="rPlayOne" title="${esc(t.playOneT)}">${esc(t.play)} ${esc(t.playOne)}</button>
-      <button class="btn play" id="rPlayAll" title="${esc(t.playAllT)}">⏵⏵ ${esc(t.playAll)}</button>
-      <button class="btn icon-b" id="rNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${state.lang === 'ar' ? '‹' : '›'}</button>
       <label class="btn rep" title="${esc(t.repeatTitle)}">${esc(t.repeat)} <select id="rRep" aria-label="${esc(t.repeatTitle)}">${[1, 3, 5, 10, 0].map(n => `<option value="${n}"${(rep === n || (rep === Infinity && n === 0)) ? ' selected' : ''}>${n ? '×' + n : '∞'}</option>`).join('')}</select></label>
       <label class="btn rep" title="${esc(t.speed)}">${esc(t.speed)} <select id="rSpeed" aria-label="${esc(t.speed)}">${SPEEDS.map(x => `<option value="${x}"${x === state.speed ? ' selected' : ''}>×${x}</option>`).join('')}</select></label>
       <span class="grp"><button class="btn icon-b sm" id="rFm" aria-label="${esc(t.fontSmaller)}" title="${esc(t.fontSmaller)}">A−</button><button class="btn icon-b sm" id="rFp" aria-label="${esc(t.fontLarger)}" title="${esc(t.fontLarger)}">A+</button></span>
       ${en ? `<button class="btn ${state.showTranslit ? 'on' : ''}" id="rTl" aria-pressed="${state.showTranslit}">${esc(t.translit)}</button><button class="btn ${state.showTr ? 'on' : ''}" id="rTr" aria-pressed="${state.showTr}">${esc(t.translationBtn)}</button>` : ''}
       <button class="btn ${state.tjOn ? 'on' : ''}" id="rTj" aria-pressed="${!!state.tjOn}" title="${esc(TJ_S[state.lang === 'ar' ? 'ar' : 'en'].btn)}">🎨 ${esc(TJ_S[state.lang === 'ar' ? 'ar' : 'en'].btn)}</button>
+      <button class="btn" id="rInfo" aria-expanded="false">ℹ ${esc(t.aboutSura)}</button>
+      <button class="btn" id="rStats" title="${esc(t.statsNow)}">📊 ${esc(t.statsShort)}</button>
       <button class="btn icon-b" id="rCopy" title="${esc(t.copyVerse)}" aria-label="${esc(t.copyVerse)}">⧉</button>
       <button class="btn icon-b" id="rShare" title="${esc(t.shareVerse)}" aria-label="${esc(t.shareVerse)}">🔗</button>
     </div></div>
@@ -1224,6 +1259,8 @@ function renderReader() {
   $('#rFirst').onclick = () => { const was = state.playing; selectVerse(S.first, { scroll: true, keepAudio: true }); if (was) play(S.first, true); };
   $('#rClose').onclick = closeReader;
   $('#rTaf').onclick = () => setTafsirOpen(true);
+  $('#rMore').onclick = () => { const o = $('#rOpts').hidden; $('#rOpts').hidden = !o; $('#rMore').setAttribute('aria-expanded', o); store.set(isPhone() ? 'rdMoreM' : 'rdMoreD', o ? '1' : '0'); };
+  $('#rStats').onclick = () => openVerseStats();
   $('#rTj').onclick = () => { state.tjOn = !state.tjOn; store.set('tj', state.tjOn ? '1' : '0'); rerenderReader(); };
   // the colours of this surah load once, then the page is drawn again with them
   if (state.tjOn && !state.tajweedData.has(sura)) getJSON(`data/tajweed/${sura}.json`).then(d => { state.tajweedData.set(sura, d); if (state.reader.sura === sura && state.tjOn) rerenderReader(); }).catch(() => {});
@@ -1243,7 +1280,13 @@ function renderReader() {
   $('#rSura').onchange = (ev) => openReader(+ev.target.value, null);
   $('#rSel').onchange = (ev) => selectVerse(+ev.target.value, { scroll: true });
   $('#rInfo').onclick = () => { const p = $('#sInfo'), open = p.hidden; p.hidden = !open; $('#rInfo').setAttribute('aria-expanded', open); if (open) fillSuraInfo(p, sura); };
-  $('#mushaf').querySelectorAll('.v').forEach(el => el.onclick = () => selectVerse(+el.dataset.i, { scroll: false }));
+  $('#mushaf').querySelectorAll('.v').forEach(el => el.onclick = (ev) => {
+    // a tapped coloured letter: its rule is told in the tajweed box
+    const tj = state.tjOn && ev.target.closest && ev.target.closest('.tj[data-r]');
+    selectVerse(+el.dataset.i, { scroll: false });
+    if (tj && $('#tjInfo')) { $('#tjInfo').innerHTML = tjRuleInfo(+tj.dataset.r); $('#tjInfo').hidden = false; }
+  });
+  if (state.tjOn) $('#mushaf').querySelectorAll('.tj[data-r]').forEach(el => { el.title = RULE_INFO[+el.dataset.r][state.lang === 'ar' ? 'ar' : 'en']; });
   markHits();
   if (en && state.showTranslit) fillTranslit(sura);
   scrollRead.cur = null;
@@ -1300,8 +1343,9 @@ function playButtons() {
   const t = T(), one = $('#rPlayOne'), all = $('#rPlayAll');
   if (!one) return;
   const p1 = state.playing && state.playMode === 'one', p2 = state.playing && state.playMode === 'all';
-  one.textContent = `${p1 ? t.pause : t.play} ${t.playOne}`; one.classList.toggle('on', p1); one.setAttribute('aria-pressed', p1);
-  all.textContent = `${p2 ? t.pause : '⏵⏵'} ${t.playAll}`; all.classList.toggle('on', p2); all.setAttribute('aria-pressed', p2);
+  // the symbol stays, the word hides on a phone (its name is in aria-label and title)
+  one.innerHTML = `<span aria-hidden="true">${esc(p1 ? t.pause : t.play)}</span> <span class="bl">${esc(t.playOne)}</span>`; one.classList.toggle('on', p1); one.setAttribute('aria-pressed', p1); one.setAttribute('aria-label', t.playOneT);
+  all.innerHTML = `<span aria-hidden="true">${esc(p2 ? t.pause : '⏵⏵')}</span> <span class="bl">${esc(t.playAll)}</span>`; all.classList.toggle('on', p2); all.setAttribute('aria-pressed', p2); all.setAttribute('aria-label', t.playAllT);
 }
 function closeReader() {
   stopAudio(true); stopSpeech();
@@ -1338,6 +1382,7 @@ function selectVerse(i, { scroll = true, fly = true, keepAudio = false } = {}) {
   const changed = state.reader.cur !== i;
   const wasPlaying = state.playing && changed && !keepAudio;
   state.reader.cur = i;
+  if (state.tjOn) fillTajweedVerse(i);
   document.querySelectorAll('#mushaf .v').forEach(el => el.classList.toggle('cur', +el.dataset.i === i));
   const sel = $('#rSel'); if (sel) sel.value = i;
   const el = $(`#mushaf .v[data-i="${i}"]`), b = $('#rdBody');
@@ -1379,10 +1424,14 @@ function renderTafsir(i) {
   const tok = ++state.taf.tok;
   state.taf.idx = i; state.taf.text = ''; state.taf.lang = BOOKS[book].lang; state.taf.ref = null;
   const prev = lang === 'ar' ? '›' : '‹', next = lang === 'ar' ? '‹' : '›';
-  $('#viewTaf').innerHTML = `<div class="zhead tz-head"><h2>${esc(t.zTafsir)}</h2><span class="tz-ref">${esc(refLabel(i))}</span>
-      <span class="tz-nav"><button class="icon" id="tPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${prev}</button><button class="icon" id="tNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${next}</button><button class="icon tz-x" id="tClose" aria-label="${esc(t.closeTafsir)}" title="${esc(t.closeTafsir)}">✕</button></span></div>
+  const moreOpen = store.get(isPhone() ? 'tzMoreM' : 'tzMoreD', isPhone() ? '0' : '1') === '1';
+  // one bar: the book (a menu on a phone, tabs below on a computer), the verse, ‹ ›, ⋯ (tools), ✕
+  $('#viewTaf').innerHTML = `<div class="zhead tz-head"><h2>${esc(t.zTafsir)}</h2>
+      <label class="tz-pick"><span class="sr">${esc(t.tafBook)}</span><select id="tBook" aria-label="${esc(t.tafBook)}">${books.map(id => `<option value="${id}"${id === book ? ' selected' : ''}>${esc(t.srcNames[id] || id)}${BOOKS[id].kind === 'live' ? ' ↗' : ''}</option>`).join('')}</select></label>
+      <span class="tz-ref">${esc(refLabel(i))}</span>
+      <span class="tz-nav"><button class="icon" id="tPrev" aria-label="${esc(t.prevA)}" title="${esc(t.prevA)}">${prev}</button><button class="icon" id="tNext" aria-label="${esc(t.nextA)}" title="${esc(t.nextA)}">${next}</button><button class="icon tz-more" id="tMore" aria-expanded="${moreOpen}" aria-controls="tTools" aria-label="${esc(t.tafMore)}" title="${esc(t.tafMore)}">⋯</button><button class="icon tz-x" id="tClose" aria-label="${esc(t.closeTafsir)}" title="${esc(t.closeTafsir)}">✕</button></span></div>
     <div class="tz-books" role="tablist" aria-label="${esc(t.zTafsir)}">${books.map(id => `<button role="tab" data-book="${id}" aria-selected="${id === book}"${BOOKS[id].kind === 'live' ? ' class="live"' : ''}>${esc(t.srcNames[id] || id)}</button>`).join('')}</div>
-    <div class="tz-tools">
+    <div class="tz-tools" id="tTools"${moreOpen ? '' : ' hidden'}>
       <button class="btn tts" id="tTts" aria-pressed="false">🔊 ${esc(t.readTafsir)}</button>
       <span class="grp"><button class="btn icon-b sm" id="tFm" aria-label="${esc(t.fontSmaller)}" title="${esc(t.fontSmaller)}">A−</button><button class="btn icon-b sm" id="tFp" aria-label="${esc(t.fontLarger)}" title="${esc(t.fontLarger)}">A+</button></span>
       <button class="mini" id="tCopy">${esc(t.copy)}</button>
@@ -1397,6 +1446,9 @@ function renderTafsir(i) {
   $('#tClose').onclick = (ev) => { ev.stopPropagation(); setTafsirOpen(false); };
   $('#viewTaf .tz-head').onclick = () => { if (document.body.classList.contains('ans-open')) openAnswers(false); };
   $('#viewTaf').querySelectorAll('[data-book]').forEach(b => b.onclick = () => { state.taf.book = b.dataset.book; store.set('book', b.dataset.book); renderTafsir(i); });
+  $('#tBook').onclick = (ev) => ev.stopPropagation();
+  $('#tBook').onchange = (ev) => { state.taf.book = ev.target.value; store.set('book', ev.target.value); renderTafsir(i); };
+  $('#tMore').onclick = (ev) => { ev.stopPropagation(); const o = $('#tTools').hidden; $('#tTools').hidden = !o; $('#tMore').setAttribute('aria-expanded', o); store.set(isPhone() ? 'tzMoreM' : 'tzMoreD', o ? '1' : '0'); };
   const tfont = (d) => { state.ts = Math.round(Math.min(1.8, Math.max(0.7, state.ts + d)) * 10) / 10; store.set('ts', state.ts); $('#tzone').style.setProperty('--ts', state.ts); };
   $('#tFm').onclick = () => tfont(-0.1);
   $('#tFp').onclick = () => tfont(0.1);
@@ -1698,11 +1750,12 @@ function setupTools() {
     focus: (i) => { try { state.galaxy.setFocusVerse(i); } catch (e) { /* ignore */ } } });
   state.stats = createStats({ lang: () => state.lang, core: state.core, digits: dig,
     plain: () => (state.plainP = state.plainP || getJSON('data/search_ar.json')), meta: () => (metaP = metaP || getJSON('data/mushaf_meta.json')),
-    openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); }, search: (q) => { $('#q').value = q; run(q, 'topic'); } });
+    openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); }, search: (q) => { $('#q').value = q; run(q, 'topic'); },
+    current: () => (state.mode === 'study' && state.reader.sura ? state.reader.cur : null) });
   state.athkar = createAthkar({ lang: () => state.lang });
   state.practical = createPractical({ lang: () => state.lang, qrcode, scene: (k, o) => state.galaxy && state.galaxy.setScene && state.galaxy.setScene(k, o) });
   const ids = state.toolIds = DOCK.filter(id => renderers[id]);     // also what the search bar may open (T032)
-  $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`).join('');
+  $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="dl"></span></button>`).join('');
   $('#dock').hidden = !ids.length;
   state.panels = createPanels({
     dock: $('#dock'), tray: $('#tray'), renderers,
@@ -1831,9 +1884,16 @@ function openKhatmaMap() {
     onPick: (n) => openReader(n, null, { pane: 'r' }),
     onOrder: (o) => { store.set('kmapOrder', o); refreshMiniLamp(); } });
 }
+// T100 — the small 📊 button (galaxy and reading options): statistics of the verse being read, then its surah
+function openVerseStats() {
+  const i = state.reader.cur;
+  if (!state.panels) return;
+  closeNav();
+  state.panels.open('stats', i != null && state.mode === 'study' ? { verse: i } : {});
+}
 function labelDock() {
   $('#dock').setAttribute('aria-label', TS().dock);
-  document.querySelectorAll('#dock [data-panel]').forEach(b => { const s = toolTitle(b.dataset.panel); b.setAttribute('aria-label', s); b.title = s; });
+  document.querySelectorAll('#dock [data-panel]').forEach(b => { const s = toolTitle(b.dataset.panel); b.setAttribute('aria-label', s); b.title = s; const l = b.querySelector('.dl'); if (l) l.textContent = s; });
 }
 
 // ------------------------------------------------------------- galaxy toolbar
@@ -1857,11 +1917,7 @@ async function setView(shape, order, { quiet = false } = {}) {
   const key = shape + '|' + order;
   view.shape = shape; view.order = order;
   $('#shapeSel').value = shape; $('#orderSel').value = order;
-  if (!(key in layoutIdx) || !layoutNote[key]) {
-    const lay = await buildLayout({ shape, order, wordVerse: state.galaxy.wordVerse, suras: state.core.suras, words: order === 'letters' ? await state.wordsP : null });
-    if (!(key in layoutIdx)) layoutIdx[key] = state.galaxy.addLayout(lay.positions, lay.view, lay.spine);
-    layoutNote[key] = lay.note;
-  }
+  if (!(key in layoutIdx) || !layoutNote[key]) await ensureLayout(shape, order);
   if (view.shape !== shape || view.order !== order) return; // another choice was made meanwhile
   // restoring the visitor's view at start must not pull the camera away from a verse or an answer
   state.galaxy.setLayout(layoutIdx[key], !(quiet && state.mode !== 'home'));
@@ -1873,6 +1929,42 @@ async function setView(shape, order, { quiet = false } = {}) {
     note.hidden = false;
     setView.timer = setTimeout(() => { note.hidden = true; }, 7000);
   }
+}
+// the shapes are computed in a Web Worker (js/layout-worker.js): changing the shape never freezes the page, even
+// while a verse is recited; the other shapes of the current order are prepared in the background, after start
+let lw = null, lwSeq = 0, lwRaster = null, lwWords = false;
+const lwWait = new Map();
+async function layoutJob(shape, order) {
+  const params = { shape, order, wordVerse: state.galaxy.wordVerse, suras: state.core.suras };
+  try {
+    if (!lw) {
+      lw = new Worker(new URL('./layout-worker.js', import.meta.url), { type: 'module' });
+      lw.onmessage = (ev) => { const w = lwWait.get(ev.data.id); if (w) { lwWait.delete(ev.data.id); ev.data.error ? w.rej(new Error(ev.data.error)) : w.res(ev.data); } };
+      lw.postMessage({ init: true, wordVerse: params.wordVerse, suras: params.suras });
+    }
+    const msg = { id: ++lwSeq, shape, order };
+    if (order === 'letters' && !lwWords) { msg.words = await state.wordsP; lwWords = true; }
+    if (shape === 'quran' && !lwRaster) { const { glyphRaster } = await import('./letters3d.js'); lwRaster = await glyphRaster(); Object.assign(msg, lwRaster); }
+    return await new Promise((res, rej) => { lwWait.set(msg.id, { res, rej }); lw.postMessage(msg); });
+  } catch (e) {
+    // no module workers (old browser): computed here
+    return buildLayout({ ...params, words: order === 'letters' ? await state.wordsP : null });
+  }
+}
+const layoutPending = {};
+function ensureLayout(shape, order) {
+  const key = shape + '|' + order;
+  if (key in layoutIdx && layoutNote[key]) return Promise.resolve();
+  return (layoutPending[key] = layoutPending[key] || layoutJob(shape, order).then(lay => {
+    if (!(key in layoutIdx)) layoutIdx[key] = state.galaxy.addLayout(lay.positions, lay.view, lay.spine);
+    layoutNote[key] = lay.note;
+  }).finally(() => { delete layoutPending[key]; }));
+}
+// after start, one shape at a time when the page is idle
+function prepareLayouts() {
+  const todo = SHAPES.map(x => x.id).filter(id => !((id + '|' + view.order) in layoutIdx));
+  const next = () => { const id = todo.shift(); if (!id) return; ensureLayout(id, view.order).catch(() => {}).then(() => (window.requestIdleCallback || setTimeout)(next, { timeout: 4000 })); };
+  (window.requestIdleCallback || setTimeout)(next, { timeout: 6000 });
 }
 const cycle = (list, cur, d = 1) => list[(list.findIndex(x => x.id === cur) + d + list.length) % list.length].id;
 function setNames(v) { state.galaxy.setNames(v); $('#gNames').setAttribute('aria-pressed', v); store.set('names', v ? '1' : '0'); }
@@ -1895,6 +1987,9 @@ $('#gHome').onclick = () => state.galaxy.home();
   });
 }
 $('#gIn').onclick = () => state.galaxy.zoom(0.6);
+$('#gStats').onclick = () => openVerseStats();
+// ⋯ on a phone: the toolbar shows ⌂, the shape and ⤢; ⋯ unfolds zoom, rotation, names, order, legend and the camera pad
+$('#gMore').onclick = () => { const on = !$('#gzone').classList.contains('gt-open'); $('#gzone').classList.toggle('gt-open', on); $('#gMore').setAttribute('aria-expanded', on); };
 $('#gOut').onclick = () => state.galaxy.zoom(1.6);
 $('#gRot').onclick = () => { const v = !state.galaxy.autoRotate; state.galaxy.setAutoRotate(v); $('#gRot').setAttribute('aria-pressed', v); };
 $('#gNames').onclick = () => setNames($('#gNames').getAttribute('aria-pressed') !== 'true');
@@ -1918,9 +2013,53 @@ setupSplit($('#splitMain'), $('.col-main'), 'splitMain');
 setupSplit($('#splitSide'), $('.col-side'), 'splitSide');
 showPane('r');
 state.taf.book = store.get('book');
-$('#btnMenu').onclick = () => openWelcome();
-$('#btnAbout').onclick = () => $('#about').showModal();
+$('#btnMenu').onclick = () => { closeNav(); openWelcome(); };
+$('#btnAbout').onclick = () => { closeNav(); $('#about').showModal(); };
 $('#themeBtn').onclick = () => setTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+
+// ------------------------------------------------------------ the menu drawer (☰)
+// The top bar keeps the search, the tools (on a computer) and ☰. The drawer holds the rest: interests, install,
+// about, language, theme — and on a phone the tools (with their names), the engagement level and the khatma count,
+// moved there from the top bar (the bar had ten icons in two rows at 390 px). Nothing is removed, only placed.
+function placeNav() {
+  const phone = isPhone(), dock = $('#dock'), eng = $('#engBtn'), kc = $('#khCount'), hr = $('#hright');
+  if (phone) {
+    if (dock.parentElement.id !== 'ndDock') $('#ndDock').appendChild(dock);
+    if (eng.parentElement.id !== 'ndEng') { $('#ndEng').appendChild(eng); $('#ndEng').appendChild(kc); }
+  } else {
+    const ref = hr.querySelector('.hlangs');
+    if (kc.parentElement !== hr) hr.insertBefore(kc, ref);
+    if (dock.parentElement !== hr) hr.insertBefore(dock, ref);
+    if (eng.parentElement !== hr) hr.insertBefore(eng, ref);
+  }
+  $('#ndTools').hidden = !phone;
+  $('#ndMine').hidden = !phone;
+}
+function openNav() {
+  const d = $('#navDrawer');
+  d.hidden = false; $('#navScrim').hidden = false;
+  requestAnimationFrame(() => { d.classList.add('open'); $('#navScrim').classList.add('open'); });
+  $('#navBtn').setAttribute('aria-expanded', 'true');
+  document.body.classList.add('nav-open');
+  setTimeout(() => $('#navClose').focus({ preventScroll: true }), 60);
+}
+function closeNav(focusBack = false) {
+  const d = $('#navDrawer');
+  if (d.hidden) return;
+  d.classList.remove('open'); $('#navScrim').classList.remove('open');
+  $('#navBtn').setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('nav-open');
+  setTimeout(() => { if (!d.classList.contains('open')) { d.hidden = true; $('#navScrim').hidden = true; } }, 260);
+  if (focusBack) $('#navBtn').focus({ preventScroll: true });
+}
+$('#navBtn').onclick = () => ($('#navDrawer').hidden ? openNav() : closeNav());
+$('#navClose').onclick = () => closeNav(true);
+$('#navScrim').onclick = () => closeNav();
+// a tool, the engagement map or the khatma map opened from the drawer: the drawer steps aside
+$('#navDrawer').addEventListener('click', (ev) => { if (ev.target.closest('[data-panel], #engBtn, #khCount')) closeNav(); });
+document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && !$('#navDrawer').hidden) { ev.stopPropagation(); closeNav(true); } }, true);
+matchMedia('(max-width: 860px)').addEventListener('change', () => { placeNav(); closeNav(); });
+placeNav();
 document.addEventListener('keydown', (ev) => {
   if (ev.target.closest && ev.target.closest('input,select,textarea,[contenteditable]')) return;
   if (!$('#gate').hidden || !$('#welcome').hidden || !$('#voice').hidden || $('#about').open) return;
@@ -1942,7 +2081,8 @@ document.addEventListener('keydown', (ev) => {
 
 function setTheme(th) {
   document.documentElement.dataset.theme = th;
-  $('#themeBtn').textContent = th === 'light' ? '☀' : '☾';
+  $('#themeBtn .ti').textContent = th === 'light' ? '☀' : '☾';
+  $('#themeBtn .tl2').textContent = (UI[state.lang] || UI.ar)[th === 'light' ? 'themeLight' : 'themeDark'];
   store.set('theme', th);
 }
 setTheme(store.get('theme', 'dark'));
@@ -2045,7 +2185,7 @@ async function runIntro() {
   const { playIntro } = await import('./intro.js');
   const before = { shape: store.get('shape', 'galaxy'), order: store.get('order', 'mushaf') };
   return new Promise(resolve => playIntro({
-    lang: () => state.lang, core: state.core, galaxy: state.galaxy, audioBase: AUDIO_BASE, timing: suraFile('timing', 24),
+    lang: () => state.lang, core: state.core, galaxy: state.galaxy, audioBase: AUDIO_BASE, timing: suraFile('timing', 24), timingBasmala: suraFile('timing', 1),
     placeName: () => (state.practical ? state.practical.placeName() : ''),
     setView: (sh, od) => setView(sh, od, { quiet: true }),
     qibla: () => { const pl = state.practical && state.practical.place(); return pl ? qiblaBearing(pl.lat, pl.lon) : null; },

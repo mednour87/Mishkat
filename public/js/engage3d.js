@@ -1,6 +1,6 @@
 // T096 — the visitor's engagement as a small 3D world in the style of the galaxy: three luminous terraces, one per
 // level (غرسة مباركة · زيتونة مباركة · كوكب دري — names from the verse of light, all positive), the last 28 days as
-// columns of light spiralling up, and the visitor as a glowing star placed at their level. A tiny pseudo-3D version
+// beads of light spiralling up, and the visitor as a glowing star placed at their level. A tiny pseudo-3D version
 // (2D canvas, no WebGL) reminds the visitor of their level once a day, and lives in the top bar as a button.
 // Data: js/progress.js (this browser only).
 import { LEVELS } from './progress.js';
@@ -12,11 +12,11 @@ const RADII = [5.2, 3.8, 2.4], HEIGHTS = [0, 2.6, 5.2];
 export const EG = {
   ar: { title: 'خريطة التزامك', close: 'إغلاق', level: 'مستواك', points: 'نقاط الالتزام (آخر ٢٨ يومًا)', days: 'أيام نشيطة', minutes: 'دقائق تكرار', units: 'وحدات حفظ', verses: 'آيات مقروءة',
     score: 'علامتك', monthRead: 'قراءة هذا الشهر', monthHifz: 'حفظ وتكرار هذا الشهر', khatmas: 'الختمات', week: 'هذا الأسبوع', weekRead: 'قراءة', weekTk: 'تكرار',
-    next: (n, name) => `بقي ${n} نقطة لتبلغ «${name}»`, top: 'بلغت أعلى مستوى — نور على نور', hint: 'اسحب للتدوير · كل عمود ضوء يوم من أيامك الأخيرة', canvas: 'خريطة ثلاثية الأبعاد لالتزامك',
+    next: (n, name) => `بقي ${n} نقطة لتبلغ «${name}»`, top: 'بلغت أعلى مستوى — نور على نور', hint: 'اسحب للتدوير · كل حبّة ضوء على الدرج الحلزوني يوم من أيامك الأخيرة، تكبر بقدر نشاطك', canvas: 'خريطة ثلاثية الأبعاد لالتزامك',
     remind: (name) => `مستواك اليوم: «${name}» — بارك الله في وقتك`, open: 'افتح خريطة التزامك', private: 'تُحسب في متصفحك فقط، ولا تُرسل إلى أي خادم.' },
   en: { title: 'Your engagement map', close: 'Close', level: 'Your level', points: 'Engagement points (last 28 days)', days: 'Active days', minutes: 'Repetition minutes', units: 'Memorising units', verses: 'Verses read',
     score: 'Your mark', monthRead: 'Read this month', monthHifz: 'Repeated this month', khatmas: 'Khatmas', week: 'This week', weekRead: 'Reading', weekTk: 'Repetition',
-    next: (n, name) => `${n} points to reach “${name}”`, top: 'You reached the highest level — light upon light', hint: 'Drag to turn · each column of light is one of your recent days', canvas: '3D map of your engagement',
+    next: (n, name) => `${n} points to reach “${name}”`, top: 'You reached the highest level — light upon light', hint: 'Drag to turn · each bead of light on the spiral is one of your recent days, larger when you did more', canvas: '3D map of your engagement',
     remind: (name) => `Your level today: “${name}” — may Allah bless your time`, open: 'Open your engagement map', private: 'Computed in your browser only, never sent to any server.' },
 };
 
@@ -104,22 +104,29 @@ export async function openEngageMap({ lang = 'ar', info, digits = String, onClos
     const disc = new THREE.Mesh(new THREE.CircleGeometry(RADII[k], 64), new THREE.MeshBasicMaterial({ color: c0, transparent: true, opacity: on ? 0.07 : 0.025, side: THREE.DoubleSide, depthWrite: false }));
     disc.rotation.x = -Math.PI / 2; disc.position.y = HEIGHTS[k]; scene.add(disc);
   }
-  // the last 28 days: columns of light on a spiral that climbs the terraces (oldest at the bottom)
+  // the last 28 days: beads of light on a spiral that climbs the terraces (oldest at the bottom); a bead is larger
+  // and brighter when the day was more active, a faint dot when it was quiet — no vertical bars any more
   { const p = [], c = [];
     eng.daily.forEach((v, d) => {
-      const t = d / 27, a = t * Math.PI * 4.2, r = RADII[0] - (RADII[0] - RADII[2]) * t + 0.9, y0 = t * HEIGHTS[2];
-      const hgt = 0.15 + v * 2.2, steps = Math.max(2, Math.round(hgt / 0.12)), cc = v > 0 ? col(LEVEL_COLORS[Math.min(2, Math.floor(t * 3))]) : col('#5a6a8a');
-      for (let s = 0; s < steps; s++) { p.push(r * Math.cos(a), y0 + s * 0.12, r * Math.sin(a)); const f = v > 0 ? 0.55 + 0.45 * (s / steps) : 0.3; c.push(cc.r * f, cc.g * f, cc.b * f); }
+      const t = d / 27, a = t * Math.PI * 4.2, r = RADII[0] - (RADII[0] - RADII[2]) * t + 0.9, y0 = t * HEIGHTS[2] + 0.15;
+      const cx = r * Math.cos(a), cz = r * Math.sin(a), cc = v > 0 ? col(LEVEL_COLORS[Math.min(2, Math.floor(t * 3))]) : col('#5a6a8a');
+      const n = v > 0 ? 6 + Math.round(v * 14) : 1, rad = v > 0 ? 0.05 + v * 0.16 : 0;
+      for (let k = 0; k < n; k++) {
+        const u = k * 2.39996, w = Math.acos(1 - 2 * ((k + 0.5) / n));   // golden-angle points on a small sphere
+        p.push(cx + rad * Math.sin(w) * Math.cos(u), y0 + rad * Math.cos(w), cz + rad * Math.sin(w) * Math.sin(u));
+        const f = v > 0 ? 0.7 + 0.3 * v : 0.35; c.push(cc.r * f, cc.g * f, cc.b * f);
+      }
     });
     scene.add(pts(p, c, 0.2)); }
+  // the spiral path itself, a thin dotted line joining the days
+  { const p = [], c = []; for (let k = 0; k <= 540; k++) { const t = k / 540, a = t * Math.PI * 4.2, r = RADII[0] - (RADII[0] - RADII[2]) * t + 0.9; p.push(r * Math.cos(a), t * HEIGHTS[2] + 0.15, r * Math.sin(a)); c.push(0.22, 0.24, 0.3); } scene.add(pts(p, c, 0.06)); }
   // the visitor's star
   const sy = starPos(eng);
   const star = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: col(LEVEL_COLORS[eng.level - 1]), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
   star.position.set(0, sy, 0); star.scale.set(2.4, 2.4, 1); scene.add(star);
   const core = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xffffff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
   core.position.copy(star.position); core.scale.set(0.9, 0.9, 1); scene.add(core);
-  // a thread of light from the ground to the star
-  { const p = [], c = []; for (let y = 0; y < sy; y += 0.1) { p.push(0, y, 0); const f = 0.15 + 0.5 * y / sy; c.push(f, f * 0.9, f * 0.6); } scene.add(pts(p, c, 0.12)); }
+  // (no vertical thread from the ground: the star floats above its terrace)
   // HTML labels of the terraces, placed every frame
   labels.innerHTML = LV.map((l, k) => `<span class="eg-l${k < eng.level ? ' on' : ''}" style="--c:${LEVEL_COLORS[k]}">${esc(l.name)}</span>`).join('');
   const lab = [...labels.children];

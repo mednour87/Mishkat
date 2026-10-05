@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { readJson } from './load.mjs';
 import { SHAPES, ORDERS, buildLayout, suraSequence, countLetters } from '../public/js/layouts.js';
+import { threadStats } from './thread.mjs';
 
 const core = readJson('core.json');
 const words = readJson('words.json');
@@ -65,7 +66,7 @@ const PROGRESS = {
   galaxy: (x, y) => Math.hypot(x, y),                      // spiral radius
   rose: (x, y) => Math.hypot(x, y),                        // ring radius
   dome: (x, y, z) => z,                                    // height on the dome
-  petals: (x, y) => ((Math.PI / 2 - Math.atan2(y, x)) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI), // clockwise angle
+  petals: (x, y) => ((Math.PI / 2 - Math.atan2(y, x)) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI), // clockwise angle from 12 o'clock
 };
 const runs = (() => { // [start, end) word range of each surah (Mushaf storage order)
   const r = Array.from({ length: 115 }, () => [Infinity, -1]);
@@ -74,61 +75,31 @@ const runs = (() => { // [start, end) word range of each surah (Mushaf storage o
 })();
 function checkProgress(shape, lay, tag) {
   const P = lay.positions, f = PROGRESS[shape];
-  const pr = (w) => f(P[w * 3], P[w * 3 + 1], P[w * 3 + 2]);
   // 1) each surah is one contiguous run of words (words.json / galaxy.bin are in Mushaf order)
   for (let s = 1; s <= 114; s++) assert.equal(runs[s][1] - runs[s][0], wordsOf[s], `${tag} surah ${s} contiguous`);
-  // 2) surahs advance along the shape in the order of the sequence
-  const mean = lay.sequence.map((s) => { let t = 0; for (let w = runs[s][0]; w < runs[s][1]; w++) t += pr(w); return t / wordsOf[s]; });
+  // 2) the reading thread (refonte, 4 Oct): walking the words in reading order, the path never turns back
+  //    (reversal = a step turning by more than 120°) and turns gently (few steps over 60°)
+  const order = [];
+  for (const s of lay.sequence) for (let w = runs[s][0]; w < runs[s][1]; w++) order.push(w);
+  const sOf = (w) => suraOfVerse[wordVerse[w]];
+  const t = threadStats(P, order, (k) => sOf(order[k]) !== sOf(order[k - 1]));
+  assert.ok(t.rev < 0.005, `${tag}: ${(100 * t.rev).toFixed(2)} % of the steps turn back`);
+  assert.ok(t.sharp < 0.08, `${tag}: ${(100 * t.sharp).toFixed(2)} % of the steps turn by more than 60°`);
+  // 3) the surahs follow each other along the shape in the order of the sequence
   if (shape === 'galaxy') {
-    // two arms, each carrying half of the words in the order of the sequence: on the whole disc the surahs go from
-    // the core to the rim in that order — measured by each surah's PROGRESS ALONG ITS ARM (the radius is a poor
-    // yardstick: the verses' lanes weave across the arm) — and ON EACH ARM they advance strictly (checked below)
-    // the layout says which surahs each arm carries: both arms are used, in the order of the sequence, and along
-    // each arm the surahs move outward
-    assert.ok(lay.arms && lay.arms.length === 2, `${tag} arms`);
-    assert.deepEqual([...lay.arms[0], ...lay.arms[1]].sort((a, b) => a - b), Array.from({ length: 114 }, (_, k) => k + 1));
-    // progress along an arm = the spiral angle, unwrapped word after word along the arm (consecutive words are a
-    // tiny angle apart): every surah's words come strictly after the previous surah's, and almost every word
-    // after the previous one — the recited word only moves forward
-    const pos = new Map(lay.sequence.map((s, k) => [s, k])), progress = new Map();
-    for (const arm of lay.arms) {
-      assert.ok(arm.length > 10, tag);
-      let prevAngle = null, acc = 0, back = 0, all = 0, lastMax = -Infinity;
-      const sums = [];
-      for (let k = 0; k < arm.length; k++) {
-        if (k) assert.ok(pos.get(arm[k]) > pos.get(arm[k - 1]), `${tag}: arm keeps the order of the sequence`);
-        let lo = Infinity, hi = -Infinity, sum = 0;
-        for (let w = runs[arm[k]][0]; w < runs[arm[k]][1]; w++) {
-          const a = Math.atan2(P[w * 3 + 1], P[w * 3]);
-          if (prevAngle != null) { let d = a - prevAngle; d -= 2 * Math.PI * Math.round(d / (2 * Math.PI)); acc += d; all++; if (d < -1e-4) back++; }
-          prevAngle = a; lo = Math.min(lo, acc); hi = Math.max(hi, acc); sum += acc;
-        }
-        assert.ok(lo >= lastMax - 1e-3, `${tag}: surah ${arm[k]} starts behind the previous surah on its arm`);
-        lastMax = hi; sums.push(sum / wordsOf[arm[k]]);
-      }
-      // the angle grows as √(progress): progress of a surah = (its mean angle / the arm's whole angle)²
-      arm.forEach((s, k) => progress.set(s, (sums[k] / acc) ** 2));
-      assert.ok(back / all < 0.01, `${tag}: ${(100 * back / all).toFixed(1)} % of the words step back along the arm`);
-    }
-    const prog = lay.sequence.map(s => progress.get(s));
-    const rank = (v) => { const o = v.map((x, i) => [x, i]).sort((p, q) => p[0] - q[0]), r = new Array(v.length); o.forEach(([, i], k) => { r[i] = k; }); return r; };
-    let d2 = 0; rank(prog).forEach((x, k) => { d2 += (x - k) ** 2; });
-    const rho = 1 - (6 * d2) / (114 * (114 * 114 - 1));
-    assert.ok(rho > 0.97, `${tag} Spearman of the progress along the arms ${rho}`);
-  } else {
-    for (let k = 1; k < 114; k++) assert.ok(mean[k] > mean[k - 1], `${tag}: surah ${lay.sequence[k]} before ${lay.sequence[k - 1]}`);
+    // the spine (Fermat spiral read in one stroke) only moves forward
+    const S = lay.spine;
+    assert.ok(S && S.length === P.length, `${tag} spine`);
+    const ts = threadStats(S, order);
+    assert.ok(ts.rev < 0.001, `${tag}: the spine turns back (${(100 * ts.rev).toFixed(2)} %)`);
+    return;
   }
-  // 3) inside a surah, words keep Mushaf order: they move outward along a petal, or clockwise
-  //    (rose rings, dome circuit) — checked on consecutive words
-  if (shape === 'galaxy') return;
-  const cw = (w) => Math.PI / 2 - Math.atan2(P[w * 3 + 1], P[w * 3]);
-  let ok = 0, all = 0;
-  for (let s = 1; s <= 114; s++) for (let w = runs[s][0]; w + 1 < runs[s][1]; w++) {
-    all++;
-    if (shape === 'petals') { if (Math.hypot(P[w * 3 + 3], P[w * 3 + 4]) - Math.hypot(P[w * 3], P[w * 3 + 1]) > -2.5) ok++; }
-    else { const d = (((cw(w + 1) - cw(w)) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI); if (d < Math.PI) ok++; }
-  }
-  assert.ok(ok / all > 0.98, `${tag}: only ${(100 * ok / all).toFixed(1)}% of consecutive words advance`);
+  // petals overlap like a real flower's: a petal is placed by its axis (the direction of the sum of its words, symmetric on each loop), the others by their mean
+  const mean = lay.sequence.map((s) => { if (shape === 'petals') { let x = 0, y = 0; for (let w = runs[s][0]; w < runs[s][1]; w++) { x += P[w * 3]; y += P[w * 3 + 1]; } return f(x, y); }
+    let v = 0; for (let w = runs[s][0]; w < runs[s][1]; w++) v += f(P[w * 3], P[w * 3 + 1], P[w * 3 + 2]); return v / wordsOf[s]; });
+  // (the rose's rings ruffle in five lobes: a thin ring may sit a few units inside its neighbour on average)
+  const tol = shape === 'rose' ? 6 : 0;
+  for (let k = 1; k < 114; k++) assert.ok(mean[k] > mean[k - 1] - tol, `${tag}: surah ${lay.sequence[k]} before ${lay.sequence[k - 1]}`);
 }
 
 for (const shape of SHAPES.filter((s) => s.id !== 'quran')) {
@@ -163,21 +134,10 @@ for (const shape of SHAPES.filter((s) => s.id !== 'quran')) {
   });
 }
 
-// The page replaces layouts 0/1 of galaxy.bin by the browser galaxy (smooth arms, bulge): the SKELETON must stay
-// the same — every surah at the same distance from the core, in the same order — only its look changes.
-test('galaxy + mushaf keeps the skeleton of the precomputed galaxy (layout 0 of galaxy.bin), with a bulge and a thin disc', async () => {
-  const scale = dv.getFloat32(8, true);
-  const q = new Int16Array(ab, 12, N * 3 * nL);
+// the galaxy: a round bulge at the core, a thin disc at the rim
+test('galaxy: a bulge at the core and a thin disc', async () => {
   const g = await buildLayout({ shape: 'galaxy', order: 'mushaf', wordVerse, suras });
   const P = g.positions;
-  let worst = 0;
-  for (let s = 1; s <= 114; s++) {
-    let a = 0, b = 0;
-    for (let w = runs[s][0]; w < runs[s][1]; w++) { a += Math.hypot(P[w * 3], P[w * 3 + 1]); b += Math.hypot(q[w * 3], q[w * 3 + 1]) * scale; }
-    worst = Math.max(worst, Math.abs(a - b) / wordsOf[s]);
-  }
-  // (two arms of half the words each: a surah moves by less than ~one tenth of the radius)
-  assert.ok(worst < 60, `mean radius of a surah moved by ${worst.toFixed(1)}`);
   const thick = (lo, hi) => { let n = 0, z = 0; for (let w = 0; w < N; w++) { const r = Math.hypot(P[w * 3], P[w * 3 + 1]); if (r >= lo && r < hi) { n++; z += Math.abs(P[w * 3 + 2]); } } return z / n; };
   assert.ok(thick(0, 120) > 3 * thick(450, 700), 'a bulge at the core, a thin disc at the rim');
 });
@@ -185,4 +145,23 @@ test('galaxy + mushaf keeps the skeleton of the precomputed galaxy (layout 0 of 
 test('bad input is rejected', async () => {
   await assert.rejects(buildLayout({ shape: 'nope', order: 'mushaf', wordVerse, suras }));
   await assert.rejects(buildLayout({ shape: 'galaxy', order: 'nope', wordVerse, suras }));
+});
+
+// «قرآن»: contours parallel to the letters' outlines, one thread; checked on a raster drawn here (a ring and a bar)
+test('«قرآن»: the thread of contours fills the letters without turning back', async () => {
+  const { contourPath, quranWordLayout } = await import('../public/js/letters3d.js');
+  const W = 600, H = 300, img = new Uint8Array(W * H * 4);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const d2 = (x - 450) ** 2 + (y - 150) ** 2;
+    if ((d2 < 90 ** 2 && d2 > 40 ** 2) || (x > 80 && x < 300 && y > 100 && y < 200)) img[(y * W + x) * 4 + 3] = 255;
+  }
+  const path = contourPath(img, W, H);
+  assert.ok(path.length > 2000);
+  // the right-hand letter (the ring) comes first: reading from right to left
+  assert.ok(path[0][0] > 0, 'starts on the right');
+  const n = 5000, wv = new Uint16Array(n).map((_, i) => Math.floor(i / 10));
+  const so = new Uint8Array(6236).map((_, v) => v < 250 ? 1 : 2);
+  const lay = await quranWordLayout({ wordVerse: wv, suraOf: so, suras: [{ n: 1, order: 1, type: 'meccan' }, { n: 2, order: 2, type: 'meccan' }], path });
+  const t = threadStats(lay.positions, [...Array(n).keys()]);
+  assert.ok(t.rev < 0.01, `${(100 * t.rev).toFixed(2)} % of the steps turn back`);
 });

@@ -2,9 +2,9 @@
 // at once), the cached copy when offline. Data files, fonts, images, libraries: cached copy first, refreshed in the
 // background. The API (/api/*) and other sites (recitation audio, prayer times, maps) are never cached here: answers
 // stay live and the visitor's place never passes through this file.
-const VERSION = 'mishkat-2026-10-04b';
-const SHELL = ['./', 'index.html', 'css/app.css', 'css/features.css', 'fonts/fonts.css', 'img/logo.svg', 'img/icon-192.png', 'manifest.webmanifest',
-  'js/app.js', 'js/engine.js', 'js/i18n.js', 'js/galaxy.js', 'js/layouts.js', 'js/lamp.js', 'js/lampmap.js', 'js/search-worker.js',
+const VERSION = 'mishkat-2026-10-04c';
+const SHELL = ['./', 'index.html', 'css/app.css', 'css/features.css', 'css/refonte.css', 'fonts/fonts.css', 'img/logo.svg', 'img/icon-192.png', 'manifest.webmanifest',
+  'js/app.js', 'js/engine.js', 'js/i18n.js', 'js/galaxy.js', 'js/layouts.js', 'js/layout-worker.js', 'js/letters3d.js', 'js/lamp.js', 'js/lampmap.js', 'js/search-worker.js',
   'vendor/three/three.module.min.js', 'data/core.json', 'data/search_ar.json', 'data/galaxy.bin'];
 
 self.addEventListener('install', (ev) => {

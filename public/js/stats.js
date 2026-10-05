@@ -94,6 +94,19 @@ export function wordStats(core, plain, query, mode = 'word', suraOf) {
     bySura: [...by.entries()].sort((a, b) => b[1] - a[1]), forms: [...forms.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12) };
 }
 
+// T100 — the verse being read: its words and letters, its rank by length in its surah, its place (page, juz)
+export function verseStats(core, meta, i, suraOf) {
+  const n = suraOf[i], S = core.suras[n - 1], w = verseWords(core, i, suraOf);
+  const lens = [];
+  for (let k = 0; k < S.ayas; k++) lens.push(verseWords(core, S.first + k, suraOf).length);
+  const longer = lens.filter(v => v > w.length).length;
+  let sw = 0; for (const v of lens) sw += v;
+  const pageOf = (j) => { let lo = 0, hi = meta.pages.length - 1; while (lo < hi) { const m = (lo + hi + 1) >> 1; if (meta.pages[m] <= j) lo = m; else hi = m - 1; } return lo + 1; };
+  let juz = 0; while (juz + 1 < meta.juz.length && meta.juz[juz + 1] <= i) juz++;
+  return { S, aya: i - S.first + 1, words: w.length, letters: letterCount(w), list: w.map(x => [x, letterCount([x])]),
+    rank: longer + 1, share: w.length / Math.max(1, sw), page: pageOf(i), juz: juz + 1 };
+}
+
 export function totals(core, suraOf) {
   let words = 0, letters = 0;
   for (let i = 0; i < core.verses.length; i++) { const w = verseWords(core, i, suraOf); words += w.length; letters += letterCount(w); }
@@ -104,6 +117,8 @@ export const ST = {
   ar: {
     title: 'الإحصاءات', lead: 'أرقام محسوبة في متصفحك من نص المصحف (Tanzil): الآيات والكلمات والحروف والمواضع. لا حساب للجُمَّل ولا «إعجاز عددي».',
     all: 'القرآن كله', suras: 'سورة', verses: 'آية', words: 'كلمة', letters: 'حرفًا',
+    tabAya: 'الآية', ayaOf: (r) => `الآية ${r}`, posIn: (k, n) => `الآية ${k} من ${n}`, rankLen: (r, n) => `ترتيبها طولًا في سورتها: ${r} من ${n}`, shareSura: 'نسبتها من كلمات السورة', page: 'الصفحة',
+    wordsOf: 'كلماتها (وعدد حروف كل كلمة)', suraAll: 'إحصاءات السورة كاملة', where: 'موضعها في السورة',
     tabSura: 'سورة', tabWord: 'كلمة', pick: 'اختر سورة', type: 'النوع', meccan: 'مكية', medinan: 'مدنية', order: 'ترتيب النزول', ayas: 'عدد الآيات', nWords: 'عدد الكلمات', nLetters: 'عدد الحروف',
     pages: 'الصفحات', juz: 'الجزء', share: 'نسبتها من المصحف', longest: 'أطول آية', shortest: 'أقصر آية', wordsN: (n) => `${n} كلمة`, top: 'أكثر الكلمات تكرارًا (دون حروف المعاني)',
     lens: 'طول الآيات بالكلمات (من أول السورة إلى آخرها)', open: 'افتح',
@@ -115,6 +130,8 @@ export const ST = {
   en: {
     title: 'Statistics', lead: 'Counts made in your browser from the Mushaf text (Tanzil): verses, words, letters and places. No letter values (jummal) and no “numerical miracle”.',
     all: 'The whole Quran', suras: 'surahs', verses: 'verses', words: 'words', letters: 'letters',
+    tabAya: 'Verse', ayaOf: (r) => `Verse ${r}`, posIn: (k, n) => `verse ${k} of ${n}`, rankLen: (r, n) => `Rank by length in its surah: ${r} of ${n}`, shareSura: 'Share of the surah’s words', page: 'Page',
+    wordsOf: 'Its words (and the letters of each)', suraAll: 'Statistics of the whole surah', where: 'Its place in the surah',
     tabSura: 'Surah', tabWord: 'Word', pick: 'Choose a surah', type: 'Type', meccan: 'Meccan', medinan: 'Medinan', order: 'Order of revelation', ayas: 'Verses', nWords: 'Words', nLetters: 'Letters',
     pages: 'Pages', juz: 'Juz', share: 'Share of the Mushaf', longest: 'Longest verse', shortest: 'Shortest verse', wordsN: (n) => `${n} words`, top: 'Most frequent words (without particles)',
     lens: 'Verse lengths in words (from the first verse to the last)', open: 'Open',
@@ -125,7 +142,7 @@ export const ST = {
   },
 };
 
-// ctx: { lang(), core, plain() → Promise<array>, meta() → Promise, openVerse(i), search(q), digits(n) }
+// ctx: { lang(), core, plain() → Promise<array>, meta() → Promise, openVerse(i), search(q), digits(n), current() → verse being read or null }
 export function createStats(ctx) {
   const L = () => ST[ctx.lang()] || ST.ar;
   const num = (n) => ctx.digits ? ctx.digits(n) : String(n);
@@ -135,12 +152,15 @@ export function createStats(ctx) {
     const [plain, meta] = await Promise.all([ctx.plain(), ctx.meta()]);
     suraOf = suraOf || suraOfIndex(core);
     tot = tot || totals(core, suraOf);
-    if (args.word) tab = 'word'; else if (args.sura) tab = 'sura';
+    const vi = args.verse != null ? args.verse : (ctx.current ? ctx.current() : null);
+    if (args.word) tab = 'word'; else if (args.verse != null) tab = 'aya'; else if (args.sura) tab = 'sura';
+    if (tab === 'aya' && vi == null) tab = 'sura';
+    const sura0 = args.sura || (vi != null ? suraOf[vi] : 1);
     const name = (n) => ctx.lang() === 'ar' ? core.suras[n - 1].ar : core.suras[n - 1].tr;
     const ref = (i) => `${name(suraOf[i])} ${num(suraOf[i])}:${num(i - core.suras[suraOf[i] - 1].first + 1)}`;
     body.innerHTML = `<p class="p-lead">${esc(t.lead)}</p>
       <div class="st-all"><b>${esc(t.all)}</b> <span>${esc(num(tot.suras))} ${esc(t.suras)}</span><span>${esc(num(tot.verses))} ${esc(t.verses)}</span><span>${esc(num(tot.words))} ${esc(t.words)}</span><span>${esc(num(tot.letters))} ${esc(t.letters)}</span></div>
-      <div class="seg st-tabs" role="tablist"><button type="button" role="tab" data-tab="sura" aria-selected="${tab === 'sura'}">${esc(t.tabSura)}</button><button type="button" role="tab" data-tab="word" aria-selected="${tab === 'word'}">${esc(t.tabWord)}</button></div>
+      <div class="seg st-tabs" role="tablist">${vi != null ? `<button type="button" role="tab" data-tab="aya" aria-selected="${tab === 'aya'}">${esc(t.tabAya)}</button>` : ''}<button type="button" role="tab" data-tab="sura" aria-selected="${tab === 'sura'}">${esc(t.tabSura)}</button><button type="button" role="tab" data-tab="word" aria-selected="${tab === 'word'}">${esc(t.tabWord)}</button></div>
       <div class="st-body"></div><p class="p-small">${esc(t.note)}</p>`;
     const box = body.querySelector('.st-body');
     const bars = (rows, max, fmt) => `<ul class="st-bars">${rows.map(r => `<li${r.go != null ? ` data-go="${r.go}" tabindex="0" role="button"` : ''}><span class="st-l">${esc(r.label)}</span><span class="st-b"><i style="width:${(100 * r.v / max).toFixed(1)}%"></i></span><b>${esc(fmt(r.v))}</b></li>`).join('')}</ul>`;
@@ -161,6 +181,21 @@ export function createStats(ctx) {
         <h3 class="p-sub">${esc(t.top)}</h3>${bars(r.top.map(([w, v]) => ({ label: w, v })), r.top.length ? r.top[0][1] : 1, num)}`;
       box.querySelector('#stS').onchange = (ev) => drawSura(+ev.target.value);
       wire();
+    };
+    const drawVerse = (i) => {
+      const r = verseStats(core, meta, i, suraOf), S = r.S;
+      box.innerHTML = `<p class="st-vref"><b>${esc(name(S.n))}</b> · ${esc(t.ayaOf(num(r.aya)))}</p>
+        <dl class="k-stats st-grid">
+          <div><dt>${esc(t.nWords)}</dt><dd>${esc(num(r.words))}</dd></div><div><dt>${esc(t.nLetters)}</dt><dd>${esc(num(r.letters))}</dd></div>
+          <div><dt>${esc(t.page)}</dt><dd>${esc(num(r.page))}</dd></div><div><dt>${esc(t.juz)}</dt><dd>${esc(num(r.juz))}</dd></div>
+          <div><dt>${esc(t.type)}</dt><dd>${esc(S.type === 'meccan' ? t.meccan : t.medinan)}</dd></div><div><dt>${esc(t.shareSura)}</dt><dd>${esc(num((100 * r.share).toFixed(1)))}${ctx.lang() === 'ar' ? '٪' : '%'}</dd></div></dl>
+        <h3 class="p-sub">${esc(t.where)}</h3>
+        <div class="st-pos" role="img" aria-label="${esc(t.posIn(num(r.aya), num(S.ayas)))}"><i style="inset-inline-start:${(100 * (r.aya - 0.5) / S.ayas).toFixed(2)}%"></i></div>
+        <p class="p-small">${esc(t.posIn(num(r.aya), num(S.ayas)))} · ${esc(t.rankLen(num(r.rank), num(S.ayas)))}</p>
+        <h3 class="p-sub">${esc(t.wordsOf)}</h3>
+        <div class="st-words" dir="rtl">${r.list.map(([w, l]) => `<span class="st-w"><b>${esc(w)}</b><small>${esc(num(l))}</small></span>`).join('')}</div>
+        <p><button type="button" class="mini gold" id="stAll">${esc(t.suraAll)}</button></p>`;
+      box.querySelector('#stAll').onclick = () => { tab = 'sura'; body.querySelectorAll('[data-tab]').forEach(x => x.setAttribute('aria-selected', x.dataset.tab === 'sura')); drawSura(S.n); };
     };
     const drawWord = (w0 = '', mode = 'word') => {
       box.innerHTML = `<form class="p-row st-wf"><input type="search" id="stW" dir="rtl" lang="ar" value="${esc(w0)}" placeholder="${esc(t.wordPh)}" maxlength="40"><button class="mini gold">${esc(t.count)}</button></form>
@@ -186,8 +221,8 @@ export function createStats(ctx) {
       box.querySelectorAll('input[name=stm]').forEach(x => x.onchange = go);
       if (w0) go();
     };
-    body.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; body.querySelectorAll('[data-tab]').forEach(x => x.setAttribute('aria-selected', x === b)); tab === 'sura' ? drawSura(args.sura || 1) : drawWord(); });
-    if (tab === 'word') drawWord(args.word || ''); else drawSura(args.sura || 1);
+    body.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; body.querySelectorAll('[data-tab]').forEach(x => x.setAttribute('aria-selected', x === b)); tab === 'sura' ? drawSura(sura0) : tab === 'aya' ? drawVerse(vi) : drawWord(); });
+    if (tab === 'word') drawWord(args.word || ''); else if (tab === 'aya') drawVerse(vi); else drawSura(sura0);
   }
   return { render };
 }

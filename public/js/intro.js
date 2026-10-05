@@ -6,6 +6,8 @@
 // fills with the surahs read; finally a quick motion-graphic tour of the services (AI search, khatma, prayer, qibla,
 // mosques, repetition, statistics, engagement, installing the app).
 // Religious text shown: only the Tanzil text of the verses (core.json) and the verse words themselves as labels.
+// (4 Oct, refonte) The film opens with the basmala — the Tanzil text of 1:1, recited by the same reciter — whose
+// points of light then flow into the verse of light.
 import { lampSVG } from './lamp.js';
 import { miniLamp } from './lampmap.js';
 
@@ -61,7 +63,8 @@ export function playIntro(ctx) {
   const lang = ctx.lang(), t = IN[lang] || IN.ar, ar = lang === 'ar';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const S = ctx.core.suras[23], vIdx = S.first + 34;
-  const words = ctx.core.verses[vIdx].split(' ');
+  const verseWords = ctx.core.verses[vIdx].split(' '), basmalaWords = ctx.core.verses[0].split(' ');
+  let words = basmalaWords;
   const root = document.createElement('div');
   root.id = 'intro'; root.setAttribute('role', 'dialog'); root.setAttribute('aria-modal', 'true'); root.setAttribute('aria-label', t.name);
   root.dir = ar ? 'rtl' : 'ltr';
@@ -76,14 +79,14 @@ export function playIntro(ctx) {
   document.body.classList.add('intro-on');
   const cv = root.querySelector('.in-cv'), g = cv.getContext('2d');
   const cap = root.querySelector('.in-cap'), stage = root.querySelector('.in-stage'), logo = root.querySelector('.in-logo'), labelsEl = root.querySelector('.in-labels');
-  let W = 0, H = 0, DPR = 1, parts = [], wordBox = [], alive = true, raf = 0, audio = null, t0 = performance.now(), tim = null, phase = 'verse', galaxyOn = false;
+  let W = 0, H = 0, DPR = 1, parts = [], wordBox = [], alive = true, raf = 0, audio = null, t0 = performance.now(), tim = null, phase = 'basmala', galaxyOn = false, timVerse = null, basmalaMs = 0;
 
   // ---------------------------------------------------------------- the verse as luminous points
   function layoutText() {
     DPR = Math.min(2, window.devicePixelRatio || 1);
     W = window.innerWidth; H = window.innerHeight;
     cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
-    const phone = W < 700, fs = phone ? Math.max(21, Math.min(28, W / 15)) : Math.min(44, W / 27, H / 17);
+    const phone = W < 700, fs = (phase === 'basmala' ? 1.45 : 1) * (phone ? Math.max(21, Math.min(28, W / 15)) : Math.min(44, W / 27, H / 17));
     const off = document.createElement('canvas'), o = off.getContext('2d');
     off.width = W; off.height = Math.round(H * 0.6);
     o.font = `${fs}px Amiri, 'Noto Naskh Arabic', serif`; o.fillStyle = '#fff'; o.textBaseline = 'middle';
@@ -94,7 +97,7 @@ export function playIntro(ctx) {
       if (lw + ww > maxW && lines[lines.length - 1].length) { lines.push([]); lw = 0; }
       lines[lines.length - 1].push({ k, ww }); lw += ww + gap;
     }
-    const top = phone ? H * 0.1 : H * 0.09;
+    const top = phase === 'basmala' ? H * (phone ? 0.3 : 0.26) : phone ? H * 0.1 : H * 0.09;
     wordBox = [];
     lines.forEach((ln, r) => {
       const total = ln.reduce((s, x) => s + x.ww, 0) + gap * (ln.length - 1);
@@ -106,13 +109,13 @@ export function playIntro(ctx) {
     const old = parts; parts = [];
     let lit = 0;
     for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) if (img[(y * off.width + x) * 4 + 3] >= 128) lit++;
-    const keep = Math.min(1, (phone ? 3800 : 7000) / Math.max(1, lit));
+    const keep = Math.min(1, (phone ? 4600 : 8500) / Math.max(1, lit));
     for (let y = 0; y < off.height; y += step) for (let x = 0; x < off.width; x += step) {
       if (img[(y * off.width + x) * 4 + 3] < 128 || Math.random() > keep) continue;
       let k = 0; for (let j = 0; j < wordBox.length; j++) { const b = wordBox[j]; if (b && x >= b.x0 - 2 && x <= b.x1 + 2 && Math.abs(y - b.y) < lh / 2) { k = j; break; } }
       const prev = old[parts.length];
-      const a = Math.random() * 6.283, r = 25 + Math.random() * 70;
-      parts.push({ tx: x, ty: y, ox: Math.cos(a) * r, oy: Math.sin(a) * r * 0.6, x: prev ? prev.x : Math.random() * W, y: prev ? prev.y : Math.random() * H, vx: 0, vy: 0, k, tw: Math.random() * 6.28 });
+      const a = Math.random() * 6.283, r = 8 + Math.random() * 16;   // waiting close to its place: the verse's shape is already there, faint
+      parts.push({ tx: x, ty: y, ox: Math.cos(a) * r, oy: Math.sin(a) * r * 0.6, x: prev ? prev.x : W / 2 + (Math.random() - 0.5) * W * 0.3, y: prev ? prev.y : H * 0.4 + (Math.random() - 0.5) * H * 0.2, vx: 0, vy: 0, k, tw: Math.random() * 6.28 });
     }
     const lamp = root.querySelector('.in-lamp svg');
     const below = top + lines.length * lh + 14;
@@ -133,7 +136,7 @@ export function playIntro(ctx) {
     g.fillStyle = galaxyOn ? 'rgba(3,5,12,0.25)' : 'rgba(3,5,12,0.32)'; g.fillRect(0, 0, W, H);
     if (galaxyOn) g.clearRect(0, 0, W, H);
     g.globalCompositeOperation = 'lighter';
-    const cur = wordAt(ms), leaving = phase !== 'verse';
+    const cur = wordAt(ms), leaving = phase !== 'verse' && phase !== 'basmala';
     for (const p of parts) {
       const on = p.k <= cur && !leaving;
       let ax, ay;
@@ -141,10 +144,10 @@ export function playIntro(ctx) {
         const dx = p.x - W / 2, dy = p.y - H / 2, r = Math.hypot(dx, dy) + 1;
         ax = (-dy / r) * 0.9 - dx * 0.004; ay = (dx / r) * 0.9 - dy * 0.004;
       } else if (on) { ax = (p.tx - p.x) * 0.09; ay = (p.ty - p.y) * 0.09; }
-      else { p.tw += 0.015; ax = (p.tx + p.ox + Math.cos(p.tw) * 12 - p.x) * 0.025; ay = (p.ty + p.oy + Math.sin(p.tw * 1.3) * 8 - p.y) * 0.025; }
+      else { p.tw += 0.012; ax = (p.tx + p.ox * Math.cos(p.tw) - p.x) * 0.03; ay = (p.ty + p.oy * Math.sin(p.tw) - p.y) * 0.03; }
       p.vx = (p.vx + ax) * 0.86; p.vy = (p.vy + ay) * 0.86; p.x += p.vx; p.y += p.vy;
       const hot = p.k === cur && !leaving;
-      g.fillStyle = hot ? 'rgba(255,222,130,1)' : on ? 'rgba(255,244,215,0.8)' : 'rgba(150,175,230,0.07)';
+      g.fillStyle = hot ? 'rgba(255,222,130,1)' : on ? 'rgba(255,244,215,0.8)' : 'rgba(150,175,230,0.12)';
       const s = hot ? 2.4 : on ? 1.9 : 1.1;
       g.fillRect(p.x - s / 2, p.y - s / 2, s, s);
     }
@@ -153,6 +156,7 @@ export function playIntro(ctx) {
   // ---------------------------------------------------------------- logo parts and labels
   let shownParts = 0;
   function logoAt(cur) {
+    if (phase === 'basmala') return;
     while (shownParts < PARTS.length && cur >= PARTS[shownParts].at) { logo.classList.add(PARTS[shownParts].cls); shownParts++; }
     const labs = PHRASES.filter(ph => ph[0] <= cur).map(ph => `<span>${esc(ph.filter(k => k <= cur).map(k => words[k]).join(' '))}</span>`).join('');
     if (labelsEl.dataset.h !== labs) { labelsEl.innerHTML = labs; labelsEl.dataset.h = labs; }
@@ -221,12 +225,37 @@ export function playIntro(ctx) {
     stage.querySelector('.in-go').focus();
   }
 
+  // ---------------------------------------------------------------- the recitation (basmala, then the verse)
+  function startAudio(u) {
+    if (audio) { audio.pause(); audio = null; }
+    if (!u) return;
+    audio = new Audio(ctx.audioBase + u);
+    audio.volume = 0.95;
+    const muted = root.querySelector('.in-mute').getAttribute('aria-pressed') === 'true';
+    audio.muted = muted;
+    audio.play().catch(() => {
+      // blocked (no gesture): the film runs on its own clock; the sound button starts the recitation at that time
+      const b = root.querySelector('.in-mute'); b.textContent = `▶ ${t.sound}`; b.classList.add('pulse');
+      b.onclick = () => { if (!audio) return; audio.currentTime = Math.max(0, (performance.now() - t0 - 1200) / 1000); audio.play().then(() => { b.classList.remove('pulse'); b.textContent = `🔊 ${t.sound}`; b.onclick = muteToggle; }).catch(() => {}); };
+    });
+  }
+  function startVerse() {
+    phase = 'verse'; words = verseWords; tim = timVerse;
+    basmalaMs = performance.now() - t0;
+    layoutText();                                  // the points of the basmala flow into the verse
+    t0 = performance.now();
+    setTimeout(() => { if (alive && phase === 'verse') startAudio(tim && tim.u); }, 1200);
+  }
+
   // ---------------------------------------------------------------- the loop and the clock
-  const TOTAL = 80060 + 9 * 3900 + 4000;
+  const TOTAL = 6000 + 80060 + 9 * 3900 + 4000;
   function loop() {
     if (!alive) return;
     const ms = clockMs(), cur = wordAt(ms);
-    if (phase === 'verse' || phase === 'galaxy') {
+    if (phase === 'basmala') {
+      const endB = tim && tim.t ? tim.t[tim.t.length - 1] : 5200;
+      if (ms > endB + 900) startVerse();
+    } else if (phase === 'verse' || phase === 'galaxy') {
       logoAt(cur);
       // the last part of the verse («يهدي الله لنوره…») is read on the real galaxy
       if (phase === 'verse' && cur >= 35) enterGalaxy();
@@ -234,8 +263,8 @@ export function playIntro(ctx) {
       const end = tim && tim.t ? tim.t[tim.t.length - 1] : 80060;
       if (ms > end + 600) { shapesTour(); setTimeout(() => alive && features(), reduced ? 2000 : 7600); }
     }
-    if (!reduced || phase === 'verse') drawParticles(ms);
-    const el = phase === 'features' || phase === 'end' ? 80060 + 7600 + 3900 * (stage.querySelectorAll('.in-dots .on').length ? [...stage.querySelectorAll('.in-dots i')].findIndex(x => x.classList.contains('on')) : 9) : Math.max(0, ms);
+    if (!reduced || phase === 'verse' || phase === 'basmala') drawParticles(ms);
+    const el = phase === 'features' || phase === 'end' ? 80060 + 7600 + 3900 * (stage.querySelectorAll('.in-dots .on').length ? [...stage.querySelectorAll('.in-dots i')].findIndex(x => x.classList.contains('on')) : 9) : Math.max(0, ms) + (phase === 'basmala' ? 0 : basmalaMs);
     root.querySelector('.in-prog i').style.width = `${Math.min(100, 100 * el / TOTAL).toFixed(1)}%`;
     raf = requestAnimationFrame(loop);
   }
@@ -251,7 +280,7 @@ export function playIntro(ctx) {
   }
   const onKey = (ev) => { if (ev.key === 'Escape') { ev.preventDefault(); ev.stopPropagation(); done(); } };
   root.querySelector('.in-skip').onclick = done;
-  const muteToggle = (ev) => { if (!audio) return; audio.muted = !audio.muted; ev.currentTarget.setAttribute('aria-pressed', String(audio.muted)); ev.currentTarget.textContent = `${audio.muted ? '🔇' : '🔊'} ${t.sound}`; };
+  const muteToggle = (ev) => { const b = ev.currentTarget, m = b.getAttribute('aria-pressed') !== 'true'; if (audio) audio.muted = m; b.setAttribute('aria-pressed', String(m)); b.textContent = `${m ? '🔇' : '🔊'} ${t.sound}`; };
   root.querySelector('.in-mute').onclick = muteToggle;
   document.addEventListener('keydown', onKey, true);
   window.addEventListener('resize', layoutText);
@@ -259,17 +288,10 @@ export function playIntro(ctx) {
   (document.fonts && document.fonts.load ? document.fonts.load('40px Amiri').catch(() => {}) : Promise.resolve()).then(async () => {
     if (!alive) return;
     layoutText();
-    try { const all = await ctx.timing; tim = all && all[34]; } catch (e) { tim = null; }
+    try { const all = await ctx.timing; timVerse = all && all[34]; } catch (e) { timVerse = null; }
+    try { const b = await ctx.timingBasmala; tim = b && b[0]; } catch (e) { tim = null; }
     t0 = performance.now();
-    if (tim && tim.u) {
-      audio = new Audio(ctx.audioBase + tim.u);
-      audio.volume = 0.95;
-      setTimeout(() => { if (alive && audio) audio.play().catch(() => {
-        // blocked (no gesture): the film runs on its own clock; the sound button starts the recitation at that time
-        const b = root.querySelector('.in-mute'); b.textContent = `▶ ${t.sound}`; b.classList.add('pulse');
-        b.onclick = () => { if (!audio) return; audio.currentTime = Math.max(0, (performance.now() - t0 - 1200) / 1000); audio.play().then(() => { b.classList.remove('pulse'); b.textContent = `🔊 ${t.sound}`; b.onclick = muteToggle; }).catch(() => {}); };
-      }); }, 1200);
-    }
+    setTimeout(() => { if (alive && phase === 'basmala') startAudio(tim && tim.u); }, 1200);
     loop();
   });
   root.querySelector('.in-skip').focus();

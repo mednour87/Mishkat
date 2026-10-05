@@ -68,6 +68,21 @@ Done at the author's request before the window opens; commits after the tag `bas
 - T099 — **tajweed**: study of open projects (`02_SOURCES/ETUDE_TAJWID_AHKAM_TILAWA.md`); optional tajweed colours in the reader from cpfair/quran-tajweed (CC BY 4.0), checked letter by letter on our text (5,942 verses kept, the others without colour).
 - Tests: 213/213 (`tests/features_oct4.test.mjs`, 16 tests); visual checks in headless Chrome at 1280 × 800 and 390 × 844 (`tools/check_features.mjs`), no console error.
 
+## Challenge — night of 4 to 5 October 2026 — UI refonte (author's requests, nothing removed)
+- **Top bar → menu drawer (☰)**: the bar keeps the search, the tools (computer) and ☰; the drawer holds interests, install, about, language, theme — and on a phone the ten tools with their names, the engagement level and the khatma count (the bar had ten icons in two rows at 390 px).
+- **Reading bar on one line** (play, follow, ‹ ›, surah, verse, tafsir, ⋯, ✕); ⋯ unfolds first verse, repetition, speed, font size, tajweed, about the surah, statistics, copy, share (open by default on a computer, folded on a phone, remembered). **Tafsir bar on one line** with a book menu on a phone and ⋯ for its tools: on a phone the tafsir text now takes almost the whole pane; the galaxy shrinks to 19 % of the height while the tafsir is read.
+- **Galaxy toolbar** folded behind ⋯ on a phone (⌂, shape, ⤢ stay); on the phone home the galaxy is framed whole above the suggestions.
+- **📊 statistics of what is being read**: a verse tab (words, letters, page, juz, rank by length in its surah, place in the surah, each word with its letters), then its surah.
+- **Light theme**: paper panels (warm, not white); the galaxy and everything drawn over it keep the night colours (no dark-on-dark selects any more); on a phone the top bar and tabs stay night next to the 3D view. Automatic contrast audit (`tools/contrast_probe.js`, scenario `contrast` of `tools/ui_shots.mjs`): 0 low-contrast text in 60 states (light/dark × phone/computer × reader, tafsir, options, drawer, about, interests, 10 panels, answers, gate).
+- **Reading thread in every 3D shape** (`layouts.js`, `letters3d.js`): the words follow one continuous thread, never turning back — galaxy = Fermat spiral r = R√u read in one stroke through the core (equal area per word), each verse one turn of a small helix whose width grows with √(its words); rose = one continuous spiral (each surah starts where the previous ended); dome = smooth circuit (no random jitter); petals = nested round loops leaving from and returning to each petal's base, clockwise; «قرآن» = contours parallel to the letters' outlines (distance map + marching squares), embossed in depth. Measured on every shape × order: 0–0.05 % of the steps turn back (`tests/thread.mjs`, `tests/layouts.test.mjs`); reading camera reversals < 1 % (`tests/reading.test.mjs`).
+- **No lag when the shape changes**: shapes computed in a Web Worker (`js/layout-worker.js`) and prepared in the background; the GPU attributes swap instead of being copied; while a verse is recited the camera and the word's disc follow the word as it glides to its new place (measured: no long task during five changes of shape while reciting).
+- **Points of light**: two-scale halo, a slow ±7 % twinkle per star, four fine rays on the recited word.
+- **Film**: opens with the basmala (Tanzil text of 1:1, recited by Alafasy), whose points of light flow into the verse of light; the waiting points stay close to their places (a clearer, even picture).
+- **Tajweed rules**: each coloured run carries its rule; a tap or hover tells its name and definition; «أحكام هذه الآية» lists the rules of the verse being read with their words; all 18 rules with their keys (ينمو، ل ر، صِفْ ذا ثنا…، قُطْبُ جَدٍّ…), after Tuḥfat al-Aṭfāl and al-Muqaddima al-Jazariyya (riwāyat Ḥafṣ), written by hand.
+- **Engagement map**: the vertical columns of the last 28 days and the vertical thread replaced by beads of light on the spiral (larger when the day was more active).
+- Fix: the Mushaf jumped back to the first verse when the translations finished loading.
+- Tests: 218/218 (`tests/refonte.test.mjs` added); captures `04_LIVRABLES/captures/refonte/`.
+
 ## Challenge — 5 October 2026
 -
 

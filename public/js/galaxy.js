@@ -29,8 +29,11 @@ const VERT = /* glsl */`
   varying float vHl;
   varying float vNear;
   varying float vFar;
+  varying float vTw;
   void main() {
     vec3 p = mix(position, position2, uMix);
+    // a slow, gentle twinkle, each star at its own pace (never a flicker: ±7 %)
+    vTw = 0.93 + 0.07 * sin(uTime * (0.9 + fract(size * 7.31) * 1.2) + dot(position.xy, vec2(0.131, 0.077)));
     vec4 mv = modelViewMatrix * vec4(p, 1.0);
     float strong = (hl > 0.5 && hl < 8.5) ? 1.0 : 0.0;
     float soft = hl > 8.5 ? 1.0 : 0.0;
@@ -59,18 +62,20 @@ const FRAG = /* glsl */`
   varying float vHl;
   varying float vNear;
   varying float vFar;
+  varying float vTw;
   void main() {
-    // a star: a crisp bright core (a little whiter) inside a narrow halo — no more soft blurred discs
+    // a star: a crisp bright core (a little whiter) inside a two-scale halo (a close glow and a faint wide one)
     float d = length(gl_PointCoord - 0.5) * 2.0;
     if (d > 1.0) discard;
-    float core = 1.0 - smoothstep(0.30, 0.52, d);
-    float halo = exp(-d * d * 5.0) * 0.42;
+    float core = 1.0 - smoothstep(0.24, 0.46, d);
+    float halo = exp(-d * d * 9.0) * 0.5 + exp(-d * d * 2.6) * 0.16;
     float a = clamp(core + halo, 0.0, 1.0);
     // strong = verse of the answer, soft = rest of its surah, the rest of the sky stays visible
     // brighter stars (author's request); the verses of an answer brightest
     vec3 col = vHl > 0.75 ? vColor * 1.9 : vHl > 0.25 ? vColor * 1.15 : vColor * mix(1.22, 0.6, uDim);
     col = mix(col, vec3(1.0), core * 0.28);                 // a whiter core, but the stars keep their colour
-    gl_FragColor = vec4(col, a * vNear * vFar * (vHl > 0.75 ? 1.0 : vHl > 0.25 ? 0.9 : mix(0.9, 0.6, uDim)));
+    col *= vTw;
+    gl_FragColor = vec4(col, a * vNear * vFar * vTw * (vHl > 0.75 ? 1.0 : vHl > 0.25 ? 0.9 : mix(0.9, 0.6, uDim)));
   }`;
 
 export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onLabelVerse, wordText = () => '', suraLabel = (n) => String(n) }) {
@@ -175,6 +180,22 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   active.scale.set(10, 10, 1); active.visible = false; scene.add(active);
   const activeCore = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTex, color: 0xffffff, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
   activeCore.scale.set(0.42, 0.42, 1); active.add(activeCore);   // relative to the halo's scale
+  // four fine rays of light around the recited word, turning very slowly
+  const rayTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d');
+    for (const [w, a] of [[1.4, 0.9], [3.2, 0.35]]) {
+      for (const rot of [0, Math.PI / 2]) {
+        g.save(); g.translate(64, 64); g.rotate(rot);
+        const gr = g.createLinearGradient(-64, 0, 64, 0);
+        gr.addColorStop(0, 'rgba(255,220,140,0)'); gr.addColorStop(0.5, `rgba(255,240,200,${a})`); gr.addColorStop(1, 'rgba(255,220,140,0)');
+        g.fillStyle = gr; g.fillRect(-64, -w / 2, 128, w); g.restore();
+      }
+    }
+    return new THREE.CanvasTexture(c);
+  })();
+  const rays = new THREE.Sprite(new THREE.SpriteMaterial({ map: rayTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0.85 }));
+  rays.scale.set(1.7, 1.7, 1); rays.material.opacity = 0.55; active.add(rays);
 
   let layout = 0;
   let highlighted = [];
@@ -218,7 +239,13 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     if (v3.z < -1 || v3.z > 1) return null;
     return { x: (v3.x * 0.5 + 0.5) * w, y: (-v3.y * 0.5 + 0.5) * h, z: v3.z };
   }
-  const wpos = (i, out = new THREE.Vector3()) => { const P = layouts[layout]; return out.set(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]); };
+  // a word's place; during a change of shape, where it is right now (between the two shapes)
+  const wpos = (i, out = new THREE.Vector3()) => {
+    const P = layouts[layout];
+    if (!morph) return out.set(P[i * 3], P[i * 3 + 1], P[i * 3 + 2]);
+    const Q = layouts[morph.to], m = morph.e;
+    return out.set(P[i * 3] + (Q[i * 3] - P[i * 3]) * m, P[i * 3 + 1] + (Q[i * 3 + 1] - P[i * 3 + 1]) * m, P[i * 3 + 2] + (Q[i * 3 + 2] - P[i * 3 + 2]) * m);
+  };
   const put = (el, x, y) => { el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`; };
   const tmpV = new THREE.Vector3();
 
@@ -244,11 +271,11 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
       boxes.push({ x, y, w: bw, h: bh });
       return true;
     };
-    const ok = !morph && w && h;
+    const ok = !morph && w && h, okPill = w && h;   // the recited word stays written during a change of shape
     const d = camera.position.distanceTo(controls.target);
     // 1. the recited word (glides smoothly from one star to the next)
     let pillOn = false;
-    if (ok && activeI != null && d < WORDS_DIST) {      // zoomed out, the word is in the lamp only
+    if (okPill && activeI != null && d < WORDS_DIST) {      // zoomed out, the word is in the lamp only
       const p = screen(active.position, w, h);
       if (p) {
         const k = pillPos.on ? 1 - Math.exp(-dt * 10) : 1;
@@ -337,8 +364,12 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (!w || !h) return;
     renderer.setSize(w, h, false);
-    camera.aspect = w / h; camera.updateProjectionMatrix();
+    camera.aspect = w / h;
+    // the picture can be lifted (phone, home: the suggestions cover the lower part of the view)
+    if (shiftY) camera.setViewOffset(w, h, 0, shiftY * h, w, h); else camera.clearViewOffset();
+    camera.updateProjectionMatrix();
   }
+  let shiftY = 0;
   new ResizeObserver(resize).observe(canvas);
   resize();
 
@@ -454,7 +485,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     resize();                                         // the zone's size right now (the observer may not have run yet)
     const v = homes[L], target = v ? new THREE.Vector3(...v.target) : HOME.target.clone();
     const pos = v ? new THREE.Vector3(...v.pos) : HOME.pos.clone();
-    const k = Math.min(2.6, Math.max(1, 1.25 / Math.max(0.3, camera.aspect)));
+    const k = Math.min(3.6, Math.max(1, 1.35 / Math.max(0.3, camera.aspect)));
     return { pos: target.clone().add(pos.sub(target).multiplyScalar(k)), target };
   }
   { const r = refView(0); camera.position.copy(r.pos); controls.target.copy(r.target); }
@@ -471,16 +502,28 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
       geo.computeBoundingSphere(); drawPath(); drawThread();
     }
   }
+  // a change of shape: the new positions go into 'position2' only (one upload), the shader glides between the two;
+  // at the end the two attributes swap names (no copy, no upload). While a verse is recited the camera does not fly
+  // home: it keeps following the recited word, which glides with its star to its new place.
   function setLayout(L, moveCamera = true) {
     if (L === layout || !layouts[L]) return;
-    if (moveCamera) { const r = refView(L); animateTo(r.pos, r.target, 2200); }
+    if (morph) finishMorph();
+    if (moveCamera && !(follow && reciting)) { const r = refView(L); animateTo(r.pos, r.target, 2200); }
     controls.autoRotate = false;
-    const posAttr = geo.getAttribute('position'), pos2 = geo.getAttribute('position2');
-    posAttr.array.set(layouts[layout]); pos2.array.set(layouts[L]);
-    posAttr.needsUpdate = pos2.needsUpdate = true;
+    const pos2 = geo.getAttribute('position2');
+    pos2.array.set(layouts[L]); pos2.needsUpdate = true;
     uniforms.uMix.value = 0;
-    morph = { t0: performance.now(), to: L };
+    morph = { t0: performance.now(), to: L, e: 0 };
     drawThread();
+  }
+  function finishMorph() {
+    if (!morph) return;
+    layout = morph.to; morph = null;
+    const a = geo.getAttribute('position'), b = geo.getAttribute('position2');
+    geo.setAttribute('position', b); geo.setAttribute('position2', a);
+    uniforms.uMix.value = 0;
+    geo.boundingSphere = null; geo.computeBoundingSphere();
+    drawPath(); drawThread();
   }
 
   function home() {
@@ -554,20 +597,16 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     }
     if (morph) {
       const t = Math.min(1, (now - morph.t0) / 2200);
-      uniforms.uMix.value = ease(t);
-      if (t >= 1) {
-        layout = morph.to; morph = null;
-        const posAttr = geo.getAttribute('position');
-        posAttr.array.set(layouts[layout]); posAttr.needsUpdate = true;
-        uniforms.uMix.value = 0;
-        geo.computeBoundingSphere();
-        drawPath();
-        drawThread();
-      }
+      morph.e = uniforms.uMix.value = ease(t);
+      // reading: the camera keeps the recited word in view while it glides to its new place
+      if (follow && activeI != null) follow.target.copy(wpos(activeI, tmpV));
+      if (t >= 1) finishMorph();
     }
     if (active.visible && activeI != null) {
       // the glow slides to the new word instead of jumping
       active.position.lerp(wpos(activeI, tmpV), 1 - Math.exp(-dt * 12));
+      rays.material.rotation += dt * 0.25;
+      const br = 1 + 0.06 * Math.sin(now * 0.004); active.scale.set(10 * br, 10 * br, 1);
     }
     if (ring.visible) ring.lookAt(camera.position);
     placeLabels(dt);
@@ -645,6 +684,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
       animateTo(controls.target.clone().add(offv.setLength(len)), controls.target.clone(), 600);
     },
     setNames(v) { namesOn = !!v; },
+    setShift(f) { if (f !== shiftY) { shiftY = f; resize(); } },
     setGroupsVisible(v) { groupsOn = !!v; },
     get layout() { return layout; },
     get autoRotate() { return controls.autoRotate; },

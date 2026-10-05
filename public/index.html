@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="fonts/fonts.css">
 <link rel="stylesheet" href="css/app.css">
 <link rel="stylesheet" href="css/features.css">
+<link rel="stylesheet" href="css/refonte.css">
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 </head>
 <body>
@@ -33,17 +34,39 @@
       <svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M20 20l-4.2-4.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
     </button>
   </form>
-  <div class="hright">
+  <!-- the top bar keeps only the search, the tools (computer) and the menu; everything else is in the menu drawer.
+       On a phone the dock of tools, the engagement and the khatma count move into the drawer too (js: placeNav) -->
+  <div class="hright" id="hright">
     <button type="button" id="khCount" class="khc" hidden></button>
     <nav id="dock" hidden></nav>
-    <button type="button" id="engBtn" class="hbtn engb"><canvas width="30" height="30" aria-hidden="true"></canvas></button>
-    <button type="button" id="btnInstall" class="hbtn" hidden><span aria-hidden="true">⤓</span> <span class="hl" data-i18n="installApp">ثبّت</span></button>
-    <button id="btnMenu" class="hbtn" data-i18n-title="menuTitle"><span aria-hidden="true">✦</span> <span class="hl" data-i18n="menu">اهتماماتي</span></button>
-    <button id="btnAbout" class="hbtn" data-i18n-title="about"><span aria-hidden="true">ⓘ</span> <span class="hl" data-i18n="about">عن مشكاة</span></button>
-    <button id="themeBtn" class="icon" data-i18n-aria="themeLabel">☾</button>
-    <div class="langs" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button></div>
+    <button type="button" id="engBtn" class="hbtn engb"><canvas width="30" height="30" aria-hidden="true"></canvas><span class="nl" data-i18n="engShort">مستواي</span></button>
+    <div class="langs hlangs" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button></div>
+    <button type="button" id="navBtn" class="navb" aria-expanded="false" aria-controls="navDrawer" data-i18n-aria="navOpen" data-i18n-title="navOpen">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
   </div>
 </header>
+<div id="navScrim" hidden></div>
+<aside id="navDrawer" aria-labelledby="navTitle" hidden>
+  <div class="nd-head">
+    <img src="img/logo.svg" alt="" width="34" height="34">
+    <h2 id="navTitle" data-i18n="brand">مِشكاة</h2>
+    <button type="button" id="navClose" class="icon" data-i18n-aria="navClose" data-i18n-title="navClose">✕</button>
+  </div>
+  <div class="nd-body">
+    <section class="nd-sec" id="ndTools"><h3 data-i18n="navTools">الأدوات</h3><div id="ndDock"></div></section>
+    <section class="nd-sec" id="ndMine"><h3 data-i18n="navMine">رحلتي</h3><div id="ndEng"></div></section>
+    <section class="nd-sec"><h3 data-i18n="navMore">المزيد</h3>
+      <button id="btnMenu" class="nd-item" data-i18n-title="menuTitle"><span class="ni" aria-hidden="true">✦</span> <span data-i18n="menu">اهتماماتي</span></button>
+      <button type="button" id="btnInstall" class="nd-item" hidden><span class="ni" aria-hidden="true">⤓</span> <span data-i18n="installApp">ثبّت</span></button>
+      <button id="btnAbout" class="nd-item" data-i18n-title="about"><span class="ni" aria-hidden="true">ⓘ</span> <span data-i18n="about">عن مشكاة</span></button>
+    </section>
+  </div>
+  <div class="nd-foot">
+    <div class="langs" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button></div>
+    <button id="themeBtn" class="nd-theme" data-i18n-aria="themeLabel"><span class="ti" aria-hidden="true">☾</span> <span class="tl2"></span></button>
+  </div>
+</aside>
 <div id="status" aria-live="polite"></div>
 <!-- tool panels: ONE open at a time (drawer beside the galaxy on a computer, bottom sheet on a phone);
      their dock of icon buttons is in the top bar -->
@@ -68,7 +91,14 @@
         <div id="lampRef"></div>
         <div id="hud" hidden></div>
       </aside>
+      <!-- statistics of the verse / surah being read (shown once a verse is open) -->
+      <button type="button" id="gStats" class="gstat" data-i18n-title="statsNow" hidden>
+        <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M5 20V11M12 20V5M19 20v-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <span data-i18n="statsShort">إحصاءات</span>
+      </button>
+      <!-- the galaxy toolbar: on a phone only ⌂, the shape, ⤢ and ⋯ are shown; ⋯ unfolds the other tools -->
       <div id="gtools" role="toolbar" data-i18n-aria="gTools">
+        <button id="gMore" class="gmore" aria-expanded="false" data-i18n-title="gMore" data-i18n-aria="gMore">⋯</button>
         <button id="gHome" data-i18n-title="home" data-i18n-aria="home">⌂</button>
         <button id="gIn" data-i18n-title="zoomIn" data-i18n-aria="zoomIn">＋</button>
         <button id="gOut" data-i18n-title="zoomOut" data-i18n-aria="zoomOut">－</button>
