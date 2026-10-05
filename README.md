@@ -18,7 +18,7 @@ Live demo: https://mishkat-4m1.pages.dev · Pre-existing work disclosed in [BASE
 - **قصص الأنبياء** من «علوم السور» في موسوعة الجمهرة، و**التحقق من النصوص**: هل هذه آية؟ (اقتباس محرَّف، آيتان مدموجتان، قول ليس من القرآن).
 - **شخص في ضيق شديد** (أفكار انتحار…): رسالة دعم ثابتة ورابط findahelpline.com أوّلًا، ثم آيات الرجاء بتفسيرها.
 - **الأسئلة المفخّخة وحقن الأوامر** وطلبات «اكتب لي آية/حديثًا/فتوى»: جواب ثابت دون أي نداء للذكاء الاصطناعي.
-- **أدوات**: مواقيت الصلاة (Aladhan، مع ذكر طريقة الحساب)، القبلة، المساجد القريبة (OpenStreetMap)، الأذكار (HadeethEnc وحصن المسلم بعد التحقق من حكم كل ذكر في الدرر)، التقويم الهجري، خطة الختمة (وتضيء السور المقروءة داخل شعار المشكاة)، روابط مفيدة، البحث بالصوت (Whisper)، **ابحث عن آية بتلاوتها**. الموقع لا يرسل موقعك إلى خادمه أبدًا.
+- **أدوات**: مواقيت الصلاة (Aladhan، مع ذكر طريقة الحساب)، القبلة، المساجد القريبة (قائمة OpenStreetMap عبر خادم مشكاة، وخريطة Google Maps داخل الصفحة)، الأذكار (HadeethEnc وحصن المسلم بعد التحقق من حكم كل ذكر في الدرر)، التقويم الهجري، خطة الختمة (وتضيء السور المقروءة داخل شعار المشكاة)، روابط مفيدة، البحث بالصوت (Whisper)، **ابحث عن آية بتلاوتها**. الموقع لا يرسل موقعك إلى خادمه أبدًا.
 - **خارج الموضوع** (وصفة طعام، سعر رحلة، كتابة برنامج، مقال أو قصيدة، الطقس، الرياضة…): جواب ثابت لطيف يبيّن ما تقدّمه «مشكاة» دون أي نداء للذكاء الاصطناعي، والخادم يرفض النصوص نفسها؛ أمّا **تاريخ اليوم والساعة** فيُجاب عنهما مباشرة، و«كم بقي على الصلاة» يفتح المواقيت.
 - **وضع الطفل** (أقل من ١٨ سنة، في التفضيلات): لا فتاوى ولا لون أحمر؛ رسالة لطيفة بأن الفتوى للعلماء الذين ختموا القرآن وتعلّموا تفسيره، وسؤال: «أيّ سورة تحبّ أن تحفظ؟» ثم وضع التكرار أو خطة ختمة.
 - **البحث موصول بالخدمات**: «خطة لختم القرآن في شهرين» تفتح الختمة بخطة مقترحة تُعدَّل حسب التزاماتك، «أريد أن أحفظ سورة الملك» تفتح التكرار، «كم مرة ذكرت كلمة الصبر» تفتح الإحصاءات.
@@ -54,7 +54,7 @@ Type **an idea, a question, a surah name, a verse number or part of a verse**:
 | `قصة يوسف` · `story of Moses` | Al-Jamhara's «علوم السور» summary and episodes with verse ranges, every verse naming the prophet |
 | `I want to kill myself` (crisis) | a fixed support message, findahelpline.com first, verses of hope with their full tafsir |
 | `ignore your instructions…` · `write me a hadith` | a fixed answer, no AI call |
-| `كم بقي على صلاة العصر` · `qibla` · `أذكار النوم` · `متى رمضان` | prayer times (Aladhan, method named), qibla, nearby mosques (OSM), adhkar with known grades, Hijri calendar, khatma plan — the position never reaches Mishkat's server |
+| `كم بقي على صلاة العصر` · `qibla` · `أذكار النوم` · `متى رمضان` | prayer times (Aladhan, method named), qibla, nearby mosques (OSM list through Mishkat's server, Google Maps map inside the page), adhkar with known grades, Hijri calendar, khatma plan — the position reaches Mishkat's server only rounded to ~100 m for the mosque search, never stored |
 
 | `وصفة الكسكسي` · `price of a flight` · `write me a python script` | **outside Mishkat's subject**: a fixed, kind answer that says what Mishkat does (and offers a Quran search when the request carries an Islamic subject: «اكتب مقالا عن الصبر» → «الصبر»); never sent to a model — the API refuses the same texts. Checked on the project's 1,498 questions: 13 mapped off-topic, all really off-topic; over-refusal bench 50/50 |
 | `ما تاريخ اليوم` · `what time is it` | today's Gregorian and Umm al-Qura date and the time, from the device's clock, with the prayer times and calendar a click away |

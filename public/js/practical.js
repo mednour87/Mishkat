@@ -112,7 +112,7 @@ export function parseMosques(j, from, lang = 'ar') {
 export const PS = {
   ar: {
     prayer: 'مواقيت الصلاة', qibla: 'اتجاه القبلة', mosques: 'المساجد القريبة',
-    place: 'المكان', placeNone: 'اختر مدينتك أو استعمل موقعك لعرض المواقيت.', usePos: 'استعمل موقعي', posNote: 'يُطلب الموقع بعد ضغطك فقط، ويُحفظ في هذا المتصفح، ولا يُرسل إلى خادم «مشكاة»؛ تُرسل الإحداثيات مباشرةً إلى خدمة الحساب (Aladhan) أو خريطة OpenStreetMap فقط.',
+    place: 'المكان', placeNone: 'اختر مدينتك أو استعمل موقعك لعرض المواقيت.', usePos: 'استعمل موقعي', posNote: 'يُطلب الموقع بعد ضغطك فقط، ويُحفظ في هذا المتصفح. تُرسل الإحداثيات إلى خدمة المواقيت (Aladhan) وإلى خريطة Google Maps المعروضة في الصفحة، وإلى خادم «مشكاة» مقرَّبةً (نحو ١٠٠ م) للبحث عن المساجد دون حفظها.',
     posFail: 'تعذّر الحصول على موقعك (لم يُسمح أو غير متاح). اختر مدينة من القائمة أو ابحث عنها.', posHere: 'موقعي الحالي', cityPh: 'ابحث عن مدينة…', find: 'بحث', choose: 'اختر مدينة', cityNone: 'لم أجد مدينة بهذا الاسم.',
     method: 'طريقة الحساب', methodAuto: (n) => `مقترحة حسب البلد: ${n}`, school: 'العصر', schoolStd: 'الجمهور (ظل المثل)', schoolHanafi: 'الحنفية (ظل المثلين)',
     by: (m, id) => `حسب: ${m} — طريقة Aladhan رقم ${id}. المواقيت حساب فلكي تقريبي، والمعتمد تقويم الجهة الرسمية في بلدك.`,
@@ -125,11 +125,12 @@ export const PS = {
     qCalib: 'البوصلة الإلكترونية تتأثر بالمعادن والمغناطيس: حرّك الهاتف على شكل ٨ لمعايرتها، وتحقّق بعلامة معروفة (محراب مسجد).', qNoSensor: 'لا تتوفر بوصلة في هذا الجهاز؛ استعمل الزاوية المعروضة أو افتح الصفحة على هاتفك:',
     qQr: 'امسح الرمز لفتح القبلة على هاتفك', qHow: 'الحساب: اتجاه الدائرة العظمى من موقعك إلى الكعبة (21.4225، 39.8262)، يُحسب في متصفحك.',
     mRadius: 'نصف القطر', mSearch: 'ابحث عن المساجد', mNone: 'لم تُسجَّل مساجد في هذا النطاق على خريطة OpenStreetMap؛ وسّع النطاق.', mFail: 'تعذّر الوصول إلى خريطة OpenStreetMap الآن.',
+    mOnMap: 'على الخريطة', mRoute: 'المسار', mAllMap: 'كل المساجد على الخريطة', mMapTitle: 'خريطة المساجد القريبة (Google Maps)', mMapNote: 'الخريطة من Google Maps داخل الصفحة: تُرسل إليها إحداثيات المكان المختار لعرضه. القائمة من OpenStreetMap عبر خادم «مشكاة» (الموقع مقرَّبًا إلى ١٠٠ م تقريبًا، لا يُحفظ).', mCount: (n) => `${n} مسجدًا في هذا النطاق`,
     mLoading: 'جارٍ البحث…', mMaps: 'Google Maps', mOsm: 'الخريطة', mUnnamed: 'مسجد (بلا اسم في الخريطة)', mSrc: 'البيانات: © مساهمو OpenStreetMap (ODbL) عبر Overpass؛ قد لا تكون كاملة.', km: (k) => `${k} كم`,
   },
   en: {
     prayer: 'Prayer times', qibla: 'Qibla direction', mosques: 'Nearby mosques',
-    place: 'Place', placeNone: 'Choose your city or use your location to show the times.', usePos: 'Use my location', posNote: 'Your location is asked only after your click, kept in this browser and never sent to Mishkat’s server; the coordinates go directly to the calculation service (Aladhan) or to OpenStreetMap only.',
+    place: 'Place', placeNone: 'Choose your city or use your location to show the times.', usePos: 'Use my location', posNote: 'Your location is asked only after your click and kept in this browser. The coordinates go to the prayer-time service (Aladhan), to the Google Maps map shown in the page, and — rounded to about 100 m, never stored — to Mishkat’s server to find mosques.',
     posFail: 'Your location could not be read (not allowed or unavailable). Choose a city from the list or search for it.', posHere: 'My current location', cityPh: 'Search a city…', find: 'Search', choose: 'Choose a city', cityNone: 'No city found with this name.',
     method: 'Calculation method', methodAuto: (n) => `proposed for the country: ${n}`, school: 'Asr', schoolStd: 'Majority (shadow = 1×)', schoolHanafi: 'Hanafi (shadow = 2×)',
     by: (m, id) => `According to: ${m} — Aladhan method ${id}. Times are an astronomical approximation; the official calendar of your country prevails.`,
@@ -142,6 +143,7 @@ export const PS = {
     qCalib: 'Phone compasses are disturbed by metal and magnets: move the phone in a figure 8 to calibrate it, and check against a known mark (a mosque’s mihrab).', qNoSensor: 'This device has no compass; use the angle shown or open the page on your phone:',
     qQr: 'Scan to open the qibla on your phone', qHow: 'Computation: great-circle direction from your position to the Kaaba (21.4225, 39.8262), computed in your browser.',
     mRadius: 'Radius', mSearch: 'Find mosques', mNone: 'No mosque is mapped in this area on OpenStreetMap; widen the radius.', mFail: 'OpenStreetMap cannot be reached now.',
+    mOnMap: 'On the map', mRoute: 'Route', mAllMap: 'All mosques on the map', mMapTitle: 'Map of the nearby mosques (Google Maps)', mMapNote: 'The map is Google Maps inside the page: the chosen place’s coordinates are sent to it to show the area. The list comes from OpenStreetMap through Mishkat’s server (place rounded to about 100 m, never stored).', mCount: (n) => `${n} mosques in this radius`,
     mLoading: 'Searching…', mMaps: 'Google Maps', mOsm: 'Map', mUnnamed: 'Mosque (no name on the map)', mSrc: 'Data: © OpenStreetMap contributors (ODbL) via Overpass; it may be incomplete.', km: (k) => `${k} km`,
   },
 };
@@ -389,32 +391,57 @@ export function createPractical(ctx) {
   }
 
   // ------------------------------------------------------------------ T066 nearby mosques
+  // (5 Oct) the map is IN the page (Google Maps embed, no key) and the list comes from Mishkat's server (/api/mosques:
+  // Overpass with an identified User-Agent and several mirrors — the public server refused browsers with 406/504);
+  // the search starts at once, a mosque of the list is shown on the map, «route» opens Google Maps' directions
+  const ZOOM = { 500: 16, 1000: 15, 2000: 14, 5000: 13, 10000: 12 };
+  const mapSrc = (q, lat, lon, z) => `https://www.google.com/maps?q=${encodeURIComponent(q)}&ll=${lat.toFixed(5)},${lon.toFixed(5)}&z=${z}&output=embed&hl=${ar() ? 'ar' : 'en'}`;
+  async function findMosques(p, r) {
+    try {
+      const res = await doFetch('api/mosques', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ lat: p.lat, lon: p.lon, r }) });
+      const j = res.ok ? await res.json() : null;
+      if (j && j.ok) return parseMosques(j, p, ctx.lang());
+    } catch (e) { /* the browser tries a mirror itself below */ }
+    try {
+      const res = await doFetch('https://z.overpass-api.de/api/interpreter?data=' + encodeURIComponent(overpassQuery(p.lat, p.lon, r)));
+      if (res.ok) return parseMosques(await res.json(), p, ctx.lang());
+    } catch (e) { /* unavailable */ }
+    return null;
+  }
   async function mosques(body) {
     clearInterval(timer);
     await restorePlace();
     const t = L(), p = place();
     if (!p) { picker(body, () => mosques(body)); return; }
-    const radius = store.get('mosqueRadius', 2000);
-    body.innerHTML = placeLine(p) + `<div class="p-row"><label>${esc(t.mRadius)} <select data-r>${[500, 1000, 2000, 5000, 10000].map(r => `<option value="${r}" ${r === radius ? 'selected' : ''}>${esc(t.km(num(r / 1000)))}</option>`).join('')}</select></label>
-      <button type="button" class="mini gold" data-go>${esc(t.mSearch)}</button>
-      <a class="mini" href="https://www.google.com/maps/search/${encodeURIComponent(ar() ? 'مسجد' : 'mosque')}/@${p.lat},${p.lon},15z" target="_blank" rel="noopener">🗺 ${esc(t.mAllMaps)}</a></div><ol class="mq-list"></ol><p class="p-small">${esc(t.mSrc)}</p>`;
+    const radius = store.get('mosqueRadius', 2000), my = gen;
+    const allQ = ar() ? 'مسجد' : 'mosque';
+    body.innerHTML = placeLine(p) + `<div class="mq-map"><iframe title="${esc(t.mMapTitle)}" src="${esc(mapSrc(allQ, p.lat, p.lon, ZOOM[radius] || 14))}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+      <div class="p-row mq-bar"><label>${esc(t.mRadius)} <select data-r>${[500, 1000, 2000, 5000, 10000].map(r => `<option value="${r}" ${r === radius ? 'selected' : ''}>${esc(t.km(num(r / 1000)))}</option>`).join('')}</select></label>
+      <button type="button" class="mini" data-all>${esc(t.mAllMap)}</button>
+      <a class="mini" href="https://www.google.com/maps/search/${encodeURIComponent(allQ)}/@${p.lat},${p.lon},15z" target="_blank" rel="noopener">↗ ${esc(t.mMaps)}</a></div>
+      <p class="mq-count note" aria-live="polite"></p><ol class="mq-list"></ol><p class="p-small">${esc(t.mMapNote)} ${esc(t.mSrc)}</p>`;
+    const frame = body.querySelector('.mq-map iframe'), show = (src) => { if (frame.src !== src) frame.src = src; };
     body.querySelector('[data-change]').onclick = () => picker(body, () => mosques(body));
-    body.querySelector('[data-r]').onchange = (ev) => store.set('mosqueRadius', +ev.target.value);
-    body.querySelector('[data-go]').onclick = async () => {
-      const ol = body.querySelector('.mq-list'), r = +body.querySelector('[data-r]').value;
-      ol.innerHTML = `<li class="note">${esc(t.mLoading)}</li>`;
-      let list = null;
-      for (const host of ['https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']) {
-        try {
-          const res = await doFetch(host, { method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' }, body: 'data=' + encodeURIComponent(overpassQuery(p.lat, p.lon, r)) });
-          if (res.ok) { list = parseMosques(await res.json(), p, ctx.lang()); break; }
-        } catch (e) { /* next mirror */ }
-      }
-      if (!list) { ol.innerHTML = `<li class="note">${esc(t.mFail)}</li>`; return; }
-      if (!list.length) { ol.innerHTML = `<li class="note">${esc(t.mNone)}</li>`; return; }
-      ol.innerHTML = list.slice(0, 40).map(m => `<li><b>${esc(m.name || t.mUnnamed)}</b> <small>${esc(t.km(num(m.km < 1 ? m.km.toFixed(2) : m.km.toFixed(1))))}</small>
-        <span class="mq-a"><a class="mini" href="${esc(m.maps)}" target="_blank" rel="noopener">${esc(t.mMaps)}</a> <a class="mini" href="${esc(m.osm)}" target="_blank" rel="noopener">${esc(t.mOsm)}</a></span></li>`).join('');
+    body.querySelector('[data-all]').onclick = () => { body.querySelectorAll('.mq-list li.on').forEach(x => x.classList.remove('on')); show(mapSrc(allQ, p.lat, p.lon, ZOOM[+body.querySelector('[data-r]').value] || 14)); };
+    const search = async () => {
+      const ol = body.querySelector('.mq-list'), cnt = body.querySelector('.mq-count'), r = +body.querySelector('[data-r]').value;
+      cnt.textContent = t.mLoading; ol.innerHTML = '';
+      const list = await findMosques(p, r);
+      if (my !== gen || !ol.isConnected) return;
+      if (!list) { cnt.textContent = t.mFail; return; }
+      if (!list.length) { cnt.textContent = t.mNone; return; }
+      cnt.textContent = t.mCount(num(list.length));
+      ol.innerHTML = list.slice(0, 40).map((m, k) => `<li data-k="${k}"><button type="button" class="mq-name" data-map="${k}"><b>${esc(m.name || t.mUnnamed)}</b> <small>${esc(t.km(num(m.km < 1 ? m.km.toFixed(2) : m.km.toFixed(1))))}</small></button>
+        <span class="mq-a"><button type="button" class="mini" data-map="${k}">📍 ${esc(t.mOnMap)}</button><a class="mini" href="https://www.google.com/maps/dir/?api=1&destination=${m.lat.toFixed(6)},${m.lon.toFixed(6)}" target="_blank" rel="noopener">🧭 ${esc(t.mRoute)}</a> <a class="mini" href="${esc(m.osm)}" target="_blank" rel="noopener">${esc(t.mOsm)}</a></span></li>`).join('');
+      ol.querySelectorAll('[data-map]').forEach(b => b.onclick = () => {
+        const m = list[+b.dataset.map];
+        ol.querySelectorAll('li.on').forEach(x => x.classList.remove('on')); b.closest('li').classList.add('on');
+        show(mapSrc(`${m.lat.toFixed(6)},${m.lon.toFixed(6)}`, m.lat, m.lon, 17));
+        frame.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      });
     };
+    body.querySelector('[data-r]').onchange = (ev) => { store.set('mosqueRadius', +ev.target.value); body.querySelector('[data-all]').click(); search(); };
+    search();
   }
 
   // the adhan (or the tone) at the time of each prayer while the page is open, panel open or not: it reads the

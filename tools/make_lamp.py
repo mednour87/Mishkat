@@ -33,6 +33,7 @@ export function lampSVG({ size = 120, word = false, animated = true, title = 'Mi
 }
 
 // Put a word inside the glass, over the glowing oil; long words are compressed to fit, never cut.
+const WORD_W = new Map();
 export function setLampWord(svgRoot, word) {
   const t = svgRoot && svgRoot.querySelector('.lamp-word');
   if (!t) return;
@@ -43,11 +44,13 @@ export function setLampWord(svgRoot, word) {
   if (!word) return;
   const maxW = 38; // the inside of the glass body
   try {
-    const w = t.getComputedTextLength();
+    // widths are remembered per word (measuring forces a layout of the SVG at every recited word)
+    let w = WORD_W.get(word);
+    if (w == null) { w = t.getComputedTextLength(); if (w > 0) { WORD_W.set(word, w); if (WORD_W.size > 3000) WORD_W.clear(); } }
     if (w > maxW) {
       const fs = Math.max(8, 15 * maxW / w);
       t.setAttribute('font-size', fs.toFixed(1));
-      if (t.getComputedTextLength() > maxW) { t.setAttribute('textLength', maxW); t.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }
+      if (15 * maxW / w < 8) { t.setAttribute('textLength', maxW); t.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }   // at the smallest size it still overflows
     }
   } catch (e) { t.setAttribute('textLength', maxW); t.setAttribute('lengthAdjust', 'spacingAndGlyphs'); }
 }

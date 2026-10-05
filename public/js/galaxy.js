@@ -10,6 +10,7 @@
 //                 and ONLY the recited word is written, inside a luminous disc on its star.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/OrbitControls.js';
+import { verseDist, camStep } from './readcam.js';
 
 const CLASS_COLORS = [null, '#FFD66B', '#5EE6A0', '#8FD3FF', '#B98CFF'];
 const MECCAN = new THREE.Color('#F3D9A4');
@@ -118,7 +119,10 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true, powerPreference: 'high-performance' });
   // adaptive resolution: start at up to 2× (sharp stars on high-density screens) and drop to 1× if frames are slow
-  let px = Math.min(window.devicePixelRatio || 1, 2);
+  // (5 Oct) phones and small processors: at most 1.5× (77,433 additive points at 3× melted the frame rate and the
+  // battery), and the render loop slows down when nothing moves (see loop)
+  const lowPower = matchMedia('(pointer: coarse)').matches || (navigator.hardwareConcurrency || 8) <= 4;
+  let px = Math.min(window.devicePixelRatio || 1, lowPower ? 1.5 : 2);
   renderer.setPixelRatio(px);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(55, 1, 1, 8000);
@@ -275,7 +279,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     const d = camera.position.distanceTo(controls.target);
     // 1. the recited word (glides smoothly from one star to the next)
     let pillOn = false;
-    if (okPill && activeI != null && d < WORDS_DIST) {      // zoomed out, the word is in the lamp only
+    if (okPill && activeI != null && (d < WORDS_DIST || (reciting && d < 260))) {      // zoomed out, the word is in the lamp only
       const p = screen(active.position, w, h);
       if (p) {
         const k = pillPos.on ? 1 - Math.exp(-dt * 10) : 1;
@@ -360,10 +364,14 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     scene.add(thread);
   }
 
+  let sizeKey = '';
   function resize() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (!w || !h) return;
-    renderer.setSize(w, h, false);
+    // (5 Oct) only when the size really changed: setting the canvas size again re-allocates (and clears) the WebGL
+    // drawing buffer — refView() calls resize() at every flight home or change of shape (≈ 0.4 s on a slow phone)
+    const key = `${w}x${h}@${px}`;
+    if (key !== sizeKey) { sizeKey = key; renderer.setSize(w, h, false); }
     camera.aspect = w / h;
     // the picture can be lifted (phone, home: the suggestions cover the lower part of the view)
     if (shiftY) camera.setViewOffset(w, h, 0, shiftY * h, w, h); else camera.clearViewOffset();
@@ -395,8 +403,11 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     const c = centroid(v);
     const dir = camera.position.clone().sub(controls.target).normalize();
     if (dir.lengthSq() < 0.5) dir.set(0, -0.7, 0.7);
-    animateTo(c.clone().add(dir.multiplyScalar(dist)), c);
-    ring.position.copy(c); ring.visible = true;
+    // far enough to see the whole verse (in the galaxy a verse is one helix turn around its arm)
+    const d2 = Math.max(dist, verseDist(layouts[layout], spines[layout], vStart[v], vEnd[v]));
+    animateTo(c.clone().add(dir.multiplyScalar(d2)), c);
+    // (5 Oct) no selection ring: it floated in the void at the centre of the verse (a helix turn) and looked like
+    // a useless turning circle; the verse is shown by its stars, its words and their thread
   }
   // frame a set of verses (the answer) so that all of them are in view
   function fitVerses(list) {
@@ -566,16 +577,41 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     if (p && onPick) onPick(p);
   });
 
+  // (5 Oct) the shaders of the recited word's glow and of the verse's thread are compiled and linked now, while the
+  // loader is shown, by drawing them once out of view — not at the first recited word (a hitch when «play» was
+  // pressed on a phone). Shader error checks (extra driver round-trips at first use) are off in production.
+  renderer.debug.checkShaderErrors = false;
+  {
+    // in front of the camera (an object behind it is culled, and its shader was then not compiled); the loader
+    // still covers the canvas, and they are removed before the first visible frame
+    camera.lookAt(controls.target); camera.updateMatrixWorld();
+    const ahead = camera.position.clone().addScaledVector(camera.getWorldDirection(new THREE.Vector3()), 60);
+    const warm = new THREE.Line(new THREE.BufferGeometry().setFromPoints([ahead, ahead.clone().addScalar(1)]), threadMat);
+    scene.add(warm); active.visible = true; active.position.copy(ahead);
+    try { renderer.render(scene, camera); } catch (e) { /* ignore */ }
+    scene.remove(warm); warm.geometry.dispose(); active.visible = false;
+  }
   const clock = new THREE.Clock();
   let last = performance.now();
-  const FOLLOW_DIST = 34, FOLLOW_SLACK = 0.3;     // tests/reading_camera.mjs simulates the same rule
+  const _p = [0, 0, 0], _s = [0, 0, 0], _t = [0, 0, 0];   // scratch for the reading camera (readcam.js)
   let slow = 0;
+  // (5 Oct) the loop draws only what can be seen: nothing while the galaxy is off screen (phone: the Mushaf or the
+  // tafsir tab) or the page hidden; when nothing moves, a few frames a second are enough for the slow twinkle
+  let inView = true, lastChange = 0, lastFrame = 0;
+  new IntersectionObserver((es) => { inView = es[es.length - 1].isIntersecting; }).observe(canvas);
+  controls.addEventListener('change', () => { lastChange = performance.now(); });
   function loop() {
     requestAnimationFrame(loop);
-    const now = performance.now(), raw = now - last, dt = Math.min(0.1, raw / 1000);
+    const now = performance.now();
+    if (document.hidden || !inView || !canvas.clientWidth) { last = now; return; }
+    const moving = anim || morph || follow || reciting || now - lastChange < 400 || now - userAt < 1500;
+    const gap = moving ? (lowPower && !reciting && !anim ? 1000 / 45 : 0) : controls.autoRotate ? (lowPower ? 1000 / 30 : 0) : (lowPower ? 1000 / 12 : 1000 / 24);
+    if (gap && now - lastFrame < gap - 2) return;
+    lastFrame = now;
+    const raw = now - last, dt = Math.min(0.1, raw / 1000);
     last = now;
     // slow frames for ~2 s while the page is visible → render at 1× (never back up during a visit)
-    if (px > 1 && raw < 250) {
+    if (px > 1 && !gap && raw < 250) {
       slow = raw > 26 ? slow + 1 : Math.max(0, slow - 1);
       if (slow > 90) { px = 1; renderer.setPixelRatio(1); uniforms.uPx.value = 1; resize(); slow = 0; }
     }
@@ -588,24 +624,27 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
       controls.target.lerpVectors(anim.c0, anim.c1, e);
       if (t >= 1) anim = null;
     } else if (follow && now - userAt > 5000) {
-      // critically damped glide: the target slides to the word, the distance eases to the reading zoom
-      const k = 1 - Math.exp(-dt * 2.6);
+      // the reading camera (readcam.js): the aim glides to the recited word (between the arm's middle curve and
+      // the word), the distance eases to the reading zoom; the view keeps its angle
       const offv = camera.position.clone().sub(controls.target);
-      controls.target.lerp(follow.target, k);
+      const S = morph ? null : spines[layout], i = follow.i;
+      const p = wpos(i, tmpV), t = controls.target;
+      _p[0] = p.x; _p[1] = p.y; _p[2] = p.z;
+      if (S) { _s[0] = S[i * 3]; _s[1] = S[i * 3 + 1]; _s[2] = S[i * 3 + 2]; }
+      _t[0] = t.x; _t[1] = t.y; _t[2] = t.z;
+      camStep(_t, follow.goal, _p, S ? _s : null, follow.dist, dt);
+      t.set(_t[0], _t[1], _t[2]);
       const len = offv.length() + (follow.dist - offv.length()) * (1 - Math.exp(-dt * 1.6));
-      camera.position.copy(controls.target).add(offv.setLength(len));
+      camera.position.copy(t).add(offv.setLength(len));
     }
     if (morph) {
       const t = Math.min(1, (now - morph.t0) / 2200);
       morph.e = uniforms.uMix.value = ease(t);
-      // reading: the camera keeps the recited word in view while it glides to its new place
-      if (follow && activeI != null) follow.target.copy(wpos(activeI, tmpV));
       if (t >= 1) finishMorph();
     }
     if (active.visible && activeI != null) {
       // the glow slides to the new word instead of jumping
       active.position.lerp(wpos(activeI, tmpV), 1 - Math.exp(-dt * 12));
-      rays.material.rotation += dt * 0.25;
       const br = 1 + 0.06 * Math.sin(now * 0.004); active.scale.set(10 * br, 10 * br, 1);
     }
     if (ring.visible) ring.lookAt(camera.position);
@@ -628,28 +667,20 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     // (paused for a few seconds after the visitor moves the camera)
     lookAtWord(i) {
       if (i == null || i < 0 || i >= N) return;
-      const p = wpos(i);
-      ring.position.copy(p); ring.visible = true;
-      // a calm camera for reading: it stays still while the recited word is in the middle of the view and only
-      // glides FORWARD to it when the word nears the edge — the words advance along the shape in one direction
-      // (an arm, a ring, the dome's circuit, a petal, the letters' columns), so the view only moves that way.
-      // Following each word, or jumping to each verse's centre (in the void for a verse along a ring), made the
-      // view swing back and forth. The distance shows the verse (closer for a short one).
-      // on a layout with a spine (the galaxy), the camera follows the arm's middle curve, not the scattered word
-      const S = morph ? null : spines[layout];
-      const at = (k, o = new THREE.Vector3()) => S ? o.set(S[k * 3], S[k * 3 + 1], S[k * 3 + 2]) : wpos(k, o);
-      const v = wordVerse[i], half = Math.tan(camera.fov * Math.PI / 360);
-      if (S) p.copy(at(i));
+      // (5 Oct) no ring and no turning rays any more: the recited word is shown by its glow and its disc only.
+      // The distance shows the whole verse (its helix turn around the arm in the galaxy); the camera itself glides
+      // in the render loop (camStep), towards the word, without jolts and without going back.
+      ring.visible = false;
+      const v = wordVerse[i];
       if (!follow || follow.v !== v) {
-        const mid = at((vStart[v] + vEnd[v] - 1) >> 1), w = new THREE.Vector3();
-        let r = 0;
-        for (let k = vStart[v]; k < vEnd[v]; k++) r = Math.max(r, at(k, w).distanceTo(mid));
-        const dist = Math.min(110, Math.max(FOLLOW_DIST, r / half * 1.15 + 8));
-        if (!follow) { follow = { target: p.clone(), dist, v }; anim = null; controls.autoRotate = false; }
-        else { follow.dist = dist; follow.v = v; }
+        const S = morph ? null : spines[layout], P = morph ? null : layouts[layout];
+        const dist = P ? verseDist(P, S, vStart[v], vEnd[v]) : (follow ? follow.dist : 60);
+        if (!follow) {
+          const t = controls.target;
+          follow = { goal: [t.x, t.y, t.z], dist, v, i }; anim = null; controls.autoRotate = false;
+        } else { follow.dist = dist; follow.v = v; }
       }
-      // the recited word stays near the middle of the view (within 30 % of the half-view)
-      if (p.distanceTo(follow.target) > FOLLOW_SLACK * follow.dist * half * Math.min(1, camera.aspect)) follow.target.copy(p);
+      follow.i = i;
     },
     get count() { return N; },
     // the recited word: a glowing sprite + its text in a luminous disc on the star

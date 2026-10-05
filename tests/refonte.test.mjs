@@ -11,7 +11,7 @@ const html = fs.readFileSync('public/index.html', 'utf8');
 const app = fs.readFileSync('public/js/app.js', 'utf8');
 
 test('top bar + drawer: every former control is still on the page', () => {
-  for (const id of ['navBtn', 'navDrawer', 'navClose', 'navScrim', 'dock', 'engBtn', 'khCount', 'btnInstall', 'btnMenu', 'btnAbout', 'themeBtn', 'gStats', 'gMore',
+  for (const id of ['navBtn', 'navDrawer', 'navClose', 'navScrim', 'dock', 'engBtn', 'khCount', 'btnInstall', 'btnMenu', 'btnAbout', 'themeBtn', 'gMore',
     'gHome', 'gIn', 'gOut', 'gRot', 'gNames', 'shapeSel', 'orderSel', 'gLegend', 'gFull', 'gcam'])
     assert.ok(html.includes(`id="${id}"`), id);
   assert.equal((html.match(/data-lang="ar"/g) || []).length, 3, 'language switch: top bar (computer), drawer, gate');

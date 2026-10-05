@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أحكام التجويد — مشكاة · Tajweed rules — Mishkat</title>
+<meta name="description" content="The tajweed rules (riwayat Hafs) with their colours, their letters and examples from the Mushaf — Mishkat.">
+<meta name="theme-color" content="#05070d">
+<link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/features.css">
+<link rel="stylesheet" href="css/tajweed-page.css">
+</head>
+<body class="tjp">
+<header class="tjp-top">
+  <a class="tjp-back" id="back" href="./"><span aria-hidden="true">→</span> <span data-t="back">العودة إلى المصحف</span></a>
+  <a class="tjp-brand" href="./"><img src="img/logo.svg" alt="" width="34" height="34"><b data-t="brand">مِشكاة</b></a>
+  <div class="tjp-tools">
+    <div class="langs" role="group" aria-label="Language"><button type="button" data-lang="ar">ع</button><button type="button" data-lang="en">EN</button></div>
+    <button type="button" id="theme" class="tjp-theme" aria-label="Theme">☾</button>
+  </div>
+</header>
+<main class="tjp-main">
+  <section class="tjp-hero">
+    <h1 data-t="title">أحكام التجويد</h1>
+    <p data-t="lead"></p>
+    <nav class="tjp-toc" id="toc" aria-label="Contents"></nav>
+  </section>
+  <div id="groups"></div>
+  <section class="tjp-src"><h2 data-t="srcTitle">المصادر</h2><p id="src1"></p><p id="src2"></p><p data-t="srcEx"></p></section>
+</main>
+<script type="module" src="js/tajweed-page.js"></script>
+</body>
+</html>

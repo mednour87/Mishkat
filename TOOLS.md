@@ -21,7 +21,8 @@ The AI never writes text shown to the visitor: it returns IDs (verses, sentences
 | Service | Role | Terms |
 |---|---|---|
 | Aladhan API v1 | prayer times (method and authority shown) | free public API |
-| Overpass API (overpass-api.de, mirror kumi.systems) / Nominatim | nearby mosques, city search | ODbL data, OSM usage policies |
+| Overpass API (z./lz4.overpass-api.de, overpass-api.de, kumi.systems, private.coffee — through `/api/mosques`) / Nominatim | nearby mosques, city search | ODbL data, OSM usage policies (identified User-Agent, cached answers) |
+| Google Maps embed (iframe, no key) | the map of the nearby mosques inside the panel, a mosque shown on it, «route» link | Google Maps terms; the chosen place is sent to Google to draw the map (stated) |
 | verses.quran.com | Alafasy recitation audio (streamed) | Quran.com |
 
 ## Software

@@ -78,13 +78,11 @@ html[dir=ltr] #navDrawer { transform: translateX(100%); }
   #status { top: calc(var(--head) + 6px); }
 }
 
-/* ---------------------------------------------------------------- galaxy toolbar, 📊, camera pad */
-.gstat { position: absolute; z-index: 4; bottom: 10px; inset-inline-start: 10px; display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 12px;
-  border-radius: 999px; border: 1px solid rgba(255, 214, 107, .45); background: rgba(10, 14, 24, .82); color: var(--gold); font-size: 12.5px; backdrop-filter: blur(6px); }
-.gstat:hover { background: rgba(40, 30, 8, .8); }
+/* ---------------------------------------------------------------- galaxy toolbar, camera pad
+   (5 Oct: the 📊 button of the galaxy is gone — the statistics are in the reading bar, beside the verse they count) */
 #gtools > .gmore { display: none; font-size: 18px; letter-spacing: -1px; }
 @media (max-width: 860px) {
-  #gtools { flex-wrap: nowrap !important; overflow: visible !important; inset-inline-start: auto !important; max-width: calc(100% - 110px); gap: 4px; bottom: 8px; inset-inline-end: 8px; }
+  #gtools { flex-wrap: nowrap !important; overflow: visible !important; inset-inline-start: auto !important; max-width: calc(100% - 16px); gap: 4px; bottom: 8px; inset-inline-end: 8px; }
   #gtools > .gmore { display: grid; }
   #gtools > button, #gtools .viewpick { width: 36px; height: 36px; border-radius: 10px; font-size: 15px; }
   #gtools .viewpick { width: auto; padding: 0 6px; }
@@ -93,8 +91,6 @@ html[dir=ltr] #navDrawer { transform: translateX(100%); }
   #gzone:not(.gt-open) #gLegend, #gzone:not(.gt-open) .viewpick:has(#orderSel), #gzone:not(.gt-open) #gcam { display: none !important; }
   /* unfolded: two rows, from the corner */
   #gzone.gt-open #gtools { flex-wrap: wrap !important; justify-content: flex-end; max-width: calc(100% - 16px); row-gap: 4px; }
-  #gzone.gt-open #gStats { bottom: 92px; }
-  .gstat { height: 36px; padding: 0 10px; bottom: 8px; inset-inline-start: 8px; font-size: 12px; }
   #legendBox { bottom: 96px !important; }
 }
 
@@ -196,7 +192,6 @@ html[data-theme=light] #suggest .fy-pick select, html[data-theme=light] #suggest
 html[data-theme=light] #suggest .btn { background: rgba(255, 255, 255, .06); color: #eceff5; border-color: rgba(255, 255, 255, .14); }
 html[data-theme=light] #suggest .btn.gold { background: linear-gradient(135deg, rgba(255, 214, 107, .22), rgba(232, 169, 60, .14)); color: #ffd66b; }
 html[data-theme=light] #lampMap .lm-orders button, html[data-theme=light] #lampMap .lm-ctrl button { color: #eceff5; }
-html[data-theme=light] .gstat { color: #ffd66b; }
 /* the drawer in the light theme: paper */
 html[data-theme=light] #navDrawer { background: linear-gradient(180deg, #fbf6ea, #f3ead6); border-color: rgba(168, 111, 12, .25); box-shadow: 0 0 50px rgba(60, 40, 10, .25); }
 html[data-theme=light] #navDrawer .nd-head h2 { color: #8a5a06; }
@@ -257,3 +252,47 @@ html[data-theme=light] .tj-info { background: #fff6e2; }
 /* the tajweed box stays in view while the Mushaf scrolls under it */
 .rd-body > .tj-legend { position: sticky; top: -8px; z-index: 3; background: var(--panel); max-height: 46%; overflow-y: auto; box-shadow: 0 8px 18px rgba(0, 0, 0, .25); }
 html[data-theme=light] .rd-body > .tj-legend { background: #f7f1e4; box-shadow: 0 6px 14px rgba(60, 40, 10, .1); }
+
+/* (5 Oct) the theme button of the drawer keeps its label inside the drawer on a phone (an older rule of app.css
+   gave #themeBtn a fixed 30 px width: «الوضع الداكن» overflowed out of the drawer) */
+#themeBtn.nd-theme { width: auto; height: auto; min-width: 0; flex: 0 1 auto; overflow: hidden; }
+#themeBtn.nd-theme .tl2 { overflow: hidden; text-overflow: ellipsis; }
+
+/* (5 Oct) the brief tajweed box of the reader: two short lines, the full rules are on tajweed.html */
+.tj-legend.tj-brief { padding: 6px 10px; line-height: 1.6; max-height: none; }
+.tj-brief .tj-here { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.tj-brief .tj-here > b { flex: none; font-size: 12.5px; }
+.tj-brief .tj-verse { flex: 1 1 auto; min-width: 0; flex-wrap: nowrap; overflow-x: auto; margin: 0; scrollbar-width: none; padding-block: 2px; }
+.tj-brief .tj-verse::-webkit-scrollbar { display: none; }
+.tj-brief .tj-chip { flex: none; min-height: 30px; font-size: 12.5px; }
+.tj-brief .tj-info { margin-top: 4px; }
+.tj-foot { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.tj-brief .tj-key { flex: 1 1 auto; min-width: 0; display: flex; gap: 10px; margin: 0; overflow-x: auto; white-space: nowrap; scrollbar-width: none; font-size: 11.5px; color: var(--mut); }
+.tj-brief .tj-key::-webkit-scrollbar { display: none; }
+.tj-more { flex: none; font-size: 12.5px; color: var(--gold); text-decoration: none; border-bottom: 1px dotted currentColor; white-space: nowrap; }
+
+/* (5 Oct) nearby mosques: Google Maps inside the panel, the list below; a mosque of the list is shown on the map */
+.mq-map { position: relative; margin: 6px 0 8px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #0d1220; aspect-ratio: 4 / 3; max-height: 46vh; }
+.mq-map iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.mq-bar { flex-wrap: wrap; gap: 6px; }
+.mq-count { margin: 4px 0; }
+.mq-list li { padding: 4px 6px; border-radius: 10px; }
+.mq-list li.on { background: rgba(255, 214, 107, .1); outline: 1px solid rgba(255, 214, 107, .35); }
+.mq-name { background: none; border: 0; padding: 0; text-align: start; color: var(--txt); }
+.mq-name:hover b { color: var(--gold); }
+.mq-a { flex-wrap: wrap; }
+/* the sticky tajweed box hides the verses scrolling under it (it was 92 % opaque: the text showed through) */
+.rd-body > .tj-legend.tj-brief { background: #0c111d; }
+html[data-theme=light] .rd-body > .tj-legend.tj-brief { background: #f7f1e4; }
+/* (5 Oct) phone: the daily level reminder sits under the top bar (at the bottom it covered the suggestions and the
+   galaxy toolbar) */
+@media (max-width: 860px) { #engToast { top: calc(var(--head) + 8px); bottom: auto; } }
+/* gate: the basmala's marks (Amiri Quran) touched the hint line under it */
+.g-basmala { padding-bottom: 8px; }
+.ghint { margin-top: 10px; }
+
+/* (5 Oct) the Mushaf in its pages, each laid out only near the screen; a thin page number closes each page */
+.mushaf .pg { content-visibility: auto; contain-intrinsic-size: auto 720px; }
+.mushaf .pg-n { display: block; margin: 2px auto 10px; width: fit-content; min-width: 34px; padding: 0 10px; border-top: 1px solid rgba(255, 214, 107, .22);
+  text-align: center; font-family: var(--ui); font-size: 11px; line-height: 1.8; color: var(--mut); opacity: .8; }
+.mushaf.en .vb { content-visibility: auto; contain-intrinsic-size: auto 220px; }

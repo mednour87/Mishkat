@@ -119,7 +119,7 @@ try {
     await open('', { theme: 'light' }); await shot('m_light_home.jpg', 2500);
   }
   if (run('menu')) { await phone(); await open('?s=24&a=35'); await click('#navBtn'); await shot('m_menu.jpg', 1200); }
-  if (run('stats')) { await phone(); await open('?s=24&a=35'); await sleep(2500); await click('#gStats'); await shot('m_stats.jpg', 2000); }
+  if (run('stats')) { await phone(); await open('?s=24&a=35'); await sleep(2500); await click('#mtabs [data-pane=r]'); await click('#rMore'); await click('#rStats'); await shot('m_stats.jpg', 2000); }
   if (run('engage')) {
     await phone(); await open('', { prefs: ACTIVE }); await click('#navBtn'); await sleep(500); await click('#engBtn'); await shot('m_engage.jpg', 5000);
     await desk(); await open('', { prefs: ACTIVE }); await click('#engBtn'); await shot('d_engage.jpg', 5000);
@@ -134,6 +134,98 @@ try {
       await evalJs(`(()=>{const s=document.querySelector('#shapeSel'); s.selectedIndex=${k}; s.dispatchEvent(new Event('change',{bubbles:true})); return 1})()`);
       await shot(`d_shape${k}.jpg`, 3500);
     }
+  }
+  // (5 Oct) explicit scenarios: reading camera on a phone, mosques panel, tajweed page, intro film on a phone
+  if (WANT.includes('readcam')) {
+    await phone(); await open('?s=18&a=1'); await sleep(2500); await click('#mtabs [data-pane=r]'); await sleep(500); await click('#rPlayAll');
+    for (const t of [4, 8, 12, 16, 20]) {
+      await sleep(t === 4 ? 4000 : 4000);
+      const m = await evalJs(`(()=>{const c=document.querySelector('#galaxy').getBoundingClientRect(), p=document.querySelector('.gl.now'); if(!p||p.classList.contains('off')) return 'word hidden'; const r=p.getBoundingClientRect(); return JSON.stringify({word:p.textContent, dx:+(((r.left+r.width/2)-(c.left+c.width/2))/(c.width/2)).toFixed(2), dy:+(((r.top+r.height/2)-(c.top+c.height/2))/(c.height/2)).toFixed(2)})})()`);
+      console.log('readcam', t, m);
+      await shot(`m_readcam_${t}s.jpg`);
+    }
+  }
+  if (WANT.includes('mosques')) {
+    await phone(); await open(''); await click('#navBtn'); await sleep(500); await click('[data-panel=mosques]'); await sleep(9000);
+    console.log('mosques:', await evalJs(`JSON.stringify({count:(document.querySelector('.mq-count')||{}).textContent, items:document.querySelectorAll('.mq-list li').length, map:!!document.querySelector('.mq-map iframe')})`));
+    await shot('m_mosques.jpg');
+    await evalJs(`(document.querySelector('.mq-list [data-map]')||{click(){}}).click(), 1`); await shot('m_mosques_one.jpg', 4000);
+    await desk(); await open(''); await click('[data-panel=mosques]'); await shot('d_mosques.jpg', 9000);
+  }
+  if (WANT.includes('tajpage')) {
+    await phone(); await send('Page.navigate', { url: BASE + '/tajweed.html?lang=ar&from=2:5' }); await shot('m_tajpage.jpg', 4000);
+    await evalJs(`scrollTo(0, 1400), 1`); await shot('m_tajpage2.jpg', 800);
+    await desk(); await send('Page.navigate', { url: BASE + '/tajweed.html?lang=en' }); await shot('d_tajpage_en.jpg', 4000);
+    await phone(); await open('?s=2&a=5', { prefs: {} }); await evalJs(`localStorage.setItem('mishkat.tj','1'); location.reload(); 1`); await sleep(5000); await click('#mtabs [data-pane=r]'); await shot('m_tj_reader.jpg', 2000);
+  }
+  // every tool panel, the drawer, the reader and the tafsir on a phone and a computer: elements cut by the edge of the
+  // screen (a word or a button half outside, like the theme label of 5 Oct), console errors, a picture of each
+  if (WANT.includes('audit')) {
+    const overflow = `(()=>{const W=innerWidth, out=[]; for (const el of document.querySelectorAll('body *')) { if (!el.offsetParent && getComputedStyle(el).position!=='fixed') continue; const cs=getComputedStyle(el); if (cs.visibility==='hidden'||+cs.opacity===0) continue; const r=el.getBoundingClientRect(); if (!r.width||!r.height) continue; if (el.closest('.glabels,#tooltip,.mq-map,.tz-books,.tj-verse,.tj-key,#dock,.fy-chips,.hscroll,[data-scroll]')) continue; if (r.right>W+1||r.left<-1) { let p=el.parentElement, clipped=false; while(p&&p!==document.body){const s=getComputedStyle(p); if(/(auto|scroll|hidden)/.test(s.overflowX)){const pr=p.getBoundingClientRect(); if(pr.right<=W+1&&pr.left>=-1){clipped=true;break}} p=p.parentElement} if(!clipped) out.push((el.id?'#'+el.id:el.tagName.toLowerCase()+'.'+[...el.classList].join('.'))+' ['+Math.round(r.left)+','+Math.round(r.right)+'] '+(el.textContent||'').trim().slice(0,30)); } } return out.slice(0,15)})()`;
+    for (const dev of ['phone', 'desk']) {
+      for (const lang of ['ar', 'en']) {
+        await (dev === 'phone' ? phone() : desk()); await open('?s=36&a=1', { lang });
+        await sleep(2500);
+        const ids = await evalJs(`JSON.stringify([...document.querySelectorAll('[data-panel]')].map(b=>b.dataset.panel).filter((x,i,a)=>a.indexOf(x)===i))`);
+        console.log(dev, lang, 'panels', ids);
+        if (dev === 'phone') { await click('#navBtn'); await sleep(600); console.log('drawer', JSON.stringify(await evalJs(overflow))); await shot(`a_${dev}_${lang}_drawer.jpg`); await click('#navClose'); await sleep(400); }
+        for (const id of JSON.parse(ids)) {
+          if (dev === 'phone') { await click('#navBtn'); await sleep(500); }
+          await click(`[data-panel=${id}]`); await sleep(id === 'prayer' || id === 'mosques' ? 6000 : 2000);
+          const ov = await evalJs(overflow);
+          console.log(dev, lang, id, ov.length ? JSON.stringify(ov) : 'ok');
+          await shot(`a_${dev}_${lang}_${id}.jpg`);
+          await evalJs(`(document.querySelector('.panel:not([hidden]) .p-x')||{click(){}}).click(), 1`); await sleep(400);
+        }
+        if (dev === 'phone') for (const pane of ['r', 't', 's']) { await click(`#mtabs [data-pane=${pane}]`); await sleep(1500); const ov = await evalJs(overflow); console.log(dev, lang, 'pane', pane, ov.length ? JSON.stringify(ov) : 'ok'); await shot(`a_${dev}_${lang}_pane_${pane}.jpg`); }
+        else { const ov = await evalJs(overflow); console.log(dev, lang, 'study', ov.length ? JSON.stringify(ov) : 'ok'); await shot(`a_${dev}_${lang}_study.jpg`); }
+      }
+    }
+  }
+  // a mid-range phone (CPU 4× slower): long tasks (> 50 ms) and frame times at start, while reading and while idle
+  if (WANT.includes('perf')) {
+    await phone(); await send('Emulation.setCPUThrottlingRate', { rate: 4 });
+    await evalJs(`1`);
+    await send('Page.addScriptToEvaluateOnNewDocument', { source: `window.__lt=[]; try{ new PerformanceObserver(l=>l.getEntries().forEach(e=>__lt.push([Math.round(e.startTime),Math.round(e.duration)]))).observe({type:'longtask',buffered:true}); }catch(e){}` });
+    await open('?s=18&a=1');
+    await sleep(6000);
+    const lt = JSON.parse(await evalJs(`JSON.stringify(__lt)`));
+    console.log('start: long tasks', lt.length, 'total ms', lt.reduce((s, x) => s + x[1], 0), 'worst', Math.max(0, ...lt.map(x => x[1])), JSON.stringify(lt.slice(0, 12)));
+    const frames = async (label, ms = 4000) => {
+      const r = JSON.parse(await evalJs(`new Promise(res=>{const f=[];let t=performance.now(),n0=__lt.length;const end=t+${ms};const step=(n)=>{f.push(n-t);t=n; if(n<end) requestAnimationFrame(step); else { f.sort((a,b)=>a-b); res(JSON.stringify({frames:f.length, fps:+(f.length/${ms / 1000}).toFixed(1), p50:Math.round(f[f.length>>1]), p95:Math.round(f[Math.floor(f.length*.95)]), worst:Math.round(f[f.length-1]), longTasks:__lt.slice(n0).map(x=>x[1])})); } }; requestAnimationFrame(step);})`));
+      console.log(label, JSON.stringify(r));
+    };
+    await frames('idle (study)');
+    await click('#mtabs [data-pane=r]'); await sleep(300); await click('#rPlayAll'); await sleep(2500);
+    await frames('reciting');
+    await evalJs(`document.querySelector('#rdBody').scrollBy(0, 600), 1`); await frames('reciting + scroll', 2000);
+    await click('#rPlayAll'); await sleep(800);
+    await evalJs(`(()=>{const s=document.querySelector('#shapeSel'); s.value='rose'; s.dispatchEvent(new Event('change')); return 1})()`); await frames('shape change');
+    await click('#navBtn'); await sleep(200); await frames('drawer open', 1500); await click('#navClose');
+    await send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  }
+  // where the main thread spends its time (CPU profile, self time by function), at start and while reciting
+  if (WANT.includes('profile')) {
+    const top = (prof, label) => {
+      const self = new Map(), byId = new Map(prof.nodes.map(n => [n.id, n]));
+      const dt = prof.timeDeltas; let k = 0;
+      for (const s of prof.samples) { const n = byId.get(s), f = n.callFrame, key = `${f.functionName || '(anon)'} ${f.url.split('/').pop()}:${f.lineNumber + 1}`; self.set(key, (self.get(key) || 0) + (dt[k++] || 0) / 1000); }
+      console.log(label, [...self.entries()].sort((a, b) => b[1] - a[1]).slice(0, 18).map(([kk, v]) => `${Math.round(v)}ms ${kk}`).join('\n   '));
+    };
+    await phone(); await send('Emulation.setCPUThrottlingRate', { rate: 4 });
+    await send('Profiler.enable'); await send('Profiler.setSamplingInterval', { interval: 500 });
+    await send('Profiler.start'); await open('?s=18&a=1'); await sleep(5000);
+    top((await send('Profiler.stop')).profile, 'START');
+    await evalJs(`(()=>{window.__cs=0; for (const C of [WebGL2RenderingContext, WebGLRenderingContext]) { const o=C.prototype.compileShader; C.prototype.compileShader=function(x){ __cs++; return o.call(this,x) } } return 1})()`);
+    await click('#mtabs [data-pane=r]'); await sleep(300); await click('#rPlayAll'); await sleep(2000);
+    await send('Profiler.start'); await sleep(6000);
+    console.log('shaders compiled while reciting:', await evalJs(`__cs`));
+    top((await send('Profiler.stop')).profile, 'RECITING');
+    await send('Emulation.setCPUThrottlingRate', { rate: 1 });
+  }
+  if (WANT.includes('intro-phone')) {
+    await phone(); await open('', { prefs: { intro: false } });
+    let at = 0; for (const t of [4, 9, 16, 30]) { await shot(`m_intro_${t}s.jpg`, (t - at) * 1000); at = t; }
   }
 } finally {
   writeFileSync(join(OUT, 'console.txt'), logs.join('\n'));

@@ -38,9 +38,9 @@ export function tokenOffsets(verse) {
   return out;
 }
 export const TJ_S = {
-  ar: { btn: 'ألوان التجويد', legend: 'مفتاح ألوان التجويد', rules: 'الأحكام وحروفها (مفاتيحها)', here: 'أحكام هذه الآية', none: 'لا ألوان لهذه الآية (لم يُتحقق من مطابقتها).', tap: 'اضغط حرفًا ملوَّنًا لترى حكمه.', keys: 'الحروف', inWord: 'في',
+  ar: { btn: 'ألوان التجويد', all: 'كل أحكام التجويد', legend: 'مفتاح ألوان التجويد', rules: 'الأحكام وحروفها (مفاتيحها)', here: 'أحكام هذه الآية', none: 'لا ألوان لهذه الآية (لم يُتحقق من مطابقتها).', tap: 'اضغط حرفًا ملوَّنًا لترى حكمه.', keys: 'الحروف', inWord: 'في',
     srcRules: 'التعريفات مختصرة من متن «تحفة الأطفال» للجمزوري و«المقدمة الجزرية» لابن الجزري (رواية حفص عن عاصم).', src: 'التلوين من مشروع quran-tajweed المفتوح (رواية حفص، رخصة CC BY 4.0)، مطابق على نص Tanzil آيةً آية؛ الآيات التي لم يُتحقق من تطابقها تُعرض بلا ألوان.' },
-  en: { btn: 'Tajweed colours', legend: 'Tajweed colour key', rules: 'The rules and their letters (keys)', here: 'Rules in this verse', none: 'No colours for this verse (its annotation could not be checked).', tap: 'Tap a coloured letter to see its rule.', keys: 'Letters', inWord: 'in',
+  en: { btn: 'Tajweed colours', all: 'All the tajweed rules', legend: 'Tajweed colour key', rules: 'The rules and their letters (keys)', here: 'Rules in this verse', none: 'No colours for this verse (its annotation could not be checked).', tap: 'Tap a coloured letter to see its rule.', keys: 'Letters', inWord: 'in',
     srcRules: 'Short definitions after the classical poems Tuḥfat al-Aṭfāl (al-Jamzūrī) and al-Muqaddima al-Jazariyya (Ibn al-Jazarī), riwāyat Ḥafṣ ʿan ʿĀṣim.', src: 'Colours from the open quran-tajweed project (Hafs, CC BY 4.0), checked on the Tanzil text verse by verse; verses that could not be checked are shown without colours.' },
 };
 

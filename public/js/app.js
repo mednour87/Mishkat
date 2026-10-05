@@ -22,6 +22,7 @@ import { createTekrar, TK } from './tekrar.js';
 import { createStats, ST } from './stats.js';
 import { drawMini, animateMini, EG } from './engage3d.js';
 import { setupPWA, openInstall, canPrompt, isStandalone, onInstallChange, PW } from './pwa.js';
+import { setupWake } from './wake.js';
 import { toHijri, formatHijri } from './hijri.js';
 import { colourToken, tokenOffsets, GROUPS as TJ_GROUPS, TJ_S, RULE_INFO, verseRules } from './tajweed.js';
 
@@ -69,6 +70,7 @@ const store = {
   set(k, v) { try { localStorage.setItem('mishkat.' + k, String(v)); } catch (e) { /* private mode */ } },
 };
 
+let metaP = null;   // data/mushaf_meta.json (first verse of each of the 604 pages, juz…), 3 KB, loaded at start
 const state = {
   lang: 'ar', engine: null, galaxy: null, core: null, llm: null, llmModel: null, words: null,
   result: null, reader: { sura: null, cur: null, hits: new Set() },
@@ -122,7 +124,7 @@ function applyLang(lang) {
     renderSide();
     ensureSources(lang).then(() => {
       renderSide();
-      if (state.reader.sura) { renderReader(); state.taf.idx = null; selectVerse(state.reader.cur, { fly: false, scroll: true, keepAudio: true }); }
+      if (state.reader.sura) { if (lang === 'en' || document.querySelector('#mushaf.en')) renderReader(); state.taf.idx = null; selectVerse(state.reader.cur, { fly: false, scroll: true, keepAudio: true }); }
     });
   }
 }
@@ -195,10 +197,13 @@ function setLoad(i) { $('#loadMsg').textContent = T().loading[i]; }
 
 async function boot() {
   setupPWA();
+  // the phone's screen stays on during a recitation, the film or the repetition counter, and a few minutes after the
+  // last touch (wake.js)
+  state.wake = setupWake(() => !!state.playing || !!document.getElementById('intro') || !!document.querySelector('#p-tekrar:not([hidden])'));
   applyChild();
   applyLang(pickLang());
   setLoad(0);
-  const [core, searchAr] = await Promise.all([getJSON('data/core.json'), getJSON('data/search_ar.json')]);
+  const [core, searchAr] = await Promise.all([getJSON('data/core.json'), getJSON('data/search_ar.json'), (metaP = metaP || getJSON('data/mushaf_meta.json')).then(m => { state.meta = m; }).catch(() => {})]);
   state.core = core;
   state.engine = createEngine({ core, searchAr });   // display copy; searching runs in a Web Worker
   startSearchWorker();
@@ -214,11 +219,15 @@ async function boot() {
   });
   state.galaxy.setShift(state.mode === 'home' && isPhone() ? 0.2 : 0);
   // the galaxy drawn in the browser (smooth arms, a bulge at the core) replaces the precomputed layouts 0 and 1
-  for (const [L, order] of [[0, 'mushaf'], [1, 'nuzul']]) {
+  // (5 Oct) only the shape shown at start is awaited; the revelation-order galaxy is computed afterwards, in the
+  // background (the loader stayed up for both on a phone)
+  const galaxyJob = async (L, order) => {
     const lay = await layoutJob('galaxy', order);
     state.galaxy.replaceLayout(L, lay.positions, lay.view, lay.spine);
     layoutNote[`galaxy|${order}`] = lay.note;
-  }
+  };
+  await galaxyJob(0, 'mushaf');
+  setTimeout(() => galaxyJob(1, 'nuzul').catch(() => {}), 1500);
   state.wordsP = getJSON('data/words.json').then(w => { state.words = w; return w; });
   setTimeout(prepareLayouts, 8000);
   setupTools();
@@ -228,10 +237,17 @@ async function boot() {
   // the tafsir files (several MB) are not needed to show the galaxy: they load after the
   // first paint, only for the interface language; a search waits for them if needed and
   // another language loads only when chosen
-  (window.requestIdleCallback || setTimeout)(() => { workerCall({ op: 'warm', lang: state.lang }).catch(() => {}); ensureSources(state.lang).then(() => {
-    // redrawn with the translations: the page keeps where the reader was (it jumped back to the first verse)
-    if (state.reader.sura) { renderReader(); state.taf.idx = null; selectVerse(state.reader.cur, { fly: false, scroll: true, keepAudio: true }); }
-  }); });
+  // (5 Oct) on a phone the page itself loads none of them at start (≈ 4 MB of JSON parsed on the main thread made the
+  // first seconds stutter): the tafsir view loads its book when shown, a search loads what it needs; only the English
+  // reader needs its translation at once. Only the English reader is redrawn (the Arabic Mushaf has no translation)
+  (window.requestIdleCallback || setTimeout)(() => {
+    workerCall({ op: 'warm', lang: state.lang }).catch(() => {});
+    const need = isPhone() ? (state.lang === 'en' && TRANSLATION_FOR.en ? [TRANSLATION_FOR.en] : []) : SOURCES_NEEDED[state.lang];
+    Promise.all(need.map(loadSource)).then(() => {
+      // redrawn with the translations: the page keeps where the reader was (it jumped back to the first verse)
+      if (state.reader.sura && state.lang === 'en') { renderReader(); state.taf.idx = null; selectVerse(state.reader.cur, { fly: false, scroll: true, keepAudio: true }); }
+    }).catch(() => {});
+  });
   // AI layer: 1) pre-computed answers for frequent questions (verified again by
   // the engine like any live answer), 2) live API, 3) deterministic fallback.
   const [cache, health] = await Promise.all([
@@ -1067,7 +1083,6 @@ function setMode(m) {
   document.body.classList.remove('ans-open', 'ans-peek');
   $('#ansToggle').setAttribute('aria-expanded', m !== 'study');
   $('#suggest').hidden = m !== 'home' || state.suggestClosed;
-  $('#gStats').hidden = m !== 'study';
   $('#sgOpen').hidden = m !== 'home' || !state.suggestClosed;
   $('#szone').hidden = m === 'home' || !state.result;
   document.body.classList.toggle('has-res', !!state.result);
@@ -1167,14 +1182,17 @@ function verseWordsHtml(i) {
   });
   return html;
 }
-// the tajweed box above the Mushaf: the colour key, the rules of the verse being read (with the word of each),
-// the rule of a tapped letter, and all the rules with their «keys» (the letters that trigger them)
+// the tajweed box above the Mushaf — kept BRIEF while reading (5 Oct, author's request): one line with the rules of the
+// verse being read (tap one: its definition), one line of colour key, and a link to the dedicated page tajweed.html
+// where every rule has its letters, its definition and examples from the Mushaf
 function tajweedLegend() {
-  const L = state.lang === 'ar' ? 'ar' : 'en', X = TJ_S[L], grp = (r) => (TJ_GROUPS.find(g => g.rules.includes(r)) || {}).id;
-  const rules = RULE_INFO.map((R, r) => `<li><span class="tj tj-${grp(r)} tj-n">${esc(R[L])}</span> <span class="tj-k"><small>${esc(X.keys)}:</small> <b dir="rtl">${esc(L === 'ar' ? R.kar : R.ken)}</b></span><br><small>${esc(L === 'ar' ? R.dar : R.den)}</small></li>`).join('');
-  return `<div class="tj-legend" id="tjLegend">
-    <div class="tj-here"><b>${esc(X.here)}</b> <small class="muted">${esc(X.tap)}</small><div id="tjVerse" class="tj-verse"></div><div id="tjInfo" class="tj-info" hidden></div></div>
-    <details class="tj-all"><summary>${esc(X.legend)} · ${esc(X.rules)}</summary><p class="tj-key">${TJ_GROUPS.map(g => `<span class="tj tj-${g.id}">■</span> ${esc(g[L])}`).join(' · ')}</p><ul>${rules}</ul><p class="p-small">${esc(X.srcRules)}</p><p class="p-small">${esc(X.src)}</p></details></div>`;
+  const L = state.lang === 'ar' ? 'ar' : 'en', X = TJ_S[L], cur = state.reader.cur, e = state.engine;
+  const from = cur != null ? `&from=${e.suraOf[cur]}:${e.ayaOf[cur]}` : '';
+  return `<div class="tj-legend tj-brief" id="tjLegend">
+    <div class="tj-here"><b>${esc(X.here)}</b><div id="tjVerse" class="tj-verse"></div></div>
+    <div id="tjInfo" class="tj-info" hidden></div>
+    <div class="tj-foot"><p class="tj-key">${TJ_GROUPS.map(g => `<span><span class="tj tj-${g.id}">●</span> ${esc(g[L].split(/[(،/]/)[0].trim())}</span>`).join('')}</p>
+      <a class="tj-more" href="tajweed.html?lang=${L}${from}" target="_blank" rel="noopener">${esc(X.all)} ${L === 'ar' ? '←' : '→'}</a></div></div>`;
 }
 function tjRuleInfo(r) {
   const L = state.lang === 'ar' ? 'ar' : 'en', R = RULE_INFO[r], X = TJ_S[L], g = (TJ_GROUPS.find(x => x.rules.includes(r)) || {}).id;
@@ -1186,6 +1204,7 @@ function fillTajweedVerse(i) {
   if (!box) return;
   const e = state.engine, f = state.tajweedData.get(e.suraOf[i]), ann = f ? f[e.ayaOf[i] - 1] : null, L = state.lang === 'ar' ? 'ar' : 'en';
   $('#tjInfo').hidden = true;
+  { const m = $('#tjLegend .tj-more'); if (m) m.href = `tajweed.html?lang=${L}&from=${e.suraOf[i]}:${e.ayaOf[i]}`; }
   if (!f) { box.innerHTML = ''; return; }
   if (!ann || !ann.length) { box.innerHTML = `<small class="muted">${esc(TJ_S[L].none)}</small>`; return; }
   const toks = e.verses[i].split(' '), by = new Map();
@@ -1197,6 +1216,12 @@ function fillTajweedVerse(i) {
   box.querySelectorAll('[data-rule]').forEach(b => b.onclick = () => { const x = $('#tjInfo'); x.innerHTML = tjRuleInfo(+b.dataset.rule); x.hidden = false; });
 }
 
+// the Mushaf page (1..604) of a verse index, from mushaf_meta.json (first verse of each page)
+function pageOfVerse(i) {
+  const P = state.meta.pages; let lo = 0, hi = P.length - 1;
+  while (lo < hi) { const m = (lo + hi + 1) >> 1; if (P[m] <= i) lo = m; else hi = m - 1; }
+  return lo + 1;
+}
 const SPEEDS = [0.75, 1, 1.25, 1.5];
 // the reading options (⋯): open by default on a computer, folded on a phone; each remembered apart
 const rdMoreOpen = () => store.get(isPhone() ? 'rdMoreM' : 'rdMoreD', isPhone() ? '0' : '1') === '1';
@@ -1206,8 +1231,15 @@ function renderReader() {
   const en = state.lang === 'en';
   const basmala = (sura !== 1 && sura !== 9) ? `<div class="basmala">${esc(e.verses[S.first].split(' ').slice(0, 4).join(' '))}</div>` : '';
   let body = '';
+  // (5 Oct) the Arabic Mushaf in its real pages (Tanzil's 604 pages): each page is a block the browser lays out only
+  // when it comes near the screen (content-visibility) — laying out a whole long surah at once (Amiri Quran shaping)
+  // took ≈ 0.6 s on a phone and froze the start; a thin page number marks each page, as in a printed Mushaf
+  const pages = !en && state.meta && state.meta.pages ? state.meta.pages : null;
+  let pg = pages ? pageOfVerse(S.first) : 0;
+  if (pages) body += `<div class="pg" data-pg="${pg}">`;
   for (let a = 1; a <= S.ayas; a++) {
     const i = S.first + a - 1;
+    if (pages && a > 1 && pageOfVerse(i) !== pg) { body += `<span class="pg-n" aria-hidden="true">${arNum(pg)}</span></div><div class="pg" data-pg="${pg = pageOfVerse(i)}">`; }
     if (en) {
       // English: verse by verse — Arabic, word-by-word transliteration, translation
       const tr = state.showTr ? e.translation('en', i).replace(/\[\d+\]/g, '') : '';
@@ -1219,6 +1251,7 @@ function renderReader() {
       body += `<span class="v" data-i="${i}"><button class="vplay" data-play="${i}" aria-label="${esc(t.playAya(a))}">▶</button>${verseWordsHtml(i)}<span class="end">﴿${arNum(a)}﴾</span></span> `;
     }
   }
+  if (pages) body += `<span class="pg-n" aria-hidden="true">${arNum(pg)}</span></div>`;
   const rep = state.repeat || 1;
   const trSrc = TRANSLATION_FOR.en ? e.sources[TRANSLATION_FOR.en] : null;
   const moreOpen = rdMoreOpen();
@@ -1317,6 +1350,9 @@ function verseAtReadingLine() {
 const wordsIn = (v) => { const [a, b] = state.galaxy.wordsOfVerse(v); return Math.max(1, b - a); };
 function readingLine() {
   if (state.playing) return;
+  // a scroll made by the page itself (a chosen verse brought into view) is not reading: the chosen verse stays the one
+  // shown (the reading line could fall on the end of the verse before it, which shares its first line)
+  if (performance.now() - scrollRead.jumpAt < 1500) { scrollRead.cur = state.reader.cur; scrollRead.since = performance.now(); return; }
   const i = verseAtReadingLine();
   if (i == null || i === scrollRead.cur) return;
   const prev = scrollRead.cur, now = performance.now();
@@ -1386,7 +1422,7 @@ function selectVerse(i, { scroll = true, fly = true, keepAudio = false } = {}) {
   document.querySelectorAll('#mushaf .v').forEach(el => el.classList.toggle('cur', +el.dataset.i === i));
   const sel = $('#rSel'); if (sel) sel.value = i;
   const el = $(`#mushaf .v[data-i="${i}"]`), b = $('#rdBody');
-  if (el && b && scroll) { scrollRead.jumpAt = performance.now(); b.scrollTo({ top: Math.max(0, el.offsetTop - b.clientHeight * 0.3), behavior: changed ? 'smooth' : 'auto' }); }
+  if (el && b && scroll) { scrollRead.jumpAt = performance.now(); scrollToVerse(el, b, changed ? 'smooth' : 'auto'); }
   state.galaxy.setFocusVerse(i);
   if (fly) state.galaxy.flyToVerse(i, 70);
   if (!state.playing) $('#lampRef').textContent = refLabel(i);
@@ -1394,6 +1430,19 @@ function selectVerse(i, { scroll = true, fly = true, keepAudio = false } = {}) {
   if (changed || state.taf.idx !== i) renderTafsir(i);
   markCurrentInResults();
   if (wasPlaying) play(i, true);
+}
+// the pages far from the screen are not laid out yet (estimated height): once the scroll ends, the real place of the
+// verse is checked again and corrected (twice at most)
+function scrollToVerse(el, b, behavior) {
+  const top = () => el.getBoundingClientRect().top - b.getBoundingClientRect().top + b.scrollTop - b.clientHeight * 0.3;
+  b.scrollTo({ top: Math.max(0, top()), behavior });
+  let n = 0;
+  const fix = () => {
+    if (!el.isConnected || ++n > 2) return;
+    const off = el.getBoundingClientRect().top - b.getBoundingClientRect().top;
+    if (off < 0 || off > b.clientHeight * 0.75) { scrollRead.jumpAt = performance.now(); b.scrollTo({ top: Math.max(0, top()), behavior: 'auto' }); setTimeout(fix, 250); }
+  };
+  setTimeout(fix, behavior === 'smooth' ? 700 : 120);
 }
 function step(d) {
   const i = state.reader.cur + d, S = state.core.suras[state.reader.sura - 1];
@@ -1697,7 +1746,6 @@ const TS = () => TOOL_S[state.lang] || TOOL_S.ar;
 const toolTitle = (id) => id === 'tekrar' ? (TK[state.lang] || TK.ar).title : id === 'stats' ? (ST[state.lang] || ST.ar).title
   : TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id] || (id === 'athkar' ? (ATHKAR_S[state.lang] || ATHKAR_S.ar).title : id);
 const isPhone = () => matchMedia('(max-width: 860px)').matches;
-let metaP = null;
 function setupTools() {
   state.tools = createToolPanels({
     lang: () => state.lang, core: state.core,
@@ -1962,6 +2010,9 @@ function ensureLayout(shape, order) {
 }
 // after start, one shape at a time when the page is idle
 function prepareLayouts() {
+  // (5 Oct) not on a phone: the other shapes are computed when chosen (in the layout worker) — precomputing them all
+  // 8 s after the start (with the letters of «قرآن» drawn on the page) was one of the «sometimes it lags» moments
+  if (isPhone() || matchMedia('(pointer: coarse)').matches) return;
   const todo = SHAPES.map(x => x.id).filter(id => !((id + '|' + view.order) in layoutIdx));
   const next = () => { const id = todo.shift(); if (!id) return; ensureLayout(id, view.order).catch(() => {}).then(() => (window.requestIdleCallback || setTimeout)(next, { timeout: 4000 })); };
   (window.requestIdleCallback || setTimeout)(next, { timeout: 6000 });
@@ -1987,7 +2038,6 @@ $('#gHome').onclick = () => state.galaxy.home();
   });
 }
 $('#gIn').onclick = () => state.galaxy.zoom(0.6);
-$('#gStats').onclick = () => openVerseStats();
 // ⋯ on a phone: the toolbar shows ⌂, the shape and ⤢; ⋯ unfolds zoom, rotation, names, order, legend and the camera pad
 $('#gMore').onclick = () => { const on = !$('#gzone').classList.contains('gt-open'); $('#gzone').classList.toggle('gt-open', on); $('#gMore').setAttribute('aria-expanded', on); };
 $('#gOut').onclick = () => state.galaxy.zoom(1.6);

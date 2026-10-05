@@ -23,7 +23,7 @@ export const IN = {
       ['الختمة', 'خطة على أيامك وأوقاتك، والسور المقروءة تضيء في المشكاة.'],
       ['مواقيت الصلاة', 'حسب مدينتك، مع عدّ تنازلي للصلاة القادمة.'],
       ['القبلة', 'اتجاه الكعبة من موقعك، مع بوصلة الهاتف.'],
-      ['المساجد القريبة', 'من خريطة OpenStreetMap، ومسار في Google Maps.'],
+      ['المساجد القريبة', 'على خريطة Google داخل الصفحة، والقائمة من OpenStreetMap، مع المسار.'],
       ['التكرار والحفظ', 'عدّاد لكل تكرار، ووقت أدنى قريب من وقت الشيخ، وتشجيع دائم.'],
       ['الإحصاءات', 'السور والكلمات ومواضعها — دون حساب الجُمَّل.'],
       ['خريطة الالتزام', 'ثلاثة مستويات بأسماء من آية النور: غرسة، زيتونة، كوكب دري.'],
@@ -40,7 +40,7 @@ export const IN = {
       ['Khatma', 'A plan on your days and times; the surahs you read light up in the lamp.'],
       ['Prayer times', 'For your city, with a countdown to the next prayer.'],
       ['Qibla', 'The direction of the Kaaba from where you are, with the phone’s compass.'],
-      ['Nearby mosques', 'From OpenStreetMap, with a route in Google Maps.'],
+      ['Nearby mosques', 'On a Google map inside the page, the list from OpenStreetMap, with the route.'],
       ['Repetition & memorising', 'A counter for each repetition, a minimal time close to the reciter’s, constant encouragement.'],
       ['Statistics', 'Surahs, words and where they occur — no letter values.'],
       ['Engagement map', 'Three levels named from the verse of light: sapling, olive tree, shining star.'],
@@ -79,7 +79,7 @@ export function playIntro(ctx) {
   document.body.classList.add('intro-on');
   const cv = root.querySelector('.in-cv'), g = cv.getContext('2d');
   const cap = root.querySelector('.in-cap'), stage = root.querySelector('.in-stage'), logo = root.querySelector('.in-logo'), labelsEl = root.querySelector('.in-labels');
-  let W = 0, H = 0, DPR = 1, parts = [], wordBox = [], alive = true, raf = 0, audio = null, t0 = performance.now(), tim = null, phase = 'basmala', galaxyOn = false, timVerse = null, basmalaMs = 0;
+  let W = 0, H = 0, DPR = 1, parts = [], wordBox = [], txtCv = null, wordLit = [], lineH = 0, lastDraw = 0, alive = true, raf = 0, audio = null, t0 = performance.now(), tim = null, phase = 'basmala', galaxyOn = false, timVerse = null, basmalaMs = 0;
 
   // ---------------------------------------------------------------- the verse as luminous points
   function layoutText() {
@@ -105,6 +105,20 @@ export function playIntro(ctx) {
       const y = top + r * lh + lh / 2;
       for (const { k, ww } of ln) { x -= ww; o.fillText(words[k], x, y); wordBox[k] = { x0: x, x1: x + ww, y }; x -= gap; }
     });
+    // (5 Oct) the letters themselves, sharp at the screen's resolution with a thin golden outline: the points alone
+    // (sampled every 2 px) made the verse look blurred, without clear edges (author's remark). Each word appears
+    // when it is recited; the points stay around it as a halo.
+    txtCv = document.createElement('canvas');
+    txtCv.width = Math.round(W * DPR); txtCv.height = Math.round(off.height * DPR);
+    { const c = txtCv.getContext('2d');
+      c.setTransform(DPR, 0, 0, DPR, 0, 0);
+      c.font = o.font; c.textBaseline = 'middle'; c.lineJoin = 'round';
+      c.shadowColor = 'rgba(255, 196, 80, .4)'; c.shadowBlur = Math.max(4, fs * 0.2);
+      c.fillStyle = '#fff8ea';
+      for (let k = 0; k < words.length; k++) { const b = wordBox[k]; if (b) c.fillText(words[k], b.x0, b.y); }
+      c.shadowBlur = 0; c.strokeStyle = 'rgba(255, 210, 110, .7)'; c.lineWidth = Math.max(0.5, fs / 40);
+      for (let k = 0; k < words.length; k++) { const b = wordBox[k]; if (b) c.strokeText(words[k], b.x0, b.y); } }
+    wordLit = wordBox.map(() => 0); lineH = lh;
     const step = 2, img = o.getImageData(0, 0, off.width, off.height).data;
     const old = parts; parts = [];
     let lit = 0;
@@ -147,9 +161,31 @@ export function playIntro(ctx) {
       else { p.tw += 0.012; ax = (p.tx + p.ox * Math.cos(p.tw) - p.x) * 0.03; ay = (p.ty + p.oy * Math.sin(p.tw) - p.y) * 0.03; }
       p.vx = (p.vx + ax) * 0.86; p.vy = (p.vy + ay) * 0.86; p.x += p.vx; p.y += p.vy;
       const hot = p.k === cur && !leaving;
-      g.fillStyle = hot ? 'rgba(255,222,130,1)' : on ? 'rgba(255,244,215,0.8)' : 'rgba(150,175,230,0.12)';
-      const s = hot ? 2.4 : on ? 1.9 : 1.1;
+      // once its sharp letters are drawn, a recited word's points are only a soft halo around them
+      g.fillStyle = hot ? 'rgba(255,222,130,0.55)' : on ? 'rgba(255,236,190,0.22)' : 'rgba(150,175,230,0.12)';
+      const s = hot ? 2 : on ? 1.5 : 1.1;
       g.fillRect(p.x - s / 2, p.y - s / 2, s, s);
+    }
+    // the sharp letters of the recited words, fading in (and out when the verse flows into the galaxy)
+    const now = performance.now(), dts = Math.min(0.1, (now - (lastDraw || now)) / 1000); lastDraw = now;
+    if (txtCv) {
+      g.globalCompositeOperation = 'source-over';
+      for (let k = 0; k < wordBox.length; k++) {
+        const b = wordBox[k];
+        if (!b) continue;
+        const goal = !leaving && k <= cur ? 1 : 0;
+        wordLit[k] += (goal - wordLit[k]) * (1 - Math.exp(-dts * (goal ? 3.2 : 1.6)));
+        if (wordLit[k] < 0.01) continue;
+        const pad = 14, x = Math.max(0, b.x0 - pad), y = Math.max(0, b.y - lineH / 2), w = Math.min(W - x, b.x1 - b.x0 + 2 * pad), h = lineH;
+        g.globalAlpha = wordLit[k] * (k === cur && !leaving ? 1 : 0.9);
+        g.drawImage(txtCv, x * DPR, y * DPR, w * DPR, h * DPR, x, y, w, h);
+        if (k === cur && !leaving) {                 // the recited word glows a little more
+          g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.22 * wordLit[k];
+          g.drawImage(txtCv, x * DPR, y * DPR, w * DPR, h * DPR, x, y, w, h);
+          g.globalCompositeOperation = 'source-over';
+        }
+      }
+      g.globalAlpha = 1;
     }
   }
 
