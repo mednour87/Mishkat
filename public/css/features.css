@@ -235,3 +235,53 @@ body.child .tj-madd6 { color: #c9a2ff; } body.child .tj-maddw { color: #ffb4d2; 
 .tj-legend { margin: 0 0 10px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--line); font-size: 12.5px; line-height: 2; }
 .tj-legend b { display: block; color: var(--gold); }
 .mushaf .w.now .tj { color: inherit; }
+/* T102 — intro v2: chapter rail, faint translation, services on the live galaxy, the search path, example questions */
+.in-chap { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 3; width: min(640px, 94vw); }
+.in-chap button { flex: 1; min-width: 0; display: grid; gap: 5px; padding: 6px 2px; background: none; border: 0; color: #9aa3b5; font: inherit; font-size: 12px; cursor: pointer; text-align: center; }
+.in-chap button i { display: block; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .14); overflow: hidden; }
+.in-chap button i b { display: block; height: 100%; width: 0; background: var(--gold); transition: width .35s linear; }
+.in-chap button.on { color: #fff1cc; } .in-chap button.past { color: #c9b98f; }
+.in-chap button:hover span, .in-chap button:focus-visible span { color: var(--gold); text-decoration: underline; }
+.in-chap span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.in-cap { bottom: 64px; }
+.in-tr { position: absolute; bottom: 64px; left: 50%; transform: translateX(-50%); width: min(880px, 92vw); margin: 0; text-align: center; font-size: 15px; line-height: 1.6; color: #cfd6e6; font-style: italic; text-shadow: 0 2px 10px rgba(0, 0, 0, .9); opacity: 0; transition: opacity 1.2s; }
+.in-tr.on { opacity: .92; } .in-tr.away { opacity: 0 !important; }
+#intro.feat .in-cap { opacity: 0; }
+#intro.feat .in-stage { top: auto; bottom: 64px; left: auto; transform: none; inset-inline-start: 24px; width: min(460px, 92vw); }
+#intro.feat .in-card { background: rgba(9, 12, 21, .74); text-align: start; padding: 18px 20px; }
+#intro.feat .in-card h3 { font-size: 19px; } #intro.feat .in-card p { font-size: 14.5px; line-height: 1.75; }
+.in-card.big .in-demo { min-height: 210px; align-content: start; justify-items: stretch; gap: 10px; }
+.d-mag { color: var(--gold); font-size: 18px; margin-inline-end: 6px; }
+.d-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.d-steps li { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #aeb7c9; padding: 6px 9px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, .08); background: rgba(255, 255, 255, .03); opacity: .35; transition: opacity .45s, border-color .45s, color .45s; }
+.d-steps li b { flex: 0 0 auto; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; background: rgba(255, 255, 255, .08); color: #fff; }
+.d-steps li.on { opacity: 1; color: #f3ecd8; border-color: rgba(255, 214, 107, .45); }
+.d-steps li.on b { background: var(--gold); color: #1a1406; }
+.d-steps li.on:last-child { border-color: rgba(94, 230, 160, .6); } .d-steps li.on:last-child b { background: #5EE6A0; }
+.d-ans { text-align: center; } .d-ans small { color: #8fe0b4; }
+.d-two { display: flex; align-items: center; justify-content: center; gap: 28px; width: 100%; }
+.in-dots button { width: 7px; height: 7px; padding: 0; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .22); cursor: pointer; transition: width .3s; }
+.in-dots button.on { background: var(--gold); width: 20px; border-radius: 4px; }
+.in-dots { gap: 6px; align-items: center; }
+#intro.feat .in-dots { justify-content: flex-start; }
+.in-try { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 16px 0 0; color: #cfd6e6; font-size: 14px; }
+.in-q { border: 1px solid rgba(255, 214, 107, .45); background: rgba(9, 12, 21, .7); color: #fff1cc; border-radius: 999px; padding: 7px 14px; font: inherit; font-size: 14px; cursor: pointer; min-height: 38px; }
+.in-q:hover, .in-q:focus-visible { background: rgba(255, 214, 107, .16); }
+#intro.fin .in-end { margin-top: 40vh; }
+#intro.see-galaxy .in-chap { pointer-events: auto; }
+@media (max-width: 700px) {
+  .in-chap { bottom: 8px; } .in-chap span { display: none; } .in-chap button.on span { display: block; position: absolute; bottom: 20px; left: 0; right: 0; }
+  .in-chap { position: absolute; } .in-chap button { position: relative; }
+  .in-tr { font-size: 13px; bottom: 44px; } .in-cap { bottom: 48px; }
+  #intro.feat .in-stage { inset-inline-start: 4vw; bottom: 40px; }
+  .d-steps { grid-template-columns: 1fr; } .d-steps li { font-size: 12px; padding: 4px 8px; }
+  .in-card.big .in-demo { min-height: 170px; }
+  .d-two { gap: 14px; } .d-two .d-count { font-size: 30px; }
+  #intro.fin .in-end { margin-top: 36vh; }
+}
+#intro .in-go { background: linear-gradient(135deg, #ffd66b, #e8a93c); color: #1a1406; border-color: #ffd66b; font-weight: 700; box-shadow: 0 10px 40px rgba(255, 196, 80, .35); padding: 10px 34px; font-size: 17px; }
+#intro .in-go:hover, #intro .in-go:focus-visible { filter: brightness(1.08); outline: 2px solid #fff3cf; outline-offset: 3px; }
+@media (max-width: 700px) { .in-labels { max-width: 94vw; gap: 4px; } .in-labels span { font-size: 14px; padding: 0 8px; } .in-labels span:nth-last-child(n+4) { display: none; } }
+/* English: a smaller lamp and one row of the last word labels; the translation keeps the bottom of the screen */
+#intro.in-en .in-labels { flex-wrap: nowrap; } #intro.in-en .in-labels span:nth-last-child(n+4) { display: none; }
+#intro.in-en .in-labels span { font-size: 15px; }

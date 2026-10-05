@@ -145,7 +145,7 @@ test('T098 film strings exist in Arabic and English, and the place step comes be
   assert.equal(IN.ar.feats.length, IN.en.feats.length);
   assert.ok(EG.ar.remind('x') && EG.en.remind('x'));
   const app = fs.readFileSync('public/js/app.js', 'utf8');
-  assert.match(app, /if \(state\.practical && !state\.practical\.place\(\)\) await placeStep\(\);\s*await runIntro\(\);/);
+  assert.match(app, /if \(state\.practical && !state\.practical\.place\(\)\) await placeStep\(\);\s*(const q = )?await runIntro\(\);/);
   assert.ok(SCOPE_S.ar.offTitle && SCOPE_S.en.offTitle);
 });
 test('T090 the tafsir zone has a close button and a reopen button', () => {

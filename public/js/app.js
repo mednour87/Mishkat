@@ -1773,7 +1773,7 @@ function setupTools() {
       font: (d) => { state.qs = Math.round(Math.min(1.8, Math.max(0.7, state.qs + d)) * 10) / 10; store.set('qs', state.qs); $('#rzone').style.setProperty('--qs', state.qs); },
       open: (id) => state.panels.open(id),
       age: () => state.prefs.age, setAge: (v) => { state.prefs.age = v; savePrefs(state.prefs); applyChild(); },
-      replayIntro: () => { state.panels.close(); runIntro(); }, install: () => openInstall(state.lang),
+      replayIntro: () => { state.panels.close(); runIntro().then(q => { if (q) { $('#q').value = q; run(q); } }); }, install: () => openInstall(state.lang),
     },
   });
   const renderers = {
@@ -2209,8 +2209,9 @@ async function onboarding() {
   const P = state.prefs;
   if (!P.intro) {
     if (state.practical && !state.practical.place()) await placeStep();
-    await runIntro();
+    const q = await runIntro();
     P.intro = true; savePrefs(P);
+    if (q) { $('#q').value = q; run(q); return; }     // the visitor asked a question at the end of the film
   }
   if (store.get('welcomed') !== '1') openWelcome(); else remindEngagement();
 }
@@ -2239,7 +2240,10 @@ async function runIntro() {
     placeName: () => (state.practical ? state.practical.placeName() : ''),
     setView: (sh, od) => setView(sh, od, { quiet: true }),
     qibla: () => { const pl = state.practical && state.practical.place(); return pl ? qiblaBearing(pl.lat, pl.lon) : null; },
-    onDone: () => { setView(before.shape, before.order, { quiet: true }); resolve(); },
+    // English: the reader's own translation (QuranEnc) under the verses of the film
+    translation: (i) => state.lang === 'en' && TRANSLATION_FOR.en ? loadSource(TRANSLATION_FOR.en).then(() => state.engine.translation('en', i)) : '',
+    // T102: the last screen of the film offers example questions — the chosen one starts a real search
+    onDone: (q) => { setView(before.shape, before.order, { quiet: true }); resolve(q || ''); },
   }));
 }
 

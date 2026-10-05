@@ -67,9 +67,29 @@ try {
   await send('Page.enable'); await send('Runtime.enable');
   const phone = () => size(390, 844, true), desk = () => size(1366, 800);
   if (WANT.includes('probe')) { await desk(); await open('?s=24&a=35'); for (const t of [500, 2000, 5000]) { await sleep(t); console.log(t, await evalJs(`JSON.stringify([document.querySelector('#rSel')?.value, document.querySelector('#rdBody')?.scrollTop, document.querySelector('#lampRef')?.textContent, location.search])`)); } }
+  if (WANT.includes('intro-jump')) {           // T102: the chapter rail jumps ahead (recitation stopped with a fade)
+    await desk(); await open('', { prefs: { intro: false } });
+    await sleep(5000);
+    await evalJs(`document.querySelector('.in-chap [data-ch=features]').click(); 1`);
+    await shot('jump_features.jpg', 2500);
+    console.log('phase after jump:', await evalJs(`document.querySelector('#intro').className + ' | card: ' + (document.querySelector('.in-card h3')||{}).textContent`));
+    await evalJs(`document.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })); 1`);
+    await sleep(600);
+    console.log('after ArrowLeft:', await evalJs(`(document.querySelector('.in-card h3')||{}).textContent`));
+    await evalJs(`document.querySelector('.in-chap [data-ch=end]').click(); 1`);
+    await shot('jump_end.jpg', 2500);
+    await evalJs(`document.querySelector('.in-q').click(); 1`);
+    await sleep(4000);
+    console.log('after example question:', await evalJs(`JSON.stringify({ intro: !!document.querySelector('#intro'), q: document.querySelector('#q').value })`));
+    await shot('jump_search.jpg', 3000);
+  }
+  if (WANT.includes('intro-en')) {
+    await desk(); await open('', { lang: 'en', prefs: { intro: false } });
+    let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [4, 30, 75, 104])) { await shot(`en_intro_${t}s.jpg`, (t - at) * 1000); at = t; }
+  }
   if (WANT.includes('intro')) {
     await desk(); await open('', { prefs: { intro: false } });
-    let at = 0; for (const t of [3, 6, 10, 24, 86]) { await shot(`intro_${t}s.jpg`, (t - at) * 1000); at = t; }
+    let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [3, 6, 10, 24, 86])) { await shot(`intro_${t}s.jpg`, (t - at) * 1000); at = t; }
   }
   if (WANT.includes('contrast')) {
     const probe = (await import('node:fs')).readFileSync(new URL('./contrast_probe.js', import.meta.url), 'utf8');
@@ -225,7 +245,7 @@ try {
   }
   if (WANT.includes('intro-phone')) {
     await phone(); await open('', { prefs: { intro: false } });
-    let at = 0; for (const t of [4, 9, 16, 30]) { await shot(`m_intro_${t}s.jpg`, (t - at) * 1000); at = t; }
+    let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [4, 9, 16, 30])) { await shot(`m_intro_${t}s.jpg`, (t - at) * 1000); at = t; }
   }
 } finally {
   writeFileSync(join(OUT, 'console.txt'), logs.join('\n'));
