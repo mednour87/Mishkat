@@ -1,5 +1,7 @@
 # مِشكاة · Mishkat — The Quran Galaxy Guide
 
+**🌐 https://mishkatquran.org** · © 2026 Mohamed Nour Bou Ali — All rights reserved · جميع الحقوق محفوظة (see [LICENSE](LICENSE), [NOTICE.md](NOTICE.md)). How the search engine and its evidence-bound RAG work: [docs/MOTEUR_RECHERCHE_RAG.md](docs/MOTEUR_RECHERCHE_RAG.md) · ![pipeline](docs/pipeline_rag.png)
+
 > ﴿…كَمِشْكَوٰةٍ فِيهَا مِصْبَاحٌ…﴾ (An-Nur 24:35) — a niche gathers the lamp’s light.
 > Mishkat gathers, around your question, the light of vetted sources — inside a 3D galaxy whose 77,433 stars are the words of the Quran.
 
