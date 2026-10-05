@@ -286,3 +286,26 @@ body.child .tj-madd6 { color: #c9a2ff; } body.child .tj-maddw { color: #ffb4d2; 
 /* English: a smaller lamp and one row of the last word labels; the translation keeps the bottom of the screen */
 #intro.in-en .in-labels { flex-wrap: wrap; }
 #intro.in-en .in-labels span { font-size: 15px; }
+
+/* (5 Oct, evening) the services after the verse: one large narrated card in the middle, the live galaxy behind */
+#intro.feat .in-stage { top: 50%; bottom: auto; left: 50%; inset-inline-start: auto; transform: translate(-50%, -50%); width: min(820px, 92vw); }
+#intro.feat .in-card { padding: 30px 34px 22px; text-align: center; background: rgba(9, 12, 21, .86); }
+#intro.feat .in-card h3 { font-size: 30px; margin-top: 16px; } #intro.feat .in-card p { font-size: 20px; line-height: 1.9; }
+#intro.feat .in-dots { justify-content: center; }
+#intro.feat .in-card .d-two { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.d-rec { font-family: 'Amiri Quran', 'Amiri', serif; font-size: 34px; line-height: 2; margin: 18px 0 0; color: #cfd6e6; }
+.d-rec span { animation: drec 6s linear infinite; animation-delay: calc(var(--j) * .9s); }
+@keyframes drec { 0%, 14% { color: #ffd66b; text-shadow: 0 0 18px rgba(255, 214, 107, .8); } 20%, 100% { color: #cfd6e6; text-shadow: none; } }
+.d-kid { display: flex; justify-content: center; gap: 26px; font-size: 52px; padding-top: 20px; }
+.d-kid span { animation: tkpop 1.6s ease-in-out infinite alternate; } .d-kid span:nth-child(2) { animation-delay: .4s; } .d-kid span:nth-child(3) { animation-delay: .8s; }
+/* the recited word written over the galaxy, in time with the recitation */
+.in-word { position: absolute; left: 50%; top: 66%; transform: translate(-50%, -50%); font-family: 'Amiri Quran', 'Amiri', serif; font-size: 64px; color: #ffe39a;
+  text-shadow: 0 0 26px rgba(255, 200, 90, .85), 0 2px 12px rgba(0, 0, 0, .9); opacity: 0; pointer-events: none; white-space: nowrap; }
+#intro.see-word .in-word { opacity: 1; }
+.in-word.pop { animation: inword .5s cubic-bezier(.2, .8, .2, 1); }
+@keyframes inword { from { opacity: .2; transform: translate(-50%, -40%) scale(.92); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+@media (max-width: 700px) {
+  #intro.feat .in-stage { width: 94vw; }
+  #intro.feat .in-card { padding: 18px 16px 14px; } #intro.feat .in-card h3 { font-size: 21px; } #intro.feat .in-card p { font-size: 15.5px; line-height: 1.8; }
+  .in-word { font-size: 44px; top: 62%; } .d-rec { font-size: 24px; }
+}

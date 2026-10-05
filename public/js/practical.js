@@ -122,7 +122,7 @@ export const PS = {
     adhanNote: 'تسجيل أذان برخصة مفتوحة من', digits: 'الأرقام', country: 'البلد', city: 'المدينة', mAllMaps: 'كل المساجد القريبة في Google Maps',
     placesSrc: 'قائمة المدن: GeoNames (رخصة CC BY 4.0). يُحفظ اسم المدينة والبلد فقط في ملف تعريف ارتباط (cookie) في متصفحك لسنة، دون الإحداثيات.',
     qDeg: (d) => `القبلة على ${d}° من الشمال الجغرافي`, qDist: (k) => `المسافة إلى الكعبة المشرفة: ${k} كم`, qCompass: 'تفعيل البوصلة', qAlign: 'وجّه أعلى الهاتف حتى يصير السهم الذهبي إلى الأعلى.',
-    qCalib: 'البوصلة الإلكترونية تتأثر بالمعادن والمغناطيس: حرّك الهاتف على شكل ٨ لمعايرتها، وتحقّق بعلامة معروفة (محراب مسجد).', qNoSensor: 'لا تتوفر بوصلة في هذا الجهاز؛ استعمل الزاوية المعروضة أو افتح الصفحة على هاتفك:',
+    qCalib: 'البوصلة الإلكترونية تتأثر بالمعادن والمغناطيس: حرّك الهاتف على شكل ٨ لمعايرتها، وتحقّق بعلامة معروفة (محراب مسجد).', qNoSensor: 'لا تتوفر بوصلة في هذا الجهاز؛ استعمل الزاوية المعروضة أو افتح الصفحة على هاتفك:', qNoAbs: 'لم يُرسل الهاتف اتجاهًا مطلقًا من البوصلة، فلن نُدير القرص حتى لا نُريك اتجاهًا خاطئًا. استعمل الزاوية المكتوبة مع بوصلة الهاتف أو علامة معروفة. ملاحظة: بوصلة الهاتف تشير إلى الشمال المغناطيسي، والفرق عن الشمال الحقيقي بضع درجات في أغلب البلاد العربية.',
     qQr: 'امسح الرمز لفتح القبلة على هاتفك', qHow: 'الحساب: اتجاه الدائرة العظمى من موقعك إلى الكعبة (21.4225، 39.8262)، يُحسب في متصفحك.',
     mRadius: 'نصف القطر', mSearch: 'ابحث عن المساجد', mNone: 'لم تُسجَّل مساجد في هذا النطاق على خريطة OpenStreetMap؛ وسّع النطاق.', mFail: 'تعذّر الوصول إلى خريطة OpenStreetMap الآن.',
     mOnMap: 'على الخريطة', mRoute: 'المسار', mAllMap: 'كل المساجد على الخريطة', mMapTitle: 'خريطة المساجد القريبة (Google Maps)', mMapNote: 'الخريطة من Google Maps داخل الصفحة: تُرسل إليها إحداثيات المكان المختار لعرضه. القائمة من OpenStreetMap عبر خادم «مشكاة» (الموقع مقرَّبًا إلى ١٠٠ م تقريبًا، لا يُحفظ).', mCount: (n) => `${n} مسجدًا في هذا النطاق`,
@@ -140,7 +140,7 @@ export const PS = {
     adhanNote: 'Openly licensed adhan recording from', digits: 'Digits', country: 'Country', city: 'City', mAllMaps: 'All nearby mosques in Google Maps',
     placesSrc: 'City list: GeoNames (CC BY 4.0). Only the city and country names are kept in a cookie in your browser for one year, never the coordinates.',
     qDeg: (d) => `Qibla at ${d}° from true north`, qDist: (k) => `Distance to the Kaaba: ${k} km`, qCompass: 'Turn on the compass', qAlign: 'Turn the top of the phone until the golden arrow points up.',
-    qCalib: 'Phone compasses are disturbed by metal and magnets: move the phone in a figure 8 to calibrate it, and check against a known mark (a mosque’s mihrab).', qNoSensor: 'This device has no compass; use the angle shown or open the page on your phone:',
+    qCalib: 'Phone compasses are disturbed by metal and magnets: move the phone in a figure 8 to calibrate it, and check against a known mark (a mosque’s mihrab).', qNoSensor: 'This device has no compass; use the angle shown or open the page on your phone:', qNoAbs: 'The phone sent no absolute compass heading, so the dial is not turned (it would show a wrong direction). Use the angle above with the phone’s compass app or a known mark. Note: a phone compass points to magnetic north, a few degrees from true north in most Arab countries.',
     qQr: 'Scan to open the qibla on your phone', qHow: 'Computation: great-circle direction from your position to the Kaaba (21.4225, 39.8262), computed in your browser.',
     mRadius: 'Radius', mSearch: 'Find mosques', mNone: 'No mosque is mapped in this area on OpenStreetMap; widen the radius.', mFail: 'OpenStreetMap cannot be reached now.',
     mOnMap: 'On the map', mRoute: 'Route', mAllMap: 'All mosques on the map', mMapTitle: 'Map of the nearby mosques (Google Maps)', mMapNote: 'The map is Google Maps inside the page: the chosen place’s coordinates are sent to it to show the area. The list comes from OpenStreetMap through Mishkat’s server (place rounded to about 100 m, never stored).', mCount: (n) => `${n} mosques in this radius`,
@@ -383,7 +383,21 @@ export function createPractical(ctx) {
     if (cb) cb.onclick = async () => {
       try { if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') { const s = await DeviceOrientationEvent.requestPermission(); if (s !== 'granted') throw new Error('denied'); } } catch (e) { cb.insertAdjacentHTML('afterend', `<p class="note">${esc(t.qNoSensor)}</p>`); return; }
       const rose = body.querySelector('.qb-rose');
-      orient = (ev) => { const h = headingOf(ev); if (h == null || !rose.isConnected) return; rose.setAttribute('transform', `rotate(${(-h).toFixed(1)} 100 100)`); const off = Math.abs(((b - h + 540) % 360) - 180); body.querySelector('.qb-dial').classList.toggle('aligned', off < 4); };
+      // (5 Oct) the heading is corrected for a phone held sideways (screen angle), smoothed on the circle (no jitter),
+      // and if no ABSOLUTE heading arrives within 3 s the dial is not turned at all: a relative sensor would point anywhere
+      let sx = null, sy = null, got = false;
+      orient = (ev) => {
+        let h = headingOf(ev); if (h == null || !rose.isConnected) return;
+        const ang = (screen.orientation && typeof screen.orientation.angle === 'number') ? screen.orientation.angle : (typeof window.orientation === 'number' ? window.orientation : 0);
+        h = (h + ang + 360) % 360;
+        const cx = Math.cos(h * R), cy = Math.sin(h * R);
+        sx = sx == null ? cx : sx * 0.8 + cx * 0.2; sy = sy == null ? cy : sy * 0.8 + cy * 0.2;
+        const hs = (Math.atan2(sy, sx) / R + 360) % 360;
+        got = true;
+        rose.setAttribute('transform', `rotate(${(-hs).toFixed(1)} 100 100)`);
+        const off = Math.abs(((b - hs + 540) % 360) - 180); body.querySelector('.qb-dial').classList.toggle('aligned', off < 4);
+      };
+      setTimeout(() => { if (!got && rose.isConnected) cb.insertAdjacentHTML('afterend', `<p class="note">${esc(t.qNoAbs)}</p>`); }, 3000);
       window.addEventListener('deviceorientationabsolute', orient);
       window.addEventListener('deviceorientation', orient);
       cb.disabled = true;

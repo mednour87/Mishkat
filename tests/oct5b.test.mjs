@@ -52,3 +52,34 @@ test('⤢ on a phone works in every reading pane (the tafsir rule no longer wins
   assert.match(css, /body\.gfull\[data-mode=study\]\[data-pane\] #work \{ grid-template-rows: 60vh/);
   assert.match(css, /body\.gfull\[data-mode=study\]\[data-pane=t\] #tzone \{ display: flex !important; \}/);
 });
+
+test('khatma v2: whole Quran by pages = 604, short surahs first starts at an-Nas, daily amount, choose-for-me', async () => {
+  const k = await import('../public/js/khatma.js');
+  const core = JSON.parse(read('public/data/core.json')), pages = JSON.parse(read('public/data/mushaf_meta.json')).pages;
+  const U = k.planUnits({}, core.suras, pages);
+  assert.equal(Math.round(k.planTotal(U)), 604);
+  const tp = k.todayPortion2({ start: '2026-10-05', days: 30, moments: [{ id: 'fajr' }, { id: 'night' }] }, k.newRead(), U, new Date(2026, 9, 5));
+  assert.equal(tp.parts.length, 2); assert.ok(Math.abs(tp.w - 604 / 30) < 1.5);
+  const S = k.planUnits({ unit: 'ayas', scope: 'suras', suras: [67, 112, 113, 114], order: 'short' }, core.suras, pages);
+  assert.equal(S[0].sura, 114); assert.equal(S.length, 30 + 4 + 5 + 6);
+  assert.equal(k.planDays({ mode: 'amount', perDay: 5 }, S), 9);
+  const r = k.suggestPlan({ minutes: 20, pace: 'medium', deadline: 60, moments: [] }, '2026-10-05');
+  assert.equal(r.days, 60); assert.ok(r.fits);
+  assert.equal(k.suggestPlan({ minutes: 5, pace: 'slow', deadline: 30 }, '2026-10-05').fits, false);
+});
+
+test('qibla bearings match published values (great circle)', async () => {
+  const q = await import('../public/js/practical.js');
+  const near = (a, b) => Math.abs(a - b) < 0.3;
+  assert.ok(near(q.qiblaBearing(51.5074, -0.1278), 119.0)); assert.ok(near(q.qiblaBearing(40.7128, -74.006), 58.5));
+  assert.ok(near(q.qiblaBearing(-6.2088, 106.8456), 295.1)); assert.ok(near(q.qiblaBearing(35.5047, 11.0622), 111.5));
+});
+
+test('phone review (5 Oct night): SVG play icons, tajweed close keeps colours, panel enlarge, readable lists, Arabic first', () => {
+  const app = read('public/js/app.js');
+  assert.doesNotMatch(app, /'⏵⏵'/);
+  assert.match(app, /state\.tjBoxHidden = true/);
+  assert.match(read('public/js/panels.js'), /p-max/);
+  assert.match(read('public/css/refonte.css'), /select option, select optgroup \{ background: #0f1424; color: #f3eedf; \}/);
+  assert.match(app, /const nav = m && EN_LANDS\.includes\(m\[1\]\.toUpperCase\(\)\) \? 'en' : 'ar';/);
+});

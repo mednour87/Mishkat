@@ -182,9 +182,38 @@ try {
     await evalJs(`(document.querySelector('#lampMap .p-x, #lampMap [data-close]')||{click(){}}).click(), 1`);
     mark('engage'); await click('#engBtn'); await sleep(5500);
   });
+  // (5 Oct, evening) the services narrated one by one: memorising, the child mode, the khatma, installing the app
+  await open('');
+  await record('tekrar', async (mark) => {
+    await sleep(400); mark('type');
+    await type('أريد أن أحفظ سورة الإخلاص', { cps: 16 });
+    await waitFor(`!!document.querySelector('#tkGo')`, 8000); await sleep(1200); mark('start');
+    await click('#tkGo'); await sleep(1800);
+    for (let k = 0; k < 3; k++) { await click('#tkPress'); await sleep(1300); }
+    mark('end'); await sleep(1500);
+  });
+  await open('', { prefs: { age: 'child' } });
+  await record('child', async (mark) => {
+    await sleep(400); mark('type');
+    await type('ما حكم الموسيقى؟', { cps: 14 });
+    await sleep(2800); mark('card'); await moveTo('.kidbox'); await sleep(2600);
+  });
+  await open('');
+  await record('khatma', async (mark) => {
+    await sleep(400); mark('panel');
+    await click('#dock [data-panel=khatma]'); await sleep(3600);
+    await evalJs(`(document.querySelector('.panel:not([hidden]) .p-x')||{click(){}}).click(), 1`);
+    mark('lamp'); await click('#lampSlot'); await sleep(4200);
+  });
+  await open('');
+  await record('install', async (mark) => {
+    await sleep(400); mark('type');
+    await type('كيف أثبت التطبيق على هاتفي', { cps: 16 });
+    await sleep(4200); mark('shown'); await sleep(1500);
+  });
   await open('?s=24&a=35');
   await record('shapes', async (mark) => {
-    for (const sh of ['rose', 'quran', 'dome', 'galaxy']) {
+    for (const sh of ['zahra', 'rose', 'galaxy']) {
       mark(sh);
       await evalJs(`(()=>{const s=document.querySelector('#shapeSel'); s.value=${JSON.stringify(sh)}; s.dispatchEvent(new Event('change',{bubbles:true})); return 1})()`);
       await sleep(3200);

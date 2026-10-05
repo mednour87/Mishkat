@@ -49,6 +49,35 @@
   #end .url { margin-top: 26px; font-family: 'Inter'; font-size: 30px; color: #fff; padding: 10px 28px; border-radius: 999px; border: 1px solid rgba(255,214,107,.5); display: inline-block; }
   #end .tl { margin-top: 26px; font-size: 30px; color: #f3eedf; direction: rtl; } #end .tl small { display: block; font-family: 'Inter'; font-size: 21px; color: var(--mut); margin-top: 6px; direction: ltr; }
   #end .ch { margin-top: 22px; font-family: 'Inter'; font-size: 18px; color: #8f98ab; }
+  /* (5 Oct, evening) v2 — motion design in every part: chapter rail with the address, light sweeps between chapters,
+     feature cards whose points come one by one, a bridge card, the challenge's logo at the end */
+  #rail { left: 60px; right: 60px; top: 22px; height: 48px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 22px; }
+  #rail .logo { display: flex; align-items: center; gap: 10px; font-family: 'Amiri'; font-size: 28px; color: var(--gold); text-shadow: 0 2px 10px rgba(0,0,0,.9); }
+  #rail .bar { position: relative; height: 34px; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; direction: rtl; }
+  #rail .ch { position: relative; border-radius: 999px; background: rgba(5,7,13,.62); border: 1px solid rgba(255,255,255,.14); overflow: hidden; display: grid; place-items: center; font-size: 17px; color: #cfd6e6; white-space: nowrap; }
+  #rail .ch i { position: absolute; inset: 0 auto 0 0; right: 0; left: auto; width: 0; background: linear-gradient(270deg, rgba(255,214,107,.55), rgba(255,214,107,.18)); }
+  #rail .ch span { position: relative; } #rail .ch span small { font-family: 'Inter'; font-size: 13px; color: #aab3c7; margin-inline-start: 6px; }
+  #rail .ch.now { border-color: rgba(255,214,107,.75); color: #fff8e6; box-shadow: 0 0 22px rgba(255,214,107,.35); }
+  #rail .url { font-family: 'Inter'; font-size: 19px; font-weight: 600; color: #fff3cf; padding: 6px 16px; border-radius: 999px; background: rgba(5,7,13,.7); border: 1px solid rgba(255,214,107,.45); direction: ltr; }
+  #sweep { left: 0; top: 0; width: 1920px; height: 1080px; pointer-events: none; overflow: hidden; }
+  #sweep i { position: absolute; top: -200px; width: 420px; height: 1480px; background: linear-gradient(90deg, rgba(255,214,107,0), rgba(255,236,180,.55), rgba(255,214,107,0)); filter: blur(18px); transform: rotate(14deg); }
+  #sweep b { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); font-size: 64px; color: #fff8e6; text-shadow: 0 0 40px rgba(255,200,90,.8); white-space: nowrap; }
+  #sweep b small { display: block; text-align: center; font-family: 'Inter'; font-size: 26px; font-weight: 500; color: #f0e3c0; margin-top: 4px; }
+  .feat { top: 200px; width: 610px; padding: 24px 26px 18px; border-radius: 24px; background: rgba(5,7,13,.86); border: 1px solid rgba(255,214,107,.4); box-shadow: 0 30px 90px rgba(0,0,0,.6); direction: rtl; }
+  .feat.r { right: 48px; } .feat.l { left: 48px; }
+  .feat h3 { margin: 0 0 14px; display: flex; align-items: center; gap: 14px; font-size: 32px; color: var(--gold); }
+  .feat h3 em { font-style: normal; width: 58px; height: 58px; border-radius: 16px; display: grid; place-items: center; font-size: 32px; background: rgba(255,214,107,.14); border: 1px solid rgba(255,214,107,.45); }
+  .feat h3 small { display: block; font-family: 'Inter'; font-size: 18px; color: var(--mut); font-weight: 400; direction: ltr; text-align: right; }
+  .feat ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .feat li { display: grid; grid-template-columns: 34px 1fr; gap: 12px; align-items: start; padding: 10px 12px; border-radius: 14px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); font-size: 24px; line-height: 1.4; }
+  .feat li b { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--green); color: #062114; font-family: 'Inter'; font-size: 17px; margin-top: 3px; }
+  .feat li small { display: block; font-family: 'Inter'; font-size: 16px; color: var(--mut); direction: ltr; text-align: right; }
+  #bridge .in { text-align: center; } #bridge .lamp { display: inline-block; filter: drop-shadow(0 0 50px rgba(255,210,110,.7)); }
+  #bridge h2 { margin: 18px 0 0; font-size: 70px; color: #fff3cf; } #bridge h2 small { display: block; font-family: 'Inter'; font-size: 30px; color: var(--mut); font-weight: 400; margin-top: 10px; }
+  #bridge .ic { margin-top: 34px; display: flex; justify-content: center; gap: 22px; font-size: 44px; }
+  #bridge .ic span { width: 92px; height: 92px; border-radius: 24px; display: grid; place-items: center; background: rgba(255,214,107,.1); border: 1px solid rgba(255,214,107,.4); }
+  #end .chal { margin-top: 26px; display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 24px; color: #e9e4d6; direction: rtl; }
+  #end .chal img { height: 92px; } #end .chal small { display: block; font-family: 'Inter'; font-size: 19px; color: var(--mut); direction: ltr; }
   /* corner mark */
   #mark { right: 34px; top: 26px; display: flex; align-items: center; gap: 10px; font-family: 'Amiri'; font-size: 30px; color: var(--gold); text-shadow: 0 2px 10px rgba(0,0,0,.9); }
   #mark small { font-family: 'Inter'; font-size: 15px; color: #cfd6e6; }
@@ -77,15 +106,20 @@ for (const e of TL.events) {
   else if (e.kind === 'mark') { d.id = 'mark'; d.innerHTML = `${lampSVG({ size: 46, animated: false, title: '' })}<span>مِشكاة<small> · Mishkat</small></span>`; }
   else if (e.kind === 'pipe') { d.id = 'pipe'; d.innerHTML = `<h3>طريق الجواب<small>How an answer is built</small></h3>` + e.steps.map((s, k) => `${k ? '<div class="arrow">▼</div>' : ''}<div class="st" data-k="${k}"><b>${k + 1}</b><div>${esc(s.ar)}<small>${esc(s.en)}</small></div></div>`).join(''); }
   else if (e.kind === 'stats') { d.id = 'stats'; d.className = 'L card'; d.innerHTML = `<div class="in"><h2>${esc(e.title.ar)}<small>${esc(e.title.en)}</small></h2><div class="grid">${e.kpis.map((k, j) => `<div class="kpi${k.good ? ' g' : ''}" data-j="${j}"><b data-v="${k.v}" data-d="${k.dec || 0}" data-suf="${esc(k.suf || '')}">0</b><span>${esc(k.ar)}</span><small>${esc(k.en)}</small></div>`).join('')}</div><div class="foot">${esc(e.foot || '')}</div></div>`; }
-  else if (e.kind === 'end') { d.id = 'end'; d.className = 'L card'; d.innerHTML = `<div class="in"><div class="lamp">${lampSVG({ size: 250, animated: false, title: 'Mishkat' })}</div><h1>مشكاة<small>MISHKAT</small></h1><div class="url">${esc(e.url)}</div><div class="tl">${esc(e.ar)}<small>${esc(e.en)}</small></div><div class="ch">${esc(e.foot || '')}</div></div>`; }
+  else if (e.kind === 'rail') { d.id = 'rail'; d.innerHTML = `<div class="logo">${lampSVG({ size: 40, animated: false, title: '' })}<span>مِشكاة</span></div><div class="bar">${e.chapters.map(c => `<div class="ch"><i></i><span>${esc(c.ar)}<small>${esc(c.en)}</small></span></div>`).join('')}</div><div class="url">${esc(e.url)}</div>`; }
+  else if (e.kind === 'sweep') { d.id = 'sweep'; d.innerHTML = `<i></i>${e.ar ? `<b>${esc(e.ar)}<small>${esc(e.en || '')}</small></b>` : ''}`; }
+  else if (e.kind === 'feat') { d.className = 'L feat ' + (e.side || 'r'); d.innerHTML = `<h3><em>${esc(e.icon)}</em><span>${esc(e.ar)}<small>${esc(e.en)}</small></span></h3><ul>${e.points.map((x, k) => `<li data-k="${k}"><b>✓</b><div>${esc(x.ar)}<small>${esc(x.en)}</small></div></li>`).join('')}</ul>`; }
+  else if (e.kind === 'bridge') { d.id = 'bridge'; d.className = 'L card'; d.innerHTML = `<div class="in"><div class="lamp">${lampSVG({ size: 190, animated: false, title: '' })}</div><h2>${esc(e.ar)}<small>${esc(e.en)}</small></h2><div class="ic">${e.icons.map(x => `<span>${esc(x)}</span>`).join('')}</div></div>`; }
+  else if (e.kind === 'end') { d.id = 'end'; d.className = 'L card'; d.innerHTML = `<div class="in"><div class="lamp">${lampSVG({ size: 230, animated: false, title: 'Mishkat' })}</div><h1>مشكاة<small>MISHKAT</small></h1><div class="url">${esc(e.url)}</div><div class="tl">${esc(e.ar)}<small>${esc(e.en)}</small></div>${e.chal ? `<div class="chal"><img src="${esc(e.chal.logo)}" alt=""><div>${esc(e.chal.ar)}<small>${esc(e.chal.en)}</small></div></div>` : ''}<div class="ch">${esc(e.foot || '')}</div></div>`; }
+  else if (e.kind === 'end_v1') { d.id = 'end'; d.className = 'L card'; d.innerHTML = `<div class="in"><div class="lamp">${lampSVG({ size: 250, animated: false, title: 'Mishkat' })}</div><h1>مشكاة<small>MISHKAT</small></h1><div class="url">${esc(e.url)}</div><div class="tl">${esc(e.ar)}<small>${esc(e.en)}</small></div><div class="ch">${esc(e.foot || '')}</div></div>`; }
   else continue;
   d.style.opacity = 0; root.appendChild(d); els.push({ e, d });
 }
 
 window.render = (t) => {
   for (const { e, d } of els) {
-    const fi = e.kind === 'stats' || e.kind === 'end' ? .5 : .35;
-    const a = env(t, e.at, e.dur, fi, e.kind === 'end' ? .01 : .4);
+    const fi = e.kind === 'stats' || e.kind === 'end' || e.kind === 'bridge' ? .5 : e.kind === 'sweep' ? .05 : .35;
+    const a = env(t, e.at, e.dur, fi, e.kind === 'end' ? .01 : e.kind === 'sweep' ? .05 : .4);
     d.style.opacity = a.toFixed(3);
     d.style.display = a > 0 ? '' : 'none';
     if (!a) continue;
@@ -108,6 +142,34 @@ window.render = (t) => {
         const b = k.querySelector('b'), v = +b.dataset.v, dec = +b.dataset.d, c = clamp((u - .5 - j * .25) / 1.4);
         b.textContent = (v * ease(c)).toFixed(dec).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + b.dataset.suf;
       });
+    }
+    if (e.kind === 'rail') {
+      // the chapter rail: the current chapter glows, its own bar fills with the time spent in it
+      d.querySelectorAll('.ch').forEach((c, k) => {
+        const ch = e.chapters[k], next = e.chapters[k + 1], end = next ? next.at : e.at + e.dur, f = clamp((t - ch.at) / (end - ch.at));
+        c.querySelector('i').style.width = (100 * f).toFixed(1) + '%';
+        c.className = 'ch' + (t >= ch.at && t < end ? ' now' : '');
+      });
+      // it steps aside under the full-screen cards
+      const card = TL.events.some(x => (x.kind === 'stats' || x.kind === 'end' || x.kind === 'bridge') && t >= x.at && t <= x.at + x.dur);
+      d.style.opacity = (a * (card ? 0 : 1)).toFixed(3);
+    }
+    if (e.kind === 'sweep') {
+      const f = clamp(u / e.dur), x = -500 + f * 2900;
+      d.querySelector('i').style.left = x + 'px';
+      const b = d.querySelector('b'); if (b) { b.style.opacity = Math.sin(Math.PI * f).toFixed(3); b.style.letterSpacing = ((1 - Math.sin(Math.PI * f)) * 10).toFixed(1) + 'px'; }
+    }
+    if (e.kind === 'feat') {
+      d.style.transform = `translateX(${(1 - ease(u / .55)) * (e.side === 'l' ? -70 : 70)}px)`;
+      d.querySelectorAll('li').forEach((li, k) => { const p = clamp((u - (e.points[k].at != null ? e.points[k].at : .6 + k * 1.2)) / .45); li.style.opacity = ease(p).toFixed(3); li.style.transform = `translateY(${((1 - ease(p)) * 16).toFixed(1)}px)`; li.querySelector('b').style.transform = `scale(${(.6 + .4 * outBack(p)).toFixed(3)})`; });
+    }
+    if (e.kind === 'bridge') {
+      const l = d.querySelector('.lamp'); l.style.transform = `scale(${(.8 + .2 * outBack(u / .9)).toFixed(3)})`;
+      d.querySelector('h2').style.transform = `translateY(${((1 - ease((u - .3) / .7)) * 30).toFixed(1)}px)`; d.querySelector('h2').style.opacity = ease((u - .3) / .7).toFixed(3);
+      d.querySelectorAll('.ic span').forEach((x, k) => { const p = clamp((u - .9 - k * .22) / .4); x.style.opacity = ease(p).toFixed(3); x.style.transform = `translateY(${((1 - outBack(p)) * 26).toFixed(1)}px)`; });
+    }
+    if (e.kind === 'end') {
+      const c = d.querySelector('.chal'); if (c) { const p = clamp((u - (e.chalAt || 4)) / .6); c.style.opacity = ease(p).toFixed(3); c.style.transform = `translateY(${((1 - ease(p)) * 20).toFixed(1)}px)`; }
     }
     if (e.kind === 'end') { const l = d.querySelector('.lamp'); l.style.transform = `scale(${.85 + .15 * outBack(u / 1.0)})`; l.style.opacity = ease(u / .6); }
   }

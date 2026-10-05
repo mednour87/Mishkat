@@ -73,7 +73,7 @@ export function miniLamp(prog, suras, order = 'mushaf') {
 // ------------------------------------------------------------------ the 3D view
 // hifz: fraction of each surah repeated to the end in the tekrar mode (blue ring); extra: a line under the title
 // (this month's percentages and the number of khatmas)
-export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', order = 'mushaf', strings, onPick, onOrder, onClose }) {
+export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', order = 'mushaf', strings, onPick, onOrder, onClose, reveal = null }) {
   const T = strings;
   const old = document.getElementById('lampMap');
   if (old) old.remove();
@@ -97,6 +97,7 @@ export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', 
       <button type="button" data-c="out" title="${esc(T.zoomOut)}" aria-label="${esc(T.zoomOut)}">－</button>
       <button type="button" data-c="reset" title="${esc(T.reset)}" aria-label="${esc(T.reset)}">⟲</button></div>
     <div class="lm-tip" hidden></div>
+    ${reveal ? `<div class="lm-reveal" aria-live="polite"><b>${esc(reveal.title || '')}</b><div class="lm-choice" hidden><p>${esc(reveal.question || '')}</p><div class="lm-cbtns">${(reveal.choices || []).map(c => `<button type="button" class="btn ${c.id === 'with' ? 'gold' : ''}" data-choice="${esc(c.id)}">${esc(c.label)}</button>`).join('')}</div></div></div>` : ''}
     <p class="lm-legend"><span class="lg on"></span>${esc(T.read)} <span class="lg part"></span>${esc(T.partly)} <span class="lg off"></span>${esc(T.unread)}${hifz ? ` <span class="lg hz"></span>${esc(T.hifz || '')}` : ''} · ${esc(T.hint)}</p>`;
   document.body.appendChild(root);
   const cv = root.querySelector('canvas'), tip = root.querySelector('.lm-tip');
@@ -109,6 +110,8 @@ export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', 
   const SPEEDS = [1, 2, 4, 0];
   let speedK = 0, zoom = 1, over = false, panY = 0;
   const pinch = new Map();
+  const plan = reveal ? new Map(reveal.seq.map((n, k) => [n, k])) : null, revealT0 = performance.now(), REVEAL_MS = 3200;
+  let choiceShown = false;
   // (5 Oct) vertical move once zoomed (author: on a phone, after zooming, one could not go up to the neck or down to the
   // foot). panY is in glass units: +31 brings the top of the neck to the middle of the view, −30 the foot.
   const clampPan = (v) => zoom <= 1.02 ? 0 : Math.max(-30, Math.min(31, v));
@@ -158,6 +161,9 @@ export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', 
     ctx2.beginPath();
     pts.forEach((q, k) => k ? ctx2.lineTo(q.x, q.y) : ctx2.moveTo(q.x, q.y));
     ctx2.strokeStyle = 'rgba(142,197,240,.16)'; ctx2.stroke();
+    // a new plan: its surahs light up in reading order
+    const litN = plan ? Math.floor(Math.min(1, (performance.now() - revealT0) / REVEAL_MS) * plan.size) : 0;
+    if (plan && !choiceShown && litN >= plan.size) { choiceShown = true; const c = root.querySelector('.lm-choice'); if (c) { c.hidden = false; const b = c.querySelector('[data-choice]'); if (b) b.focus(); } }
     // lights, back to front
     const sorted = pts.slice().sort((a, b) => a.z - b.z);
     hits = [];
@@ -174,6 +180,11 @@ export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', 
       ctx2.fillStyle = on ? '#fffbe6' : part ? `rgba(255,214,107,${0.45 + 0.5 * q.f})` : `rgba(160,175,205,${0.25 + 0.35 * depth})`;
       ctx2.fill();
       hits.push({ n: q.n, z: q.z, x0: q.x - rad - 5, x1: q.x + rad + 5, y0: q.y - rad - 5, y1: q.y + rad + 5, k: q });
+      if (plan && plan.has(q.n) && plan.get(q.n) < litN) {
+        const gp = ctx2.createRadialGradient(q.x, q.y, 0, q.x, q.y, rad * 5); gp.addColorStop(0, 'rgba(120,255,214,.55)'); gp.addColorStop(1, 'rgba(120,255,214,0)');
+        ctx2.fillStyle = gp; ctx2.beginPath(); ctx2.arc(q.x, q.y, rad * 5, 0, 7); ctx2.fill();
+        ctx2.beginPath(); ctx2.arc(q.x, q.y, rad + 2.6, 0, 7); ctx2.strokeStyle = 'rgba(150,255,220,.9)'; ctx2.lineWidth = 1.6; ctx2.stroke();
+      }
       if (part) { ctx2.beginPath(); ctx2.arc(q.x, q.y, rad + 2, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * q.f); ctx2.strokeStyle = '#ffd66b'; ctx2.lineWidth = 1.4; ctx2.stroke(); }
       // T095: repeated in the tekrar mode — a blue ring (full when the whole surah was repeated)
       const hf = hifz ? hifz[q.n - 1] || 0 : 0;
@@ -276,6 +287,7 @@ export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', 
     root.remove(); onClose && onClose();
   };
   root.querySelector('.lm-close').onclick = close;
+  root.querySelectorAll('[data-choice]').forEach(b => b.onclick = () => { const id = b.dataset.choice; close(); if (reveal && reveal.onChoice) reveal.onChoice(id); });
   window.addEventListener('resize', resize);
   document.addEventListener('keydown', onKey, true);
   resize(); draw();

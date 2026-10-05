@@ -2,7 +2,7 @@
 // Religious content shown here is only: verses (Tanzil text, opened in the reader) and authentic
 // hadiths of HadeethEnc shown verbatim with their grade and link. Titles and help texts are ours.
 import { toHijri, toGregorian, formatHijri, upcoming, nextEvent, nextWhiteDays, MONTHS, REMARKABLE, MONTHLY, WEEKLY } from './hijri.js';
-import { N_PAGES, todayPortion, pagesRead, countRead, markRead, unmarkRead, encodeRead, decodeRead, surasRead, streak, planToIcs, ymd, pageRange, pageOf } from './khatma.js';
+import { N_PAGES, todayPortion, pagesRead, countRead, markRead, unmarkRead, encodeRead, decodeRead, surasRead, streak, planToIcs, ymd, pageRange, pageOf, planOf, planUnits, planSuras, planTotal, planDays, todayPortion2, planToIcs2, suggestPlan } from './khatma.js';
 import { exportPrefs, importPrefs, resetPrefs, DEFAULTS } from './prefs.js';
 
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -118,7 +118,44 @@ export const LINKS = [
 ];
 
 const PRESETS = [7, 10, 15, 20, 30, 40, 60];
-const MOMENT_IDS = ['fajr', 'morning', 'noon', 'asr', 'maghrib', 'night', 'other'];
+const MOMENT_IDS = ['fajr', 'morning', 'noon', 'asr', 'maghrib', 'isha', 'night', 'other'];
+const MOMENT_TIME = { fajr: '05:30', morning: '08:00', noon: '13:30', asr: '16:30', maghrib: '19:00', isha: '20:30', night: '22:00', other: '' };
+// (5 Oct, evening) the khatma v2: every moment can be chosen, plans by length or by daily amount, by pages, verses or
+// surahs, the whole Quran or chosen surahs, Mushaf order or the short surahs first, and «اختر لي» (choose for me)
+export const K2 = {
+  ar: {
+    isha: 'بعد العشاء', choose: '✦ اختر لي', chooseLead: 'أجب عن أسئلة قليلة، فنقترح عليك أنسب خطة، ثم تعدّلها كما تشاء.', manual: 'أو صمّم خطتك بنفسك:',
+    what: 'ماذا تقرأ؟', whole: 'القرآن كله', some: 'سورًا أختارها', pickSuras: 'اختر السور (اضغط مع Ctrl لاختيار أكثر من سورة)', nSel: (n) => `اخترت ${n}`,
+    order: 'من أين تبدأ؟', oMushaf: 'ترتيب المصحف (من الفاتحة)', oShort: 'قصار السور أولًا (من الناس صعودًا)',
+    how: 'كيف تُحسب خطتك؟', byDays: 'بالمدة: أختم في عدد من الأيام', byAmount: 'بالمقدار: أقرأ كل يوم', unit: 'الوحدة', uPages: 'صفحات', uAyas: 'آيات', uSuras: 'سور',
+    perDay: 'كل يوم', moments: 'متى تقرأ؟ (اختر وقتًا أو أكثر)', time: 'الساعة',
+    qMin: 'كم دقيقة تستطيع أن تقرأ كل يوم؟', min: (n) => `${n} دقيقة`, qWhen: 'متى يناسبك أن تقرأ؟', qPace: 'كيف قراءتك؟', pSlow: 'متأنّية', pMed: 'متوسطة', pFast: 'سريعة',
+    qStart: 'بماذا تحب أن تبدأ؟', qDead: 'هل تريد أن تختم في مدة محددة؟', dNone: 'لا، حسب وقتي', d30: 'شهر', d60: 'شهران', d90: 'ثلاثة أشهر', d7: 'أسبوع',
+    suggest: 'اقترح عليّ', result: 'خطتك المقترحة', resLine: (d, p, m) => `ختمة في ${d} يومًا، نحو ${p} صفحة كل يوم (قرابة ${m} دقيقة).`,
+    resWhen: (w) => `موزّعة على: ${w}.`, resShort: 'تبدأ بقصار السور، من الناس صعودًا.', resMushaf: 'بترتيب المصحف، من الفاتحة.',
+    noFit: (d, m) => `لتختم في ${d} يومًا تحتاج نحو ${m} دقيقة كل يوم؛ لذا اقترحنا مدة تناسب وقتك. يمكنك تعديلها.`,
+    accept: 'اعتمد هذه الخطة', edit: 'عدّلها بنفسي', back: 'رجوع',
+    howRead: 'كيف تحب أن تقرأ وردك؟', rWith: '🎧 مع القارئ والمجرّة', rOnly: '📖 قراءة فقط (ملء الشاشة)', rListen: '🔊 استماع فقط', later: 'لاحقًا',
+    revealTitle: 'سور خطتك تضيء في المشكاة', portion: (u) => u, rangeSura: (name, a, b) => a === b ? `${name} ${a}` : `${name} ${a}–${b}`,
+    unitsLeft: (a, b) => `${a} من ${b}`, uWord: { pages: 'صفحة', ayas: 'آية', suras: 'سورة' },
+  },
+  en: {
+    isha: 'After Isha', choose: '✦ Choose for me', chooseLead: 'Answer a few questions and we propose the plan that fits you best; you can change it afterwards.', manual: 'Or design your own plan:',
+    what: 'What will you read?', whole: 'The whole Quran', some: 'Surahs I choose', pickSuras: 'Choose the surahs (Ctrl-click to choose several)', nSel: (n) => `${n} chosen`,
+    order: 'Where do you start?', oMushaf: 'Mushaf order (from al-Fatiha)', oShort: 'Short surahs first (from an-Nas up)',
+    how: 'How is your plan counted?', byDays: 'By length: finish in a number of days', byAmount: 'By amount: read every day', unit: 'Unit', uPages: 'pages', uAyas: 'verses', uSuras: 'surahs',
+    perDay: 'every day', moments: 'When do you read? (one moment or more)', time: 'Time',
+    qMin: 'How many minutes can you read every day?', min: (n) => `${n} min`, qWhen: 'When suits you?', qPace: 'How do you read?', pSlow: 'Slowly', pMed: 'Medium', pFast: 'Fast',
+    qStart: 'How would you like to start?', qDead: 'Do you want to finish within a set time?', dNone: 'No, at my pace', d30: 'A month', d60: 'Two months', d90: 'Three months', d7: 'A week',
+    suggest: 'Suggest a plan', result: 'Your proposed plan', resLine: (d, p, m) => `A khatma in ${d} days, about ${p} pages a day (around ${m} minutes).`,
+    resWhen: (w) => `Spread over: ${w}.`, resShort: 'It starts with the short surahs, from an-Nas up.', resMushaf: 'In Mushaf order, from al-Fatiha.',
+    noFit: (d, m) => `To finish in ${d} days you would need about ${m} minutes a day, so we proposed a length that fits your time. You can change it.`,
+    accept: 'Use this plan', edit: 'Adjust it myself', back: 'Back',
+    howRead: 'How would you like to read your portion?', rWith: '🎧 With the reciter and the galaxy', rOnly: '📖 Reading only (full screen)', rListen: '🔊 Listening only', later: 'Later',
+    revealTitle: 'The surahs of your plan light up in the lamp', portion: (u) => u, rangeSura: (name, a, b) => a === b ? `${name} ${a}` : `${name} ${a}–${b}`,
+    unitsLeft: (a, b) => `${a} of ${b}`, uWord: { pages: 'pages', ayas: 'verses', suras: 'surahs' },
+  },
+};
 
 // ctx: { lang(), core, meta(): Promise<{pages,juz}>, prefs, save(), openVerse(idx), readerVerse(): idx|null,
 //        hadiths(ids, lang): Promise<items>, onReadChange(), status(msg) }
@@ -146,50 +183,90 @@ export function createToolPanels(ctx) {
     const t = L(), P = ctx.prefs, meta = await ctx.meta(), pages = meta.pages;
     const bits = decodeRead(P.read);
     const kp = P.khatma;
+    const k2 = K2[ar() ? 'ar' : 'en'], mlabel = (id) => id === 'isha' ? k2.isha : (t.kMoment[id] || id);
     if (!kp.active) {
-      const days = args.days || kp.days || 30;
-      const moments = kp.moments && kp.moments.length ? kp.moments : DEFAULTS.khatma.moments;
+      if (args.wizard || state2.wizard) return wizard(body, args);
+      const cur = planOf(kp.v === 2 ? kp : { ...kp, mode: 'days' });
+      const days = args.days || cur.days || 30;
+      const moments = (cur.moments && cur.moments.length ? cur.moments : DEFAULTS.khatma.moments).map(m => ({ ...m }));
       const prop = args.days ? `<p class="k-proposal">${esc(t.kProposal(num(days), num(Math.ceil(N_PAGES / days))))}</p>` : '';
+      const chosen = new Set(cur.suras || []);
       body.innerHTML = `${prop}<p class="p-lead">${esc(t.kIntro)}</p>
-        <fieldset class="p-field"><legend>${esc(t.kDays)}</legend><div class="chips">${PRESETS.map(n => `<label class="chip"><input type="radio" name="kd" value="${n}" ${n === days ? 'checked' : ''}> ${esc(t.kDaysN(num(n)))}</label>`).join('')}</div>
-          <label class="p-row">${esc(t.kCustom)} <input type="number" id="kdN" min="1" max="1000" value="${PRESETS.includes(days) ? '' : days}" inputmode="numeric"></label></fieldset>
+        <div class="k-choose"><button type="button" class="btn gold big" id="kWiz">${esc(k2.choose)}</button><p class="p-small">${esc(k2.chooseLead)}</p></div>
+        <h3 class="p-sub">${esc(k2.manual)}</h3>
+        <fieldset class="p-field"><legend>${esc(k2.what)}</legend><div class="chips">
+          <label class="chip"><input type="radio" name="kScope" value="quran" ${cur.scope !== 'suras' ? 'checked' : ''}> ${esc(k2.whole)}</label>
+          <label class="chip"><input type="radio" name="kScope" value="suras" ${cur.scope === 'suras' ? 'checked' : ''}> ${esc(k2.some)}</label></div>
+          <div id="kSurasBox" ${cur.scope === 'suras' ? '' : 'hidden'}><label class="p-small" for="kSuras">${esc(k2.pickSuras)}</label>
+            <select id="kSuras" multiple size="7">${ctx.core.suras.map(x => `<option value="${x.n}" ${chosen.has(x.n) ? 'selected' : ''}>${x.n}. ${esc(ar() ? x.ar : x.tr)}</option>`).join('')}</select> <small id="kNSel"></small></div></fieldset>
+        <fieldset class="p-field"><legend>${esc(k2.order)}</legend><div class="chips">
+          <label class="chip"><input type="radio" name="kOrd" value="mushaf" ${cur.order !== 'short' ? 'checked' : ''}> ${esc(k2.oMushaf)}</label>
+          <label class="chip"><input type="radio" name="kOrd" value="short" ${cur.order === 'short' ? 'checked' : ''}> ${esc(k2.oShort)}</label></div></fieldset>
+        <fieldset class="p-field"><legend>${esc(k2.how)}</legend>
+          <label class="p-row"><input type="radio" name="kMode" value="days" ${cur.mode !== 'amount' ? 'checked' : ''}> ${esc(k2.byDays)}</label>
+          <div id="kByDays"><div class="chips">${PRESETS.map(n => `<label class="chip"><input type="radio" name="kd" value="${n}" ${n === days ? 'checked' : ''}> ${esc(t.kDaysN(num(n)))}</label>`).join('')}</div>
+            <label class="p-row">${esc(t.kCustom)} <input type="number" id="kdN" min="1" max="1000" value="${PRESETS.includes(days) ? '' : days}" inputmode="numeric"></label></div>
+          <label class="p-row"><input type="radio" name="kMode" value="amount" ${cur.mode === 'amount' ? 'checked' : ''}> ${esc(k2.byAmount)}</label>
+          <div id="kByAmount" class="p-row"><input type="number" id="kPer" min="1" max="604" value="${cur.perDay || 2}" inputmode="numeric" style="width:6em">
+            <select id="kUnitA"><option value="pages">${esc(k2.uPages)}</option><option value="ayas">${esc(k2.uAyas)}</option><option value="suras">${esc(k2.uSuras)}</option></select> ${esc(k2.perDay)}</div>
+          <label class="p-row">${esc(k2.unit)} <select id="kUnit"><option value="pages">${esc(k2.uPages)}</option><option value="ayas">${esc(k2.uAyas)}</option><option value="suras">${esc(k2.uSuras)}</option></select></label></fieldset>
         <label class="p-row">${esc(t.kStart)} <input type="date" id="kStart" value="${ymd(new Date())}"></label>
-        <fieldset class="p-field"><legend>${esc(t.kMoments)}</legend><div id="kMoms"></div><button type="button" class="mini" id="kAdd">${esc(t.kAddMoment)}</button></fieldset>
+        <fieldset class="p-field"><legend>${esc(k2.moments)}</legend><div id="kMoms" class="k-moms"></div></fieldset>
         <button type="button" class="btn gold" id="kGo" autofocus>${esc(t.kBegin)}</button>`;
-      const ms = moments.map(m => ({ ...m }));
+      const $b = (q) => body.querySelector(q);
+      $b('#kUnit').value = cur.unit || 'pages'; $b('#kUnitA').value = cur.unit || 'pages';
+      const syncMode = () => { const m = (body.querySelector('input[name=kMode]:checked') || {}).value; $b('#kByDays').hidden = m === 'amount'; $b('#kByAmount').hidden = m !== 'amount'; $b('#kUnit').closest('label').hidden = m === 'amount'; };
+      body.querySelectorAll('input[name=kMode]').forEach(x => x.onchange = syncMode); syncMode();
+      const syncScope = () => { $b('#kSurasBox').hidden = (body.querySelector('input[name=kScope]:checked') || {}).value !== 'suras'; };
+      body.querySelectorAll('input[name=kScope]').forEach(x => x.onchange = syncScope);
+      const nSel = () => { $b('#kNSel').textContent = k2.nSel(num([...$b('#kSuras').selectedOptions].length)); };
+      $b('#kSuras').onchange = nSel; nSel();
+      // every moment as a chip; a chosen one shows its time (editable)
+      const on = new Map(moments.map(m => [m.id, m.time || MOMENT_TIME[m.id] || '']));
       const drawMoms = () => {
-        body.querySelector('#kMoms').innerHTML = ms.map((m, j) => `<div class="p-row mom"><select data-j="${j}" class="kmId">${MOMENT_IDS.map(id => `<option value="${id}" ${id === m.id ? 'selected' : ''}>${esc(t.kMoment[id])}</option>`).join('')}</select>
-          <input type="time" data-j="${j}" class="kmT" value="${esc(m.time || '')}">${ms.length > 1 ? `<button type="button" class="mini kmX" data-j="${j}">${esc(t.kRemove)}</button>` : ''}</div>`).join('');
-        body.querySelectorAll('.kmId').forEach(s => s.onchange = () => { ms[+s.dataset.j].id = s.value; });
-        body.querySelectorAll('.kmT').forEach(s => s.onchange = () => { ms[+s.dataset.j].time = s.value; });
-        body.querySelectorAll('.kmX').forEach(b => b.onclick = () => { ms.splice(+b.dataset.j, 1); drawMoms(); });
-        body.querySelector('#kAdd').hidden = ms.length >= 5;
+        $b('#kMoms').innerHTML = MOMENT_IDS.map(id => `<div class="k-mom ${on.has(id) ? 'on' : ''}"><label class="chip"><input type="checkbox" data-m="${id}" ${on.has(id) ? 'checked' : ''}> ${esc(mlabel(id))}</label>
+          ${on.has(id) ? `<input type="time" data-t="${id}" value="${esc(on.get(id) || '')}" aria-label="${esc(k2.time)}">` : ''}</div>`).join('');
+        body.querySelectorAll('[data-m]').forEach(c => c.onchange = () => { if (c.checked) on.set(c.dataset.m, MOMENT_TIME[c.dataset.m] || ''); else on.delete(c.dataset.m); drawMoms(); });
+        body.querySelectorAll('[data-t]').forEach(c => c.onchange = () => on.set(c.dataset.t, c.value));
       };
       drawMoms();
-      body.querySelector('#kAdd').onclick = () => { ms.push({ id: 'other', time: '' }); drawMoms(); };
-      body.querySelector('#kGo').onclick = () => {
-        const custom = +body.querySelector('#kdN').value;
+      $b('#kWiz').onclick = () => { state2.wizard = true; wizard(body, args); };
+      $b('#kGo').onclick = () => {
+        const mode = (body.querySelector('input[name=kMode]:checked') || {}).value || 'days';
+        const custom = +$b('#kdN').value;
         const d = custom >= 1 ? Math.min(1000, Math.round(custom)) : +(body.querySelector('input[name=kd]:checked') || {}).value || 30;
-        P.khatma = { active: true, start: body.querySelector('#kStart').value || ymd(new Date()), days: d, moments: ms };
-        ctx.save(); khatma(body); ctx.onReadChange();
+        const scope = (body.querySelector('input[name=kScope]:checked') || {}).value || 'quran';
+        const suras = [...$b('#kSuras').selectedOptions].map(o => +o.value);
+        const plan = { v: 2, active: true, start: $b('#kStart').value || ymd(new Date()), mode, days: d, perDay: Math.max(1, +$b('#kPer').value || 1),
+          unit: mode === 'amount' ? $b('#kUnitA').value : $b('#kUnit').value, scope: scope === 'suras' && suras.length ? 'suras' : 'quran', suras,
+          order: (body.querySelector('input[name=kOrd]:checked') || {}).value || 'mushaf',
+          moments: MOMENT_IDS.filter(id => on.has(id)).map(id => ({ id, time: on.get(id) || '' })) };
+        if (!plan.moments.length) plan.moments = [{ id: 'other', time: '' }];
+        P.khatma = plan; ctx.save(); ctx.onReadChange();
+        afterPlan(body, plan);
       };
       return;
     }
-    const plan = { ...kp, moments: kp.moments.map(m => ({ ...m, label: t.kMoment[m.id] || m.id })) };
-    const tp = todayPortion(plan, bits, pages);
-    const done = pagesRead(bits, pages), nRead = countRead(bits);
+    const plan = { ...planOf(kp), moments: (kp.moments || []).map(m => ({ ...m, label: mlabel(m.id) })) };
+    const units = planUnits(plan, ctx.core.suras, pages), totalU = planTotal(units), daysN = planDays(plan, units);
+    const tp = todayPortion2(plan, bits, units);
+    const uw = k2.uWord[plan.unit] || k2.uWord.pages;
+    const nRead = countRead(bits), done = Math.round(tp.doneW);
+    const rangesOf = (list) => { const out = []; for (const u of list) { const l = out[out.length - 1]; if (l && l.sura === u.sura && l.b + 1 === u.a) l.b = u.b; else out.push({ sura: u.sura, a: u.a, b: u.b }); } return out; };
+    const nameOf = (n) => { const x = ctx.core.suras[n - 1]; return ar() ? x.ar : x.tr; };
+    const descr = (list) => rangesOf(list).map(r => { const S0 = ctx.core.suras[r.sura - 1]; return k2.rangeSura(nameOf(r.sura), num(r.a - S0.first + 1), num(r.b - S0.first + 1)); }).join(' · ');
     const greens = surasRead(bits, ctx.core.suras);
     const here = ctx.readerVerse();
-    let h = (args.days ? `<p class="k-proposal">${esc(t.kProposalActive)}</p>` : '') + `<div class="k-prog" role="progressbar" aria-valuemin="0" aria-valuemax="${N_PAGES}" aria-valuenow="${done}"><span style="width:${(100 * done / N_PAGES).toFixed(1)}%"></span></div>
-      <p class="p-row k-sum"><b>${esc(t.kProgress(num(done), num(N_PAGES)))}</b> · ${esc(t.kDay(num(Math.max(1, tp.day)), num(kp.days)))}</p>`;
+    let h = (args.days ? `<p class="k-proposal">${esc(t.kProposalActive)}</p>` : '') + `<div class="k-prog" role="progressbar" aria-valuemin="0" aria-valuemax="${Math.round(totalU)}" aria-valuenow="${done}"><span style="width:${(100 * tp.doneW / totalU).toFixed(1)}%"></span></div>
+      <p class="p-row k-sum"><b>${esc(k2.unitsLeft(num(done), num(Math.round(totalU))))} ${esc(uw)}</b> · ${esc(t.kDay(num(Math.max(1, tp.day)), num(daysN)))}</p>`;
     if (tp.finished) h += `<p class="k-ok">${esc(t.kFinished)}</p>`;
     else {
-      if (tp.behind > 0) h += `<p class="note">${esc(t.kBehind(num(tp.behind)))}</p>`;
+      if (tp.behind >= 1 && plan.mode !== 'amount' && plan.unit === 'pages') h += `<p class="note">${esc(t.kBehind(num(Math.round(tp.behind))))}</p>`;
       h += `<h3 class="p-sub">${esc(t.kToday)}</h3><ol class="k-parts">${tp.parts.map((p, j) => {
-        const r = refOf(p.verses[0]), all = countRead(bits, p.verses[0], p.verses[1]) === p.verses[1] - p.verses[0] + 1;
+        const all = p.units.every(u => countRead(bits, u.a, u.b) === u.b - u.a + 1);
         return `<li class="${all ? 'done' : ''}"><div><b>${esc(p.moment.label)}</b>${p.moment.time ? ` <small>${esc(num(p.moment.time))}</small>` : ''}</div>
-          <div>${esc(t.kPages(num(p.from), num(p.to)))} <small>(${esc(r.label)})</small></div>
-          <div class="k-btns"><button type="button" class="mini" data-go="${p.verses[0]}">${esc(t.kRead)}</button>
+          <div>${esc(descr(p.units))}</div>
+          <div class="k-btns"><button type="button" class="mini" data-go="${p.units[0].a}">${esc(t.kRead)}</button>
           <button type="button" class="mini ${all ? '' : 'gold'}" data-mark="${j}">${esc(all ? t.kUndo : t.kDone)}</button></div></li>`;
       }).join('')}</ol><p class="note">${esc(t.kAutoNote)}</p>`;
     }
@@ -207,12 +284,67 @@ export function createToolPanels(ctx) {
     body.innerHTML = h;
     const mark = (a, b, on) => { const B = decodeRead(P.read); const before = countRead(B); (on ? markRead : unmarkRead)(B, a, b); P.read = encodeRead(B); const k = ymd(new Date()); P.log = P.log || {}; P.log[k] = Math.max(0, (P.log[k] || 0) + countRead(B) - before); ctx.save(); ctx.onReadChange(); khatma(body); };
     body.querySelectorAll('[data-go]').forEach(b => b.onclick = () => ctx.openVerse(+b.dataset.go));
-    body.querySelectorAll('[data-mark]').forEach(b => b.onclick = () => { const p = tp.parts[+b.dataset.mark]; const all = countRead(bits, p.verses[0], p.verses[1]) === p.verses[1] - p.verses[0] + 1; mark(p.verses[0], p.verses[1], !all); });
+    body.querySelectorAll('[data-mark]').forEach(b => b.onclick = () => {
+      const p = tp.parts[+b.dataset.mark], all = p.units.every(u => countRead(bits, u.a, u.b) === u.b - u.a + 1);
+      const B = decodeRead(P.read), before = countRead(B);
+      for (const u of p.units) (all ? unmarkRead : markRead)(B, u.a, u.b);
+      P.read = encodeRead(B); const k = ymd(new Date()); P.log = P.log || {}; P.log[k] = Math.max(0, (P.log[k] || 0) + countRead(B) - before); ctx.save(); ctx.onReadChange(); khatma(body);
+    });
     const kh = body.querySelector('#kHere'); if (kh) kh.onclick = () => { if (confirm(t.kMarkHereQ(refOf(here).label, num(here + 1)))) mark(0, here, true); };
     body.querySelector('#kGal').onchange = (ev) => { P.showReadOnGalaxy = ev.target.checked; ctx.save(); ctx.onReadChange(); };
     const km = body.querySelector('#kMap'); if (km) km.onclick = () => ctx.openLampMap && ctx.openLampMap();
-    body.querySelector('#kIcs').onclick = () => download('mishkat-khatma.ics', planToIcs(plan, pages, { title: t.kIcsTitle, describe: (p) => t.kIcsPart(p), url: location.origin + location.pathname }), 'text/calendar');
+    body.querySelector('#kIcs').onclick = () => download('mishkat-khatma.ics', planToIcs2(plan, units, { title: t.kIcsTitle, describe: (p) => `${p.moment.label || ''}: ${descr(p.units)}`, url: location.origin + location.pathname }), 'text/calendar');
     body.querySelector('#kStop').onclick = () => { if (confirm(t.kStopQ)) { P.khatma = { ...P.khatma, active: false }; ctx.save(); ctx.onReadChange(); khatma(body); } };
+  }
+
+  // «اختر لي»: a few questions → the best plan for the visitor's time → accept (or adjust it in the form)
+  const state2 = { wizard: false };
+  function wizard(body, args = {}) {
+    const t = L(), k2 = K2[ar() ? 'ar' : 'en'], mlabel = (id) => id === 'isha' ? k2.isha : (t.kMoment[id] || id);
+    const A = { minutes: 15, when: new Set(['fajr']), pace: 'medium', order: 'mushaf', deadline: 0 };
+    const chips = (name, list, val) => `<div class="chips">${list.map(([v, l]) => `<label class="chip"><input type="radio" name="${name}" value="${v}" ${String(v) === String(val) ? 'checked' : ''}> ${esc(l)}</label>`).join('')}</div>`;
+    body.innerHTML = `<div class="k-wiz"><p class="p-lead">${esc(k2.chooseLead)}</p>
+      <fieldset class="p-field"><legend>${esc(k2.qMin)}</legend>${chips('wMin', [5, 10, 15, 20, 30, 45, 60].map(n => [n, k2.min(num(n))]), A.minutes)}</fieldset>
+      <fieldset class="p-field"><legend>${esc(k2.qWhen)}</legend><div class="chips">${MOMENT_IDS.filter(id => id !== 'other').map(id => `<label class="chip"><input type="checkbox" name="wWhen" value="${id}" ${A.when.has(id) ? 'checked' : ''}> ${esc(mlabel(id))}</label>`).join('')}</div></fieldset>
+      <fieldset class="p-field"><legend>${esc(k2.qPace)}</legend>${chips('wPace', [['slow', k2.pSlow], ['medium', k2.pMed], ['fast', k2.pFast]], A.pace)}</fieldset>
+      <fieldset class="p-field"><legend>${esc(k2.qStart)}</legend>${chips('wOrd', [['short', k2.oShort], ['mushaf', k2.oMushaf]], A.order)}</fieldset>
+      <fieldset class="p-field"><legend>${esc(k2.qDead)}</legend>${chips('wDead', [[0, k2.dNone], [7, k2.d7], [30, k2.d30], [60, k2.d60], [90, k2.d90]], A.deadline)}</fieldset>
+      <p class="p-row"><button type="button" class="btn gold" id="wGo">${esc(k2.suggest)}</button> <button type="button" class="mini" id="wBack">${esc(k2.back)}</button></p>
+      <div id="wRes" aria-live="polite"></div></div>`;
+    const $b = (q) => body.querySelector(q), val = (n) => (body.querySelector(`input[name=${n}]:checked`) || {}).value;
+    $b('#wBack').onclick = () => { state2.wizard = false; khatma(body, { ...args, wizard: false }); };
+    $b('#wGo').onclick = () => {
+      const when = [...body.querySelectorAll('input[name=wWhen]:checked')].map(x => x.value);
+      const ans = { minutes: +val('wMin') || 15, pace: val('wPace') || 'medium', order: val('wOrd') || 'mushaf', deadline: +val('wDead') || 0,
+        moments: (when.length ? when : ['fajr']).map(id => ({ id, time: MOMENT_TIME[id] })) };
+      const r = suggestPlan(ans, ymd(new Date()));
+      const needMin = ans.deadline ? Math.round(N_PAGES / ans.deadline / ({ slow: 1 / 3, medium: 1 / 2, fast: 3 / 4 }[ans.pace])) : 0;
+      $b('#wRes').innerHTML = `<section class="k-res"><h3>${esc(k2.result)}</h3>
+        <p><b>${esc(k2.resLine(num(r.days), num(Math.round(r.pagesPerDay * 10) / 10), num(r.minutesPerDay)))}</b></p>
+        <p>${esc(k2.resWhen(ans.moments.map(m => mlabel(m.id)).join('، ')))} ${esc(ans.order === 'short' ? k2.resShort : k2.resMushaf)}</p>
+        ${r.fits ? '' : `<p class="note">${esc(k2.noFit(num(ans.deadline), num(needMin)))}</p>`}
+        <p class="p-row"><button type="button" class="btn gold big" id="wOk">${esc(k2.accept)}</button> <button type="button" class="mini" id="wEdit">${esc(k2.edit)}</button></p></section>`;
+      $b('#wOk').onclick = () => { state2.wizard = false; P().khatma = { ...r.plan, active: true }; ctx.save(); ctx.onReadChange(); afterPlan(body, P().khatma); };
+      $b('#wEdit').onclick = () => { state2.wizard = false; P().khatma = { ...r.plan, active: false }; ctx.save(); khatma(body, { ...args, wizard: false }); };
+      $b('#wRes').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    };
+  }
+  const P = () => ctx.prefs;
+  // after a plan is set: the surahs of the plan light up one by one in the 3D lamp, then «how would you like to read?»
+  function afterPlan(body, plan) {
+    khatma(body);
+    const k2 = K2[ar() ? 'ar' : 'en'];
+    const seq = planSuras(plan, ctx.core.suras);
+    if (!ctx.planReveal) return;
+    ctx.planReveal(seq, { title: k2.revealTitle, question: k2.howRead,
+      choices: [{ id: 'with', label: k2.rWith }, { id: 'only', label: k2.rOnly }, { id: 'listen', label: k2.rListen }, { id: 'later', label: k2.later }],
+      onChoice: async (id) => {
+        if (id === 'later') return;
+        const units = planUnits(plan, ctx.core.suras, (await ctx.meta()).pages);
+        const tp = units && units.length ? todayPortion2(plan, decodeRead(ctx.prefs.read), units) : null;
+        const first = tp && tp.parts.length ? tp.parts[0].units[0].a : ctx.core.suras[seq[0] - 1].first;
+        ctx.startReading && ctx.startReading(first, id);
+      } });
   }
 
   // ------------------------------------------------------------------ hijri

@@ -36,6 +36,7 @@ const X = {
     placeTitle: 'أين أنت؟', placeLead: 'اختر بلدك ومدينتك، أو اسمح باستعمال موقعك، ليُضبط التقويم ومواقيت الصلاة والمساجد القريبة والتذكير. يُحفظ في متصفحك فقط.', placeLater: 'لاحقًا', placeOk: (p) => `تم: ${p}`,
     svcTitle: 'خدمات مشكاة لهذه السورة:', svcTekrar: '↻ احفظها بالتكرار', svcStats: '📊 إحصاءاتها',
     engBtn: 'مستوى التزامك', install: 'ثبّت', age: 'العمر', childAge: 'أقل من ١٨', adultAge: '١٨ فأكثر',
+    rdFold: 'اطوِ شريط القراءة إلى سطر واحد / افتحه', readFull: 'قراءة فقط', readFullT: 'المصحف بملء الشاشة (اضغط مرة أخرى لإظهار المجرّة)', galaxyBack: 'أظهر المجرّة', tjClose: 'أغلق أحكام التجويد (تبقى الألوان)', pMax: 'كبّر اللوحة', pMin: 'أعدها إلى حجمها',
   },
   en: {
     childTitle: 'A lovely question — may Allah bless you', child: 'You are still young, and fatwas belong to scholars who completed the Quran and learned its explanation and rulings. Mishkat helps you now to memorise the Quran and understand its meanings step by step.',
@@ -45,9 +46,11 @@ const X = {
     placeTitle: 'Where are you?', placeLead: 'Choose your country and city, or allow your location, to set the calendar, prayer times, nearby mosques and reminders. Kept in your browser only.', placeLater: 'Later', placeOk: (p) => `Done: ${p}`,
     svcTitle: 'Mishkat services for this surah:', svcTekrar: '↻ Memorise it by repetition', svcStats: '📊 Its statistics',
     engBtn: 'Your engagement level', install: 'Install', age: 'Age', childAge: 'Under 18', adultAge: '18 or over',
+    rdFold: 'Fold the reading bar to one line / unfold it', readFull: 'Reading only', readFullT: 'The Mushaf full screen (press again to see the galaxy)', galaxyBack: 'Show the galaxy', tjClose: 'Close the tajweed rules (the colours stay)', pMax: 'Enlarge the panel', pMin: 'Back to the normal size',
   },
 };
 const XS = () => X[state.lang] || X.ar;
+try { if (localStorage.getItem('mishkat.rdFold') === '1') document.body.classList.add('rd-folded'); } catch (e) { /* storage blocked */ }
 
 // Three moments, one current verse (body[data-mode]):
 //   home    — the galaxy alone, with a suggestion card in the middle (can be closed);
@@ -88,7 +91,12 @@ const state = {
 // ------------------------------------------------------------------ i18n
 function pickLang() {
   const url = new URL(location.href).searchParams.get('lang');
-  const nav = (navigator.language || 'ar').slice(0, 2);
+  // (5 Oct) first visit: Arabic by default; English only when the browser's first language is English of a country
+  // whose usual language is English (en-US, en-GB…). An Arab, French or Turkish visitor starts in Arabic and may switch.
+  const first = String((navigator.languages && navigator.languages[0]) || navigator.language || 'ar');
+  const EN_LANDS = ['US', 'GB', 'AU', 'NZ', 'IE', 'CA', 'ZA', 'JM', 'TT', 'BS', 'BB', 'BZ', 'GY', 'AG', 'DM', 'GD', 'KN', 'LC', 'VC', 'SG', 'PH', 'NG', 'GH', 'KE', 'UG', 'ZM', 'ZW', 'BW', 'MW', 'SL', 'LR', 'GM', 'FJ', 'PG'];
+  const m = first.match(/^en[-_]([A-Za-z]{2})/);
+  const nav = m && EN_LANDS.includes(m[1].toUpperCase()) ? 'en' : 'ar';
   return [url, store.get('lang'), nav].find(l => LANGS.includes(l)) || 'ar';
 }
 const T = () => UI[state.lang];
@@ -970,6 +978,23 @@ function sensitiveBanner(res) {
     ${fiqh ? `<h4 class="fq-h">${esc(t.fiqhTitle)}</h4><div id="fiqhBox" aria-live="polite"></div>` : ''}
     ${(res.links || []).some(l => l.id === 'alifta') ? '' : `<p class="sens-refer"><a href="https://alifta.gov.sa/ar/home" target="_blank" rel="noopener">${esc(t.links.alifta)}</a></p>`}</section>`;
 }
+// «عن السورة» in its own window over the reader, with a close button (Escape closes it too)
+function openSuraInfo(n) {
+  let w = $('#sInfoWin');
+  if (w) w.remove();
+  const t = T(), S = state.core.suras[n - 1];
+  w = document.createElement('section');
+  w.id = 'sInfoWin'; w.className = 'sinfo-win'; w.setAttribute('role', 'dialog'); w.setAttribute('aria-label', t.aboutSura);
+  w.innerHTML = `<header><h3>${esc(t.aboutSura)} — ${esc(state.lang === 'ar' ? S.ar : S.tr)}</h3><button type="button" class="icon" data-x aria-label="${esc(t.close)}" title="${esc(t.close)}">✕</button></header><div class="sinfo" id="sInfo">…</div>`;
+  $('#rzone').appendChild(w);
+  const close = () => { w.remove(); $('#rInfo') && $('#rInfo').setAttribute('aria-expanded', 'false'); document.removeEventListener('keydown', esc1); };
+  const esc1 = (ev) => { if (ev.key === 'Escape') { ev.stopPropagation(); close(); } };
+  w.querySelector('[data-x]').onclick = close;
+  document.addEventListener('keydown', esc1);
+  $('#rInfo') && $('#rInfo').setAttribute('aria-expanded', 'true');
+  fillSuraInfo(w.querySelector('#sInfo'), n);
+  w.querySelector('[data-x]').focus({ preventScroll: true });
+}
 // Quranpedia surah information (Arabic): introduction, topics, purposes
 async function suraInfo(n) {
   if (!state.suraInfoP) state.suraInfoP = getJSON('data/qp_surahs.json');
@@ -1201,7 +1226,7 @@ function verseWordsHtml(i) {
 function tajweedLegend() {
   const L = state.lang === 'ar' ? 'ar' : 'en', X = TJ_S[L], cur = state.reader.cur, e = state.engine;
   const from = cur != null ? `&from=${e.suraOf[cur]}:${e.ayaOf[cur]}` : '';
-  return `<div class="tj-legend tj-brief" id="tjLegend">
+  return `<div class="tj-legend tj-brief" id="tjLegend"><button type="button" class="icon tj-x" id="tjClose" title="${esc(XS().tjClose)}" aria-label="${esc(XS().tjClose)}">✕</button>
     <div class="tj-here"><b>${esc(X.here)}</b><div id="tjVerse" class="tj-verse"></div></div>
     <div id="tjInfo" class="tj-info" hidden></div>
     <div class="tj-foot"><p class="tj-key">${TJ_GROUPS.map(g => `<span><span class="tj tj-${g.id}">●</span> ${esc(g[L].split(/[(،/]/)[0].trim())}</span>`).join('')}</p>
@@ -1278,10 +1303,11 @@ function renderReader() {
       <span class="rd-meta">${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</span>
       <button class="mini" id="rTaf" title="${esc(t.openTafsir)}">📖 ${esc(t.zTafsir)}</button>
       <button class="icon rd-more" id="rMore" aria-expanded="${moreOpen}" aria-controls="rOpts" title="${esc(t.readMore)}" aria-label="${esc(t.readMore)}">⋯</button>
+      <button class="icon rd-fold" id="rFold" aria-pressed="${document.body.classList.contains('rd-folded')}" title="${esc(XS().rdFold)}" aria-label="${esc(XS().rdFold)}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 14l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="icon" id="rClose" title="${esc(t.closeReader)}" aria-label="${esc(t.closeReader)}">✕</button>
     </div>
     <div class="rd-ctrl" id="rOpts" role="toolbar" aria-label="${esc(t.readMore)}"${moreOpen ? '' : ' hidden'}>
-      <button class="btn icon-b" id="rFirst" title="${esc(t.firstA)}" aria-label="${esc(t.firstA)}">⏮</button>
+      <button class="btn icon-b" id="rFirst" title="${esc(t.firstA)}" aria-label="${esc(t.firstA)}"><span class="pi" aria-hidden="true">${ICON.first}</span></button>
       <label class="btn rep" title="${esc(t.repeatTitle)}">${esc(t.repeat)} <select id="rRep" aria-label="${esc(t.repeatTitle)}">${[1, 3, 5, 10, 0].map(n => `<option value="${n}"${(rep === n || (rep === Infinity && n === 0)) ? ' selected' : ''}>${n ? '×' + n : '∞'}</option>`).join('')}</select></label>
       <label class="btn rep" title="${esc(t.speed)}">${esc(t.speed)} <select id="rSpeed" aria-label="${esc(t.speed)}">${SPEEDS.map(x => `<option value="${x}"${x === state.speed ? ' selected' : ''}>×${x}</option>`).join('')}</select></label>
       <span class="grp"><button class="btn icon-b sm" id="rFm" aria-label="${esc(t.fontSmaller)}" title="${esc(t.fontSmaller)}">A−</button><button class="btn icon-b sm" id="rFp" aria-label="${esc(t.fontLarger)}" title="${esc(t.fontLarger)}">A+</button></span>
@@ -1289,11 +1315,12 @@ function renderReader() {
       <button class="btn ${state.tjOn ? 'on' : ''}" id="rTj" aria-pressed="${!!state.tjOn}" title="${esc(TJ_S[state.lang === 'ar' ? 'ar' : 'en'].btn)}">🎨 ${esc(TJ_S[state.lang === 'ar' ? 'ar' : 'en'].btn)}</button>
       <button class="btn" id="rInfo" aria-expanded="false">ℹ ${esc(t.aboutSura)}</button>
       <button class="btn" id="rStats" title="${esc(t.statsNow)}">📊 ${esc(t.statsShort)}</button>
+      <button class="btn" id="rFull" aria-pressed="${document.body.classList.contains('read-full')}" title="${esc(XS().readFullT)}">⛶ ${esc(XS().readFull)}</button>
       <button class="btn icon-b" id="rCopy" title="${esc(t.copyVerse)}" aria-label="${esc(t.copyVerse)}">⧉</button>
       <button class="btn icon-b" id="rShare" title="${esc(t.shareVerse)}" aria-label="${esc(t.shareVerse)}">🔗</button>
     </div></div>
     <div class="rd-body" id="rdBody">
-      <section class="sinfo" id="sInfo" hidden></section>${state.tjOn ? tajweedLegend() : ''}
+      ${state.tjOn && !state.tjBoxHidden ? tajweedLegend() : ''}
       <div class="mushaf${en ? ' en' : ''}" id="mushaf">${basmala}${body}</div>
       ${en && state.showTr && trSrc ? `<p class="rd-src">${esc(trSrc.title)} · QuranEnc.com</p>` : ''}
     </div>`;
@@ -1307,7 +1334,13 @@ function renderReader() {
   $('#rTaf').onclick = () => setTafsirOpen(true);
   $('#rMore').onclick = () => { const o = $('#rOpts').hidden; $('#rOpts').hidden = !o; $('#rMore').setAttribute('aria-expanded', o); store.set(isPhone() ? 'rdMoreM' : 'rdMoreD', o ? '1' : '0'); };
   $('#rStats').onclick = () => openVerseStats();
-  $('#rTj').onclick = () => { state.tjOn = !state.tjOn; store.set('tj', state.tjOn ? '1' : '0'); rerenderReader(); };
+  $('#rFull').onclick = () => setReadFull(!document.body.classList.contains('read-full'));
+  $('#rFold').onclick = () => { const on = !document.body.classList.contains('rd-folded'); document.body.classList.toggle('rd-folded', on); $('#rFold').setAttribute('aria-pressed', on); store.set('rdFold', on ? '1' : '0'); if (state.galaxy && state.galaxy.resize) setTimeout(() => state.galaxy.resize(), 60); };
+  $('#rTj').onclick = () => {
+    if (state.tjOn && state.tjBoxHidden) { state.tjBoxHidden = false; rerenderReader(); return; }   // colours on, box closed: reopen the box
+    state.tjOn = !state.tjOn; state.tjBoxHidden = false; store.set('tj', state.tjOn ? '1' : '0'); rerenderReader();
+  };
+  { const x = $('#tjClose'); if (x) x.onclick = () => { state.tjBoxHidden = true; const l = $('#tjLegend'); if (l) l.remove(); }; }
   // the colours of this surah load once, then the page is drawn again with them
   if (state.tjOn && !state.tajweedData.has(sura)) getJSON(`data/tajweed/${sura}.json`).then(d => { state.tajweedData.set(sura, d); if (state.reader.sura === sura && state.tjOn) rerenderReader(); }).catch(() => {});
   playButtons();
@@ -1325,7 +1358,7 @@ function renderReader() {
   $('#mushaf').querySelectorAll('.vplay').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); play(+b.dataset.play, true); });
   $('#rSura').onchange = (ev) => openReader(+ev.target.value, null);
   $('#rSel').onchange = (ev) => selectVerse(+ev.target.value, { scroll: true });
-  $('#rInfo').onclick = () => { const p = $('#sInfo'), open = p.hidden; p.hidden = !open; $('#rInfo').setAttribute('aria-expanded', open); if (open) fillSuraInfo(p, sura); };
+  $('#rInfo').onclick = () => openSuraInfo(sura);
   $('#mushaf').querySelectorAll('.v').forEach(el => el.onclick = (ev) => {
     // a tapped coloured letter: its rule is told in the tajweed box
     const tj = state.tjOn && ev.target.closest && ev.target.closest('.tj[data-r]');
@@ -1388,13 +1421,21 @@ function togglePlay(mode) {
   state.playMode = mode;
   play(state.reader.cur, true);
 }
+// (5 Oct) icons drawn as SVG: symbols such as ⏵⏵ or ⏮ have no glyph on many phones (crossed boxes); in Arabic the
+// arrows point to the left, the direction of reading
+const ICON = {
+  play: '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg>',
+  playAll: '<svg viewBox="0 0 28 24" width="20" height="16"><path d="M3 4.5v15l10-7.5zM14 4.5v15l10-7.5z" fill="currentColor"/></svg>',
+  pause: '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 4.5h4v15H6zM14 4.5h4v15h-4z" fill="currentColor"/></svg>',
+  first: '<svg viewBox="0 0 24 24" width="16" height="16"><path d="M5 4.5h3v15H5zM20 4.5v15L9 12z" fill="currentColor"/></svg>',
+};
 function playButtons() {
   const t = T(), one = $('#rPlayOne'), all = $('#rPlayAll');
   if (!one) return;
   const p1 = state.playing && state.playMode === 'one', p2 = state.playing && state.playMode === 'all';
   // the symbol stays, the word hides on a phone (its name is in aria-label and title)
-  one.innerHTML = `<span aria-hidden="true">${esc(p1 ? t.pause : t.play)}</span> <span class="bl">${esc(t.playOne)}</span>`; one.classList.toggle('on', p1); one.setAttribute('aria-pressed', p1); one.setAttribute('aria-label', t.playOneT);
-  all.innerHTML = `<span aria-hidden="true">${esc(p2 ? t.pause : '⏵⏵')}</span> <span class="bl">${esc(t.playAll)}</span>`; all.classList.toggle('on', p2); all.setAttribute('aria-pressed', p2); all.setAttribute('aria-label', t.playAllT);
+  one.innerHTML = `<span class="pi" aria-hidden="true">${p1 ? ICON.pause : ICON.play}</span> <span class="bl">${esc(t.playOne)}</span>`; one.classList.toggle('on', p1); one.setAttribute('aria-pressed', p1); one.setAttribute('aria-label', t.playOneT);
+  all.innerHTML = `<span class="pi" aria-hidden="true">${p2 ? ICON.pause : ICON.playAll}</span> <span class="bl">${esc(t.playAll)}</span>`; all.classList.toggle('on', p2); all.setAttribute('aria-pressed', p2); all.setAttribute('aria-label', t.playAllT);
 }
 function closeReader() {
   stopAudio(true); stopSpeech();
@@ -1772,6 +1813,9 @@ function setupTools() {
     readerVerse: () => (state.mode === 'study' && state.reader.sura ? state.reader.cur : null),
     onReadChange: () => { if (checkKhatma(state.prefs)) { savePrefs(state.prefs); celebrateKhatma(); } applyHighlight(); refreshMiniLamp(); refreshHud(); },
     openLampMap: () => openKhatmaMap(),
+    // (5 Oct, evening) a new khatma plan: its surahs light up one by one in the 3D lamp, then «how would you like to read?»
+    planReveal: (seq, opts) => openKhatmaMap({ reveal: { seq, ...opts } }),
+    startReading: (i, how) => startReading(i, how),
     // hadiths of the remarkable days, by HadeethEnc id, verbatim from the local files (search worker)
     hadiths: (ids, lang) => workerCall({ op: 'hadiths', ids, lang }),
     status: alertNote,
@@ -1820,7 +1864,7 @@ function setupTools() {
   $('#dock').hidden = !ids.length;
   state.panels = createPanels({
     dock: $('#dock'), tray: $('#tray'), renderers,
-    titles: Object.fromEntries(DOCK.map(id => [id, () => toolTitle(id)])), closeLabel: () => TS().close,
+    titles: Object.fromEntries(DOCK.map(id => [id, () => toolTitle(id)])), closeLabel: () => TS().close, maxLabel: (on) => on ? XS().pMin : XS().pMax,
     onOpen: (id) => { document.body.dataset.panel = id; if (id === 'khatma' || id === 'tekrar') applyHighlight(); },
     onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma' || id === 'tekrar') applyHighlight(); if (id === 'tekrar') state.tekrar.stop(); state.practical.stop(); },
   });
@@ -1936,14 +1980,26 @@ function refreshMiniLamp() {
   slot.setAttribute('role', 'button'); slot.tabIndex = 0; slot.setAttribute('aria-label', T().lm.slotTitle(n));
   slot.onkeydown = (ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openKhatmaMap(); } };
 }
-function openKhatmaMap() {
+// reading the day's portion: with the reciter and the galaxy, reading only (the Mushaf full screen), or listening only
+function startReading(i, how) {
+  if (state.panels) state.panels.close();
+  goVerse(i, { pane: 'r' });
+  setReadFull(how === 'only' || how === 'listen');
+  if (how === 'with' || how === 'listen') setTimeout(() => { state.playMode = 'all'; play(i, true); }, 700);
+}
+function setReadFull(on) {
+  document.body.classList.toggle('read-full', on);
+  const b = $('#rFull'); if (b) b.setAttribute('aria-pressed', String(on));
+  if (state.galaxy && state.galaxy.resize) setTimeout(() => state.galaxy.resize(), 80);
+}
+function openKhatmaMap(extraOpts = {}) {
   if (!state.core) return;
   const prog = progressOf(decodeRead(state.prefs.read), state.core.suras, isRead);
   const P = state.prefs, m = monthPct(P), x = XS();
   openLampMap({ core: state.core, prog, lang: state.lang, order: store.get('kmapOrder', 'mushaf'), strings: T().lm,
     hifz: hifzProgress(P, state.core.suras), extra: `${x.hudRead} ${pctTxt(m.read)} · ${x.hudHifz} ${pctTxt(m.hifz)} · ${x.khTitle}: ${dig(P.khatmas || 0)}`,
     onPick: (n) => openReader(n, null, { pane: 'r' }),
-    onOrder: (o) => { store.set('kmapOrder', o); refreshMiniLamp(); } });
+    onOrder: (o) => { store.set('kmapOrder', o); refreshMiniLamp(); }, ...extraOpts });
 }
 // T100 — the small 📊 button (galaxy and reading options): statistics of the verse being read, then its surah
 function openVerseStats() {

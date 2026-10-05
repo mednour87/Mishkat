@@ -312,3 +312,47 @@ html[data-theme=light] .rd-body > .tj-legend.tj-brief { background: #f7f1e4; }
 /* copyright (5 Oct) */
 .nd-rights { margin: 0; padding: 0 14px calc(10px + env(safe-area-inset-bottom)); font-size: 11px; line-height: 1.6; color: var(--mut); }
 #aboutBody .rights { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--mut); }
+
+/* (5 Oct, evening) the author's phone review, part 2 */
+.btn .pi, .icon-b .pi { display: inline-grid; place-items: center; line-height: 0; vertical-align: middle; }
+html[dir=rtl] .btn.play .pi svg, html[dir=rtl] #rFirst .pi svg { transform: scaleX(-1); }   /* in Arabic the reading goes to the left */
+.rd-fold svg { transition: transform .25s; } body.rd-folded .rd-fold svg { transform: rotate(180deg); }
+body.rd-folded #rOpts, body.rd-folded .tj-legend, body.rd-folded #rMore, body.rd-folded .rd-aya, body.rd-folded .rd-meta { display: none !important; }
+/* tajweed rules box: its own close button */
+.tj-legend { position: relative; } .tj-x { position: absolute; top: 4px; inset-inline-end: 4px; width: 30px; height: 30px; font-size: 13px; z-index: 1; }
+.tj-legend .tj-here { padding-inline-end: 34px; }
+/* «عن السورة» window over the reader */
+.sinfo-win { position: absolute; inset: 52px 8px 8px; z-index: 6; display: flex; flex-direction: column; border-radius: 16px; border: 1px solid rgba(255, 214, 107, .4);
+  background: var(--panel, #0b0f1a); box-shadow: 0 20px 60px rgba(0, 0, 0, .55); overflow: hidden; }
+.sinfo-win header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+.sinfo-win h3 { margin: 0; font-size: 15px; color: var(--gold); }
+.sinfo-win .sinfo { margin: 0; border: 0; border-radius: 0; overflow: auto; flex: 1; }
+html[data-theme=light] .sinfo-win { background: #fffdf7; }
+#rzone { position: relative; }
+/* panels: ⤢ enlarges to all the room under the top bar */
+.p-btns { display: inline-flex; gap: 6px; } .p-max { display: grid; place-items: center; }
+#tray.max { top: calc(var(--head) + var(--gap)) !important; bottom: var(--gap) !important; inset-inline: var(--gap) !important; width: auto !important; max-height: none !important; }
+#tray.max .panel { height: 100% !important; max-height: 100%; }
+@media (max-width: 860px) { #tray.max { top: var(--head) !important; bottom: 0 !important; inset-inline: 0 !important; } #tray.max .panel { border-radius: 0; } }
+/* native drop-down lists: never white text on a white list (country and city pickers, every select) */
+select option, select optgroup { background: #0f1424; color: #f3eedf; }
+html[data-theme=light] select option, html[data-theme=light] select optgroup { background: #ffffff; color: #1d2433; }
+
+/* khatma v2: choose-for-me, moments as chips, plan reveal, reading only */
+.k-choose { margin: 8px 0 14px; padding: 12px; border-radius: 14px; border: 1px solid rgba(255, 214, 107, .35); background: rgba(255, 214, 107, .06); text-align: center; }
+.k-moms { display: grid; gap: 6px; } .k-mom { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } .k-mom input[type=time] { min-height: 32px; }
+.k-mom.on .chip { border-color: rgba(255, 214, 107, .6); }
+#kSuras { width: 100%; max-width: 360px; }
+.k-res { margin-top: 12px; padding: 14px; border-radius: 14px; border: 1px solid rgba(94, 230, 160, .45); background: rgba(94, 230, 160, .06); }
+.k-res h3 { margin: 0 0 6px; color: var(--gold); font-size: 16px; }
+.lm-reveal { position: absolute; left: 50%; bottom: 96px; transform: translateX(-50%); width: min(620px, 94vw); text-align: center; z-index: 3;
+  padding: 12px 14px; border-radius: 16px; background: rgba(5, 7, 13, .86); border: 1px solid rgba(120, 255, 214, .45); }
+.lm-reveal b { color: #9fffe0; } .lm-choice p { margin: 8px 0; } .lm-cbtns { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+html[data-theme=light] .lm-reveal { background: rgba(255, 252, 244, .95); } html[data-theme=light] .lm-reveal b { color: #0b7a5c; }
+/* reading only: the Mushaf takes the whole screen; ⛶ again brings the galaxy back */
+body.read-full[data-mode=study] #gzone, body.read-full[data-mode=study] #splitMain { display: none !important; }
+body.read-full[data-mode=study] .col-main { grid-template-rows: 0 0 minmax(0, 1fr) !important; }
+body.read-full[data-mode=study] #rzone { display: flex !important; grid-row: 1 / -1; }
+@media (min-width: 861px) { body.read-full[data-mode=study] #work { grid-template-columns: minmax(0, 1fr) 0 !important; column-gap: 0; } body.read-full[data-mode=study] .col-side { display: none; } }
+@media (max-width: 860px) { body.read-full[data-mode=study] #work { grid-template-rows: 0 minmax(0, 1fr) !important; } body.read-full[data-mode=study] #mtabs { display: none; } body.read-full[data-mode=study] #work { bottom: 0; } }
+#rFull[aria-pressed=true] { color: var(--gold); border-color: rgba(255, 214, 107, .55); }

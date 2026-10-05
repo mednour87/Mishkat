@@ -275,6 +275,30 @@ try {
       await shot(`${dev}_zahra.jpg`, 7000);
     }
   }
+  // (5 Oct, night) khatma «choose for me» → 3D reveal → reading only; panel ⤢; tajweed ✕; «about the surah»; icons
+  if (WANT.includes('oct5c')) {
+    await phone(); await open('?s=24&a=35', { prefs: { khatma: { active: false, days: 30, moments: [] } } }); await sleep(2500);
+    await click('#mtabs [data-pane=r]'); await sleep(600);
+    await shot('c_reader_icons.jpg');
+    await click('#rMore'); await sleep(300); await click('#rTj'); await sleep(2500); await shot('c_tajweed.jpg');
+    await click('#tjClose'); await sleep(500);
+    console.log('tajweed colours after ✕:', await evalJs(`document.querySelectorAll('.mushaf .tj[data-r]').length`), 'box:', await evalJs(`!!document.querySelector('#tjLegend')`));
+    await click('#rInfo'); await sleep(1800); await shot('c_about_sura.jpg');
+    console.log('about window:', await evalJs(`(document.querySelector('#sInfoWin .sinfo')||{}).textContent?.slice(0,60)`));
+    await evalJs(`document.querySelector('#sInfoWin [data-x]').click(), 1`);
+    await click('#rFold'); await sleep(600); await shot('c_fold.jpg'); await click('#rFold');
+    await click('#navBtn'); await sleep(500); await click('[data-panel=khatma]'); await sleep(1800); await shot('c_khatma_form.jpg');
+    await evalJs(`document.querySelector('#tray .p-max').click(), 1`); await sleep(700); await shot('c_khatma_max.jpg');
+    await click('#kWiz'); await sleep(800);
+    await evalJs(`(()=>{ document.querySelector('input[name=wMin][value="20"]').click(); document.querySelector('input[name=wWhen][value=isha]').click(); document.querySelector('input[name=wOrd][value=short]').click(); document.querySelector('input[name=wDead][value="60"]').click(); return 1 })()`);
+    await click('#wGo'); await sleep(900); await shot('c_wizard_result.jpg');
+    console.log('result:', await evalJs(`(document.querySelector('.k-res')||{}).textContent?.replace(/\s+/g,' ').slice(0,220)`));
+    await click('#wOk'); await sleep(4500); await shot('c_reveal.jpg');
+    await evalJs(`(document.querySelector('[data-choice=only]')||{click(){}}).click(), 1`); await sleep(2500); await shot('c_read_only.jpg');
+    console.log('read-full:', await evalJs(`document.body.classList.contains('read-full')`), 'verse:', await evalJs(`(document.querySelector('#rSura')||{}).value`));
+    await click('#navBtn'); await sleep(400); await click('[data-panel=prayer]'); await sleep(2500);
+    console.log('select colours:', await evalJs(`(()=>{ const o=document.querySelector('#tray select option'); if(!o) return 'no select'; const c=getComputedStyle(o); return c.color+' on '+c.backgroundColor })()`));
+  }
   if (WANT.includes('intro-phone')) {
     await phone(); await open('', { prefs: { intro: false } });
     let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [4, 9, 16, 30])) { await shot(`m_intro_${t}s.jpg`, (t - at) * 1000); at = t; }

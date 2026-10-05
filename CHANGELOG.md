@@ -109,5 +109,18 @@ Done at the author's request before the window opens; commits after the tag `bas
 - **Social-media kit** (`tools/make_social.mjs` → `04_LIVRABLES/reseaux_sociaux/`): profile pictures, covers and banners at each network's size, with the texts to copy.
 - New checks: `tests/oct5b.test.mjs`, and the `oct5b` and `zahra` scenarios of `tools/ui_shots.mjs`.
 
+## Challenge — 5 October 2026 (night) — T106: the author's phone review, part 2
+- **Khatma v2** (`public/js/khatma.js` planUnits / todayPortion2 / planToIcs2 / suggestPlan, `public/js/toolpanels.js`):
+  - **«✦ اختر لي / Choose for me»** asks for the minutes a day, the moments (after each prayer, morning, before sleeping), the reading pace, short or long surahs first, and an optional deadline. It proposes the best plan, and says so when the deadline does not fit the time.
+  - **Manual plan**: the whole Quran or chosen surahs, Mushaf order or short surahs first (from an-Nas up), counted in pages, verses or surahs, by length (days) or by daily amount. Every moment is a chip with its own time.
+  - **After the plan**: the plan's surahs light up one by one in the 3D lamp. Then «how would you like to read?»: with the reciter and the galaxy, **reading only** (the Mushaf full screen, ⛶), or **listening only**.
+- **Panels**: a ⤢ button on every panel (computer and phone) enlarges it to all the room under the top bar; pressed again, it returns to the normal size.
+- **Reader**: play icons drawn as SVG (⏵⏵ had no glyph on phones and showed as crossed boxes). The tajweed rules box has a ✕ that keeps the colours (🎨 reopens it). «عن السورة» opens a window over the Mushaf: before, it opened at the top of a page scrolled down to the verse, so nothing seemed to happen. A ⌃ button folds the reading bar to one line.
+- **Qibla**: bearings checked against published values (London 119.0°, New York 58.5°, Jakarta 295.1°, Mahdia 111.5°). The compass is corrected for the screen angle and smoothed. If the phone sends no absolute heading within 3 s, the dial is not turned (it would point anywhere) and the visitor is told, with the magnetic-north note.
+- **First visit in Arabic** unless the browser's first language is the English of an English-speaking country.
+- **Drop-down lists** (country, city…): never white on white again.
+- **Presentation film**: the recited word is written large over the galaxy, in time with the recitation, and the camera no longer dives onto the verse (its turn of the helix filled the screen as a big white circle). The services come only after the whole verse, as large cards. Each card is narrated in **Modern Standard Arabic** (or English), with fully vowelled hand-written lines read by `ar-SA-HamedNeural` / `en-US-GuyNeural` (edge-tts, `tools/make_intro_voice.py`, never a verse). At the end the search engine greets the visitor: «كيف يمكنني أن أساعدك؟». The logo's words no longer overlap the translation or the rail.
+- New checks: `tests/oct5b.test.mjs` (khatma v2, qibla, phone fixes) and the `oct5c` scenario of `tools/ui_shots.mjs`.
+
 ## Challenge — 6 October 2026
 -

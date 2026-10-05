@@ -99,3 +99,97 @@ function fold(line) {
   out.push(cur);
   return out.join('\r\n ');
 }
+
+// ---------------------------------------------------------------- plans v2 (5 Oct, author's request)
+// A plan may cover the whole Quran or only chosen surahs, in Mushaf order or the short surahs first (from an-Nas up),
+// counted in pages, verses or surahs, and fixed either by its LENGTH (days) or by a DAILY AMOUNT (n pages/verses/surahs).
+//   plan = { v: 2, start, mode: 'days'|'amount', days, perDay, unit: 'pages'|'ayas'|'suras', scope: 'quran'|'suras',
+//            suras: [n…], order: 'mushaf'|'short', moments: [{ id, time }] }
+// A plan of the first version (no v) is the whole Quran by pages in Mushaf order over `days`.
+export const planOf = (p) => ({ mode: 'days', unit: 'pages', scope: 'quran', order: 'mushaf', suras: [], ...p });
+export function planSuras(plan, suras) {
+  const p = planOf(plan);
+  let list = p.scope === 'suras' && p.suras && p.suras.length ? [...new Set(p.suras)].filter(n => n >= 1 && n <= suras.length).sort((a, b) => a - b) : suras.map(s => s.n);
+  if (p.order === 'short') list = list.reverse();
+  return list;
+}
+// the units of the plan in reading order; a page segment cut by a surah boundary weighs its share of the page
+export function planUnits(plan, suras, pageStarts) {
+  const p = planOf(plan), units = [];
+  for (const n of planSuras(p, suras)) {
+    const S = suras[n - 1], a0 = S.first, a1 = S.first + S.ayas - 1;
+    if (p.unit === 'suras') units.push({ a: a0, b: a1, sura: n, w: 1 });
+    else if (p.unit === 'ayas') for (let i = a0; i <= a1; i++) units.push({ a: i, b: i, sura: n, w: 1 });
+    else {
+      let i = a0;
+      while (i <= a1) {
+        const pg = pageOf(pageStarts, i), [ps, pe] = pageRange(pageStarts, pg), e = Math.min(pe, a1);
+        units.push({ a: i, b: e, sura: n, page: pg, w: (e - i + 1) / (pe - ps + 1) });
+        i = e + 1;
+      }
+    }
+  }
+  return units;
+}
+const unitDone = (bits, u) => countRead(bits, u.a, u.b) === u.b - u.a + 1;
+export const planTotal = (units) => units.reduce((s, u) => s + u.w, 0);
+export function planDays(plan, units) {
+  const p = planOf(plan);
+  return p.mode === 'amount' ? Math.max(1, Math.ceil(planTotal(units) / Math.max(0.01, +p.perDay || 1) - 1e-9)) : Math.max(1, +p.days || 30);
+}
+// split a list of units over the moments, by weight, in reading order
+function splitMoments(list, moments) {
+  const ms = moments && moments.length ? moments : [{ id: 'any', label: '', time: '' }];
+  const tot = list.reduce((s, u) => s + u.w, 0), parts = [];
+  let k = 0, acc = 0;
+  ms.forEach((m, j) => {
+    const goal = tot * (j + 1) / ms.length, mine = [];
+    while (k < list.length && (acc + list[k].w / 2 <= goal + 1e-9 || j === ms.length - 1)) { mine.push(list[k]); acc += list[k].w; k++; }
+    if (mine.length) parts.push({ moment: m, units: mine, w: mine.reduce((s, u) => s + u.w, 0) });
+  });
+  return parts;
+}
+// today's portion: the next unread units up to the day's share (what is left spread over the days left — automatic
+// catch-up — or the fixed daily amount), split over the moments
+export function todayPortion2(plan, bits, units, date = new Date()) {
+  const p = planOf(plan), k = dayIndex(p.start, date), days = planDays(p, units), total = planTotal(units);
+  const doneW = units.reduce((s, u) => s + (unitDone(bits, u) ? u.w : 0), 0), left = total - doneW;
+  if (left <= 1e-9) return { finished: true, day: k + 1, days, total, doneW, parts: [] };
+  const daysLeft = Math.max(1, days - Math.max(0, k));
+  const share = p.mode === 'amount' ? Math.max(0.01, +p.perDay || 1) : left / daysLeft;
+  const list = []; let w = 0;
+  for (const u of units) { if (unitDone(bits, u)) continue; if (list.length && w + u.w / 2 > share + 1e-9) break; list.push(u); w += u.w; }
+  const expected = total * Math.min(days, Math.max(0, k)) / days;
+  return { finished: false, day: k + 1, days, daysLeft, total, doneW, share, w, parts: splitMoments(list, p.moments), behind: Math.max(0, expected - doneW) };
+}
+// .ics reminders of a v2 plan: day d reads the units of its share (ignoring what is already read)
+export function planToIcs2(plan, units, { title = 'Mishkat', describe = (part) => '', url = '' } = {}) {
+  const p = planOf(plan), days = planDays(p, units), total = planTotal(units);
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Mishkat//Khatma//AR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH'];
+  const start = new Date(p.start + 'T00:00:00'), now = new Date(), ms = (p.moments || []).filter(m => /^\d{1,2}:\d{2}$/.test(m.time || ''));
+  let k0 = 0, acc = 0;
+  for (let d = 0; d < days && k0 < units.length; d++) {
+    const goal = p.mode === 'amount' ? (d + 1) * (+p.perDay || 1) : total * (d + 1) / days, list = [];
+    while (k0 < units.length && (acc + units[k0].w / 2 <= goal + 1e-9 || d === days - 1)) { list.push(units[k0]); acc += units[k0].w; k0++; }
+    if (!list.length) continue;
+    const day = new Date(start.getFullYear(), start.getMonth(), start.getDate() + d);
+    splitMoments(list, ms).forEach((part, j) => {
+      const [hh, mm] = part.moment.time.split(':').map(Number);
+      const tt = `${stamp(day)}T${String(hh).padStart(2, '0')}${String(mm).padStart(2, '0')}00`, txt = describe({ ...part, day: d + 1 });
+      lines.push('BEGIN:VEVENT', `UID:mishkat-khatma2-${p.start}-${d}-${j}@mishkat`, `DTSTAMP:${stamp(now)}T000000Z`, `DTSTART:${tt}`, 'DURATION:PT20M',
+        `SUMMARY:${icsEsc(title + ' — ' + txt)}`, ...(url ? [`URL:${url}`] : []), 'BEGIN:VALARM', 'ACTION:DISPLAY', 'TRIGGER:PT0M', `DESCRIPTION:${icsEsc(txt)}`, 'END:VALARM', 'END:VEVENT');
+    });
+  }
+  lines.push('END:VCALENDAR');
+  return lines.map(fold).join('\r\n') + '\r\n';
+}
+// «اختر لي»: a plan from the visitor's answers. Reading pace in pages per minute (about 2 minutes a page at a calm pace).
+export const PACE = { slow: 1 / 3, medium: 1 / 2, fast: 3 / 4 };
+export function suggestPlan({ minutes = 15, pace = 'medium', order = 'mushaf', deadline = 0, moments = [] } = {}, start) {
+  const ppd = Math.max(0.5, minutes * (PACE[pace] || PACE.medium));          // pages a day the visitor can read
+  let days = Math.ceil(N_PAGES / ppd), fits = true;
+  // a deadline within 10 % of what the time allows is kept (61 days instead of 60 would be absurd)
+  if (deadline > 0) { if (N_PAGES / deadline <= ppd * 1.1 + 1e-9) days = deadline; else fits = false; }
+  const perPage = 1 / (PACE[pace] || PACE.medium);                          // minutes per page
+  return { plan: { v: 2, start, mode: 'days', days, unit: 'pages', scope: 'quran', order, suras: [], moments }, days, pagesPerDay: N_PAGES / days, minutesPerDay: Math.round(N_PAGES / days * perPage), fits, ppd };
+}

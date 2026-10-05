@@ -25,14 +25,15 @@ export const IN = {
     nameFrom: 'الاسم والشعار من آية النور', galaxy: '٧٧٬٤٣٣ كلمة · كل كلمة نجمة', reader: 'وضع القارئ: الكلمة المتلوّة تضيء في المجرّة', shapes: 'أشكال ثلاثية الأبعاد لترتيب السور',
     lampLit: 'المشكاة تضيء بالسور التي تقرؤها',
     chapters: ['البسملة', 'آية النور', 'المجرّة', 'الخدمات', 'ابدأ'], chapNav: 'فصول العرض',
+    // (5 Oct, evening) seven services, each narrated (public/audio/intro/ar/<id>.mp3, fusha, tools/make_intro_voice.py)
     feats: [
-      ['بحث ذكي في القرآن', 'اسأل بالعربية أو الإنجليزية: يختار الذكاء الاصطناعي من قائمة مغلقة بأرقامها، والنص من المصحف والتفسير المعتمد، ولا يكتب حرفًا من عنده.'],
-      ['الختمة', 'خطة على أيامك وأوقاتك، والسور المقروءة تضيء في المشكاة.'],
-      ['الصلاة والقبلة', 'مواقيت مدينتك مع عدّ تنازلي، واتجاه الكعبة ببوصلة الهاتف.'],
-      ['المساجد القريبة', 'على خريطة Google داخل الصفحة، والقائمة من OpenStreetMap، مع المسار.'],
-      ['التكرار والحفظ', 'عدّاد لكل تكرار، ووقت أدنى قريب من وقت الشيخ، وتشجيع دائم.'],
-      ['الإحصاءات والالتزام', 'السور والكلمات ومواضعها — دون حساب الجُمَّل — وخريطة التزام بثلاثة مستويات: غرسة، زيتونة، كوكب دري.'],
-      ['ثبّت التطبيق', 'على الهاتف والحاسوب من المتصفح مباشرة.'],
+      ['search', 'بحث ذكي في القرآن', 'اسألْ بكلماتِك أو بصوتِك، فيختارُ الذكاءُ الاصطناعيُّ من قائمةٍ مغلقةٍ من آياتِ المصحفِ وجُمَلِ التفسيرِ المعتمَد، ولا يكتبُ حرفًا من عندِه، ثمّ يتحقّقُ نموذجٌ ثانٍ من الجواب.'],
+      ['recite', 'التلاوة المتزامنة', 'واقرأْ بتلاوةِ الشيخِ مشاري العفاسي، فتضيءُ الكلمةُ المتلوّةُ في المصحفِ وفي المجرّة.'],
+      ['khatma', 'الختمة', 'وضَعْ خطّةَ ختمتِك على أيّامِك وأوقاتِك، والسُّوَرُ التي تقرؤها تضيءُ داخلَ المِشكاة.'],
+      ['tekrar', 'الحفظ بالتكرار', 'واحفَظْ بالتَّكرار: عدّادٌ لكلِّ تكرار، ووقتٌ أدنى قريبٌ من وقتِ الشيخ، وتشجيعٌ دائم.'],
+      ['prayer', 'الصلاة والقبلة والمساجد', 'ومواقيتُ الصلاةِ في مدينتِك، والقِبلةُ بالبوصلة، والمساجدُ القريبةُ على الخريطة.'],
+      ['child', 'وضع آمن للأطفال', 'ووضعٌ آمنٌ للأطفال: لا فتاوى ولا موضوعاتٍ حسّاسة، بل توجيهٌ لطيفٌ إلى الحِفظ.'],
+      ['install', 'على هاتفك وحاسوبك', 'وثبِّتْ مِشكاة على هاتفِك وحاسوبِك مباشرةً من المتصفِّح، بلا إعلاناتٍ ولا تتبُّع.'],
     ],
     steps: ['فهم السؤال', 'قائمة مغلقة: المصحف والتفسير', 'اختيار بالأرقام', 'تحقّق نموذج ثانٍ'],
     demoQ: 'ماذا يقول القرآن عن الصبر؟', demoNote: 'نص المصحف · التفسير الميسر بحروفه', counter: 'كرّرتُ', next: 'الصلاة القادمة', place: (p) => p ? `في ${p}` : '',
@@ -44,13 +45,13 @@ export const IN = {
     lampLit: 'The lamp lights up with the surahs you read',
     chapters: ['Basmala', 'Verse of light', 'Galaxy', 'Services', 'Start'], chapNav: 'Chapters of the film',
     feats: [
-      ['Smart Quran search', 'Ask in Arabic or English: the AI picks by number from a closed list; the text comes from the Mushaf and vetted tafsir — it never writes a word of its own.'],
-      ['Khatma', 'A plan on your days and times; the surahs you read light up in the lamp.'],
-      ['Prayer & qibla', 'Your city’s prayer times with a countdown, and the direction of the Kaaba with the phone’s compass.'],
-      ['Nearby mosques', 'On a Google map inside the page, the list from OpenStreetMap, with the route.'],
-      ['Repetition & memorising', 'A counter for each repetition, a minimal time close to the reciter’s, constant encouragement.'],
-      ['Statistics & engagement', 'Surahs, words and where they occur — no letter values — and an engagement map with three levels: sapling, olive tree, shining star.'],
-      ['Install the app', 'On your phone and computer, straight from the browser.'],
+      ['search', 'Smart Quran search', 'Ask in your own words, or by voice. The AI picks from a closed list of Mushaf verses and vetted tafsir sentences, never writes a word of its own, and a second model checks the answer.'],
+      ['recite', 'Synchronised recitation', 'Read with the recitation of Sheikh Mishary Alafasy: the recited word lights up in the Mushaf and in the galaxy.'],
+      ['khatma', 'Khatma', 'Plan your khatma on your own days and times; the surahs you read light up inside the lamp.'],
+      ['tekrar', 'Memorising by repetition', 'Memorise by repetition: a counter for each repetition, a minimal time close to the reciter’s, and constant encouragement.'],
+      ['prayer', 'Prayer, qibla & mosques', 'Prayer times in your city, the qibla with the compass, and nearby mosques on the map.'],
+      ['child', 'A safe mode for children', 'A safe mode for children: no fatwas, no sensitive subjects, a gentle path to memorising.'],
+      ['install', 'On your phone & computer', 'Install Mishkat on your phone and computer straight from the browser. No ads, no tracking.'],
     ],
     steps: ['Understand the question', 'Closed list: Mushaf & tafsir', 'Choice by number', 'Second model checks'],
     demoQ: 'What does the Quran say about patience?', demoNote: 'Mushaf text · Mukhtasar tafsir, verbatim', counter: 'Repeated', next: 'Next prayer', place: (p) => p ? `in ${p}` : '',
@@ -67,7 +68,7 @@ const PARTS = [
 const PHRASES = [[6], [8], [11], [14, 15], [18, 19, 20], [26, 27], [32, 33, 34]];   // written beside the logo as it grows
 export const CH = ['basmala', 'verse', 'galaxy', 'features', 'end'];
 // card durations (ms): the search card is the longest — it is the heart of the site
-export const DUR = [8600, 3700, 3900, 3500, 3600, 4100, 3200];
+export const DUR = [15500, 8000, 8000, 9000, 8000, 8500, 8500];   // fallback when the narration cannot play (≈ its length + 0.6 s)
 
 // ctx: { lang(), core, galaxy, audioBase, timing, timingBasmala, translation(i): Promise<string>, placeName(), setView(shape, order),
 //        qibla(): degrees|null, onDone(query|undefined) }
@@ -87,6 +88,7 @@ export function playIntro(ctx) {
     <p class="in-tr" lang="en" dir="ltr" hidden></p>
     <div class="in-logo" aria-hidden="true"><p class="in-from"></p><div class="in-lamp">${lampSVG({ size: 240, title: 'Mishkat' })}</div><div class="in-labels"></div></div>
     <div class="in-stage" aria-live="polite"></div>
+    <div class="in-word" dir="rtl" lang="ar" aria-hidden="true"></div>
     <div class="in-ctl"><button type="button" class="in-mute" aria-pressed="false">🔊 ${esc(t.sound)}</button><button type="button" class="in-skip">${esc(t.skip)} ⏭</button></div>
     <nav class="in-chap" aria-label="${esc(t.chapNav)}">${t.chapters.map((c, k) => `<button type="button" data-ch="${CH[k]}"><i><b></b></i><span>${esc(c)}</span></button>`).join('')}</nav>`;
   document.body.appendChild(root);
@@ -169,10 +171,10 @@ export function playIntro(ctx) {
     }
     const lamp = root.querySelector('.in-lamp svg');
     const below = top + lines.length * lh + 14;
-    const room = H - below - (ar ? 165 : 265);      // English: the translation (≈ 4 lines) and the rail below the logo      // English: room for the translation at the bottom
+    const room = H - below - (ar ? 215 : 330);      // English: the translation (≈ 4 lines) and the rail below the logo      // English: room for the translation at the bottom
     const ls = Math.max(ar ? 100 : 80, Math.min(phone ? Math.min(170, W * 0.42) : Math.min(260, H * 0.32), room));
     if (lamp) { lamp.setAttribute('width', ls); lamp.setAttribute('height', ls); }
-    logo.style.top = `${Math.min(H - ls - (ar ? 140 : 235), below)}px`;   // the word labels and the chapter rail stay below
+    logo.style.top = `${Math.min(H - ls - (ar ? 190 : 300), below)}px`;   // the word labels and the chapter rail stay below
   }
   // the word being recited (index) from the audio clock
   const clockMs = () => audio && !audio.paused && audio.currentTime > 0 ? audio.currentTime * 1000 : performance.now() - t0 - 1200;
@@ -248,14 +250,21 @@ export function playIntro(ctx) {
     root.classList.add('see-galaxy'); document.body.classList.add('intro-galaxy');
     trEl.classList.add('away');
     cap.textContent = t.reader;
-    try { ctx.galaxy.setAutoRotate(true); [galW0] = ctx.galaxy.wordsOfVerse(vIdx); ctx.galaxy.setReciting(!silent); } catch (e) { /* galaxy not ready */ }
-    // the services come on the live galaxy while the end of the verse is still recited
-    later(() => { if (!featuresOn) features(); }, silent ? 1600 : (reduced ? 2500 : 4500));
+    try { ctx.galaxy.home(); ctx.galaxy.setAutoRotate(true); [galW0] = ctx.galaxy.wordsOfVerse(vIdx); ctx.galaxy.setReciting(!silent); } catch (e) { /* galaxy not ready */ }
+    root.classList.add('see-word');
+    // (5 Oct, evening) the services come only AFTER the whole verse has been recited (loop below); when the visitor
+    // jumped ahead (no recitation), shortly after the galaxy appears
+    if (silent) later(() => { if (!featuresOn) features(); }, 1600);
   }
+  // (5 Oct, evening) the word being recited is written large over the galaxy, in time with the recitation, and its star
+  // lights up; the camera no longer dives onto the word (at that distance the verse's own turn of the helix filled the
+  // screen as a big white circle, author's remark) — it keeps a calm view of the whole galaxy
+  const wordEl = root.querySelector('.in-word');
   function galaxyAt(cur) {
     if (silent || !ctx.galaxy || cur < 0 || cur === lastGW) return;
     lastGW = cur;
-    try { ctx.galaxy.setActiveWord(galW0 + cur, words[cur]); ctx.galaxy.lookAtWord(galW0 + cur); } catch (e) { /* ignore */ }
+    try { ctx.galaxy.setActiveWord(galW0 + cur, words[cur]); } catch (e) { /* ignore */ }
+    wordEl.textContent = words[cur]; wordEl.classList.remove('pop'); void wordEl.offsetWidth; wordEl.classList.add('pop');
   }
   function shapesTour() {
     if (shapesDone) return;
@@ -274,19 +283,19 @@ export function playIntro(ctx) {
   }
   function featureCard(k) {
     featK = k; featT0 = performance.now();
-    const [h, p] = t.feats[k];
+    const [id, h, p] = t.feats[k];
     let demo = '';
-    if (k === 0) demo = searchDemo();
-    else if (k === 1) demo = `<div class="d-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="r0"/><circle cx="60" cy="60" r="50" class="r1" pathLength="100"/></svg><div class="d-mini">${lampSVG({ size: 74, animated: false, title: '' })}</div></div>`;
-    else if (k === 2) { const q = ctx.qibla(); demo = `<div class="d-two"><div class="d-pray"><small>${esc(t.next)} ${esc(t.place(ctx.placeName()))}</small><b class="d-count" dir="ltr">00:42:17</b></div><div class="d-comp"><i class="d-needle" style="--q:${q == null ? 110 : Math.round(q)}deg"></i><span>N</span></div></div>`; }
-    else if (k === 3) demo = `<div class="d-map">${[18, 42, 66, 30, 76].map((x, j) => `<i style="--x:${x}%;--y:${[30, 60, 38, 70, 55][j]}%;--d:${j * 0.25}s"></i>`).join('')}</div>`;
-    else if (k === 4) demo = `<button type="button" class="d-tk" tabindex="-1"><b>0</b><small>${esc(t.counter)}</small></button>`;
-    else if (k === 5) demo = `<div class="d-two"><div class="d-bars">${[90, 64, 48, 36, 22].map((v, j) => `<i style="--v:${v}%;--d:${j * 0.15}s"></i>`).join('')}</div><div class="d-lv">${[0, 1, 2].map(j => `<i style="--j:${j}"></i>`).join('')}<b></b></div></div>`;
+    if (id === 'search') demo = searchDemo();
+    else if (id === 'recite') demo = `<p class="d-rec" dir="rtl" lang="ar">${verseWords.slice(4, 9).map((w, j) => `<span style="--j:${j}">${esc(w)}</span>`).join(' ')}</p>`;
+    else if (id === 'khatma') demo = `<div class="d-ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="50" class="r0"/><circle cx="60" cy="60" r="50" class="r1" pathLength="100"/></svg><div class="d-mini">${lampSVG({ size: 74, animated: false, title: '' })}</div></div>`;
+    else if (id === 'prayer') { const q = ctx.qibla(); demo = `<div class="d-two"><div class="d-pray"><small>${esc(t.next)} ${esc(t.place(ctx.placeName()))}</small><b class="d-count" dir="ltr">00:42:17</b></div><div class="d-comp"><i class="d-needle" style="--q:${q == null ? 110 : Math.round(q)}deg"></i><span>N</span></div><div class="d-map">${[18, 42, 66, 30, 76].map((x, j) => `<i style="--x:${x}%;--y:${[30, 60, 38, 70, 55][j]}%;--d:${j * 0.25}s"></i>`).join('')}</div></div>`; }
+    else if (id === 'tekrar') demo = `<button type="button" class="d-tk" tabindex="-1"><b>0</b><small>${esc(t.counter)}</small></button>`;
+    else if (id === 'child') demo = `<div class="d-kid"><span>🧒</span><span>🛡️</span><span>📖</span></div>`;
     else demo = `<div class="d-inst"><span class="d-phone">📱</span><span class="d-pc">💻</span></div>`;
-    stage.innerHTML = `<article class="in-card${k === 0 ? ' big' : ''}"><div class="in-demo">${demo}</div><h3>${esc(h)}</h3><p>${esc(p)}</p>
+    stage.innerHTML = `<article class="in-card big"><div class="in-demo">${demo}</div><h3>${esc(h)}</h3><p>${esc(p)}</p>
       <div class="in-dots">${t.feats.map((f, j) => `<button type="button" class="${j === k ? 'on' : ''}" data-k="${j}" aria-label="${esc(f[0])}"></button>`).join('')}</div></article>`;
     stage.querySelectorAll('.in-dots button').forEach(b => b.onclick = () => goCard(+b.dataset.k));
-    if (k === 0) {
+    if (id === 'search') {
       const q = stage.querySelector('.d-q'); let n = 0;
       const steps = [...stage.querySelectorAll('.d-steps li')];
       const iv = setInterval(() => {
@@ -299,10 +308,23 @@ export function playIntro(ctx) {
         }
       }, 45);
     }
-    if (k === 2) { const c = stage.querySelector('.d-count'); let s = 42 * 60 + 17; const iv = setInterval(() => { if (!alive || !c.isConnected) return clearInterval(iv); s--; c.textContent = `00:${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; }, 1000); }
-    if (k === 4) { const b = stage.querySelector('.d-tk b'); let n = 0; const iv = setInterval(() => { if (!alive || !b.isConnected) return clearInterval(iv); n = Math.min(7, n + 1); b.textContent = String(n); b.parentElement.classList.remove('pop'); void b.offsetWidth; b.parentElement.classList.add('pop'); }, 480); }
+    if (id === 'prayer') { const c = stage.querySelector('.d-count'); let s = 42 * 60 + 17; const iv = setInterval(() => { if (!alive || !c.isConnected) return clearInterval(iv); s--; c.textContent = `00:${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; }, 1000); }
+    if (id === 'tekrar') { const b = stage.querySelector('.d-tk b'); let n = 0; const iv = setInterval(() => { if (!alive || !b.isConnected) return clearInterval(iv); n = Math.min(7, n + 1); b.textContent = String(n); b.parentElement.classList.remove('pop'); void b.offsetWidth; b.parentElement.classList.add('pop'); }, 480); }
     clearTimeout(featTimer);
-    featTimer = later(() => (k + 1 >= t.feats.length ? finale() : featureCard(k + 1)), (reduced ? 1.3 : 1) * DUR[k]);
+    const next = () => (k + 1 >= t.feats.length ? finale() : featureCard(k + 1));
+    // the card stays as long as its narration, then 0.9 s; without sound, its fallback duration
+    say(id, (ms) => { clearTimeout(featTimer); featTimer = later(next, ms + 900); });
+    featTimer = later(next, (reduced ? 1.3 : 1) * DUR[k]);
+  }
+  // ---------------------------------------------------------------- the narration (fusha / English), never a verse
+  let voiceA = null;
+  function say(id, onLen) {
+    if (voiceA) { voiceA.pause(); voiceA = null; }
+    const muted = root.querySelector('.in-mute').getAttribute('aria-pressed') === 'true';
+    const a = new Audio(`audio/intro/${ar ? 'ar' : 'en'}/${id}.mp3`);
+    a.muted = muted; voiceA = a;
+    a.addEventListener('loadedmetadata', () => { if (voiceA === a && onLen && isFinite(a.duration)) onLen(a.duration * 1000); }, { once: true });
+    a.play().catch(() => { /* blocked: the card keeps its fallback duration */ });
   }
   function goCard(k) { if (phase === 'features' && k >= 0 && k < t.feats.length) featureCard(k); }
   function features() {
@@ -310,6 +332,7 @@ export function playIntro(ctx) {
     featuresOn = true;
     if (!galaxyOn) enterGalaxy();
     phase = 'features'; cap.textContent = '';
+    root.classList.remove('see-word'); wordEl.textContent = '';
     root.classList.add('feat');
     logo.classList.add('small');
     featureCard(0);
@@ -327,6 +350,8 @@ export function playIntro(ctx) {
     const iv = setInterval(() => { if (!alive) return clearInterval(iv); for (let j = 0; j < 4 && n < 114; j++) prog[n++] = 1; box.innerHTML = miniLamp(prog, ctx.core.suras, 'mushaf'); if (n >= 114) clearInterval(iv); }, 60);
     stage.innerHTML = `<div class="in-end"><button type="button" class="btn gold big in-go">${esc(t.start)}</button>
       <p class="in-try"><span>${esc(t.tryLead)}</span>${t.tryQ.map(q => `<button type="button" class="in-q" data-q="${esc(q)}">${esc(q)}</button>`).join('')}</p></div>`;
+    // the search engine greets the visitor and asks how it can help (fusha in Arabic, English otherwise)
+    later(() => say('greet'), 700);
     stage.querySelector('.in-go').onclick = () => done();
     stage.querySelectorAll('.in-q').forEach(b => b.onclick = () => done(b.dataset.q));
     stage.querySelector('.in-go').focus();
@@ -403,6 +428,7 @@ export function playIntro(ctx) {
       if (galaxyOn && !silent && !shapesDone) galaxyAt(cur);
       const end = timVerse && timVerse.t ? timVerse.t[timVerse.t.length - 1] : 80060;
       if (galaxyOn && !shapesDone && (silent || (words === verseWords && ms > end + 600))) shapesTour();
+      if (galaxyOn && !featuresOn && !silent && words === verseWords && ms > end + 1400) features();
     }
     if (!reduced || phase === 'verse' || phase === 'basmala') drawParticles(ms);
     railAt(Math.max(0, ms));
@@ -413,6 +439,7 @@ export function playIntro(ctx) {
     alive = false; cancelAnimationFrame(raf);
     timers.forEach(clearTimeout); clearTimeout(featTimer);
     stopAudio(false);
+    if (voiceA) { voiceA.pause(); voiceA = null; }
     try { ctx.galaxy.setActiveWord(null); ctx.galaxy.setReciting(false); } catch (e) { /* ignore */ }
     document.body.classList.remove('intro-on', 'intro-galaxy');
     root.classList.add('leaving');
@@ -428,7 +455,7 @@ export function playIntro(ctx) {
     }
   };
   root.querySelector('.in-skip').onclick = () => done();
-  const muteToggle = (ev) => { const b = ev.currentTarget, m = b.getAttribute('aria-pressed') !== 'true'; if (audio) audio.muted = m; b.setAttribute('aria-pressed', String(m)); b.textContent = `${m ? '🔇' : '🔊'} ${t.sound}`; };
+  const muteToggle = (ev) => { const b = ev.currentTarget, m = b.getAttribute('aria-pressed') !== 'true'; if (audio) audio.muted = m; if (voiceA) voiceA.muted = m; b.setAttribute('aria-pressed', String(m)); b.textContent = `${m ? '🔇' : '🔊'} ${t.sound}`; };
   root.querySelector('.in-mute').onclick = muteToggle;
   document.addEventListener('keydown', onKey, true);
   window.addEventListener('resize', layoutText);
