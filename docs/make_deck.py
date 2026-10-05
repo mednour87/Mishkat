@@ -151,7 +151,7 @@ text(s, 'The Quran Galaxy Guide — AI-augmented Quran search that never writes 
 text(s, ['دليل مجرّة القرآن الذكي', 'بحث قرآني معزَّز بالذكاء الاصطناعي لا يكتب حرفًا دينيًّا'], inch(5.2), inch(3.75), inch(7.4), inch(1.0), 18, TXT, space=2)
 text(s, ['Islamic AI Challenge 2026 · Track 1 — Knowledge dialogue & reliable answers',
          'Mohamed Nour Bou Ali · Arabic and English',
-         'Live demo: mishkat-4m1.pages.dev · Code: github.com/mednour87/Mishkat'],
+         'Live demo: mishkatquran.org · Code: github.com/mednour87/Mishkat · © 2026 — all rights reserved'],
      inch(5.2), inch(5.0), inch(7.4), inch(1.4), 14, MUT, align=PP_ALIGN.LEFT)
 
 # ---------------------------------------------------------------- 2 — problem, measured
@@ -209,6 +209,12 @@ for k, (a, b) in enumerate(steps):
     text(s, b, inch(4.45), y + inch(0.13), inch(8.1), inch(0.4), 14)
     y += inch(0.67)
 
+# ---------------------------------------------------------------- 5b — the whole pipeline on one plate (tools/make_pipeline.mjs)
+s = slide('The pipeline at a glance — evidence-bound extractive RAG', 'خط المعالجة كاملًا')
+s.shapes.add_picture(os.path.join(HERE, 'pipeline_rag.png'), inch(0.5), inch(1.35), width=inch(12.3))
+text(s, 'Full description: docs/MOTEUR_RECHERCHE_RAG.md — every box names the file that does the work; every figure comes from a results file.',
+     inch(0.6), inch(6.95), inch(12.1), inch(0.4), 12, MUT)
+
 # ---------------------------------------------------------------- 6 — reliability on screen
 s = slide('Reliability you can see', 'الموثوقية')
 pic(s, '04_hukm_mawsua_ar.jpg', inch(0.6), inch(1.6), w=inch(6.0))
@@ -264,7 +270,7 @@ s = slide('More than answers: the daily companion', 'أدوات يومية')
 pic(s, '09_adhkar_ar.jpg', inch(0.6), inch(1.6), w=inch(5.3))
 pic(s, '10_qissa_ar.jpg', inch(6.05), inch(1.6), w=inch(5.3))
 pic(s, '11_mobile_ar.jpg', inch(11.55), inch(1.6), h=inch(3.3))
-text(s, ['Adhkar with known grades · prayer times (method named) · qibla · nearby mosques (OpenStreetMap) · Hijri calendar · khatma plan, the surahs read glowing inside the Mishkat lamp · stories of the prophets · voice search and recite a verse to find it · phone first, Arabic and English.',
+text(s, ['Khatma v2 with «Choose for me» (minutes a day, moments after each prayer, pace, short surahs first, deadline) — the plan lights up in the 3D lamp, then read with the reciter, reading only or listening only · memorising by repetition (counter, 70 % of the reciter’s time) · a safe mode for children (no fatwa) · adhkar with grades · prayer times, qibla (checked bearings), nearby mosques · Hijri calendar · installable on phone and computer · the Challenge flower among the 3D shapes.',
          'The visitor’s position and data stay in the browser; nothing is sent to Mishkat’s server.'],
      inch(0.6), inch(5.3), inch(12.1), inch(1.5), 14)
 
@@ -278,7 +284,8 @@ table(s, [['Source', 'Used for', 'Licence / terms'],
           ['Dorar — Fiqh Encyclopedia', 'rulings (statement only)', 'public site, link'],
           ['Al-Jamhara · Quranpedia', 'stories, subject index, surah info', 'credit + version'],
           ['Aladhan · OpenStreetMap · GeoNames', 'prayer times, mosques, cities', 'free API · ODbL · CC BY 4.0'],
-          ['Qur’an QA 2023 (bigIR)', 'evaluation only', 'CC BY-NC-ND 4.0, not redistributed']],
+          ['Qur’an QA 2023 (bigIR)', 'evaluation only', 'CC BY-NC-ND 4.0, not redistributed'],
+          ['Mishkat itself (code, design, logo, film)', 'the product', 'All rights reserved (challenge terms 13/7); organisers keep their evaluation licence']],
       inch(0.6), inch(1.55), inch(12.1), [5.0, 3.6, 3.5], 13)
 text(s, 'Full registry with access, licence and how we comply: SOURCES.md · tools and costs: TOOLS.md · traceability of every host, endpoint and data file: docs/TRACEABILITY.md',
      inch(0.6), inch(6.2), inch(12.1), inch(0.6), 13, MUT)
@@ -291,8 +298,8 @@ text(s, ['Quran Cartography data and the Mishkat engine (search, verification, g
      inch(0.85), inch(2.3), inch(5.4), inch(4.2), 14)
 card(s, inch(6.8), inch(1.6), inch(5.9), inch(3.6), PANEL2)
 text(s, 'Challenge window (CHANGELOG.md)', inch(7.05), inch(1.75), inch(5.4), inch(0.5), 17, GOLD, bold=True)
-text(s, ['Rulings only from the Fiqh Encyclopedia + red banner', 'Stories of the prophets from Al-Jamhara', 'Trap and injection guard', 'Prayer, qibla, mosques, adhkar verified on Dorar',
-         'Whisper turbo, recite to find a verse, voices', 'Khatma inside the lamp, 3D scenes', 'Measures on the free tier, documents, phone fixes'],
+text(s, ['Rulings only from the Fiqh Encyclopedia + red banner · stories from Al-Jamhara', 'Trap and injection guard · RAG tested on 1,000 questions', 'Prayer, qibla, mosques, adhkar verified on Dorar',
+         'Khatma v2 «Choose for me», tekrar, child mode, installable app', 'Film on 24:35 narrated in fusha · logo checked against As-Sa‘di', 'Domain, all rights reserved, dated archive · phone review fixes'],
      inch(7.05), inch(2.3), inch(5.4), inch(2.8), 14, space=7)
 text(s, f'{n_window} commits since the window opened (4 Oct, 09:00 Riyadh), each named by task (T0xx) and dated; the baseline tag was never moved. Work done on 3 October after the tag, at the author’s request, is declared as preparation in BASELINE.md §2.4.',
      inch(0.6), inch(5.5), inch(12.1), inch(1.2), 15, GOLD2)
