@@ -11,7 +11,7 @@ import { join, resolve } from 'node:path';
 const OUT = resolve(process.argv[2] || '../04_LIVRABLES/reseaux_sociaux');
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 mkdirSync(OUT, { recursive: true });
-const fonts = 'file:///' + resolve('public/fonts').replace(/\\/g, '/') + '/';
+const fonts = encodeURI('file:///' + resolve('public/fonts').replace(/\\/g, '/') + '/');   // the path has Arabic letters
 const logo = readFileSync('public/img/logo.svg', 'utf8').replace(/width="120" height="120"/, 'width="100%" height="100%"');
 const dir = mkdtempSync(join(tmpdir(), 'mishkat-social-'));
 
