@@ -2308,6 +2308,8 @@ async function runIntro() {
     lang: () => state.lang, core: state.core, galaxy: state.galaxy, audioBase: AUDIO_BASE, timing: suraFile('timing', 24), timingBasmala: suraFile('timing', 1),
     placeName: () => (state.practical ? state.practical.placeName() : ''),
     setView: (sh, od) => setView(sh, od, { quiet: true }),
+    // (6 Oct) the shapes of the film are computed while the verse is recited, so that each one comes on its word
+    prepare: (sh, od) => ensureLayout(sh, od).catch(() => {}),
     qibla: () => { const pl = state.practical && state.practical.place(); return pl ? qiblaBearing(pl.lat, pl.lon) : null; },
     // English: the reader's own translation (QuranEnc) under the verses of the film
     translation: (i) => state.lang === 'en' && TRANSLATION_FOR.en ? loadSource(TRANSLATION_FOR.en).then(() => state.engine.translation('en', i)) : '',

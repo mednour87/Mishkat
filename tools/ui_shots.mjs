@@ -87,6 +87,10 @@ try {
     await desk(); await open('', { lang: 'en', prefs: { intro: false } });
     let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [4, 30, 75, 104])) { await shot(`en_intro_${t}s.jpg`, (t - at) * 1000); at = t; }
   }
+  if (WANT.includes('intro-en-low')) {         // (6 Oct) a laptop window: the logo between the verse and the English translation
+    await size(1280, 610); await open('', { lang: 'en', prefs: { intro: false } });
+    let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [20, 50])) { await shot(`enlow_intro_${t}s.jpg`, (t - at) * 1000); at = t; }
+  }
   if (WANT.includes('intro')) {
     await desk(); await open('', { prefs: { intro: false } });
     let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [3, 6, 10, 24, 86])) { await shot(`intro_${t}s.jpg`, (t - at) * 1000); at = t; }

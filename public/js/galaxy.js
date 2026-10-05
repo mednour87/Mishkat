@@ -658,6 +658,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     flyToVerse, fitVerses, highlightVerses, setGroups, setLayout, addLayout, replaceLayout, home,
     // the verse whose words are labelled and linked by a thread
     setFocusVerse(v) { focusV = v == null ? null : v; drawThread(); },
+    get focusVerse() { return focusV; },
     // recitation: only the recited word is written; the field of stars dims
     setReciting(on) {
       reciting = !!on;
@@ -719,7 +720,8 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     setGroupsVisible(v) { groupsOn = !!v; },
     get layout() { return layout; },
     get autoRotate() { return controls.autoRotate; },
-    setAutoRotate(v) { controls.autoRotate = v; },
+    // (6 Oct) the film turns the shapes faster (at 0.35 a whole turn takes ≈ 3 min: the flower looked frozen)
+    setAutoRotate(v, speed) { controls.autoRotate = v; if (speed) controls.autoRotateSpeed = speed; },
     wordsOfVerse: (v) => [vStart[v], vEnd[v]],
     wordVerse,
     // T051: a scene at the centre of the galaxy while a tool panel is open —

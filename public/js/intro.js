@@ -18,6 +18,10 @@ import { lampSVG } from './lamp.js';
 import { miniLamp } from './lampmap.js';
 
 const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+// the narration is fully vowelled for the voice; the cards show it with the shadda only (easier to read)
+export const plain = (s) => String(s).replace(/[ً-ِْ]/g, '');
+// every narrated line of the film, by file name (tools/make_intro_voice.py reads them from here)
+export const lines = (l) => Object.fromEntries([...IN[l].feats.map(([id, , p]) => [id, p]), ['galaxy', IN[l].bridge], ['greet', IN[l].greet]]);
 
 export const IN = {
   ar: {
@@ -26,15 +30,20 @@ export const IN = {
     lampLit: 'المشكاة تضيء بالسور التي تقرؤها',
     chapters: ['البسملة', 'آية النور', 'المجرّة', 'الخدمات', 'ابدأ'], chapNav: 'فصول العرض',
     // (5 Oct, evening) seven services, each narrated (public/audio/intro/ar/<id>.mp3, fusha, tools/make_intro_voice.py)
+    // (6 Oct, author's review) rewritten as one spoken thread, each line leading to the next, fully vowelled so that
+    // the voice reads every word right (the card shows the same line without the short vowels)
     feats: [
-      ['search', 'بحث ذكي في القرآن', 'اسألْ بكلماتِك أو بصوتِك، فيختارُ الذكاءُ الاصطناعيُّ من قائمةٍ مغلقةٍ من آياتِ المصحفِ وجُمَلِ التفسيرِ المعتمَد، ولا يكتبُ حرفًا من عندِه، ثمّ يتحقّقُ نموذجٌ ثانٍ من الجواب.'],
-      ['recite', 'التلاوة المتزامنة', 'واقرأْ بتلاوةِ الشيخِ مشاري العفاسي، فتضيءُ الكلمةُ المتلوّةُ في المصحفِ وفي المجرّة.'],
-      ['khatma', 'الختمة', 'وضَعْ خطّةَ ختمتِك على أيّامِك وأوقاتِك، والسُّوَرُ التي تقرؤها تضيءُ داخلَ المِشكاة.'],
-      ['tekrar', 'الحفظ بالتكرار', 'واحفَظْ بالتَّكرار: عدّادٌ لكلِّ تكرار، ووقتٌ أدنى قريبٌ من وقتِ الشيخ، وتشجيعٌ دائم.'],
-      ['prayer', 'الصلاة والقبلة والمساجد', 'ومواقيتُ الصلاةِ في مدينتِك، والقِبلةُ بالبوصلة، والمساجدُ القريبةُ على الخريطة.'],
-      ['child', 'وضع آمن للأطفال', 'ووضعٌ آمنٌ للأطفال: لا فتاوى ولا موضوعاتٍ حسّاسة، بل توجيهٌ لطيفٌ إلى الحِفظ.'],
-      ['install', 'على هاتفك وحاسوبك', 'وثبِّتْ مِشكاة على هاتفِك وحاسوبِك مباشرةً من المتصفِّح، بلا إعلاناتٍ ولا تتبُّع.'],
+      ['search', 'بحث ذكي في القرآن', 'هَلْ فِي نَفْسِكَ سُؤَالٌ؟ اكْتُبْهُ بِكَلِمَاتِكَ، أَوْ قُلْهُ بِصَوْتِكَ. مِشْكَاةُ لَا تَكْتُبُ جَوَابًا مِنْ عِنْدِهَا: تَخْتَارُ مِنْ آيَاتِ الْمُصْحَفِ وَكُتُبِ التَّفْسِيرِ الْمُعْتَمَدَةِ، وَيُرَاجِعُ اخْتِيَارَهَا نَمُوذَجٌ ثَانٍ، فَيَصِلُكَ النَّصُّ كَمَا هُوَ، بِمَصْدَرِهِ.'],
+      ['recite', 'التلاوة المتزامنة', 'وَإِذَا وَجَدْتَ آيَتَكَ، فَاسْتَمِعْ إِلَيْهَا بِصَوْتِ الشَّيْخِ مِشَارِي الْعَفَاسِيِّ؛ كُلُّ كَلِمَةٍ يَتْلُوهَا تُضِيءُ أَمَامَكَ، فِي الْمُصْحَفِ وَفِي الْمَجَرَّةِ.'],
+      ['khatma', 'الختمة', 'وَإِنْ أَرَدْتَ أَنْ تَخْتِمَ الْقُرْآنَ، فَضَعْ خُطَّتَكَ عَلَى أَيَّامِكَ، أَوْ دَعْ مِشْكَاةَ تَخْتَارُ لَكَ؛ وَكُلُّ سُورَةٍ تَقْرَؤُهَا تُضِيءُ فِي الْمِشْكَاةِ.'],
+      ['tekrar', 'الحفظ بالتكرار', 'وَإِنْ كُنْتَ تَحْفَظُ، فَكَرِّرِ الْآيَةَ وَمِشْكَاةُ تَعُدُّ مَعَكَ، بِتَمَهُّلٍ قَرِيبٍ مِنْ تِلَاوَةِ الشَّيْخِ، حَتَّى تُتْقِنَ.'],
+      ['prayer', 'الصلاة والقبلة والمساجد', 'وَإِذَا حَانَ وَقْتُ الصَّلَاةِ، وَجَدْتَ مَوَاقِيتَهَا فِي مَدِينَتِكَ، وَاتِّجَاهَ الْقِبْلَةِ عَلَى الْبُوصَلَةِ، وَأَقْرَبَ الْمَسَاجِدِ إِلَيْكَ عَلَى الْخَرِيطَةِ.'],
+      ['child', 'وضع آمن للأطفال', 'وَلِأَطْفَالِكَ وَضْعٌ آمِنٌ، يُبْعِدُهُمْ عَنِ الْفَتَاوَى وَالْمَوْضُوعَاتِ الْحَسَّاسَةِ، وَيُحَبِّبُ إِلَيْهِمُ الْحِفْظَ بِلُطْفٍ.'],
+      ['install', 'على هاتفك وحاسوبك', 'وَمِشْكَاةُ مَعَكَ أَيْنَمَا كُنْتَ: ثَبِّتْهَا عَلَى هَاتِفِكَ أَوْ حَاسُوبِكَ مِنَ الْمُتَصَفِّحِ مُبَاشَرَةً، بِلَا إِعْلَانَاتٍ، وَلَا تَتَبُّعٍ.'],
     ],
+    // the bridge from the verse to the services, said over the turning shapes (public/audio/intro/ar/galaxy.mp3)
+    bridge: 'فِي هَذِهِ الْمَجَرَّةِ كَلِمَاتُ الْقُرْآنِ كُلُّهَا: أَكْثَرُ مِنْ سَبْعَةٍ وَسَبْعِينَ أَلْفَ كَلِمَةٍ، لِكُلِّ كَلِمَةٍ نَجْمَةٌ. فَمَاذَا تَجِدُ فِي مِشْكَاةَ؟',
+    greet: 'أَهْلًا بِكَ فِي مِشْكَاةَ. كَيْفَ يُمْكِنُنِي أَنْ أُسَاعِدَكَ؟',
     steps: ['فهم السؤال', 'قائمة مغلقة: المصحف والتفسير', 'اختيار بالأرقام', 'تحقّق نموذج ثانٍ'],
     demoQ: 'ماذا يقول القرآن عن الصبر؟', demoNote: 'نص المصحف · التفسير الميسر بحروفه', counter: 'كرّرتُ', next: 'الصلاة القادمة', place: (p) => p ? `في ${p}` : '',
     tryLead: 'جرّب سؤالًا:', tryQ: ['كيف أتعامل مع الحزن؟', 'ماذا يقول القرآن عن الصبر؟', 'قصة يوسف'],
@@ -45,14 +54,16 @@ export const IN = {
     lampLit: 'The lamp lights up with the surahs you read',
     chapters: ['Basmala', 'Verse of light', 'Galaxy', 'Services', 'Start'], chapNav: 'Chapters of the film',
     feats: [
-      ['search', 'Smart Quran search', 'Ask in your own words, or by voice. The AI picks from a closed list of Mushaf verses and vetted tafsir sentences, never writes a word of its own, and a second model checks the answer.'],
-      ['recite', 'Synchronised recitation', 'Read with the recitation of Sheikh Mishary Alafasy: the recited word lights up in the Mushaf and in the galaxy.'],
-      ['khatma', 'Khatma', 'Plan your khatma on your own days and times; the surahs you read light up inside the lamp.'],
-      ['tekrar', 'Memorising by repetition', 'Memorise by repetition: a counter for each repetition, a minimal time close to the reciter’s, and constant encouragement.'],
-      ['prayer', 'Prayer, qibla & mosques', 'Prayer times in your city, the qibla with the compass, and nearby mosques on the map.'],
-      ['child', 'A safe mode for children', 'A safe mode for children: no fatwas, no sensitive subjects, a gentle path to memorising.'],
-      ['install', 'On your phone & computer', 'Install Mishkat on your phone and computer straight from the browser. No ads, no tracking.'],
+      ['search', 'Smart Quran search', 'Got a question? Type it in your own words, or just ask it out loud. Mishkat never writes an answer of its own: it picks from the Mushaf and trusted tafsir, a second model checks that choice, and the text reaches you exactly as it is, with its source.'],
+      ['recite', 'Synchronised recitation', 'Found your verse? Listen to it in the voice of Sheikh Mishary Alafasy, and watch every word light up as he recites it, in the Mushaf and in the galaxy.'],
+      ['khatma', 'Khatma', 'Want to read the whole Quran? Make a plan that fits your days, or let Mishkat choose one for you; every surah you read lights up inside the lamp.'],
+      ['tekrar', 'Memorising by repetition', 'Memorising? Repeat the verse and Mishkat counts with you, at a calm pace close to the reciter’s, until you know it by heart.'],
+      ['prayer', 'Prayer, qibla & mosques', 'When it is time to pray, you will find the prayer times for your city, the qibla on a compass, and the nearest mosques on a map.'],
+      ['child', 'A safe mode for children', 'And for your children, a safe mode that keeps fatwas and sensitive topics away, and gently makes memorising a joy.'],
+      ['install', 'On your phone & computer', 'Mishkat goes wherever you go: install it on your phone or computer straight from the browser. No ads, no tracking.'],
     ],
+    bridge: 'This galaxy holds every word of the Quran: more than seventy-seven thousand words, one star for each. So, what can you find in Mishkat?',
+    greet: 'Welcome to Mishkat. How can I help you?',
     steps: ['Understand the question', 'Closed list: Mushaf & tafsir', 'Choice by number', 'Second model checks'],
     demoQ: 'What does the Quran say about patience?', demoNote: 'Mushaf text · Mukhtasar tafsir, verbatim', counter: 'Repeated', next: 'Next prayer', place: (p) => p ? `in ${p}` : '',
     tryLead: 'Try a question:', tryQ: ['How do I deal with sadness?', 'Verses about patience', 'Story of Yusuf'],
@@ -67,8 +78,10 @@ const PARTS = [
 ];
 const PHRASES = [[6], [8], [11], [14, 15], [18, 19, 20], [26, 27], [32, 33, 34]];   // written beside the logo as it grows
 export const CH = ['basmala', 'verse', 'galaxy', 'features', 'end'];
+// (6 Oct) the shapes of the galaxy part, each on a recited word of 24:35 (0-based): 40 «وَيَضْرِبُ», 44 «وَٱللَّهُ»
+export const CUES = [{ at: 40, shape: 'rose' }, { at: 44, shape: 'zahra' }];
 // card durations (ms): the search card is the longest — it is the heart of the site
-export const DUR = [15500, 8000, 8000, 9000, 8000, 8500, 8500];   // fallback when the narration cannot play (≈ its length + 0.6 s)
+export const DUR = [20200, 11600, 11400, 10000, 11600, 9900, 10700];   // fallback when the narration cannot play (≈ its length + 0.6 s)
 
 // ctx: { lang(), core, galaxy, audioBase, timing, timingBasmala, translation(i): Promise<string>, placeName(), setView(shape, order),
 //        qibla(): degrees|null, onDone(query|undefined) }
@@ -97,7 +110,8 @@ export function playIntro(ctx) {
   const cap = root.querySelector('.in-cap'), stage = root.querySelector('.in-stage'), logo = root.querySelector('.in-logo'), labelsEl = root.querySelector('.in-labels');
   const trEl = root.querySelector('.in-tr');
   let W = 0, H = 0, DPR = 1, parts = [], wordBox = [], txtCv = null, wordLit = [], lineH = 0, lastDraw = 0, alive = true, raf = 0, audio = null, t0 = performance.now(), tim = null, phase = 'basmala', galaxyOn = false, timVerse = null;
-  let silent = false;                                // the visitor jumped ahead: the recitation was stopped, the film runs on its clock
+  let leaveT0 = 0;
+  let silent = false;                             // the visitor jumped ahead: the recitation was stopped, the film runs on its clock
   let featT0 = 0, featK = -1, featTimer = 0, galT0 = 0, featuresOn = false;
   const timers = [];
   const later = (fn, ms) => { const id = setTimeout(() => { if (alive) fn(); }, ms); timers.push(id); return id; };
@@ -109,6 +123,7 @@ export function playIntro(ctx) {
       if (!alive) return;
       const txt = String(s || '').replace(/\[\d+\]/g, '').replace(/\s+/g, ' ').trim();
       trEl.textContent = txt; trEl.hidden = !txt; trEl.classList.remove('on'); void trEl.offsetWidth; trEl.classList.add('on');
+      placeLogo();
     }).catch(() => { trEl.hidden = true; });
   }
 
@@ -128,7 +143,7 @@ export function playIntro(ctx) {
       if (lw + ww > maxW && lines[lines.length - 1].length) { lines.push([]); lw = 0; }
       lines[lines.length - 1].push({ k, ww }); lw += ww + gap;
     }
-    const top = phase === 'basmala' ? H * (phone ? 0.3 : 0.26) : phone ? H * 0.1 : H * 0.09;
+    const top = phase === 'basmala' ? H * (phone ? 0.3 : 0.26) : phone ? H * 0.1 : Math.max(66, H * 0.09);   // below the name and its subtitle
     wordBox = [];
     lines.forEach((ln, r) => {
       const total = ln.reduce((s, x) => s + x.ww, 0) + gap * (ln.length - 1);
@@ -169,12 +184,30 @@ export function playIntro(ctx) {
       const a = Math.random() * 6.283, r = 8 + Math.random() * 16;   // waiting close to its place: the verse's shape is already there, faint
       parts.push({ tx: x, ty: y, ox: Math.cos(a) * r, oy: Math.sin(a) * r * 0.6, x: prev ? prev.x : W / 2 + (Math.random() - 0.5) * W * 0.3, y: prev ? prev.y : H * 0.4 + (Math.random() - 0.5) * H * 0.2, vx: 0, vy: 0, k, tw: Math.random() * 6.28 });
     }
+    belowVerse = top + lines.length * lh + 14;
+    placeLogo();
+  }
+  // (6 Oct, author's review) the logo lives between the verse and what is under it — in English the translation,
+  // whose real height is measured: on a laptop screen the logo used to be pushed up over the verse and under the
+  // English sentence. The translation gets smaller first, then the lamp; they never overlap.
+  let belowVerse = 0;
+  function placeLogo() {
     const lamp = root.querySelector('.in-lamp svg');
-    const below = top + lines.length * lh + 14;
-    const room = H - below - (ar ? 215 : 330);      // English: the translation (≈ 4 lines) and the rail below the logo      // English: room for the translation at the bottom
-    const ls = Math.max(ar ? 100 : 80, Math.min(phone ? Math.min(170, W * 0.42) : Math.min(260, H * 0.32), room));
-    if (lamp) { lamp.setAttribute('width', ls); lamp.setAttribute('height', ls); }
-    logo.style.top = `${Math.min(H - ls - (ar ? 190 : 300), below)}px`;   // the word labels and the chapter rail stay below
+    if (!lamp || !W) return;
+    const phone = W < 700, rail = phone ? 44 : 64;
+    const labH = phone ? 64 : ar ? 40 : 86, fromH = phone ? 40 : 26;   // the word labels (two rows in English) and the line above the lamp
+    const maxL = phone ? Math.min(170, W * 0.42) : Math.min(260, H * 0.32);
+    let room = 0;
+    for (const fs of [15, 14, 13, 12, 11]) {
+      if (!ar && phone) trEl.style.fontSize = `${Math.max(11, fs - 2)}px`; else if (!ar) trEl.style.fontSize = `${fs}px`;
+      const trH = !ar && trEl.textContent && !trEl.hidden ? trEl.offsetHeight + 10 : 40;   // Arabic: the caption line
+      room = (H - rail - trH) - belowVerse - fromH - labH - 12;
+      if (ar || room >= 90) break;
+    }
+    const ls = Math.max(48, Math.min(maxL, room));
+    lamp.setAttribute('width', ls); lamp.setAttribute('height', ls);
+    logo.style.top = `${belowVerse}px`;
+    logo.classList.toggle('tight', room < 48);       // no room at all (a very low window): the word labels give way
   }
   // the word being recited (index) from the audio clock
   const clockMs = () => audio && !audio.paused && audio.currentTime > 0 ? audio.currentTime * 1000 : performance.now() - t0 - 1200;
@@ -191,6 +224,11 @@ export function playIntro(ctx) {
     if (galaxyOn) g.clearRect(0, 0, W, H);
     g.globalCompositeOperation = 'lighter';
     const cur = wordAt(ms), leaving = phase !== 'verse' && phase !== 'basmala';
+    // (6 Oct, author's review) the points flowing out into the galaxy fade away within 2.5 s: left to themselves they
+    // settled on an orbit around the centre and drew the white circle seen over the 3D shapes
+    if (leaving && !leaveT0) leaveT0 = performance.now();
+    const fade = leaving ? Math.max(0, 1 - (performance.now() - leaveT0) / 2500) : 1;
+    if (fade <= 0) { parts = []; txtCv = null; return; }
     for (const p of parts) {
       const on = p.k <= cur && !leaving;
       let ax, ay;
@@ -202,7 +240,7 @@ export function playIntro(ctx) {
       p.vx = (p.vx + ax) * 0.86; p.vy = (p.vy + ay) * 0.86; p.x += p.vx; p.y += p.vy;
       const hot = p.k === cur && !leaving;
       // once its sharp letters are drawn, a recited word's points are only a soft halo around them
-      g.fillStyle = hot ? 'rgba(255,222,130,0.5)' : on ? 'rgba(255,236,190,0.14)' : 'rgba(150,175,230,0.05)';
+      g.fillStyle = hot ? 'rgba(255,222,130,0.5)' : on ? 'rgba(255,236,190,0.14)' : leaving ? `rgba(150,175,230,${(0.05 * fade).toFixed(3)})` : 'rgba(150,175,230,0.05)';
       const s = hot ? 2 : on ? 1.5 : 1.1;
       g.fillRect(p.x - s / 2, p.y - s / 2, s, s);
     }
@@ -243,18 +281,31 @@ export function playIntro(ctx) {
   }
 
   // ---------------------------------------------------------------- the real galaxy (reader mode on the same verse)
-  let galW0 = 0, lastGW = -1, shapesDone = false;
+  // (6 Oct, author's review) the shapes change ON the recited words — «وَيَضْرِبُ ٱللَّهُ ٱلْأَمْثَٰلَ» brings the rose,
+  // «وَٱللَّهُ بِكُلِّ شَىْءٍ عَلِيمٌ» the challenge's flower — and every shape keeps turning (at the site's calm speed a
+  // whole turn took ≈ 3 minutes: the flower looked frozen while only the words changed)
+  let galW0 = 0, lastGW = -1, shapesDone = false, cueK = 0, bridged = false, bridgeT0 = 0, bridgeMs = 10000;
+  const spin = () => { try { ctx.galaxy.setAutoRotate(true, 1.6); } catch (e) { /* ignore */ } };
+  function toShape(sh) { ctx.setView(sh, 'mushaf'); later(spin, 2500); }
+  // (6 Oct) the thread of the reader's current verse (1:1 by default, at the very centre of the spiral) was drawn
+  // over the film as a white circle: hidden while the film plays, given back at the end
+  let focus0 = null;
+  function hideThread() { try { const f = ctx.galaxy.focusVerse; if (f != null) { focus0 = f; ctx.galaxy.setFocusVerse(null); } } catch (e) { /* ignore */ } }
+  hideThread();
+  try { if (ctx.prepare) for (const c of CUES) ctx.prepare(c.shape, 'mushaf'); } catch (e) { /* ignore */ }
   function enterGalaxy() {
     if (galaxyOn) return;
     galaxyOn = true; phase = 'galaxy'; galT0 = performance.now();
     root.classList.add('see-galaxy'); document.body.classList.add('intro-galaxy');
     trEl.classList.add('away');
     cap.textContent = t.reader;
-    try { ctx.galaxy.home(); ctx.galaxy.setAutoRotate(true); [galW0] = ctx.galaxy.wordsOfVerse(vIdx); ctx.galaxy.setReciting(!silent); } catch (e) { /* galaxy not ready */ }
+    hideThread();
+    try { ctx.galaxy.home(); [galW0] = ctx.galaxy.wordsOfVerse(vIdx); ctx.galaxy.setReciting(!silent); } catch (e) { /* galaxy not ready */ }
+    later(spin, 1600);
     root.classList.add('see-word');
     // (5 Oct, evening) the services come only AFTER the whole verse has been recited (loop below); when the visitor
-    // jumped ahead (no recitation), shortly after the galaxy appears
-    if (silent) later(() => { if (!featuresOn) features(); }, 1600);
+    // jumped ahead (no recitation), the shapes and the bridge come at once
+    if (silent) later(bridge, 600);
   }
   // (5 Oct, evening) the word being recited is written large over the galaxy, in time with the recitation, and its star
   // lights up; the camera no longer dives onto the word (at that distance the verse's own turn of the helix filled the
@@ -263,15 +314,28 @@ export function playIntro(ctx) {
   function galaxyAt(cur) {
     if (silent || !ctx.galaxy || cur < 0 || cur === lastGW) return;
     lastGW = cur;
+    while (cueK < CUES.length && cur >= CUES[cueK].at) toShape(CUES[cueK++].shape);
     try { ctx.galaxy.setActiveWord(galW0 + cur, words[cur]); } catch (e) { /* ignore */ }
     wordEl.textContent = words[cur]; wordEl.classList.remove('pop'); void wordEl.offsetWidth; wordEl.classList.add('pop');
   }
+  // the shapes not reached yet, one after the other (when the visitor jumped ahead: no recitation to follow)
   function shapesTour() {
     if (shapesDone) return;
     shapesDone = true;
-    try { ctx.galaxy.setActiveWord(null); ctx.galaxy.setReciting(false); ctx.galaxy.home(); } catch (e) { /* ignore */ }
-    const tour = [['rose', 'mushaf'], ['zahra', 'mushaf'], ['galaxy', 'mushaf']];   // (5 Oct) the challenge's flower
-    tour.forEach(([sh, od], k) => later(() => ctx.setView(sh, od), 600 + k * 4200));
+    CUES.slice(cueK).forEach((c, k) => later(() => toShape(c.shape), 300 + k * 3600));
+    cueK = CUES.length;
+  }
+  // after the verse: one spoken sentence leads from the galaxy to the services (no jump from one to the other)
+  function bridge() {
+    if (bridged || featuresOn) return;
+    bridged = true; bridgeT0 = performance.now();
+    shapesTour();
+    try { ctx.galaxy.setActiveWord(null); ctx.galaxy.setReciting(false); } catch (e) { /* ignore */ }
+    root.classList.remove('see-word'); wordEl.textContent = '';
+    cap.textContent = ar ? plain(t.bridge) : t.bridge;
+    clearTimeout(featTimer);
+    featTimer = later(features, (silent ? 7600 : 10500));
+    say('galaxy', (ms) => { if (featuresOn) return; clearTimeout(featTimer); bridgeMs = ms + 900; featTimer = later(features, ms + 900); });
   }
 
   // ---------------------------------------------------------------- the services, one card after another
@@ -292,7 +356,7 @@ export function playIntro(ctx) {
     else if (id === 'tekrar') demo = `<button type="button" class="d-tk" tabindex="-1"><b>0</b><small>${esc(t.counter)}</small></button>`;
     else if (id === 'child') demo = `<div class="d-kid"><span>🧒</span><span>🛡️</span><span>📖</span></div>`;
     else demo = `<div class="d-inst"><span class="d-phone">📱</span><span class="d-pc">💻</span></div>`;
-    stage.innerHTML = `<article class="in-card big"><div class="in-demo">${demo}</div><h3>${esc(h)}</h3><p>${esc(p)}</p>
+    stage.innerHTML = `<article class="in-card big"><div class="in-demo">${demo}</div><h3>${esc(h)}</h3><p>${esc(ar ? plain(p) : p)}</p>
       <div class="in-dots">${t.feats.map((f, j) => `<button type="button" class="${j === k ? 'on' : ''}" data-k="${j}" aria-label="${esc(f[0])}"></button>`).join('')}</div></article>`;
     stage.querySelectorAll('.in-dots button').forEach(b => b.onclick = () => goCard(+b.dataset.k));
     if (id === 'search') {
@@ -342,6 +406,7 @@ export function playIntro(ctx) {
     if (!featuresOn) { featuresOn = true; if (!galaxyOn) enterGalaxy(); }
     root.classList.remove('feat'); root.classList.add('fin');
     stopAudio(true);
+    shapesDone = true; toShape('galaxy');           // the end on the galaxy of the Mushaf, the lamp above it
     logo.classList.remove('small'); logo.classList.add('final');
     cap.textContent = t.lampLit;
     const prog = ctx.core.suras.map(() => 0);
@@ -393,8 +458,8 @@ export function playIntro(ctx) {
     if (to <= at) return;
     if (ch === 'verse') { stopAudio(true); startVerse(); return; }
     if (phase === 'basmala' || phase === 'verse') { silent = true; stopAudio(true); if (phase === 'basmala') { words = verseWords; layoutText(); } }
-    if (ch === 'galaxy') { enterGalaxy(); shapesTour(); return; }
-    if (ch === 'features') { if (!galaxyOn) enterGalaxy(); if (silent) shapesTour(); features(); return; }
+    if (ch === 'galaxy') { if (galaxyOn) bridge(); else enterGalaxy(); return; }
+    if (ch === 'features') { if (!galaxyOn) enterGalaxy(); shapesTour(); features(); return; }
     finale();
   }
   const chapterNow = () => phase === 'basmala' ? 'basmala' : phase === 'verse' ? 'verse' : phase === 'galaxy' ? 'galaxy' : phase === 'features' ? 'features' : 'end';
@@ -404,7 +469,7 @@ export function playIntro(ctx) {
     let f = 0;
     if (ch === 'basmala') { const end = tim && tim.t ? tim.t[tim.t.length - 1] + 900 : 6000; f = ms / end; }
     else if (ch === 'verse') { const tt = timVerse && timVerse.t; f = ms / (tt ? tt[2 * 35] : 60000); }
-    else if (ch === 'galaxy') f = (performance.now() - galT0) / 4500;
+    else if (ch === 'galaxy') f = bridged ? 0.5 + 0.5 * (performance.now() - bridgeT0) / bridgeMs : silent ? 0 : 0.5 * Math.max(0, wordAt(ms) - 34) / 13;
     else if (ch === 'features') f = (featK + Math.min(1, (performance.now() - featT0) / DUR[Math.max(0, featK)])) / t.feats.length;
     else f = 1;
     root.querySelectorAll('.in-chap button').forEach((b, j) => {
@@ -425,10 +490,9 @@ export function playIntro(ctx) {
       if (phase === 'verse') logoAt(cur);
       // the last part of the verse («يهدي الله لنوره…») is read on the real galaxy
       if (phase === 'verse' && cur >= 35) enterGalaxy();
-      if (galaxyOn && !silent && !shapesDone) galaxyAt(cur);
+      if (galaxyOn && !silent && !bridged) galaxyAt(cur);
       const end = timVerse && timVerse.t ? timVerse.t[timVerse.t.length - 1] : 80060;
-      if (galaxyOn && !shapesDone && (silent || (words === verseWords && ms > end + 600))) shapesTour();
-      if (galaxyOn && !featuresOn && !silent && words === verseWords && ms > end + 1400) features();
+      if (galaxyOn && !bridged && !silent && words === verseWords && ms > end + 700) bridge();
     }
     if (!reduced || phase === 'verse' || phase === 'basmala') drawParticles(ms);
     railAt(Math.max(0, ms));
@@ -440,7 +504,7 @@ export function playIntro(ctx) {
     timers.forEach(clearTimeout); clearTimeout(featTimer);
     stopAudio(false);
     if (voiceA) { voiceA.pause(); voiceA = null; }
-    try { ctx.galaxy.setActiveWord(null); ctx.galaxy.setReciting(false); } catch (e) { /* ignore */ }
+    try { ctx.galaxy.setActiveWord(null); ctx.galaxy.setReciting(false); ctx.galaxy.setAutoRotate(true, 0.35); if (focus0 != null) ctx.galaxy.setFocusVerse(focus0); } catch (e) { /* ignore */ }
     document.body.classList.remove('intro-on', 'intro-galaxy');
     root.classList.add('leaving');
     window.removeEventListener('resize', layoutText); document.removeEventListener('keydown', onKey, true);
