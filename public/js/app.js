@@ -840,6 +840,9 @@ const hadChunks = new Map();
 async function loadSunnah(res) {
   const box = $('#sunnahBox'), t = T();
   if (!box) return;
+  // (RAG test, 5 Oct) a trap question about violence: no hadith listed on its own, out of its context (the verses come
+  // with their context pack; «Did the Prophet call to kill non-Muslims?» listed «أمرت أن أقاتل الناس» alone)
+  if (res.polemic || res.pack === 'violence') { res._sunnah = []; box.hidden = true; return; }
   let s = null;
   try { s = await workerCall({ op: 'sunnah', res: { type: res.type, lang: res.lang, query: res.query, meta: res.meta }, opts: { ai: !!state.llm } }); } catch (e) { s = null; }
   res._sunnah = s && s.by === 'ai' ? s.ids.slice(0, 3) : [];
@@ -942,7 +945,8 @@ async function loadFiqh(q, kw = []) {
     box.innerHTML = `<p class="lead">${esc(j && j.ok ? t.fiqhNone : t.fiqhFail)}</p><p><a class="mini" href="${esc(j && j.url || more)}" target="_blank" rel="noopener">${esc(t.fiqhSearchSite)}</a></p>`;
     return;
   }
-  const docs = (await Promise.all(j.items.slice(0, 2).map(x => postJSON('api/fatwa', { id: +x.id })))).filter(f => f && f.ok);
+  // up to four sections are read (a section may have no statement of its own); the first two with one are shown
+  const docs = (await Promise.all(j.items.slice(0, 4).map(x => postJSON('api/fatwa', kw.length ? { id: +x.id, q, kw } : { id: +x.id, q })))).filter(f => f && f.ok).filter((f, k, a) => a.findIndex(g => g.id === f.id) === k).slice(0, 2);
   if (box !== $('#fiqhBox')) return;
   if (!docs.length) { box.innerHTML = `<p class="lead">${esc(t.fiqhFail)}</p><p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fiqhSearchSite)}</a></p>`; return; }
   box.innerHTML = (state.lang === 'en' ? `<p class="note">${esc(t.fiqhArabicOnly)}</p>` : '') + docs.map(f => fiqhCard(f, t)).join('')

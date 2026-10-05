@@ -21,7 +21,7 @@ const THEME_WORDS = [
   ['prayer', /التشهد|الصلاه|السجود|الركوع|الاستفتاح|الاذان|المسجد|الوضوء|القنوت|الوتر|الاستخاره|prayer|tashahhud|sujood|ruku|adhan|mosque|wudu|ablution|istikhara/],
   ['home', /الطعام|الاكل|الشرب|المنزل|البيت|الخلاء|اللباس|العطاس|eating|food|home|house|toilet|clothes|sneez/],
   ['travel', /السفر|الركوب|المسافر|travel|journey|riding/],
-  ['distress', /الكرب|الهم|الحزن|المرض|المريض|المصيبه|الخوف|الغضب|distress|anxiety|grief|illness|sick|fear|anger|calamity/],
+  ['distress', /الكرب|الهم|الحزن|المرض|المريض|المصيبه|الخوف|الغضب|distress|anxiety|grief|illness|sick|fear|anger|angry|calamity/],
   ['istighfar', /الاستغفار|التسبيح|التهليل|forgiveness|istighfar|tasbih/],
 ];
 const STOP = new Set(['اذكار', 'الاذكار', 'ذكر', 'دعاء', 'دعا', 'الدعا', 'ادعيه', 'الدعاء', 'ماذا', 'اقول', 'يقال', 'ما', 'في', 'عند', 'قبل', 'بعد', 'what', 'to', 'say', 'when', 'before', 'after', 'adhkar', 'azkar', 'dhikr', 'dua', 'duas', 'supplication', 'of', 'the', 'for', 'i', 'do', 'should', 'remembrance', 'words']);
@@ -36,11 +36,15 @@ export function filterAthkar(items, { theme = null, words = [] } = {}) {
   let list = theme ? items.filter(x => x.theme === theme) : items.slice();
   if (words.length) {
     const hay = (x) => normAr([x.chapter, x.title, x.text, (x.cats || []).join(' ')].join(' ')) + ' ' + [x.en && x.en.title, x.en && x.en.text].filter(Boolean).join(' ').toLowerCase();
-    const W = words.map(w => normAr(w).replace(/^ال/, ''));
-    const hit = list.filter(x => W.some(w => hay(x).includes(w)));
+    // (5 Oct, RAG test) an English word stays English (normAr erased it: '' matched every remembrance, so «what should
+    // i say when it rains» listed all 342) and matches whole words only, plural «s» set aside ("rains" → "rain")
+    const lat = (w) => /^[a-z]+$/.test(w);
+    const W = words.map(w => lat(w) ? w : normAr(w).replace(/^ال/, '')).filter(Boolean);
+    const RE = W.map(w => lat(w) ? new RegExp(String.raw`\b` + (w.length > 4 ? w.replace(/s$/, '') : w) + String.raw`(s|es)?\b`) : null);
+    const hit = list.filter(x => W.some((w, k) => RE[k] ? RE[k].test(hay(x)) : hay(x).includes(w)));
     // the chapter or title that names it first («التشهد» → the tashahhud before the supplications after it)
     const head = (x) => normAr([x.chapter, x.title].join(' '));
-    if (hit.length) list = hit.map((x, i) => [x, i, W.some(w => head(x).includes(w)) ? 0 : 1]).sort((a, b) => a[2] - b[2] || a[1] - b[1]).map(a => a[0]);
+    if (hit.length) list = hit.map((x, i) => [x, i, W.some(w => !lat(w) && head(x).includes(w)) ? 0 : 1]).sort((a, b) => a[2] - b[2] || a[1] - b[1]).map(a => a[0]);
     // words that match nothing: the theme they named stays (e.g. "dua before sleeping"); without a theme,
     // nothing is shown rather than unrelated remembrances (the «none» message)
     else if (!theme) list = [];

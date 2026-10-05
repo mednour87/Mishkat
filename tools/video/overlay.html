@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>Mishkat video overlay</title>
+<link rel="stylesheet" href="/public/fonts/fonts.css">
+<style>
+  /* The motion-design layer of the video: drawn for one time t (seconds) by render(t), captured frame by frame with a
+     transparent background and laid over the real footage by ffmpeg. Nothing moves on its own: every value is a
+     function of t, so that a frame is the same whatever the speed of the capture. */
+  :root { --gold: #ffd66b; --gold2: #e8a93c; --ink: #05070d; --txt: #f3eedf; --mut: #b7bfd1; --green: #5ee6a0; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+  body { font-family: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif; color: var(--txt); }
+  .L { position: absolute; will-change: opacity, transform; }
+  /* captions: the narration in Arabic, its English subtitle */
+  #cap { left: 50%; bottom: 46px; transform: translateX(-50%); width: 1500px; text-align: center; }
+  #cap .box { display: inline-block; padding: 14px 30px 16px; border-radius: 18px; background: rgba(5, 7, 13, .78); border: 1px solid rgba(255, 214, 107, .28); box-shadow: 0 20px 60px rgba(0,0,0,.55); backdrop-filter: blur(6px); }
+  #cap .ar { font-size: 34px; line-height: 1.55; font-weight: 600; direction: rtl; color: #fff8e6; }
+  #cap .en { font-size: 23px; line-height: 1.4; color: #c9d1e2; font-family: 'Inter', sans-serif; margin-top: 4px; direction: ltr; }
+  /* chapter tag (top centre) */
+  #tag { left: 50%; top: 92px; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; padding: 9px 22px; border-radius: 999px; background: rgba(5, 7, 13, .82); border: 1px solid rgba(255, 214, 107, .45); font-size: 25px; white-space: nowrap; box-shadow: 0 12px 40px rgba(0,0,0,.5); }
+  #tag b { color: var(--gold); font-weight: 700; } #tag i { width: 1px; height: 22px; background: rgba(255,255,255,.25); } #tag span { color: #dfe5f1; font-family: 'Inter'; font-size: 21px; }
+  #tag .n { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--gold); color: #1a1406; font-weight: 700; font-size: 18px; font-family: 'Inter'; }
+  /* the brand over the opening */
+  #brand { left: 0; right: 0; top: 650px; text-align: center; }
+  #brand h1 { margin: 0; font-family: 'Amiri', serif; font-size: 96px; color: var(--gold); text-shadow: 0 0 40px rgba(255, 196, 80, .45); line-height: 1.1; }
+  #brand p { margin: 6px 0 0; font-size: 30px; color: #e9e4d6; } #brand small { display: block; font-family: 'Inter'; font-size: 22px; color: var(--mut); margin-top: 6px; letter-spacing: .04em; direction: ltr; unicode-bidi: isolate; }
+  /* the path of an answer (right side, over the galaxy) */
+  #pipe { right: 48px; top: 190px; width: 560px; padding: 26px 26px 18px; border-radius: 24px; background: rgba(5, 7, 13, .86); border: 1px solid rgba(255, 214, 107, .35); box-shadow: 0 30px 90px rgba(0,0,0,.6); direction: rtl; }
+  #pipe h3 { margin: 0 0 16px; font-size: 26px; color: var(--gold); } #pipe h3 small { display: block; font-family: 'Inter'; font-size: 17px; color: var(--mut); font-weight: 400; direction: ltr; text-align: right; margin-top: 2px; }
+  .st { display: grid; grid-template-columns: 46px 1fr; gap: 14px; align-items: center; padding: 10px 12px; border-radius: 14px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,.08); background: rgba(255,255,255,.03); }
+  .st b { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.1); font-size: 20px; font-family: 'Inter'; font-weight: 700; }
+  .st div { font-size: 23px; line-height: 1.35; } .st div small { display: block; font-family: 'Inter'; font-size: 16px; color: var(--mut); direction: ltr; text-align: right; }
+  .st.on { border-color: rgba(255, 214, 107, .55); background: rgba(255, 214, 107, .08); } .st.on b { background: var(--gold); color: #1a1406; }
+  .st.ok { border-color: rgba(94, 230, 160, .6); background: rgba(94, 230, 160, .08); } .st.ok b { background: var(--green); color: #062114; }
+  .arrow { height: 14px; margin: -4px 0 4px; display: grid; place-items: center; color: rgba(255,214,107,.6); font-size: 14px; }
+  /* full-screen cards (measures, end) */
+  .card { left: 0; top: 0; width: 1920px; height: 1080px; background: radial-gradient(ellipse at 50% 45%, #0e1834 0%, #03050c 70%); display: grid; place-items: center; }
+  #stats .in { width: 1500px; text-align: center; direction: rtl; }
+  #stats h2 { margin: 0 0 8px; font-size: 52px; color: var(--gold); } #stats h2 small { display: block; font-family: 'Inter'; font-size: 26px; color: var(--mut); font-weight: 400; margin-top: 6px; direction: ltr; }
+  #stats .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 46px; }
+  .kpi { padding: 26px 18px 22px; border-radius: 22px; border: 1px solid rgba(255, 214, 107, .3); background: rgba(255,255,255,.035); }
+  .kpi b { display: block; font-family: 'Inter'; font-size: 66px; color: #fff3cf; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .kpi span { display: block; font-size: 23px; margin-top: 10px; line-height: 1.45; } .kpi small { display: block; font-family: 'Inter'; font-size: 17px; color: var(--mut); margin-top: 6px; direction: ltr; line-height: 1.35; }
+  .kpi.g b { color: var(--green); }
+  #stats .foot { margin-top: 34px; font-size: 19px; color: var(--mut); font-family: 'Inter'; direction: ltr; }
+  #end .in { text-align: center; } #end .lamp { display: inline-block; filter: drop-shadow(0 0 60px rgba(255, 210, 110, .7)); }
+  #end h1 { margin: 10px 0 0; font-family: 'Amiri', serif; font-size: 110px; color: var(--gold); line-height: 1.1; } #end h1 small { display: block; font-family: 'Inter'; font-size: 34px; color: #e9e4d6; letter-spacing: .12em; font-weight: 500; direction: ltr; unicode-bidi: isolate; margin-top: 18px; }
+  #end .url { margin-top: 26px; font-family: 'Inter'; font-size: 30px; color: #fff; padding: 10px 28px; border-radius: 999px; border: 1px solid rgba(255,214,107,.5); display: inline-block; }
+  #end .tl { margin-top: 26px; font-size: 30px; color: #f3eedf; direction: rtl; } #end .tl small { display: block; font-family: 'Inter'; font-size: 21px; color: var(--mut); margin-top: 6px; direction: ltr; }
+  #end .ch { margin-top: 22px; font-family: 'Inter'; font-size: 18px; color: #8f98ab; }
+  /* corner mark */
+  #mark { right: 34px; top: 26px; display: flex; align-items: center; gap: 10px; font-family: 'Amiri'; font-size: 30px; color: var(--gold); text-shadow: 0 2px 10px rgba(0,0,0,.9); }
+  #mark small { font-family: 'Inter'; font-size: 15px; color: #cfd6e6; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+import { lampSVG } from '/public/js/lamp.js';
+const TL = window.TL || { events: [] };
+const root = document.getElementById('root');
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const outBack = (x) => { x = clamp(x); const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+// visibility envelope of an event: fade in, hold, fade out
+const env = (t, at, dur, fi = .35, fo = .35) => t < at || t > at + dur ? 0 : Math.min(ease((t - at) / fi), ease((at + dur - t) / fo));
+const num = (x, lang) => lang === 'ar' ? String(x).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]) : String(x);
+
+const els = [];
+for (const e of TL.events) {
+  const d = document.createElement('div'); d.className = 'L';
+  if (e.kind === 'cap') { d.id = 'cap'; d.innerHTML = `<div class="box"><div class="ar">${esc(e.ar)}</div><div class="en">${esc(e.en)}</div></div>`; }
+  else if (e.kind === 'tag') { d.id = 'tag'; d.innerHTML = `${e.n ? `<em class="n">${esc(e.n)}</em>` : ''}<b>${esc(e.ar)}</b><i></i><span>${esc(e.en)}</span>`; d.querySelector('.n') && (d.querySelector('.n').style.fontStyle = 'normal'); }
+  else if (e.kind === 'brand') { d.id = 'brand'; d.innerHTML = `<h1>مشكاة</h1><p>دليل مجرّة القرآن الذكي</p><small>MISHKAT · THE SMART GUIDE TO THE QURAN GALAXY</small>`; }
+  else if (e.kind === 'mark') { d.id = 'mark'; d.innerHTML = `${lampSVG({ size: 46, animated: false, title: '' })}<span>مِشكاة<small> · Mishkat</small></span>`; }
+  else if (e.kind === 'pipe') { d.id = 'pipe'; d.innerHTML = `<h3>طريق الجواب<small>How an answer is built</small></h3>` + e.steps.map((s, k) => `${k ? '<div class="arrow">▼</div>' : ''}<div class="st" data-k="${k}"><b>${k + 1}</b><div>${esc(s.ar)}<small>${esc(s.en)}</small></div></div>`).join(''); }
+  else if (e.kind === 'stats') { d.id = 'stats'; d.className = 'L card'; d.innerHTML = `<div class="in"><h2>${esc(e.title.ar)}<small>${esc(e.title.en)}</small></h2><div class="grid">${e.kpis.map((k, j) => `<div class="kpi${k.good ? ' g' : ''}" data-j="${j}"><b data-v="${k.v}" data-d="${k.dec || 0}" data-suf="${esc(k.suf || '')}">0</b><span>${esc(k.ar)}</span><small>${esc(k.en)}</small></div>`).join('')}</div><div class="foot">${esc(e.foot || '')}</div></div>`; }
+  else if (e.kind === 'end') { d.id = 'end'; d.className = 'L card'; d.innerHTML = `<div class="in"><div class="lamp">${lampSVG({ size: 250, animated: false, title: 'Mishkat' })}</div><h1>مشكاة<small>MISHKAT</small></h1><div class="url">${esc(e.url)}</div><div class="tl">${esc(e.ar)}<small>${esc(e.en)}</small></div><div class="ch">${esc(e.foot || '')}</div></div>`; }
+  else continue;
+  d.style.opacity = 0; root.appendChild(d); els.push({ e, d });
+}
+
+window.render = (t) => {
+  for (const { e, d } of els) {
+    const fi = e.kind === 'stats' || e.kind === 'end' ? .5 : .35;
+    const a = env(t, e.at, e.dur, fi, e.kind === 'end' ? .01 : .4);
+    d.style.opacity = a.toFixed(3);
+    d.style.display = a > 0 ? '' : 'none';
+    if (!a) continue;
+    const u = t - e.at;
+    if (e.kind === 'cap') d.style.transform = `translateX(-50%) translateY(${(1 - ease(u / .4)) * 18}px)`;
+    if (e.kind === 'tag') d.style.transform = `translateX(-50%) scale(${.9 + .1 * outBack(u / .5)})`;
+    if (e.kind === 'brand') { const h = d.querySelector('h1'); h.style.letterSpacing = `${(1 - ease(u / 1.2)) * 18}px`; d.style.transform = `translateY(${(1 - ease(u / .9)) * 26}px)`; }
+    if (e.kind === 'pipe') {
+      d.style.transform = `translateX(${(1 - ease(u / .5)) * 60}px)`;
+      d.querySelectorAll('.st').forEach((s, k) => {
+        const on = u >= e.steps[k].at, last = k === e.steps.length - 1;
+        s.className = 'st' + (on ? (last ? ' ok' : ' on') : '');
+        s.style.opacity = on ? 1 : .35;
+        const p = clamp((u - e.steps[k].at) / .35); s.style.transform = on ? `scale(${1 + .04 * Math.sin(p * Math.PI)})` : 'none';
+      });
+    }
+    if (e.kind === 'stats') {
+      d.querySelectorAll('.kpi').forEach((k, j) => {
+        const p = clamp((u - .4 - j * .25) / .5); k.style.opacity = ease(p); k.style.transform = `translateY(${(1 - ease(p)) * 30}px)`;
+        const b = k.querySelector('b'), v = +b.dataset.v, dec = +b.dataset.d, c = clamp((u - .5 - j * .25) / 1.4);
+        b.textContent = (v * ease(c)).toFixed(dec).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + b.dataset.suf;
+      });
+    }
+    if (e.kind === 'end') { const l = d.querySelector('.lamp'); l.style.transform = `scale(${.85 + .15 * outBack(u / 1.0)})`; l.style.opacity = ease(u / .6); }
+  }
+  return true;
+};
+document.fonts.ready.then(() => { window.__ready = true; });
+</script>
+</body>
+</html>

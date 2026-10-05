@@ -276,9 +276,14 @@ test('verse references proposed by the LLM are kept only if real and on-topic', 
   };
   const r = await ask('بر الوالدين', { llm });
   assert.ok(seen.includes('17:23'));          // real and about parents → candidate
-  assert.ok(!seen.includes('112:1'));         // real but off-topic → dropped
+  // (5 Oct, RAG test) real but sharing no word with the question → a candidate AFTER the anchored ones, kept only
+  // if the selection says it answers (score 2); before, it never reached the selection (2:285 for «أركان الإيمان»)
+  assert.ok(seen.indexOf('112:1') > seen.indexOf('17:23'));
   assert.ok(!seen.some(x => x.startsWith('999') || x === '2:300'));
   assert.equal(r.meta.proposedKept, 1);
+  assert.equal(r.meta.proposedLoose, 1);
+  const r2 = await ask('بر الوالدين', { llm: { ...llm, select: async () => ({ intent: 'topic', ids: ['17:23', '112:1'], scores: { '17:23': 2, '112:1': 1 }, confidence: 'high' }) } });
+  assert.ok(!r2.verses.some(v => v.ref === '112:1'));      // only «related»: dropped
   assertGrounded(r);
 });
 

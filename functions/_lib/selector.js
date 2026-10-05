@@ -40,6 +40,8 @@ Task:
    - Prefer verses that state the answer itself; skip verses that only mention the word in passing.
    - If the query joins several subjects («الصبر والشكر», "fear and hope"), list first the verses that mention them together (if any), then verses for EACH subject separately, so that every subject is covered. A verse about only one of the subjects is still relevant.
    - For a story, choose the verses that narrate its main events, in the order of the story.
+   - A person in distress (sadness, fear, anxiety, a heavy heart), even asking "what should I read": choose the verses that console, give hope, or say what to do (patience, prayer, remembrance, reliance on Allah) — never verses that only contain the words of the question ("read", "sad") or describe others in another situation (the people of Paradise, the Day of Judgement).
+   - A question about the merit or reward (فضل، ثواب، أجر) of a deed: verses that state its reward or praise it, not its timing or its rules.
    - For hostile or trap questions, prefer the verses that state the general principle and its conditions.
    - If no candidate answers the query, return "items": [].
 3. confidence: "high" if the selected verses clearly answer the query, else "low".
@@ -279,13 +281,13 @@ export const select = (body, env, fetchImpl = fetch) => run('select', body, env,
 // Closed-list relevance check for published documents (fatwas, hadiths): the model only returns
 // the numbers of the items, among those given, that address the user's question. Nothing it
 // writes is shown; unknown numbers are dropped. Without a model: null (the caller keeps its order).
-export async function pickRelevant(question, items, env, { max = 4, what = 'fatwa', fetchImpl = fetch } = {}) {
+export async function pickRelevant(question, items, env, { max = 4, what = 'fatwa', fetchImpl = fetch, task = 'pick', strict = '' } = {}) {
   const list = items.slice(0, 12).map((x, i) => `[${i + 1}] ${String(x).replace(/\s+/g, ' ').slice(0, 260)}`).join(String.fromCharCode(10));
   const messages = [
-    { role: 'system', content: `You check relevance only. Given a user's question and numbered ${what} titles/summaries, return JSON {"keep":[numbers]} with the numbers (at most ${max}, best first) of the items whose MEANING answers the same question or directly addresses its subject (guidance, ruling, virtue, warning, comfort). Exclude items where the word only appears incidentally (another meaning, a name, a place, a different topic). Return {"keep":[]} if none does. Never write anything else.` + DATA_NOTE },
+    { role: 'system', content: `You check relevance only. Given a user's question and numbered ${what} titles/summaries, return JSON {"keep":[numbers]} with the numbers (at most ${max}, best first) of the items whose MEANING answers the same question or directly addresses its subject (guidance, ruling, virtue, warning, comfort). Exclude items where the word only appears incidentally (another meaning, a name, a place, a different topic). Return {"keep":[]} if none does. Never write anything else.` + (strict ? ' ' + strict : '') + DATA_NOTE },
     { role: 'user', content: `Question: ${String(question).slice(0, 300)}` + String.fromCharCode(10, 10) + list },
   ];
-  for (const pr of providers(env, 'pick')) {
+  for (const pr of providers(env, task)) {
     if ((coolDown.get(ckey(pr)) || 0) > Date.now()) continue;
     try {
       const raw = await callOpenAICompat({ ...pr, messages, fetchImpl, timeoutMs: 7000 });

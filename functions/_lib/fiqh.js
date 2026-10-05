@@ -29,8 +29,35 @@ export function fatwaQuery(q) {
 }
 
 const linkOf = (id) => `${DORAR}/feqhia/${id}`;
+
+// light stem for matching the words of a question with the titles of the encyclopedia: no «ال» and attached
+// particles, no final «ة/ه» or plural ending, no long vowels — «تارك» = «ترك», «الصيام» = «الصوم», «المريض» = «مرض»
+export function fiqhStem(w) {
+  let s = bare(w).replace(/[^ء-ي]/g, '');
+  if (s.length > 4) s = s.replace(/^(وال|فال|بال|كال|لل)/, '');
+  if (s.length > 3) s = s.replace(/^ال/, '');
+  if (s.length > 4) s = s.replace(/(ات|ون|ين|ان|يه)$/, ''); else if (s.length > 3) s = s.replace(/ه$/, '');
+  const k = s.replace(/[اويء]/g, '');
+  const out = k.length >= 2 ? k : s;
+  return FIQH_SYN[out] || out;
+}
+// the encyclopedia's own word for the same thing (stems): «الزواج / تزوج» → «النكاح»
+const FIQH_SYN = { 'زج': 'نكح', 'تزج': 'نكح' };
+// the subject words of a ruling question (generic words of the fiqh vocabulary set aside)
+const FIQH_GENERIC = new Set(['حكم', 'الحكم', 'الاسلام', 'الشرع', 'شرعا', 'المسلم', 'المسلمين', 'الدين', 'يجوز', 'جواز', 'مشروعيه',
+  'لمن', 'كيف', 'متي', 'اذا', 'الذي', 'التي', 'علي', 'عند', 'بعد', 'قبل', 'هذا', 'هذه', 'ذلك', 'وما', 'وهل', 'فهل', 'لماذا']);
+// the closed-list check of the sections: the same act, the same people, the same case — or nothing
+const FIQH_STRICT = 'Keep a section ONLY if its title states the ruling of exactly what is asked: the same act, the same people (men / women), the same case. A section on a neighbouring case of the same subject must be excluded (e.g. a gold ring for men when the question is about chains for women; two rakaat after wudu when the question is about praying without wudu; how much is given to the poor when the question is who receives zakat). When no section matches exactly, return {"keep":[]}.';
+export function fiqhWords(text) {
+  return bare(String(text || '')).replace(/[^ء-ي\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !FIQH_GENERIC.has(w)).map(fiqhStem).filter(s => s.length >= 2);
+}
+// the words of a section's path and heading, without the markers of its place in the book («كتاب», «المبحث الأول»…)
+const MARKERS = /(^|\s-\s|\s)(كتاب|الباب|باب|الفصل|فصل|المبحث|مبحث|المطلب|مطلب|الفرع|فرع|المساله|مساله|تمهيد|الاول|الثاني|الثالث|الرابع|الخامس|السادس|السابع|الثامن|التاسع|العاشر)(?=\s|:|$)/g;
+function sectionWords(text) {
+  return new Set(bare(String(text || '')).replace(/[^ء-ي\s-]/g, ' ').replace(MARKERS, ' ').split(/[\s-]+/).filter(w => w.length > 2).map(fiqhStem));
+}
 export const FIQH_TERMS = { 'الموسيقى': 'المعازف', 'موسيقى': 'المعازف', 'الأغاني': 'الغناء', 'الاغاني': 'الغناء', 'التدخين': 'التبغ', 'الدخان': 'التبغ',
-  'السجائر': 'التبغ', 'الشيشة': 'التبغ', 'فوائد البنوك': 'الربا', 'الفوائد البنكية': 'الربا', 'الفائدة البنكية': 'الربا', 'القروض': 'القرض',
+  'السجائر': 'التبغ', 'الشيشة': 'التبغ', 'الزواج': 'النكاح', 'زواج': 'النكاح', 'فوائد البنوك': 'الربا', 'الفوائد البنكية': 'الربا', 'الفائدة البنكية': 'الربا', 'القروض': 'القرض',
   'الكحول': 'الخمر', 'المخدرات': 'المخدرات', 'الحشيش': 'المخدرات', 'التأمين': 'التأمين', 'الوشم': 'الوشم', 'الحجاب': 'الحجاب' };
 
 // search page → [{id, title, path, snippet}] (one per article)
@@ -97,6 +124,27 @@ async function getText(url, fetchImpl) {
   return { text: t, url: r.url };
 }
 
+// the words of a ruling question: the question itself (Arabic), the AI's Arabic fiqh terms (search terms, never
+// displayed; 2–4 words, Arabic letters only), and the reviewed equivalents in the vocabulary of fiqh books
+function termsOf(body) {
+  const q0 = String(body && body.q || '').slice(0, 300);
+  const kw = Array.isArray(body && body.kw) ? body.kw.map(w => String(w).replace(/[^؀-ۿ\s]/g, ' ').replace(/\s+/g, ' ').trim()).filter(w => w && w.length <= 30).slice(0, 4) : [];
+  const fq = /[؀-ۿ]/.test(q0) ? fatwaQuery(q0) : '';
+  // (5 Oct, RAG test) the AI's terms are also searched together («الفطر المريض»): the encyclopedia's search ranks
+  // the section that names both first
+  const base = [fq, ...kw, kw.length > 1 ? kw.slice(0, 3).join(' ') : ''];
+  // reviewed equivalents (the encyclopedia titles «المعازف», not «الموسيقى»; «التبغ», not «التدخين»)
+  const extra = base.flatMap(t => Object.entries(FIQH_TERMS).filter(([k]) => bare(t).includes(bare(k))).map(([, v]) => v));
+  return { kw, fq, base, extra };
+}
+// (second pass of the test) the subject: an Arabic question is its own subject — the AI's terms only stand in for a
+// question in English — plus the reviewed equivalents; each as a set of light stems
+function subjectsOf(body) {
+  if (!body || (!body.q && !body.kw)) return [];
+  const { kw, fq, extra } = termsOf(body);
+  return [fq || kw.join(' '), ...new Set(extra)].map(t => [...new Set(fiqhWords(t))]).filter(s => s.length);
+}
+
 export async function fiqhSearch(body, env, fetchImpl = fetch) {
   // one article, in full
   if (body && body.id != null) {
@@ -104,16 +152,29 @@ export async function fiqhSearch(body, env, fetchImpl = fetch) {
     if (!Number.isInteger(id) || id < 1 || id > 1e7) return { ok: false, error: 'bad id' };
     const { text, url } = await getText(linkOf(id), fetchImpl);
     const f = parseDorarFiqh(text);
-    if (!f.ruling.length) return { ok: false, error: 'no ruling statement on the page' };
+    if (!f.ruling.length) {
+      // (5 Oct, RAG test) a section that has sub-sections («المطلب الأول: حكم شرب الخمر», «الفصل الأول: المريض») shows only
+      // a table of contents; its statement is in its first sub-section, the next article («الفرع الأول: حكم الخمر
+      // المتخذة من العنب», «المبحث الأول: حكم فطر المريض»). It is read only if its breadcrumb names this section.
+      // (the title may carry its footnote as escaped HTML: «حكم تناول التبغ<span class="tip">[202] …</span>»)
+      const parent = bare(plain(decode((String(text).match(/name="title" value="([^"]+)"/) || [])[1] || '').replace(/<span class="tip">[\s\S]*?<\/span>/g, ''))).replace(/\s+/g, ' ').trim();
+      const sameSection = (p) => { const a = bare(p).replace(/\s+/g, ' ').trim(); return a === parent || (a.length >= 12 && parent.startsWith(a)) || (parent.length >= 12 && a.startsWith(parent)); };
+      // … and, when the question is given, only a sub-section that names its subject (a chapter «المخدرات والتبغ…»
+      // opens on «حكم تناول المخدرات», not on the tobacco asked about)
+      const subj = subjectsOf(body);
+      const about = (g) => !subj.length || subj.some(s => s.some(w => sectionWords(g.title || '').has(w)));
+      for (let k = 1; parent && k <= 2; k++) {
+        const c = await getText(linkOf(id + k), fetchImpl).catch(() => null);
+        const g = c && parseDorarFiqh(c.text);
+        if (g && g.ruling.length && g.path.some(sameSection) && about(g)) return { ok: true, id: id + k, via: id, ...g, url: c.url || linkOf(id + k), source: FIQH_SOURCE, sourceEn: FIQH_SOURCE_EN };
+      }
+      return { ok: false, error: 'no ruling statement on the page' };
+    }
     return { ok: true, id, ...f, url: url || linkOf(id), source: FIQH_SOURCE, sourceEn: FIQH_SOURCE_EN };
   }
   const q0 = String(body && body.q || '').slice(0, 300);
-  // the AI's Arabic fiqh search terms (2–4 words, Arabic letters only): search terms, never displayed
-  const kw = Array.isArray(body && body.kw) ? body.kw.map(w => String(w).replace(/[^؀-ۿ\s]/g, ' ').replace(/\s+/g, ' ').trim()).filter(w => w && w.length <= 30).slice(0, 4) : [];
-  const base = [/[؀-ۿ]/.test(q0) ? fatwaQuery(q0) : '', ...kw];
-  // reviewed equivalents in the vocabulary of fiqh books (the encyclopedia titles «المعازف», not «الموسيقى»)
-  const extra = base.flatMap(t => Object.entries(FIQH_TERMS).filter(([k]) => bare(t).includes(bare(k))).map(([, v]) => v));
-  const qs = [...new Set([...base, ...extra].filter(s => s.replace(/\s/g, '').length >= 3))].slice(0, 5);
+  const { kw, fq, base, extra } = termsOf(body);
+  const qs = [...new Set([...base, ...extra].filter(s => s.replace(/\s/g, '').length >= 3))].slice(0, 6);
   if (!qs.length) return { ok: false, error: 'query too short' };
   let items = [];
   const seen = new Set();
@@ -127,12 +188,34 @@ export async function fiqhSearch(body, env, fetchImpl = fetch) {
   // a hit inside a footnote or an example is not the section's subject: the words of the question (or of one
   // search term) must be in the section's path, or in the heading the search returned — with or without AI
   // (before: «ما حكم الموسيقى» got the section on dancing, whose footnote mentions music)
-  const wordsOf = (q) => bare(q).split(' ').filter(w => w.length > 2).map(w => w.replace(/^(ال|وال|بال)/, ''));
   const heading = (x) => /^(المطلب|المبحث|الفصل|الباب|الفرع|المساله|كتاب)/.test(bare(x.snippet)) ? x.snippet : '';
-  items = items.filter(x => qs.some(q => { const w = wordsOf(q); return w.length && w.every(v => bare(x.path + ' ' + heading(x)).includes(v)); })).slice(0, 12);
+  // (5 Oct, RAG test) the subject is ALL the words of the question (or, for a question in English, of the AI's terms),
+  // matched word by word on a light stem: «ترك الصلاة» finds «حكم تارك الصلاة», «المريض» finds «المريض». A section must
+  // name (in its path or heading) every word of a two-word subject, two thirds of a longer one. Before, one word of
+  // one AI term was enough: «هل يجوز الفطر للمريض في رمضان؟» got «تعجيل الفطر» (breaking the fast at sunset).
+  // the subject as asked, the AI's terms taken together, and the reviewed equivalents («التدخين» → «التبغ»)
+  // (second pass of the test) an Arabic question is its own subject — the AI's terms only stand in for a question in
+  // English — and a one-word subject must be in the section's own heading, not only in its path: «الكذب» alone found
+  // the section on witnesses who lied, «الذهب» the gold rings of men for a question on women's chains
+  const subjects = subjectsOf(body);
+  const cover = (set, head) => subjects.reduce((best, s) => {
+    const hit = s.filter(w => set.has(w)).length, need = s.length <= 2 ? s.length : Math.ceil(s.length * 2 / 3);
+    if (s.length === 1 && !head.has(s[0])) return best;
+    return hit >= need && hit / s.length > best ? hit / s.length : best;
+  }, 0);
+  const scored = items.map((x, k) => {
+    const all = sectionWords(x.path + ' - ' + heading(x)), head = sectionWords(heading(x) || '');
+    const hit = cover(all, head), hitH = cover(head, head);
+    const h = bare(heading(x) || x.snippet), leaf = /^(المطلب|المبحث|المساله|الفرع)/.test(h);
+    // a chapter heading («الباب», «الفصل», «كتاب») has no statement of the ruling on its own page — it is in its
+    // sub-sections («المبحث الأول: حكم الربا»): leaf sections first, those named «حكم…» before them all
+    return { x, k, hit, hitH, r: (leaf ? 0 : 2) + (/حكم/.test(h) ? 0 : 1) };
+  }).filter(o => o.hit > 0);
+  items = scored.sort((a, b) => b.hitH - a.hitH || a.r - b.r || b.hit - a.hit || a.k - b.k).map(o => o.x).slice(0, 12);
   let by = 'search';
-  if (items.length > 1 && body.ai !== false) {
-    const keep = await pickRelevant(q0, items.map(x => `${x.path} — ${x.snippet}`), env, { max: 3, what: 'fiqh encyclopedia section', fetchImpl }).catch(() => null);
+  // the large model checks even a single section (a ruling shown on the wrong subject is the worst error here)
+  if (items.length >= 1 && body.ai !== false) {
+    const keep = await pickRelevant(q0, items.map(x => `${x.path} — ${x.snippet}`), env, { max: 3, what: 'fiqh encyclopedia section', fetchImpl, task: 'select', strict: FIQH_STRICT }).catch(() => null);
     if (keep) { items = keep.map(i => items[i]); by = 'ai'; }
   }
   if (by === 'search') items = items.slice(0, 3);

@@ -512,6 +512,7 @@ const GUARD = [
   ['ruling', /^\s*(\S+\s+){1,3}(halal|haram)(\s+or\s+(halal|haram))?\s*\??\s*$/im],
   // «can i pray sitting», "may i fast while travelling": a question of status, not a personal case
   ['ruling', /\b(can|may) i (pray|fast|eat|drink|marry|wear|shave|smoke|listen|celebrate|combine|shorten|break my fast)\b/i],
+  ['ruling', /^\s*(what is |the )?(stoning|child marriage|marriage of minors|underage marriage)( in islam)?\s*\??\s*$/im],
   // E3: «personal» only when a decision about a relative, spouse or employer is asked — never
   // «ماذا أفعل إذا شعرت بالحزن», "should i be patient", "what should i read when i feel anxious"
   ['personal', /(زوجي|زوجتي|طليقي|طليقتي|أبي|أمي|ابني|ابنتي|مديري|أخي|أختي)\s+(يضرب|تضرب|يمنع|تمنع|تمنعني|يمنعني|طلق|طلقني|يريد|تريد|لا\s+يصلي|لا\s+تصلي|ترفض|يرفض|يظلمني|تظلمني|يهددني|تهددني|خانني|خانتني)|هل\s+(أطلق|أترك|أتزوج|أسامح|أخلع)\s|ماذا\s+أفعل\s+(مع|في|بـ?)\s*(زوجي|زوجتي|أبي|أمي|ابني|ابنتي|مديري|أخي|أختي|أهلي|طليقي|طليقتي)|\bshould i (divorce|marry|leave|forgive|cut off|report|quit|sue)\b|\bwhat should i do (about|with) my (husband|wife|father|mother|son|daughter|boss|family|brother|sister|parents)\b|\bmy (husband|wife|father|mother|son|daughter|boss|brother|sister) (hits|beats|forbids|wants|refuses|does not pray|doesn t pray|cheated|cheats|abuses|threatens)\b/i],
@@ -527,6 +528,9 @@ const GUARD_EXTRA = [
   ['dream', /(^|\s)(حلمت|حلمتو|احلم|شفت\s+في\s+(المنام|منامي|الحلم|حلمي)|رايت\s+في\s+(المنام|منامي|حلمي)|رايت\s+حلما?|تفسير\s+(حلمي|منامي|المنام|الاحلام|رويا|الرويا))(\s|$)/],
   ['personal', /(^|\s)(وش|ايش|شو|شنو|ماذا)\s+(اسوي|افعل|اعمل|ندير|نعمل|بعمل|نسوي|اتصرف)\s+(مع|في|ب)\s*(زوجي|زوجتي|جوزي|مراتي|ابوي|ابويا|ابي|امي|اخوي|اختي|ولدي|بنتي|ابني|ابنتي|مديري|اهلي)(\s|$)|(^|\s)(زوجي|زوجتي|جوزي|مراتي|ابوي|ابويا|امي|اخوي|اختي|ولدي|بنتي|مديري)\s+(ما|مش|مو|لا)\s+\S+|(^|\s)(يضربني|تضربني|يهددني|تهددني|يظلمني|تظلمني|طلقني|خانني|خانتني)(\s|$)/],
   ['takfir', /^هل\s+(اللي|الذي|من|الي)\s+(ما|لا|مش)\s+\S+\s+(كافر|كفار|مرتد|مشرك)\s*$/],
+  // (5 Oct, RAG test) penalties and marriage of minors named alone are questions of ruling: as topics, the verse search
+  // found homographs («زواج القاصرات» → «قاصرات الطرف», the maidens of Paradise; «الرجم» → «لنرجمنكم», a threat)
+  ['ruling', /^(ما\s+)?(هو\s+)?(حد\s+)?(ال)?رجم(\s+(الزاني|الزانيه|الزانية|المحصن|المحصنه))?\s*[؟?]?$|(^|\s)(زواج|تزويج|نكاح)\s+(ال)?(قاصرات|قاصر|قاصره|قاصرة|صغيره|صغيرة|صغيرات|طفله|طفلة|اطفال)(\s|$)/],
 ];
 // A person who speaks of ending their life or harming themselves gets, before anything else, a fixed
 // message of support with where to find help now, and verses of hope with their full tafsir — never a
@@ -1572,6 +1576,8 @@ export function createEngine({ core, searchAr, sources = {} }) {
     return tokens(text, L).filter(t => !pt.has(t) && !GENERIC[L].has(t));
   }
 
+  // «تفسير …», «ما معنى …», «شرح …», "tafsir of …", "meaning of …" before the name of a surah or of a verse
+  const TAFSIR_FRAME = /^\s*(?:ما\s+)?(?:هو\s+)?(?:تفسير|معنى|معني|شرح)\s+|^\s*(?:what\s+is\s+the\s+|the\s+)?(?:tafsir|tafseer|meaning|explanation|interpretation)\s+(?:of\s+)?/i;
   async function ask0(query, { uiLang = 'ar', llm = null, limit = 30, llmTimeoutMs = 9500, mode = 'auto' } = {}) {
     const q = (query || '').trim().slice(0, 500);
     const lang = q ? detectLang(q, uiLang) : uiLang;
@@ -1591,8 +1597,13 @@ export function createEngine({ core, searchAr, sources = {} }) {
     const refLike = sp.changed && !sp.empty && (sp.kinds.has('read') ||
       /(^| )(سوره|سورة|سورت|اية|ايه|الاية|الايه|surah|surat|sura|verse|ayah|aya|ayat|ayatul|ayatal)( |$)|\d/.test(sp.text));
 
+    // (5 Oct, RAG test) «تفسير سورة الإخلاص», «ما معنى آية الكرسي», "tafsir of surah al-asr": a request for the
+    // explanation of a named surah or verse is that surah / verse (shown with its tafsir), not a topic search
+    // (before: «تفسير سورة الإخلاص» → «no verse found»; «تفسير آخر آيتين من سورة البقرة» → idem)
+    const qRef0 = q.replace(TAFSIR_FRAME, '').replace(/[؟?!.]+\s*$/, '').trim();
+    const qRef = qRef0 !== q && qRef0.length >= 2 ? qRef0 : null;
     // 0. well-known verse names
-    const fam = mode === 'topic' ? null : (famousLookup(q) || (refLike ? famousLookup(sp.display) : null));
+    const fam = mode === 'topic' ? null : (famousLookup(q) || (refLike ? famousLookup(sp.display) : null) || (qRef ? famousLookup(qRef) : null));
     if (fam) {
       base.meta.route = 'famous';
       const vs = [];
@@ -1611,7 +1622,11 @@ export function createEngine({ core, searchAr, sources = {} }) {
       base.meta.route = 'story';
       const st = storyOf(prophet, { sci: SCI, topics: TOPICS && TOPICS.raw, searchAr, idxOf });
       const named = new Set(st.named);
-      const order = [...new Set([...st.named, ...st.indexed])].sort((a, b) => a - b);
+      // (5 Oct, RAG test) the verses of the episodes the approved source names (Jamhara «علوم السور») come first, in their
+      // order: «قصة مريم» opens on 19:16–40, not on 2:87 («عيسى ابن مريم»), then the other verses in Mushaf order
+      const epi = [];
+      for (const e of st.episodes || []) for (const [a0, b0] of e.ranges || []) for (let x = a0; x <= b0; x++) { const i = idxOf(e.sura, x); if (i >= 0) epi.push(i); }
+      const order = [...new Set([...epi, ...[...new Set([...st.named, ...st.indexed])].sort((a, b) => a - b)])];
       const vs = order.map(i => verseResult(i, named.has(i) ? { named: true } : { indexed: true }));
       const name = lang === 'ar' ? prophet.ar : prophet.en;
       return { ...base, type: 'story', story: st, answer: [{ kind: 'text', text: M.story(name, st.named.length, st.indexed.length) }, { kind: 'note', text: M.storyNote }],
@@ -1620,7 +1635,7 @@ export function createEngine({ core, searchAr, sources = {} }) {
     }
 
     // 1. references & surah names
-    const r = mode === 'topic' ? null : (parseReference(q) || (refLike ? parseReference(sp.display) : null));
+    const r = mode === 'topic' ? null : (parseReference(q) || (refLike ? parseReference(sp.display) : null) || (qRef && /(^| )(سور[ةه]|سورت|اي[ةه]|آية|surah|surat|sura|verse|ayah)( |$)|\d/i.test(qRef) ? parseReference(qRef) : null));
     let altSura = null;
     if (r) {
       base.meta.route = 'reference';
@@ -1752,7 +1767,9 @@ export function createEngine({ core, searchAr, sources = {} }) {
         // the LLM recognised a question (not a pasted quote): answer it as a topic
         if (softPrefix && expansion.intent !== 'other') { softPrefix = null; base.meta.route = 'topic'; }
         // not a question about the Quran at all (weather, prices, a microphone test…)
-        if (expansion.intent === 'other' && !softPrefix && !direct && !(polemic0 && pack)) {
+        // (5 Oct, RAG test) … but a person in distress is never «off topic» («وش اسوي اذا ضاق صدري», "i feel hopeless"):
+        // the selection goes on, and without a verse the AI confirms, the verses of tranquillity are shown
+        if (expansion.intent === 'other' && !softPrefix && !direct && !(polemic0 && pack) && !isComfortQ(q) && !isCrisis(q)) {
           return { ...base, type: 'notfound', answer: [{ kind: 'text', text: ML.noTopic }], verses: [], focus: null, polemic: false, sensitive, aiConfirmed: false, confirmedBy: null };
         }
       } catch (e) { base.meta.llm = { used: false, error: String(e && e.message || e) }; }
@@ -1795,19 +1812,27 @@ export function createEngine({ core, searchAr, sources = {} }) {
       base.meta.dense = dn.length;
       // an AI-proposed reference is kept if it exists AND either shares a word with the question
       // or is among the 40 nearest verses by meaning (two independent checks)
-      const proposed = (expansion ? expansion.refs : []).map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); })
-        .filter(i => i >= 0 && (dnTop.has(i) || FIELDS[L].some(([name]) => {
-          const txt = name === 'quran' ? searchAr[i] : (src[name] && src[name].text[i]);
-          return txt && tokens(txt, L).some(t => qset.has(t));
-        })));
-      base.meta.proposedKept = proposed.length;
+      const proposedAll = [...new Set((expansion ? expansion.refs : []).map(r0 => { const [a, b] = r0.split(':').map(Number); return idxOf(a, b); }).filter(i => i >= 0))];
+      const anchored = (i) => dnTop.has(i) || FIELDS[L].some(([name]) => {
+        const txt = name === 'quran' ? searchAr[i] : (src[name] && src[name].text[i]);
+        return txt && tokens(txt, L).some(t => qset.has(t));
+      });
+      const proposed = proposedAll.filter(anchored);
+      // (5 Oct, RAG test) a proposed verse with no word in common with the question (2:285 for «أركان الإيمان»: «آمن…
+      // وملائكته وكتبه ورسله») is no longer dropped before the selection: it joins the closed list after the anchored
+      // ones, and only the selection — which reads its text and tafsir — can keep it (before: 2:285 never reached it)
+      const proposedLoose = proposedAll.filter(i => !anchored(i)).slice(0, 6);
+      base.meta.proposedKept = proposed.length; base.meta.proposedLoose = proposedLoose.length;
       const tixK = softPrefix ? null : topicIndexFor(cq, L, kwAr, 12);
       // English question: the AI's Arabic keywords also search the Arabic text and tafsir
       const arK = [];
       if (L !== 'ar') for (const k of kwAr.slice(0, 3)) for (const x of topicSearch(k.replace(/_/g, ' '), 'ar', 8).ranked) if (!arK.includes(x.idx)) arK.push(x.idx);
       const lex = ranked.map(x => x.idx), kw = (ts.kwTop || []).concat(arK.filter(i => !(ts.kwTop || []).includes(i))), ix = [...new Set((tix ? tix.ids : []).concat(tixK ? tixK.ids : []))];
       const seen = new Set(), candIdx = [];
-      for (const i of proposed) if (!seen.has(i)) { seen.add(i); candIdx.push(i); }
+      for (const i of proposed.concat(proposedLoose)) if (!seen.has(i)) { seen.add(i); candIdx.push(i); }
+      // (5 Oct, RAG test) a person in distress: the verses of tranquillity are always among the candidates («اذا ضاقت فيني
+      // الدنيا وش اقرا» had only verses containing «اقرأ» — 17:14, 75:18 — to choose from)
+      if (isComfortQ(q)) for (const r0 of COMFORT_REFS) { const [a, b] = r0.split(':').map(Number); const i = idxOf(a, b); if (i >= 0 && !seen.has(i)) { seen.add(i); candIdx.push(i); } }
       // round robin (reciprocal-rank style fusion): words, meaning, AI keywords, subject index
       for (let k = 0; candIdx.length < MAX_CANDIDATES && (k < lex.length || k < dn.length || k < kw.length || k < ix.length); k++) {
         for (const i of [lex[k], dn[k], kw[k], ix[k]]) if (i != null && !seen.has(i) && candIdx.length < MAX_CANDIDATES) { seen.add(i); candIdx.push(i); }
@@ -1817,6 +1842,9 @@ export function createEngine({ core, searchAr, sources = {} }) {
         try {
           const out = await withTimeout(llm.select({ query: q, lang: L, candidates: cands }), llmTimeoutMs);
           const v = verifyLLM(out, cands);
+          // a proposed verse that shares no word with the question is kept only if the selection says it ANSWERS (score 2)
+          const loose = new Set(proposedLoose.map(i => ref(i)));
+          v.ids = v.ids.filter(id => !(loose.has(id) && v.scores[id] === 1));
           base.meta.llm = { ...base.meta.llm, used: true, model: out && out.model, rejected: v.rejected, intent: v.intent, candidates: cands.length };
           if (v.intent === 'ruling' && nWords < 3 && !rulingHint) v.intent = 'topic';
           if (v.intent === 'ruling') rulingAfter = true;
