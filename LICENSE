@@ -1,26 +1,41 @@
-MIT License
+Mishkat — مِشكاة · the smart guide to the Quran galaxy
+https://mishkatquran.org
 
-Copyright (c) 2026 Mohamed Nour Bou Ali
+Copyright (c) 2026 Mohamed Nour Bou Ali. All Rights Reserved.
+جميع الحقوق محفوظة © 2026 محمد نور بو علي.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. Ownership
+   The source code, the interface and visual design, the logo and its drawings, the 3D shapes, the
+   presentation film, the texts written for the interface, the evaluation sets and their results, the
+   documentation and the overall selection and arrangement of this project ("the Work") are the property
+   of the author. No licence of any kind is granted by making this repository or the website public:
+   the code is shown for reading, review and evaluation only.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+2. What is NOT permitted without the author's prior written permission
+   - copying, reproducing or redistributing the Work, in whole or in part;
+   - modifying it, translating it or creating derivative works from it;
+   - publishing it under another name, or under an open-source or any other licence;
+   - using it, or any part of it, in a commercial or non-commercial product or service;
+   - using the logo, the name «مِشكاة / Mishkat» as a product name, or the visual identity.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+3. Islamic AI Challenge 2026 (islamicaich.org, Bathel Foundation)
+   As required by clause 13 of the challenge terms, the organisers receive the non-exclusive, royalty-free
+   licence described there (storing, copying, running, testing and evaluating the submission, and the
+   uses it lists for non-profit purposes), for the periods and within the limits set by those terms.
+   Nothing in this notice restricts that licence. The project is not published under an open licence,
+   in line with clause 13/7 of the same terms.
 
----
-This licence covers the source code only. The Quran text, tafsir, translations,
-audio and timings keep their own licences and conditions — see SOURCES.md.
-The Quran text (Tanzil Project, CC BY 3.0) must not be modified.
+4. Third-party content keeps its own licence
+   The Quran text (Tanzil), the tafsir, translations, hadith, recitations, word timings, tajweed
+   annotations, fonts, libraries, models and any other third-party material are NOT covered by this
+   notice and remain under the terms of their owners, listed one by one in SOURCES.md and NOTICE.md.
+   The Quran text and the quoted religious texts are never modified by this project.
+
+5. Proof of date
+   Every version is dated by the history of this Git repository (commit dates, GitHub push records), and each released version is
+   archived with the SHA-256 fingerprint of every file (see ARCHIVE.md and the GitHub releases).
+
+For any permission: contact the author through https://github.com/mednour87
+
+THE WORK IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND. IT IS A SEARCH AID; IT IS NOT A SCHOLAR AND
+DOES NOT ISSUE FATWAS.

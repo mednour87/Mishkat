@@ -137,16 +137,23 @@ export function playIntro(ctx) {
     // (5 Oct) the letters themselves, sharp at the screen's resolution with a thin golden outline: the points alone
     // (sampled every 2 px) made the verse look blurred, without clear edges (author's remark). Each word appears
     // when it is recited; the points stay around it as a halo.
-    txtCv = document.createElement('canvas');
-    txtCv.width = Math.round(W * DPR); txtCv.height = Math.round(off.height * DPR);
-    { const c = txtCv.getContext('2d');
-      c.setTransform(DPR, 0, 0, DPR, 0, 0);
-      c.font = o.font; c.textBaseline = 'middle'; c.lineJoin = 'round';
-      c.shadowColor = 'rgba(255, 196, 80, .4)'; c.shadowBlur = Math.max(4, fs * 0.2);
-      c.fillStyle = '#fff8ea';
-      for (let k = 0; k < words.length; k++) { const b = wordBox[k]; if (b) c.fillText(words[k], b.x0, b.y); }
-      c.shadowBlur = 0; c.strokeStyle = 'rgba(255, 210, 110, .7)'; c.lineWidth = Math.max(0.5, fs / 40);
-      for (let k = 0; k < words.length; k++) { const b = wordBox[k]; if (b) c.strokeText(words[k], b.x0, b.y); } }
+    // (5 Oct, evening) one small canvas PER WORD, with room for its glow: cutting each word out of one canvas of the
+    // whole verse (a rectangle around the word) also cut pieces of the neighbouring letters and clipped the glow into
+    // visible luminous edges around words that were not being recited (author's remark).
+    const pad = Math.ceil(Math.max(8, fs * 0.6));
+    txtCv = wordBox.map((b, k) => {
+      if (!b) return null;
+      const c = document.createElement('canvas'), w = b.x1 - b.x0 + 2 * pad, h = lh + 2 * pad;
+      c.width = Math.ceil(w * DPR); c.height = Math.ceil(h * DPR);
+      const x = c.getContext('2d');
+      x.setTransform(DPR, 0, 0, DPR, 0, 0);
+      x.font = o.font; x.textBaseline = 'middle'; x.lineJoin = 'round';
+      x.shadowColor = 'rgba(255, 196, 80, .4)'; x.shadowBlur = Math.max(4, fs * 0.2);
+      x.fillStyle = '#fff8ea'; x.fillText(words[k], pad, pad + lh / 2);
+      x.shadowBlur = 0; x.strokeStyle = 'rgba(255, 210, 110, .7)'; x.lineWidth = Math.max(0.5, fs / 40);
+      x.strokeText(words[k], pad, pad + lh / 2);
+      return { c, w, h, pad };
+    });
     wordLit = wordBox.map(() => 0); lineH = lh;
     const step = 2, img = o.getImageData(0, 0, off.width, off.height).data;
     const old = parts; parts = [];
@@ -193,7 +200,7 @@ export function playIntro(ctx) {
       p.vx = (p.vx + ax) * 0.86; p.vy = (p.vy + ay) * 0.86; p.x += p.vx; p.y += p.vy;
       const hot = p.k === cur && !leaving;
       // once its sharp letters are drawn, a recited word's points are only a soft halo around them
-      g.fillStyle = hot ? 'rgba(255,222,130,0.55)' : on ? 'rgba(255,236,190,0.22)' : 'rgba(150,175,230,0.12)';
+      g.fillStyle = hot ? 'rgba(255,222,130,0.5)' : on ? 'rgba(255,236,190,0.14)' : 'rgba(150,175,230,0.05)';
       const s = hot ? 2 : on ? 1.5 : 1.1;
       g.fillRect(p.x - s / 2, p.y - s / 2, s, s);
     }
@@ -208,12 +215,14 @@ export function playIntro(ctx) {
         const goal = leaving ? 0 : k <= cur ? 1 : 0.16;
         wordLit[k] += (goal - wordLit[k]) * (1 - Math.exp(-dts * (goal > wordLit[k] ? 3.2 : 1.6)));
         if (wordLit[k] < 0.01) continue;
-        const pad = 14, x = Math.max(0, b.x0 - pad), y = Math.max(0, b.y - lineH / 2), w = Math.min(W - x, b.x1 - b.x0 + 2 * pad), h = lineH;
+        const wc = txtCv[k];
+        if (!wc) continue;
+        const x = b.x0 - wc.pad, y = b.y - lineH / 2 - wc.pad;
         g.globalAlpha = wordLit[k] * (k === cur && !leaving ? 1 : 0.9);
-        g.drawImage(txtCv, x * DPR, y * DPR, w * DPR, h * DPR, x, y, w, h);
+        g.drawImage(wc.c, x, y, wc.w, wc.h);
         if (k === cur && !leaving) {                 // the recited word glows a little more
           g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.22 * wordLit[k];
-          g.drawImage(txtCv, x * DPR, y * DPR, w * DPR, h * DPR, x, y, w, h);
+          g.drawImage(wc.c, x, y, wc.w, wc.h);
           g.globalCompositeOperation = 'source-over';
         }
       }
@@ -252,7 +261,7 @@ export function playIntro(ctx) {
     if (shapesDone) return;
     shapesDone = true;
     try { ctx.galaxy.setActiveWord(null); ctx.galaxy.setReciting(false); ctx.galaxy.home(); } catch (e) { /* ignore */ }
-    const tour = [['rose', 'mushaf'], ['dome', 'nuzul'], ['galaxy', 'mushaf']];
+    const tour = [['rose', 'mushaf'], ['zahra', 'mushaf'], ['galaxy', 'mushaf']];   // (5 Oct) the challenge's flower
     tour.forEach(([sh, od], k) => later(() => ctx.setView(sh, od), 600 + k * 4200));
   }
 

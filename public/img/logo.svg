@@ -1,14 +1,14 @@
 <svg class="lamp lmp2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Mishkat — light upon light (24:35)">
   <defs>
-    <!-- light upon light: soft stacked halos -->
-    <radialGradient id="lmp2h" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff6d6" stop-opacity=".9"/><stop offset=".35" stop-color="#ffe2a0" stop-opacity=".45"/><stop offset=".7" stop-color="#ffc861" stop-opacity=".14"/><stop offset="1" stop-color="#ffc861" stop-opacity="0"/></radialGradient>
-    <!-- the planet «كوكب دري»: a pearl-white sphere behind the glass -->
-    <radialGradient id="lmp2p" cx="38%" cy="32%" r="70%"><stop offset="0" stop-color="#fffdf4" stop-opacity=".55"/><stop offset=".55" stop-color="#ffe9b8" stop-opacity=".16"/><stop offset="1" stop-color="#d9a84a" stop-opacity=".05"/></radialGradient>
-    <!-- the glass (زجاجة) -->
-    <linearGradient id="lmp2v" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff8e0" stop-opacity=".5"/><stop offset=".35" stop-color="#ffffff" stop-opacity=".12"/><stop offset=".7" stop-color="#fff3cc" stop-opacity=".08"/><stop offset="1" stop-color="#ffe7a6" stop-opacity=".42"/></linearGradient>
-    <!-- the olive oil «يكاد زيتها يضيء ولو لم تمسسه نار»: it glows by itself, no flame -->
-    <linearGradient id="lmp2o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1a6"/><stop offset=".3" stop-color="#f0cc3a"/><stop offset=".72" stop-color="#c49c16"/><stop offset="1" stop-color="#857f1c"/></linearGradient>
-    <radialGradient id="lmp2c" cx="50%" cy="40%" r="55%"><stop offset="0" stop-color="#ffffff" stop-opacity=".8"/><stop offset=".5" stop-color="#fff4b0" stop-opacity=".4"/><stop offset="1" stop-color="#fff4b0" stop-opacity="0"/></radialGradient>
+    <!-- «نور على نور»: soft stacked halos -->
+    <radialGradient id="lmp2h" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fffaf0" stop-opacity=".9"/><stop offset=".35" stop-color="#ffe9b8" stop-opacity=".42"/><stop offset=".7" stop-color="#ffd27a" stop-opacity=".13"/><stop offset="1" stop-color="#ffd27a" stop-opacity="0"/></radialGradient>
+    <!-- the glass «كأنها كوكب دري»: the glass ITSELF shines like a pearl-white star — clear, bright at its heart -->
+    <radialGradient id="lmp2v" cx="50%" cy="56%" r="62%"><stop offset="0" stop-color="#ffffff" stop-opacity=".62"/><stop offset=".45" stop-color="#fffaf0" stop-opacity=".3"/><stop offset=".8" stop-color="#f4f1ff" stop-opacity=".16"/><stop offset="1" stop-color="#e8f0ff" stop-opacity=".34"/></radialGradient>
+    <!-- the olive oil «يوقد من شجرة مباركة زيتونة», clear and golden -->
+    <linearGradient id="lmp2o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff1a6"/><stop offset=".35" stop-color="#f0cc3a"/><stop offset=".75" stop-color="#c49c16"/><stop offset="1" stop-color="#8a7f1c"/></linearGradient>
+    <radialGradient id="lmp2c" cx="50%" cy="20%" r="60%"><stop offset="0" stop-color="#ffffff" stop-opacity=".75"/><stop offset=".5" stop-color="#fff4b0" stop-opacity=".35"/><stop offset="1" stop-color="#fff4b0" stop-opacity="0"/></radialGradient>
+    <!-- the lamp «مصباح»: a lit wick — white core, golden flame -->
+    <radialGradient id="lmp2fl" cx="50%" cy="68%" r="60%"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="#fff6c8"/><stop offset=".75" stop-color="#ffcf4a"/><stop offset="1" stop-color="#ff9f1c" stop-opacity=".85"/></radialGradient>
     <linearGradient id="lmp2g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset=".5" stop-color="#f0c45a"/><stop offset="1" stop-color="#b8862a"/></linearGradient>
     <linearGradient id="lmp2n" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#14203f"/><stop offset="1" stop-color="#060a18"/></linearGradient>
     <linearGradient id="lmp2l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fbf7e"/><stop offset="1" stop-color="#5d8545"/></linearGradient>
@@ -16,6 +16,8 @@
     <filter id="lmp2f" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2.6" result="b"/>
       <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     <filter id="lmp2s" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="1.2"/></filter>
+    <filter id="lmp2w" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="1.6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
     <clipPath id="lmp2b"><path d="M54.5 37 C42 40 36.5 50 37.5 61 C38.5 71 46 78.5 54 79.5 L66 79.5 C74 78.5 81.5 71 82.5 61 C83.5 50 78 40 65.5 37 Z"/></clipPath>
   </defs>
   <style>
@@ -23,55 +25,57 @@
     .lmp2 .h2{animation:lmp2a 7s ease-in-out infinite 2.3s}
     .lmp2 .oil{animation:lmp2k 5.5s ease-in-out infinite 1s}
     .lmp2 .neon{animation:lmp2k 6s ease-in-out infinite}
-    .lmp2 .star{animation:lmp2s 8s ease-in-out infinite;transform-origin:60px 60px}
+    .lmp2 .star{animation:lmp2s 8s ease-in-out infinite;transform-origin:60px 58px}
+    .lmp2 .flame{animation:lmp2l 2.6s ease-in-out infinite;transform-origin:60px 54px}
     @keyframes lmp2a{0%,100%{opacity:.78}50%{opacity:1}}
     @keyframes lmp2k{0%,100%{opacity:.88}50%{opacity:1}}
-    @keyframes lmp2s{0%,100%{opacity:.6;transform:scale(.97)}50%{opacity:.9;transform:scale(1.02)}}
+    @keyframes lmp2s{0%,100%{opacity:.62;transform:scale(.97)}50%{opacity:.92;transform:scale(1.02)}}
+    @keyframes lmp2l{0%,100%{transform:scale(1,1)}40%{transform:scale(.96,1.05)}70%{transform:scale(1.03,.97)}}
     @media (prefers-reduced-motion:reduce){.lmp2 *{animation:none!important}}</style>
 
-  <!-- the niche (مشكاة) — a pointed mihrab arch with a double gold line -->
+  <!-- 1. the niche (مشكاة, «كوّة» in As-Sa'di) — a pointed mihrab arch that gathers the light -->
   <path d="M13 115 V55 C13 29 34 10 60 4 C86 10 107 29 107 55 V115 Z" fill="url(#lmp2n)" stroke="url(#lmp2g)" stroke-width="2.6" stroke-linejoin="round"/>
   <path d="M18.5 112 V56 C18.5 33 37 17 60 11 C83 17 101.5 33 101.5 56 V112" fill="none" stroke="#f0c45a" stroke-width=".7" opacity=".5"/>
-  <!-- slender columns of the mihrab: capitals and bases -->
   <g fill="#e8bd55" opacity=".85"><rect x="16.6" y="54" width="4" height="1.6" rx=".5"/><rect x="99.4" y="54" width="4" height="1.6" rx=".5"/>
     <rect x="16.6" y="109.5" width="4" height="1.6" rx=".5"/><rect x="99.4" y="109.5" width="4" height="1.6" rx=".5"/></g>
   <path d="M14.5 113.5 H105.5" stroke="url(#lmp2g)" stroke-width="1" opacity=".75"/>
 
-  <!-- «نور على نور»: the light filling the niche -->
+  <!-- «نور على نور» (the light of the fire and the light of the oil): the niche fills with light -->
   <circle class="h1" cx="60" cy="58" r="46" fill="url(#lmp2h)"/>
-  <circle class="h2" cx="60" cy="61" r="31" fill="url(#lmp2h)"/>
+  <circle class="h2" cx="60" cy="58" r="30" fill="url(#lmp2h)"/>
 
-  <!-- soft rays of the shining star — blurred, like light through mist -->
+  <!-- 3. the glass «كأنها كوكب دري»: its own star rays, pearl-white, coming from the glass itself -->
   <g class="star" filter="url(#lmp2s)">
-    <path d="M60 16 L61.6 54 L60 60 L58.4 54 Z M60 104 L58.4 68 L60 60 L61.6 68 Z M18 60 L54 58.4 L60 60 L54 61.6 Z M102 60 L66 61.6 L60 60 L66 58.4 Z" fill="#fff8e2" opacity="1"/>
-    <path d="M33 33 L56 56 L60 60 L55 57.5 Z M87 33 L64 56 L60 60 L65 57.5 Z M33 87 L56 64 L60 60 L55 62.5 Z M87 87 L64 64 L60 60 L65 62.5 Z" fill="#ffeec4" opacity=".75"/>
+    <path d="M60 14 L61.7 50 L60 58 L58.3 50 Z M60 102 L58.3 66 L60 58 L61.7 66 Z M16 58 L52 56.3 L60 58 L52 59.7 Z M104 58 L68 59.7 L60 58 L68 56.3 Z" fill="#fffdf6"/>
+    <path d="M32 30 L55 53 L60 58 L54 55.5 Z M88 30 L65 53 L60 58 L66 55.5 Z M32 86 L55 63 L60 58 L54 60.5 Z M88 86 L65 63 L60 58 L66 60.5 Z" fill="#fff4dc" opacity=".72"/>
   </g>
 
-  <!-- the planet «كأنها كوكب دري»: its own sphere and neon outline, behind the glass -->
-  <g class="neon" filter="url(#lmp2f)">
-    <circle cx="60" cy="61" r="29.5" fill="url(#lmp2p)" stroke="#fff3d6" stroke-width="1" stroke-opacity=".9"/>
-    <path d="M30.8 64 C40 71.5 80 71.5 89.2 64" fill="none" stroke="#fff3d6" stroke-width=".6" opacity=".55"/>
-    <path d="M60 31.5 C49 41 49 81 60 90.5" fill="none" stroke="#fff3d6" stroke-width=".5" opacity=".35"/>
-  </g>
-
-  <!-- the glass vessel: flared neck, round body, small foot (a mosque lamp), drawn as a neon tube -->
-  <g clip-path="url(#lmp2b)">
-    <!-- olive oil fills most of the glass -->
-    <rect class="oil" x="34" y="47" width="52" height="36" fill="url(#lmp2o)"/>
-    <ellipse class="oil" cx="60" cy="59" rx="14" ry="9" fill="url(#lmp2c)"/>
-    <path d="M36 47.2 Q60 44.6 84 47.2" fill="none" stroke="#ffffff" stroke-width="1" opacity=".9"/>
-  </g>
+  <!-- 3. the glass vessel (a mosque lamp: flared neck, round body, small foot), clear and shining -->
   <path d="M47.5 22.5 H72.5 C70 28 66 31.5 65.5 37 C78 40 83.5 50 82.5 61 C81.5 71 74 78.5 66 79.5 L68.5 85 H51.5 L54 79.5 C46 78.5 38.5 71 37.5 61 C36.5 50 42 40 54.5 37 C54 31.5 50 28 47.5 22.5 Z" fill="url(#lmp2v)"/>
+  <g clip-path="url(#lmp2b)">
+    <!-- 5. the olive oil in the lower part of the glass: the lamp is kindled from it -->
+    <rect class="oil" x="34" y="57" width="52" height="26" fill="url(#lmp2o)"/>
+    <ellipse class="oil" cx="60" cy="60" rx="15" ry="5" fill="url(#lmp2c)"/>
+    <path d="M36 57.2 Q60 55.4 84 57.2" fill="none" stroke="#ffffff" stroke-width="1" opacity=".9"/>
+  </g>
+  <!-- 2. the lamp «مصباح» inside the glass: a wick standing in the oil, lit -->
+  <path d="M60 57.6 V52.6" stroke="#5a3a10" stroke-width="1.3" stroke-linecap="round"/>
+  <g class="flame" filter="url(#lmp2w)">
+    <path d="M60 36.5 C62.6 41.5 65.2 45.2 65.2 48.8 C65.2 52.2 62.8 54.2 60 54.2 C57.2 54.2 54.8 52.2 54.8 48.8 C54.8 45.2 57.4 41.5 60 36.5 Z" fill="url(#lmp2fl)"/>
+    <path d="M60 43.5 C61.2 46 62.3 47.6 62.3 49.3 C62.3 51 61.3 52 60 52 C58.7 52 57.7 51 57.7 49.3 C57.7 47.6 58.8 46 60 43.5 Z" fill="#ffffff"/>
+  </g>
+  <!-- the glass outline: a pearl-white neon tube (white core, warm glow) -->
   <g class="neon" filter="url(#lmp2f)" fill="none" stroke-linejoin="round" stroke-linecap="round">
-    <path d="M47.5 22.5 H72.5 C70 28 66 31.5 65.5 37 C78 40 83.5 50 82.5 61 C81.5 71 74 78.5 66 79.5 L68.5 85 H51.5 L54 79.5 C46 78.5 38.5 71 37.5 61 C36.5 50 42 40 54.5 37 C54 31.5 50 28 47.5 22.5 Z" stroke="#ffd36e" stroke-width="2.2"/>
-    <path d="M47.5 22.5 H72.5 C70 28 66 31.5 65.5 37 C78 40 83.5 50 82.5 61 C81.5 71 74 78.5 66 79.5 L68.5 85 H51.5 L54 79.5 C46 78.5 38.5 71 37.5 61 C36.5 50 42 40 54.5 37 C54 31.5 50 28 47.5 22.5 Z" stroke="#fffaf0" stroke-width=".8"/>
+    <path d="M47.5 22.5 H72.5 C70 28 66 31.5 65.5 37 C78 40 83.5 50 82.5 61 C81.5 71 74 78.5 66 79.5 L68.5 85 H51.5 L54 79.5 C46 78.5 38.5 71 37.5 61 C36.5 50 42 40 54.5 37 C54 31.5 50 28 47.5 22.5 Z" stroke="#ffe7a8" stroke-width="2.2"/>
+    <path d="M47.5 22.5 H72.5 C70 28 66 31.5 65.5 37 C78 40 83.5 50 82.5 61 C81.5 71 74 78.5 66 79.5 L68.5 85 H51.5 L54 79.5 C46 78.5 38.5 71 37.5 61 C36.5 50 42 40 54.5 37 C54 31.5 50 28 47.5 22.5 Z" stroke="#ffffff" stroke-width=".85"/>
     <!-- reflections on the glass -->
     <path d="M44 50 C41.5 55 41.5 63 44.5 69" stroke="#ffffff" stroke-width="1.5" opacity=".9"/>
     <path d="M53 25.5 C54.5 29 56 31.5 56.5 35" stroke="#ffffff" stroke-width=".9" opacity=".75"/>
   </g>
-  <circle cx="74" cy="47" r="1.2" fill="#ffffff"/>
+  <circle cx="75" cy="47" r="1.2" fill="#ffffff"/>
 
-  <!-- a small olive sprig, centred: «لا شرقية ولا غربية» -->
+  <!-- 4. the blessed olive tree, centred «لا شرقية ولا غربية»; a thread of oil rises from it to the lamp -->
+  <path d="M60 96 V86.5" stroke="#d6c26a" stroke-width=".7" stroke-dasharray="1.2 1.4" opacity=".75"/>
   <g transform="translate(60 101)">
     <path d="M-18 4 Q0 -3 18 4" fill="none" stroke="#c9a253" stroke-width="1.1" stroke-linecap="round"/>
     <g fill="url(#lmp2l)" stroke="#d8e6c4" stroke-width=".35">

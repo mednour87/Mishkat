@@ -67,6 +67,7 @@ const PROGRESS = {
   rose: (x, y) => Math.hypot(x, y),                        // ring radius
   dome: (x, y, z) => z,                                    // height on the dome
   petals: (x, y) => ((Math.PI / 2 - Math.atan2(y, x)) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI), // clockwise angle from 12 o'clock
+  zahra: (x, y) => ((Math.PI / 2 - Math.atan2(y, x)) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI),  // the same, petal by petal
 };
 const runs = (() => { // [start, end) word range of each surah (Mushaf storage order)
   const r = Array.from({ length: 115 }, () => [Infinity, -1]);
@@ -95,7 +96,7 @@ function checkProgress(shape, lay, tag) {
     return;
   }
   // petals overlap like a real flower's: a petal is placed by its axis (the direction of the sum of its words, symmetric on each loop), the others by their mean
-  const mean = lay.sequence.map((s) => { if (shape === 'petals') { let x = 0, y = 0; for (let w = runs[s][0]; w < runs[s][1]; w++) { x += P[w * 3]; y += P[w * 3 + 1]; } return f(x, y); }
+  const mean = lay.sequence.map((s) => { if (shape === 'petals' || shape === 'zahra') { let x = 0, y = 0; for (let w = runs[s][0]; w < runs[s][1]; w++) { x += P[w * 3]; y += P[w * 3 + 1]; } return f(x, y); }
     let v = 0; for (let w = runs[s][0]; w < runs[s][1]; w++) v += f(P[w * 3], P[w * 3 + 1], P[w * 3 + 2]); return v / wordsOf[s]; });
   // (the rose's rings ruffle in five lobes: a thin ring may sit a few units inside its neighbour on average)
   const tol = shape === 'rose' ? 6 : 0;

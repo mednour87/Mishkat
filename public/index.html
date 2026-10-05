@@ -6,6 +6,15 @@
 <title>مشكاة — دليل مجرّة القرآن الذكي · Mishkat</title>
 <meta name="description" content="Mishkat — ask the Quran galaxy: every answer quoted from vetted tafsir, every verse from the Tanzil text, synchronised recitation, abstains when unsure. Arabic · English.">
 <meta name="theme-color" content="#05070d">
+<meta name="author" content="Mohamed Nour Bou Ali">
+<meta name="copyright" content="© 2026 Mohamed Nour Bou Ali — All Rights Reserved">
+<link rel="canonical" href="https://mishkatquran.org/">
+<meta property="og:title" content="مِشكاة · Mishkat — the smart guide to the Quran galaxy">
+<meta property="og:description" content="Ask the Quran: every answer quoted verbatim from vetted tafsir, synchronised recitation, a 3D galaxy of 77,433 words. Arabic · English.">
+<meta property="og:url" content="https://mishkatquran.org/">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://mishkatquran.org/img/og.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="img/logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -66,6 +75,7 @@
     <div class="langs" role="group" aria-label="Language"><button data-lang="ar">ع</button><button data-lang="en">EN</button></div>
     <button id="themeBtn" class="nd-theme" data-i18n-aria="themeLabel"><span class="ti" aria-hidden="true">☾</span> <span class="tl2"></span></button>
   </div>
+  <p class="nd-rights" data-i18n="rights"></p>
 </aside>
 <div id="status" aria-live="polite"></div>
 <!-- tool panels: ONE open at a time (drawer beside the galaxy on a computer, bottom sheet on a phone);
@@ -171,7 +181,8 @@
       </button>
       <button type="submit" class="g-enter" data-i18n-aria="enter"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </form>
-    <div class="g-alt"><button type="button" id="gateCopy" class="g-link" data-i18n="gateCopy">انسخ البسملة</button></div>
+    <div class="g-alt"><button type="button" id="gatePaste" class="g-paste"><span aria-hidden="true">✦</span> <span data-i18n="gatePaste">الصق البسملة وادخل</span></button>
+      <button type="button" id="gateCopy" class="g-link" data-i18n="gateCopy">انسخ البسملة</button></div>
     <div id="gateMsg" class="gmsg" aria-live="polite"></div>
   </div>
   <p class="g-foot" data-i18n="gateFoot"></p>
@@ -190,7 +201,7 @@
   </div>
 </div>
 
-<div id="loader"><img src="img/logo.svg" alt="" width="84" height="84"><div class="spin"></div><div id="loadMsg">…</div></div>
+<div id="loader"><img src="img/logo.svg" alt="" width="84" height="84"><div class="lbar" aria-hidden="true"><i></i></div><div id="loadMsg">…</div></div>
 <script type="module" src="js/app.js"></script>
 </body>
 </html>

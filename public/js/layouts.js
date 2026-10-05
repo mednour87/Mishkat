@@ -9,6 +9,7 @@
 //   rose   — IT5/IT6 «وردة السور»: one ring per surah; ring width ∝ its words (tree rings)
 //   dome   — IT6 «قبّة الكلمات» + «طواف»: one ascending circuit over a hemisphere,
 //            each surah a band whose area ∝ its words (Archimedes' equal-area bands)
+//   zahra  — after the logo of the Islamic AI Challenge 2026: 19 petals × 6 surahs around a seven-pointed star
 //   petals — IT5 «بتلات السور» + I6 «شمسية السور» (sunburst): each surah a petal whose
 //            angular width ∝ its words; petals open upward like a cup
 //
@@ -24,6 +25,7 @@ export const SHAPES = [
   { id: 'rose', ar: 'وردة السور', en: 'Rose of surahs' },
   { id: 'dome', ar: 'قبّة الطواف', en: 'Dome' },
   { id: 'petals', ar: 'بتلات السور', en: 'Petals' },
+  { id: 'zahra', ar: 'زهرة التحدّي', en: 'Challenge flower' },
 ];
 
 export const ORDERS = [
@@ -266,6 +268,46 @@ function petals(N, seq, st) {
   return { positions: out, view: { pos: [0, -800, 740], target: [0, -40, 60] } };
 }
 
+// zahra — «the flower of the challenge»: after the logo of the Islamic AI Challenge 2026 (islamicaich.org), a ring of
+// 19 long petals drawn as outlines around an open seven-pointed star, longer on one side. 114 = 19 × 6: each petal is a
+// fan of 6 surahs that follow each other clockwise; each surah is a loop leaving from the star's edge and coming back
+// to it on successive laps that stay close to the petal's outline (so the petal reads as a line of light), and the
+// thread never turns back. The petals bend a
+// little, like the logo's, and rise like a cup.
+function zahra(N, seq, st) {
+  const out = new Float32Array(N * 3);
+  const NP = 19, PER = 6, SP = 1.8, PA = TAU / NP, FAN = PA * 0.035;
+  const LONG = Math.PI * 1.25;                                   // the long side of the flower: lower left, as in the logo
+  seq.forEach((s, k) => {
+    const ws = st.bySura[s], n = ws.length, p = Math.floor(k / PER), j = k % PER;
+    const mid = (p + 0.5) * PA + (j - (PER - 1) / 2) * FAN;     // clockwise from 12 o'clock
+    const th = Math.PI / 2 - mid, ux = Math.cos(th), uy = Math.sin(th), px = Math.sin(th), py = -Math.cos(th);
+    // the star at the centre: the base of the petal sits on the edge of a seven-pointed star
+    const R0 = 92 * (1 + 0.2 * Math.cos(7 * th));
+    const side = 0.5 + 0.5 * Math.cos(th - LONG);
+    // every petal is an OUTLINE, as in the logo: its length depends only on its side of the flower, not on the surah
+    const L = 170 + 300 * side;
+    const a = L * 0.21;
+    const per = Math.PI * (a + L / 2) * 1.05;
+    const laps = Math.max(1, Math.min(40, Math.round(2 * n * SP / per - 1)));
+    // the laps stay close to the outline (from 86 % to 100 % of it): the petal reads as a luminous line, not a filled leaf
+    const sc = Array.from({ length: laps }, (_, l) => laps === 1 ? 1 : 0.86 + 0.14 * l / (laps - 1)), tot = sc.reduce((x, y) => x + y, 0);
+    const cum = [0]; for (let l = 0; l < laps; l++) cum.push(cum[l] + sc[l]);
+    const lift = (p % 2 ? 14 : -14);                            // neighbouring petals overlap, one above the other
+    let l = 0;
+    for (let q = 0; q < n; q++) {
+      const u = (q + 0.5) / n * tot;
+      while (l < laps - 1 && cum[l + 1] <= u) l++;
+      const t = (u - cum[l]) / sc[l], al = L * sc[l] * (1 - Math.cos(TAU * t)) / 2, ac = -a * sc[l] * Math.sin(TAU * t);
+      let x = (R0 + al) * ux + ac * px, y = (R0 + al) * uy + ac * py;
+      const b = -0.05 * al / L, cb = Math.cos(b), sb = Math.sin(b);   // the petal bends a little, clockwise
+      const x2 = x * cb - y * sb, y2 = x * sb + y * cb, rr = Math.hypot(x2, y2), i = ws[q];
+      out[i * 3] = x2; out[i * 3 + 1] = y2; out[i * 3 + 2] = 230 * Math.pow(rr / 600, 1.8) - 60 + lift * Math.min(1, al / 60);
+    }
+  });
+  return { positions: out, view: { pos: [-40, -430, 1180], target: [-40, -70, 40] } };   // seen almost from above, like the logo
+}
+
 // dome — one continuous ascending circuit (tawaf) on a hemisphere; height ∝ cumulative
 // words, which by Archimedes' theorem gives every surah a band of area ∝ its words.
 function dome(N, seq, st, wordVerse) {
@@ -308,6 +350,10 @@ const SHAPE_NOTE = {
     ar: (o, a, b) => `مسار واحد يصعد القبّة طائفًا، ولكل سورة نطاق مساحته بقدر كلماتها ${o}: ${a} عند القاعدة و${b} عند القمّة.`,
     en: (o, a, b) => `One circuit climbs the dome, each surah taking a band whose area matches its word count, ${o}: ${a} at the base, ${b} at the summit.`,
   },
+  zahra: {
+    ar: (o, a, b) => `على هيئة شعار «تحدّي الذكاء الاصطناعي في خدمة المحتوى الإسلامي»: تسع عشرة بتلة حول نجمة سباعية، في كل بتلة ست سور (114 = 19 × 6)، وكل سورة حلقات متتالية على حدّ البتلة تُقرأ دون رجوع، ${o}: من ${a} إلى ${b}.`,
+    en: (o, a, b) => `After the logo of the Islamic AI Challenge: nineteen petals around a seven-pointed star, six surahs in each petal (114 = 19 × 6), each surah on successive loops along the petal's outline, read without turning back, ${o}: from ${a} to ${b}.`,
+  },
   petals: {
     ar: (o, a, b) => `كل سورة بتلة طولها بقدر كلماتها، تُقرأ في حلقات متداخلة تتّسع، ثم ينتقل الخيط مع عقارب الساعة إلى البتلة التالية ${o}: من ${a} إلى ${b}.`,
     en: (o, a, b) => `Each surah is a petal as long as its word count, read on nested loops that open outward; then the thread moves clockwise to the next petal, ${o}: from ${a} to ${b}.`,
@@ -345,6 +391,7 @@ export async function buildLayout({ shape = 'galaxy', order = 'mushaf', wordVers
     res = galaxy(N, seq, st, wordVerse);
   } else if (shape === 'rose') res = rose(N, seq, st, wordVerse);
   else if (shape === 'dome') res = dome(N, seq, st, wordVerse);
+  else if (shape === 'zahra') res = zahra(N, seq, st);
   else res = petals(N, seq, st);
   return { positions: res.positions, view: res.view, sequence: seq.slice(), note: makeNote(shape, order, seq, suras), ...(res.arms ? { arms: res.arms } : {}), ...(res.spine ? { spine: res.spine } : {}) };
 }

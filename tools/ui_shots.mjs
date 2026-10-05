@@ -243,6 +243,38 @@ try {
     top((await send('Profiler.stop')).profile, 'RECITING');
     await send('Emulation.setCPUThrottlingRate', { rate: 1 });
   }
+  // (5 Oct, evening) author's remarks: basmala paste button, ⤢ with the tafsir open, khatma map zoom + vertical move
+  if (WANT.includes('oct5b')) {
+    await phone(); await open('');
+    await evalJs(`localStorage.removeItem('mishkat.bismillah'); location.reload(); 1`); await sleep(3500);
+    await shot('m_gate.jpg');
+    await click('#gatePaste'); await sleep(2500);
+    console.log('gate after paste:', await evalJs(`JSON.stringify({ hidden: document.querySelector('#gate').hidden, msg: document.querySelector('#gateMsg').textContent })`));
+    await open('?s=24&a=35'); await sleep(2500);
+    await click('#mtabs [data-pane=t]'); await sleep(1200);
+    const gh = `Math.round(document.querySelector('#gzone').getBoundingClientRect().height)`;
+    console.log('galaxy height, tafsir pane:', await evalJs(gh));
+    await click('#gFull'); await sleep(1200);
+    console.log('galaxy height after ⤢:', await evalJs(gh), 'tafsir visible:', await evalJs(`getComputedStyle(document.querySelector('#tzone')).display`));
+    await shot('m_tafsir_full.jpg');
+    await click('#gFull'); await sleep(800);
+    await evalJs(`document.querySelector('#lampSlot').click(), 1`); await sleep(1500);
+    const cy = `(()=>{ const c=document.querySelector('#lampMap .lm-canvas'); return c ? Math.round(c.getBoundingClientRect().height) : -1 })()`;
+    console.log('map canvas', await evalJs(cy));
+    for (let k = 0; k < 4; k++) await evalJs(`document.querySelector('#lampMap [data-c=in]').click(), 1`);
+    await shot('m_map_zoom.jpg', 600);
+    for (let k = 0; k < 6; k++) await evalJs(`document.querySelector('#lampMap [data-c=up]').click(), 1`);
+    await shot('m_map_top.jpg', 600);
+    for (let k = 0; k < 14; k++) await evalJs(`document.querySelector('#lampMap [data-c=down]').click(), 1`);
+    await shot('m_map_bottom.jpg', 600);
+  }
+  if (WANT.includes('zahra')) {
+    for (const [dev, sz] of [['d', desk], ['m', phone]]) {
+      await sz(); await open('');
+      await evalJs(`(()=>{ const s=document.querySelector('#shapeSel'); s.value='zahra'; s.dispatchEvent(new Event('change', {bubbles:true})); document.querySelector('#sgClose')?.click(); return 1 })()`);
+      await shot(`${dev}_zahra.jpg`, 7000);
+    }
+  }
   if (WANT.includes('intro-phone')) {
     await phone(); await open('', { prefs: { intro: false } });
     let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [4, 9, 16, 30])) { await shot(`m_intro_${t}s.jpg`, (t - at) * 1000); at = t; }

@@ -155,7 +155,7 @@ body.intro-on { overflow: hidden; }
 .in-brand { position: absolute; top: 14px; inset-inline-start: 18px; display: grid; line-height: 1.2; }
 .in-brand b { font-family: 'Amiri', var(--ui); font-size: 24px; color: var(--gold); } .in-brand small { color: #9aa3b5; font-size: 12px; }
 .in-cap { position: absolute; bottom: 72px; left: 50%; transform: translateX(-50%); width: min(720px, 92vw); text-align: center; font-size: 18px; color: #fff1cc; text-shadow: 0 2px 12px rgba(0, 0, 0, .8); }
-.in-logo { position: absolute; left: 50%; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; transition: top 1s, opacity 1s; }
+.in-logo { position: absolute; left: 50%; transform: translateX(-50%); width: min(94vw, 560px); display: grid; justify-items: center; gap: 8px; transition: top 1s, opacity 1s; }
 .in-lamp { position: relative; line-height: 0; opacity: 0; transform: scale(.85); filter: brightness(.4) saturate(.4); transition: opacity 1.4s, transform 1.4s, filter 1.4s; }
 .in-logo.p-niche .in-lamp { opacity: .55; } .in-logo.p-lamp .in-lamp { opacity: .8; transform: scale(.92); }
 .in-logo.p-glass .in-lamp { filter: brightness(.7) saturate(.7); } .in-logo.p-star .in-lamp { filter: brightness(.9) saturate(.9); opacity: 1; }
@@ -281,7 +281,8 @@ body.child .tj-madd6 { color: #c9a2ff; } body.child .tj-maddw { color: #ffb4d2; 
 }
 #intro .in-go { background: linear-gradient(135deg, #ffd66b, #e8a93c); color: #1a1406; border-color: #ffd66b; font-weight: 700; box-shadow: 0 10px 40px rgba(255, 196, 80, .35); padding: 10px 34px; font-size: 17px; }
 #intro .in-go:hover, #intro .in-go:focus-visible { filter: brightness(1.08); outline: 2px solid #fff3cf; outline-offset: 3px; }
-@media (max-width: 700px) { .in-labels { max-width: 94vw; gap: 4px; } .in-labels span { font-size: 14px; padding: 0 8px; } .in-labels span:nth-last-child(n+4) { display: none; } }
+/* (5 Oct) phone: every word of the logo stays visible (they used to slip away, three at a time), on two compact rows */
+@media (max-width: 700px) { .in-labels { max-width: 94vw; gap: 4px; } .in-labels span { font-size: 13px; padding: 0 7px; line-height: 1.9; } }
 /* English: a smaller lamp and one row of the last word labels; the translation keeps the bottom of the screen */
-#intro.in-en .in-labels { flex-wrap: nowrap; } #intro.in-en .in-labels span:nth-last-child(n+4) { display: none; }
+#intro.in-en .in-labels { flex-wrap: wrap; }
 #intro.in-en .in-labels span { font-size: 15px; }

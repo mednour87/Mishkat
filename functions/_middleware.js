@@ -21,6 +21,12 @@ export function allowed(request, pass) {
 }
 
 export async function onRequest({ request, env, next }) {
+  // one address: www.mishkatquran.org → mishkatquran.org (same path and query)
+  const url = new URL(request.url);
+  if (url.hostname === 'www.mishkatquran.org') {
+    url.hostname = 'mishkatquran.org';
+    return Response.redirect(url.toString(), 301);
+  }
   const pass = env.SITE_PASS;
   if (!allowed(request, pass)) {
     return new Response('Mishkat — private preview', {

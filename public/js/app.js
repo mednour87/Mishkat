@@ -114,7 +114,7 @@ function applyLang(lang) {
   { const l = $('#themeBtn .tl2'); if (l) l.textContent = t[document.documentElement.dataset.theme === 'light' ? 'themeLight' : 'themeDark']; }
   fillViewPickers();
   $('#legendBox').innerHTML = t.legendItems.map(([c, x]) => `<div><i style="background:${c};color:${c}"></i>${esc(x)}</div>`).join('');
-  $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice()));
+  $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice())) + `<p class="rights">${esc(T().rights)} · <a href="https://mishkatquran.org">mishkatquran.org</a></p>`;
   $('#aiBadge').textContent = t.ai(state.llmModel);
   labelDock();
   if (state.core) refreshHud();
@@ -193,7 +193,7 @@ async function askEngine(query, opts) {
   return e.ask(query, { ...opts, llm: state.llm });
 }
 
-function setLoad(i) { $('#loadMsg').textContent = T().loading[i]; }
+function setLoad(i) { $('#loadMsg').textContent = T().loading[i]; const b = document.querySelector('#loader .lbar i'); if (b) b.style.setProperty('--lp', `${Math.round(100 * (i + 1) / (T().loading.length + 1))}%`); }
 
 async function boot() {
   setupPWA();
@@ -351,6 +351,15 @@ function gate() {
       const txt = state.core.verses[0];
       try { await navigator.clipboard.writeText(txt); $('#gateCopy').textContent = t().copied; $('#gateInput').focus(); }
       catch (e) { $('#gateInput').value = txt; check(txt); }
+    };
+    // (5 Oct) one tap: the basmala is written into the field letter by letter (the Tanzil text of 1:1), then the gate opens
+    $('#gatePaste').onclick = () => {
+      if (accepted) return;
+      const txt = state.core.verses[0], inp = $('#gateInput'), chars = [...txt];
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) { inp.value = txt; return check(txt); }
+      let n = 0; inp.value = '';
+      const step = () => { n = Math.min(chars.length, n + 2); inp.value = chars.slice(0, n).join(''); if (n < chars.length) setTimeout(step, 28); else check(txt); };
+      step();
     };
     $('#gateMic').onclick = async () => {
       try {
@@ -2048,7 +2057,7 @@ $('#gOut').onclick = () => state.galaxy.zoom(1.6);
 $('#gRot').onclick = () => { const v = !state.galaxy.autoRotate; state.galaxy.setAutoRotate(v); $('#gRot').setAttribute('aria-pressed', v); };
 $('#gNames').onclick = () => setNames($('#gNames').getAttribute('aria-pressed') !== 'true');
 $('#gLegend').onclick = () => { const b = $('#legendBox'); b.hidden = !b.hidden; $('#gLegend').setAttribute('aria-expanded', !b.hidden); };
-$('#gFull').onclick = () => { const on = !document.body.classList.contains('gfull'); document.body.classList.toggle('gfull', on); $('#gFull').setAttribute('aria-pressed', on); };
+$('#gFull').onclick = () => { const on = !document.body.classList.contains('gfull'); document.body.classList.toggle('gfull', on); $('#gFull').setAttribute('aria-pressed', on); if (state.galaxy && state.galaxy.resize) { requestAnimationFrame(() => state.galaxy.resize()); setTimeout(() => state.galaxy.resize(), 400); } };
 
 // ------------------------------------------------------------- wiring
 $('#searchForm').addEventListener('submit', (ev) => { ev.preventDefault(); const q = $('#q').value.trim(); if (q) run(q); });

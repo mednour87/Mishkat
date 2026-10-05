@@ -96,5 +96,18 @@ Done at the author's request before the window opens; commits after the tag `bas
 - Reading by scrolling: a scroll made by the page itself (a chosen verse brought into view) no longer lights the end of the previous verse sharing its first line (24:35 showed «24:34»).
 - New checks: `tests/oct5.test.mjs` (wake lock, mosques mirrors and rounding, CSP, brief tajweed box, one statistics button, no ring, light start), `tools/ui_shots.mjs` scenarios `audit` (every panel, drawer, reader and tafsir on a phone and a computer, ar and en: elements cut by the screen edge + console errors — 0 found), `readcam`, `mosques`, `tajpage`, `intro-phone`, `perf`, `profile`. Tests 224/224.
 
+## Challenge — 5 October 2026 (evening) — T104: domain, rights, logo after 24:35, the author's phone remarks
+- **Domain** `mishkatquran.org` attached to the Cloudflare Pages project; `www.` redirects to it (301, path and query kept); canonical link and share card (`img/og.png`).
+- **All rights reserved** (`LICENSE`, `NOTICE.md`): the former MIT licence is replaced. Clause 13/7 of the challenge terms does not allow an open licence without the organisers' written approval, and clause 13 gives the organisers their evaluation licence, which stays untouched. Third-party texts and data keep their own terms (SOURCES.md). The copyright line is shown in the menu, in «About», on the entry gate and in the page metadata.
+- **Logo checked word by word against 24:35 and As-Sa'di's tafsir.** The glass and the «planet» were confused: «الزجاجة كأنها كوكب دري» (the glass ITSELF shines like a pearl star), so the separate sphere behind the glass is removed and the star rays now come from the glass. «فيها مصباح… المصباح في زجاجة… نور على نور أي: نور النار ونور الزيت»: a lit wick (the lamp) now stands in the oil inside the glass. A thread of oil rises from the olive sprig. The recited word sits in the oil, under the flame. App icons regenerated.
+- **Entry gate**: «✦ الصق البسملة وادخل», one tap writes the basmala (Tanzil 1:1) into the field and enters.
+- **Loading**: no turning circle; a thin line of light fills with the loading steps.
+- **Presentation film**: each word of the verse is drawn from its own canvas. The old crop of one canvas of the whole verse also cut pieces of the neighbouring letters and boxed their glow (luminous edges around words not being recited). The waiting points are fainter. On a phone every word of the logo stays visible under the lamp: before, only the last three were shown, in half the screen width.
+- **Khatma map in 3D**: once zoomed, a vertical drag (or ▲▼, or two fingers) moves along the glass from the neck (al-Fatiha) to the foot (an-Nas). Before, the vertical position never changed, so one stayed stuck in the middle.
+- **⤢ with the tafsir open on a phone**: a later rule of the same weight kept the 3D at 19 % of the screen. Now the 3D takes 60 % in every reading pane, and the open pane stays below it with the tabs.
+- **New 3D shape «زهرة التحدّي / Challenge flower»**, after the logo of the Islamic AI Challenge: 19 petal outlines around a seven-pointed star, 6 surahs per petal (114 = 19 × 6), longer on one side. It is one thread read without turning back, like every shape (same tests). It is shown in the film's tour of shapes.
+- **Social-media kit** (`tools/make_social.mjs` → `04_LIVRABLES/reseaux_sociaux/`): profile pictures, covers and banners at each network's size, with the texts to copy.
+- New checks: `tests/oct5b.test.mjs`, and the `oct5b` and `zahra` scenarios of `tools/ui_shots.mjs`.
+
 ## Challenge — 6 October 2026
 -

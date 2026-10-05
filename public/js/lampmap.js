@@ -109,12 +109,17 @@ export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', 
   const SPEEDS = [1, 2, 4, 0];
   let speedK = 0, zoom = 1, over = false, panY = 0;
   const pinch = new Map();
+  // (5 Oct) vertical move once zoomed (author: on a phone, after zooming, one could not go up to the neck or down to the
+  // foot). panY is in glass units: +31 brings the top of the neck to the middle of the view, −30 the foot.
+  const clampPan = (v) => zoom <= 1.02 ? 0 : Math.max(-30, Math.min(31, v));
+  const panBy = (pxY) => { panY = clampPan(panY + pxY / Math.max(1e-6, S)); CY = H / 2 + panY * S; };
   const resize = () => {
     DPR = Math.min(2, window.devicePixelRatio || 1);
     const r = cv.getBoundingClientRect();
     W = r.width; H = r.height;
     cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
-    S = Math.min(W / 50, H / 66) * zoom; CX = W / 2; CY = H / 2 + panY;   // the glass centre (y 51 in the logo) in the middle
+    S = Math.min(W / 50, H / 66) * zoom; CX = W / 2;
+    panY = clampPan(panY); CY = H / 2 + panY * S;   // the glass centre (y 51 in the logo) in the middle, moved by panY glass units
   };
   const proj = (x, y, z) => {
     // rotate about the vertical axis, then tilt
@@ -218,13 +223,17 @@ export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', 
       pinch.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
       const [c, e] = [...pinch.values()], d1 = Math.hypot(c.x - e.x, c.y - e.y);
       if (d0 > 0) setZoom(zoom * d1 / d0);
+      panBy(((c.y + e.y) - (a.y + b.y)) / 2);       // two fingers also move the view up and down
       if (drag) drag.moved = true;
       return;
     }
     if (drag) {
       const dx = ev.clientX - drag.x, dy = ev.clientY - drag.y;
       if (Math.abs(dx) + Math.abs(dy) > 4) drag.moved = true;
-      rot = drag.rot + dx * 0.01; tilt = Math.max(-0.7, Math.min(0.9, drag.tilt + dy * 0.006));
+      rot = drag.rot + dx * 0.01;
+      // zoomed in: a vertical drag moves along the glass (neck ↔ foot); at normal size it tilts the view
+      if (zoom > 1.02) { panBy(ev.clientY - (drag.ly == null ? drag.y : drag.ly)); drag.ly = ev.clientY; }
+      else tilt = Math.max(-0.7, Math.min(0.9, drag.tilt + dy * 0.006));
     } else { const q = at(ev); over = !!q; showTip(q, ev); }
   });
   cv.addEventListener('pointerup', (ev) => {
@@ -240,15 +249,16 @@ export function openLampMap({ core, prog, hifz = null, extra = '', lang = 'ar', 
   root.querySelectorAll('[data-c]').forEach(b => b.onclick = () => {
     const c = b.dataset.c;
     if (c === 'speed') { speedK = (speedK + 1) % SPEEDS.length; auto = true; b.querySelector('b').textContent = SPEEDS[speedK] ? '×' + SPEEDS[speedK] : '⏸'; }
-    else if (c === 'up') tilt = Math.max(-0.7, tilt - 0.15);
-    else if (c === 'down') tilt = Math.min(0.9, tilt + 0.15);
+    else if (c === 'up') { if (zoom > 1.02) panBy(H * 0.18); else tilt = Math.max(-0.7, tilt - 0.15); }
+    else if (c === 'down') { if (zoom > 1.02) panBy(-H * 0.18); else tilt = Math.min(0.9, tilt + 0.15); }
     else if (c === 'in') setZoom(zoom * 1.25);
     else if (c === 'out') setZoom(zoom / 1.25);
     else { zoom = 1; tilt = 0.18; rot = 0; panY = 0; resize(); }
   });
   cv.addEventListener('keydown', (ev) => {
     if (ev.key === 'ArrowLeft') rot -= 0.2; else if (ev.key === 'ArrowRight') rot += 0.2;
-    else if (ev.key === 'ArrowUp') tilt = Math.max(-0.7, tilt - 0.15); else if (ev.key === 'ArrowDown') tilt = Math.min(0.9, tilt + 0.15);
+    else if (ev.key === 'ArrowUp') { if (zoom > 1.02) panBy(H * 0.18); else tilt = Math.max(-0.7, tilt - 0.15); }
+    else if (ev.key === 'ArrowDown') { if (zoom > 1.02) panBy(-H * 0.18); else tilt = Math.min(0.9, tilt + 0.15); }
     else if (ev.key === '+' || ev.key === '=') setZoom(zoom * 1.25); else if (ev.key === '-') setZoom(zoom / 1.25);
     else if (ev.key === ' ') { auto = !auto; ev.preventDefault(); }
   });

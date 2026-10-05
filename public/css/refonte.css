@@ -296,3 +296,19 @@ html[data-theme=light] .rd-body > .tj-legend.tj-brief { background: #f7f1e4; }
 .mushaf .pg-n { display: block; margin: 2px auto 10px; width: fit-content; min-width: 34px; padding: 0 10px; border-top: 1px solid rgba(255, 214, 107, .22);
   text-align: center; font-family: var(--ui); font-size: 11px; line-height: 1.8; color: var(--mut); opacity: .8; }
 .mushaf.en .vb { content-visibility: auto; contain-intrinsic-size: auto 220px; }
+
+/* (5 Oct) enlarged 3D (⤢) on a phone in EVERY reading pane: the rule «pane = tafsir → 19vh» came later with the same
+   weight and silently won, so ⤢ did nothing while the tafsir was open (author's remark). The 3D takes most of the
+   screen and the open pane (Mushaf or tafsir) stays readable below it, with the tabs. */
+@media (max-width: 860px) {
+  body.gfull[data-mode=study][data-pane] #work { grid-template-rows: 60vh minmax(0, 1fr); bottom: 52px; }
+  body.gfull[data-mode=study][data-pane] #mtabs { display: flex; }
+  body.gfull[data-mode=study][data-pane=t] #tzone { display: flex !important; }
+  body.gfull[data-mode=study][data-pane=t] #rzone { display: none !important; }
+  body.gfull[data-mode=study][data-pane=s] #szone { display: flex !important; }
+  body.gfull[data-mode=study][data-pane=s] #rzone { display: none !important; }
+}
+
+/* copyright (5 Oct) */
+.nd-rights { margin: 0; padding: 0 14px calc(10px + env(safe-area-inset-bottom)); font-size: 11px; line-height: 1.6; color: var(--mut); }
+#aboutBody .rights { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--line); font-size: 12.5px; color: var(--mut); }
