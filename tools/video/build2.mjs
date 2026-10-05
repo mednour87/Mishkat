@@ -57,7 +57,7 @@ const events = [], audio = [];
 const say = (vid, seg, rel) => { const v = VO[vid]; audio.push({ file: join(DIR, VOICE, `${vid}.wav`), at: at(seg, rel), gain: 1.9 }); events.push({ kind: 'cap', at: at(seg, rel) - 0.1, dur: v.dur + 0.45, ar: v.ar, en: v.en }); };
 const tag = (seg, n, ar, en, rel = 0.25, dur = 3.4) => events.push({ kind: 'tag', at: at(seg, rel), dur, n, ar, en });
 const sweep = (seg, ar, en) => events.push({ kind: 'sweep', at: at(seg, -XF / 2 - 0.35), dur: 1.4, ar, en });
-const feat = (seg, icon, ar, en, points, side = 'l', rel = 0.4) => events.push({ kind: 'feat', at: at(seg, rel), dur: segDur(seg) - rel - 0.5, icon, ar, en, points, side });
+const feat = (seg, icon, ar, en, points, side = 'r', rel = 0.4) => events.push({ kind: 'feat', at: at(seg, rel), dur: segDur(seg) - rel - 0.5, icon, ar, en, points, side });
 
 // the chapter rail and the address, all along (it steps aside under the full-screen cards)
 events.push({ kind: 'rail', at: at('home', 0), dur: TOTAL - at('home', 0), url: 'mishkatquran.org', chapters: [
@@ -133,7 +133,7 @@ events.push({ kind: 'end', at: at('end', 0), dur: segDur('end') + 0.2, url: 'mis
   foot: '© 2026 Mohamed Nour Bou Ali · All rights reserved' });
 say('v13', 'end', 0.5);
 say('e1', 'end', 6.6);
-for (let k = events.length - 1; k >= 0; k--) if (events[k].kind === 'cap' && (events[k].ar === VO.v13.ar)) events.splice(k, 1);
+for (let k = events.length - 1; k >= 0; k--) if (events[k].kind === 'cap' && (events[k].ar === VO.v13.ar || events[k].ar === VO.e1.ar)) events.splice(k, 1);
 writeFileSync(join(DIR, `timeline_${VOICE}.json`), JSON.stringify({ total: TOTAL, segments: SEG, events, audio: audio.map(a => ({ ...a, file: a.file.replace(DIR, '.') })) }, null, 1));
 // every narration must end inside its part (the next part's sound must not run over it)
 for (const a of audio) if (a.file.includes(VOICE)) { const id = a.file.split(/[\\/]/).pop().replace('.wav', ''), end = a.at + VO[id].dur; const seg = SEG.filter(s => s.at <= a.at + 0.01).pop(); if (id !== 'f4' && end > seg.at + seg.dur + 0.2) console.warn('narration runs over', id, (end - seg.at - seg.dur).toFixed(2), 's'); }
