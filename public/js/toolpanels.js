@@ -2,7 +2,7 @@
 // Religious content shown here is only: verses (Tanzil text, opened in the reader) and authentic
 // hadiths of HadeethEnc shown verbatim with their grade and link. Titles and help texts are ours.
 import { toHijri, toGregorian, formatHijri, upcoming, nextEvent, nextWhiteDays, MONTHS, REMARKABLE, MONTHLY, WEEKLY } from './hijri.js';
-import { N_PAGES, todayPortion, pagesRead, countRead, markRead, unmarkRead, encodeRead, decodeRead, surasRead, streak, planToIcs, ymd, pageRange, pageOf, planOf, planUnits, planSuras, planTotal, planDays, todayPortion2, planToIcs2, suggestPlan } from './khatma.js';
+import { N_PAGES, todayPortion, pagesRead, countRead, markRead, unmarkRead, encodeRead, decodeRead, surasRead, streak, planToIcs, ymd, pageRange, pageOf, planOf, planUnits, planSuras, planTotal, planDays, todayPortion2, planToIcs2, suggestPlan, addRecord } from './khatma.js';
 import { exportPrefs, importPrefs, resetPrefs, DEFAULTS } from './prefs.js';
 
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -138,6 +138,10 @@ export const K2 = {
     howRead: 'كيف تحب أن تقرأ وردك؟', rWith: '🎧 مع القارئ والمجرّة', rOnly: '📖 قراءة فقط (ملء الشاشة)', rListen: '🔊 استماع فقط', later: 'لاحقًا',
     revealTitle: 'سور خطتك تضيء في المشكاة', portion: (u) => u, rangeSura: (name, a, b) => a === b ? `${name} ${a}` : `${name} ${a}–${b}`,
     unitsLeft: (a, b) => `${a} من ${b}`, uWord: { pages: 'صفحة', ayas: 'آية', suras: 'سورة' },
+    dayDone: 'أتممت وِرد اليوم ✓ — بارك الله فيك.', more: 'إن شئت فاقرأ أكثر: ما تقرؤه الآن يُحفظ، ويُخفَّف به وِرد الأيام القادمة.', moreTitle: 'زيادة على وِرد اليوم',
+    readToday: (x, u) => `قرأت اليوم: ${x} ${u}`, extra: (x, u) => `زيادة على الوِرد: ${x} ${u}`, nextDays: (x, u) => `وِرد كل يوم من الأيام القادمة: نحو ${x} ${u}`,
+    rest: (x, u) => `بقي من وِرد اليوم: ${x} ${u}`, cont: 'واصل القراءة', rec: 'سجلّ قراءتك', recNone: 'لم تُسجَّل قراءة بعد.', recDay: (d) => d, today: 'اليوم', yesterday: 'أمس',
+    how: 'كيف تُحسب قراءتك؟ عند إتمام سورة في المصحف يظهر زرّ «أتممت السورة ✓» وزرّ السورة التالية؛ وتُحسب الآية أيضًا عند سماع تلاوتها كاملة أو قراءتها بالتمرير، أو بزرّ «قرأته» هنا.',
   },
   en: {
     isha: 'After Isha', choose: '✦ Choose for me', chooseLead: 'Answer a few questions and we propose the plan that fits you best; you can change it afterwards.', manual: 'Or design your own plan:',
@@ -154,6 +158,10 @@ export const K2 = {
     howRead: 'How would you like to read your portion?', rWith: '🎧 With the reciter and the galaxy', rOnly: '📖 Reading only (full screen)', rListen: '🔊 Listening only', later: 'Later',
     revealTitle: 'The surahs of your plan light up in the lamp', portion: (u) => u, rangeSura: (name, a, b) => a === b ? `${name} ${a}` : `${name} ${a}–${b}`,
     unitsLeft: (a, b) => `${a} of ${b}`, uWord: { pages: 'pages', ayas: 'verses', suras: 'surahs' },
+    dayDone: 'Today’s portion is done ✓ — may Allah bless you.', more: 'Read more if you wish: what you read now is kept, and the coming days’ portions get lighter.', moreTitle: 'More than today’s portion',
+    readToday: (x, u) => `Read today: ${x} ${u}`, extra: (x, u) => `Beyond the portion: ${x} ${u}`, nextDays: (x, u) => `Each coming day: about ${x} ${u}`,
+    rest: (x, u) => `Left for today: ${x} ${u}`, cont: 'Continue reading', rec: 'Your reading record', recNone: 'Nothing recorded yet.', recDay: (d) => d, today: 'Today', yesterday: 'Yesterday',
+    how: 'How is your reading counted? When you finish a surah in the Mushaf, an “I finished this surah ✓” button and the next surah appear; a verse also counts when its recitation is heard to the end, when it is read by scrolling, or with “Read” here.',
   },
 };
 
@@ -249,7 +257,9 @@ export function createToolPanels(ctx) {
     }
     const plan = { ...planOf(kp), moments: (kp.moments || []).map(m => ({ ...m, label: mlabel(m.id) })) };
     const units = planUnits(plan, ctx.core.suras, pages), totalU = planTotal(units), daysN = planDays(plan, units);
-    const tp = todayPortion2(plan, bits, units);
+    const tp = todayPortion2(plan, bits, units, new Date(), P.khSnap);
+    if (!P.khSnap || P.khSnap.day !== tp.snap.day || P.khSnap.doneW !== tp.snap.doneW || P.khSnap.start !== tp.snap.start) { P.khSnap = tp.snap; ctx.save(); }
+    const fmtW = (x) => num(Math.round(x * 10) / 10);
     const uw = k2.uWord[plan.unit] || k2.uWord.pages;
     const nRead = countRead(bits), done = Math.round(tp.doneW);
     const rangesOf = (list) => { const out = []; for (const u of list) { const l = out[out.length - 1]; if (l && l.sura === u.sura && l.b + 1 === u.a) l.b = u.b; else out.push({ sura: u.sura, a: u.a, b: u.b }); } return out; };
@@ -262,7 +272,11 @@ export function createToolPanels(ctx) {
     if (tp.finished) h += `<p class="k-ok">${esc(t.kFinished)}</p>`;
     else {
       if (tp.behind >= 1 && plan.mode !== 'amount' && plan.unit === 'pages') h += `<p class="note">${esc(t.kBehind(num(Math.round(tp.behind))))}</p>`;
-      h += `<h3 class="p-sub">${esc(t.kToday)}</h3><ol class="k-parts">${tp.parts.map((p, j) => {
+      // (6 Oct) the day's share is fixed in the morning: when it is read, the panel says so and offers to read more
+      if (tp.dayDone) h += `<div class="k-daydone"><p class="k-ok">${esc(k2.dayDone)}</p><p class="p-small">${esc(k2.readToday(fmtW(tp.readToday), uw))}${tp.extra > 0.05 ? ' · ' + esc(k2.extra(fmtW(tp.extra), uw)) : ''}</p>
+        <p class="p-small">${esc(k2.nextDays(fmtW(tp.nextShare), uw))}</p><p class="p-small">${esc(k2.more)}</p></div>`;
+      else if (tp.readToday > 0.05) h += `<p class="p-small k-rest">${esc(k2.readToday(fmtW(tp.readToday), uw))} · ${esc(k2.rest(fmtW(tp.share - tp.readToday), uw))}</p>`;
+      h += `<h3 class="p-sub">${esc(tp.dayDone ? k2.moreTitle : t.kToday)}</h3><ol class="k-parts">${tp.parts.map((p, j) => {
         const all = p.units.every(u => countRead(bits, u.a, u.b) === u.b - u.a + 1);
         return `<li class="${all ? 'done' : ''}"><div><b>${esc(p.moment.label)}</b>${p.moment.time ? ` <small>${esc(num(p.moment.time))}</small>` : ''}</div>
           <div>${esc(descr(p.units))}</div>
@@ -277,16 +291,25 @@ export function createToolPanels(ctx) {
       <div><dt>${esc(t.kSuras)}</dt><dd>${esc(num(greens.length))} / ${esc(num(114))}</dd></div>
       <div><dt>${esc(t.kStreak)}</dt><dd>${esc(num(streak(P.log || {})))}</dd></div></dl>`;
     if (greens.length) h += `<p class="p-small">${esc(t.kSurasList)}</p><div class="chips">${greens.map(n => { const s = ctx.core.suras[n - 1]; return `<button type="button" class="chip green" data-go="${s.first}">${esc(ar() ? s.ar : s.tr)}</button>`; }).join('')}</div>`;
+    // (6 Oct) the record of what was read, newest first, grouped by day
+    {
+      const rec = (P.khRec || []).slice().reverse(), today = ymd(new Date()), yest = ymd(new Date(Date.now() - 86400000));
+      const days = []; for (const r of rec) { let g = days[days.length - 1]; if (!g || g.d !== r.d) { if (days.length >= 7) break; days.push(g = { d: r.d, items: [] }); } g.items.push(r); }
+      const dayName = (d) => d === today ? k2.today : d === yest ? k2.yesterday : num(d);
+      h += `<h3 class="p-sub">${esc(k2.rec)}</h3>${days.length ? `<ul class="k-rec">${days.map(g => `<li><b>${esc(dayName(g.d))}</b> · ${esc(descr(g.items.slice().reverse().flatMap(r => ctx.core.suras.filter(x => x.first <= r.b && x.first + x.ayas - 1 >= r.a).map(x => ({ sura: x.n, a: Math.max(r.a, x.first), b: Math.min(r.b, x.first + x.ayas - 1) })))))} <small>(${esc(num(g.items.reduce((s2, r) => s2 + r.b - r.a + 1, 0)))} ${esc(k2.uWord.ayas)})</small></li>`).join('')}</ul>` : `<p class="p-small">${esc(k2.recNone)}</p>`}
+        <p class="note">${esc(k2.how)}</p>`;
+    }
     h += `<p><button type="button" class="mini gold" id="kMap">✦ ${esc(t.kMap)}</button></p>`;
     h += `<label class="p-row"><input type="checkbox" id="kGal" ${P.showReadOnGalaxy ? 'checked' : ''}> ${esc(t.kGalaxy)}</label>
       <h3 class="p-sub">${esc(t.kIcs)}</h3><p class="p-small">${esc(t.kIcsHelp)}</p><button type="button" class="mini gold" id="kIcs">⤓ ${esc(t.kIcs)}</button>
       <p><button type="button" class="mini danger" id="kStop">${esc(t.kStop)}</button></p>`;
     body.innerHTML = h;
-    const mark = (a, b, on) => { const B = decodeRead(P.read); const before = countRead(B); (on ? markRead : unmarkRead)(B, a, b); P.read = encodeRead(B); const k = ymd(new Date()); P.log = P.log || {}; P.log[k] = Math.max(0, (P.log[k] || 0) + countRead(B) - before); ctx.save(); ctx.onReadChange(); khatma(body); };
+    const mark = (a, b, on) => { const B = decodeRead(P.read); const before = countRead(B); if (on) { const nw = []; for (let i = a; i <= b; i++) if (!((B[i >> 3] >> (i & 7)) & 1)) nw.push(i); P.khRec = addRecord(P.khRec, nw); } (on ? markRead : unmarkRead)(B, a, b); P.read = encodeRead(B); const k = ymd(new Date()); P.log = P.log || {}; P.log[k] = Math.max(0, (P.log[k] || 0) + countRead(B) - before); ctx.save(); ctx.onReadChange(); khatma(body); };
     body.querySelectorAll('[data-go]').forEach(b => b.onclick = () => ctx.openVerse(+b.dataset.go));
     body.querySelectorAll('[data-mark]').forEach(b => b.onclick = () => {
       const p = tp.parts[+b.dataset.mark], all = p.units.every(u => countRead(bits, u.a, u.b) === u.b - u.a + 1);
       const B = decodeRead(P.read), before = countRead(B);
+      if (!all) { const nw = []; for (const u of p.units) for (let i = u.a; i <= u.b; i++) if (!((B[i >> 3] >> (i & 7)) & 1)) nw.push(i); P.khRec = addRecord(P.khRec, nw); }
       for (const u of p.units) (all ? unmarkRead : markRead)(B, u.a, u.b);
       P.read = encodeRead(B); const k = ymd(new Date()); P.log = P.log || {}; P.log[k] = Math.max(0, (P.log[k] || 0) + countRead(B) - before); ctx.save(); ctx.onReadChange(); khatma(body);
     });

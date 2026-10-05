@@ -87,6 +87,35 @@ try {
     await desk(); await open('', { lang: 'en', prefs: { intro: false } });
     let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [4, 30, 75, 104])) { await shot(`en_intro_${t}s.jpg`, (t - at) * 1000); at = t; }
   }
+  if (WANT.includes('oct6')) {                 // (6 Oct) the author's requests: khatma, reader end, tafsir full screen, tekrar, test, tasbih, light mode
+    const today = new Date().toISOString().slice(0, 10);
+    const KH = { khatma: { v: 2, active: true, start: today, mode: 'days', days: 30, unit: 'pages', scope: 'quran', order: 'mushaf', suras: [], moments: [{ id: 'fajr', time: '05:30' }] } };
+    await desk(); await open('', { theme: 'light' }); await shot('o6_light_home.jpg', 2500);
+    await click('#lampSlot'); await shot('o6_light_lampmap.jpg', 2500);
+    await evalJs(`document.querySelectorAll('dialog[open]').forEach(d=>d.close()); 1`);
+    await open('?s=112&a=1', { prefs: KH }); await sleep(2500);
+    await evalJs(`(()=>{const b=document.querySelector('#rdBody'); b.scrollTop=b.scrollHeight; return 1})()`); await shot('o6_sura_end.jpg', 1200);
+    await click('#rDoneSura'); await shot('o6_sura_done.jpg', 1200);
+    await evalJs(`document.querySelector('#dock [data-panel=khatma]').click(); 1`); await shot('o6_khatma.jpg', 2500);
+    await evalJs(`(()=>{const b=document.querySelector('#p-khatma .p-body'); b.scrollTop=b.scrollHeight; return 1})()`); await shot('o6_khatma_rec.jpg', 800);
+    await open('?s=2&a=255', { prefs: KH }); await sleep(2500); await click('#rMore'); await click('#rFull'); await sleep(600); await click('#rTaf'); await shot('o6_read_full_tafsir.jpg', 2500);
+    await phone(); await open('?s=2&a=255', { prefs: KH }); await sleep(2500); await click('#mtabs [data-pane=r]'); await click('#rMore'); await click('#rFull'); await sleep(600); await click('#rTaf'); await shot('o6_m_read_full_tafsir.jpg', 2500); await desk();
+    await open('', { prefs: { tk: { log: {}, last: { sura: 112, from: 1, count: 2, whole: false, reps: 3, together: false, listen: 'none' } } } });
+    await evalJs(`document.querySelector('#dock [data-panel=tekrar]').click(); 1`); await shot('o6_tekrar.jpg', 2000);
+    await click('#tkGo'); await sleep(3500); await click('#tkTj'); await shot('o6_tekrar_tj.jpg', 2500);
+    await click('#tkStop'); await shot('o6_tekrar_end.jpg', 1200);
+    await evalJs(`(()=>{const d=document.querySelector('.tk-next'); if(d) d.open=true; return 1})()`); await shot('o6_tekrar_next.jpg', 800);
+    await click('#tkTest'); await sleep(1500);
+    await evalJs(`(()=>{const t=document.querySelectorAll('.tt-v textarea'); t[0].value='قل هو الله احد'; t[1].value='الله الصمد'; return 1})()`);
+    await click('.tt-v:nth-of-type(1) .tt-hb'); await evalJs(`document.querySelectorAll('.tt-ck').forEach(b=>b.click()); 1`); await shot('o6_test.jpg', 1200);
+    await evalJs(`(()=>{const b=document.querySelector('#p-tekrar .p-body'); b.scrollTop=b.scrollHeight; return 1})()`); await shot('o6_test_end.jpg', 800);
+    await open('', { lang: 'en' }); await evalJs(`document.querySelector('#dock [data-panel=tasbih]').click(); 1`); await sleep(2000);
+    for (let k = 0; k < 5; k++) await click('#tsGo'); await shot('o6_tasbih_en.jpg', 800);
+    await open('', { theme: 'light' }); await evalJs(`document.querySelector('#dock [data-panel=tasbih]').click(); 1`); await sleep(2000); await click('[data-ts="hm:106"]'); await sleep(300);
+    for (let k = 0; k < 35; k++) await click('#tsGo'); await shot('o6_tasbih_light.jpg', 800);
+    await phone(); await open('', { prefs: { tk: { log: {}, last: { sura: 112, from: 1, count: 2, whole: false, reps: 3, together: false, listen: 'none' } } } });
+    await evalJs(`(()=>{const b=document.querySelector('#dock [data-panel=tekrar]'); if(b) b.click(); return !!b})()`); await shot('o6_m_tekrar.jpg', 2000);
+  }
   if (WANT.includes('intro-en-low')) {         // (6 Oct) a laptop window: the logo between the verse and the English translation
     await size(1280, 610); await open('', { lang: 'en', prefs: { intro: false } });
     let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [20, 50])) { await shot(`enlow_intro_${t}s.jpg`, (t - at) * 1000); at = t; }
@@ -111,11 +140,12 @@ try {
       await click('#navBtn'); await sleep(500); await check(`${theme}/${dev}/drawer`);
       await click('#btnAbout'); await sleep(600); await check(`${theme}/${dev}/about`); await evalJs(`document.querySelector('#about').close(); 1`);
       await click('#navBtn'); await sleep(400); await click('#btnMenu'); await sleep(900); await check(`${theme}/${dev}/welcome`); await click('#wClose'); await sleep(400);
-      for (const id of ['athkar', 'prayer', 'qibla', 'mosques', 'khatma', 'tekrar', 'stats', 'hijri', 'links', 'settings']) {
+      for (const id of ['athkar', 'tasbih', 'prayer', 'qibla', 'mosques', 'khatma', 'tekrar', 'stats', 'hijri', 'links', 'settings']) {
         await evalJs(`(()=>{ const b=document.querySelector('#dock [data-panel=${id}]'); if (b) b.click(); return 1 })()`); await sleep(1500);
         await check(`${theme}/${dev}/panel:${id}`);
       }
       await evalJs(`document.querySelector('#tray .p-x') && [...document.querySelectorAll('#tray .panel:not([hidden]) .p-x')].forEach(b=>b.click()); 1`);
+      await click('#lampSlot'); await sleep(1500); await check(`${theme}/${dev}/lampmap`); await evalJs(`(()=>{const x=document.querySelector('#lampMap .lm-close'); if(x) x.click(); return 1})()`);
       await open('?q=' + encodeURIComponent('الصبر'), { theme }); await sleep(5000); await check(`${theme}/${dev}/answers`);
       await evalJs(`localStorage.removeItem('mishkat.bismillah'); location.reload(); 1`); await sleep(3500); await check(`${theme}/${dev}/gate`);
     }

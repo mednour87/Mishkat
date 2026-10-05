@@ -11,7 +11,7 @@ import { PALETTE } from './galaxy.js';
 import { createPanels } from './panels.js';
 import { createToolPanels, S as TOOL_S } from './toolpanels.js';
 import { loadPrefs, savePrefs } from './prefs.js';
-import { decodeRead, encodeRead, markRead, isRead, surasRead, ymd } from './khatma.js';
+import { decodeRead, encodeRead, markRead, isRead, surasRead, ymd, addRecord, countRead } from './khatma.js';
 import { miniLamp, openLampMap, progressOf } from './lampmap.js';
 import { createPractical, PS as PRACT_S, qiblaBearing } from './practical.js';
 import { createAthkar, AS as ATHKAR_S } from './athkar.js';
@@ -19,6 +19,7 @@ import qrcode from '../vendor/qrcode/qrcode.js';
 import { mapQuestion, islamicRest, normQ, SCOPE_S } from './scope.js';
 import { noteRead, checkKhatma, rollMonth, monthPct, weekly, rewardScore, engagement, hifzProgress } from './progress.js';
 import { createTekrar, TK } from './tekrar.js';
+import { createTasbih, TS as TASBIH_S } from './tasbih.js';
 import { createStats, ST } from './stats.js';
 import { drawMini, animateMini, EG } from './engage3d.js';
 import { setupPWA, openInstall, canPrompt, isStandalone, onInstallChange, PW } from './pwa.js';
@@ -37,6 +38,7 @@ const X = {
     svcTitle: 'خدمات مشكاة لهذه السورة:', svcTekrar: '↻ احفظها بالتكرار', svcStats: '📊 إحصاءاتها',
     engBtn: 'مستوى التزامك', install: 'ثبّت', age: 'العمر', childAge: 'أقل من ١٨', adultAge: '١٨ فأكثر',
     rdFold: 'اطوِ شريط القراءة إلى سطر واحد / افتحه', readFull: 'قراءة فقط', readFullT: 'المصحف بملء الشاشة (اضغط مرة أخرى لإظهار المجرّة)', galaxyBack: 'أظهر المجرّة', tjClose: 'أغلق أحكام التجويد (تبقى الألوان)', pMax: 'كبّر اللوحة', pMin: 'أعدها إلى حجمها',
+    suraEnd: (n) => `نهاية سورة ${n}`, suraDone: 'أتممت السورة ✓', suraDoneOk: 'سُجّلت السورة مقروءة ✓', suraDoneHelp: 'تُسجَّل في الختمة وفي سجلّ قراءتك، ويُعاد توزيع الباقي من خطتك.', nextSura: (n) => `السورة التالية: ${n}`, firstSura: 'ابدأ من الفاتحة',
   },
   en: {
     childTitle: 'A lovely question — may Allah bless you', child: 'You are still young, and fatwas belong to scholars who completed the Quran and learned its explanation and rulings. Mishkat helps you now to memorise the Quran and understand its meanings step by step.',
@@ -47,6 +49,7 @@ const X = {
     svcTitle: 'Mishkat services for this surah:', svcTekrar: '↻ Memorise it by repetition', svcStats: '📊 Its statistics',
     engBtn: 'Your engagement level', install: 'Install', age: 'Age', childAge: 'Under 18', adultAge: '18 or over',
     rdFold: 'Fold the reading bar to one line / unfold it', readFull: 'Reading only', readFullT: 'The Mushaf full screen (press again to see the galaxy)', galaxyBack: 'Show the galaxy', tjClose: 'Close the tajweed rules (the colours stay)', pMax: 'Enlarge the panel', pMin: 'Back to the normal size',
+    suraEnd: (n) => `End of surah ${n}`, suraDone: 'I finished this surah ✓', suraDoneOk: 'Surah recorded as read ✓', suraDoneHelp: 'It counts in your khatma and in your reading record; the rest of your plan is spread again.', nextSura: (n) => `Next surah: ${n}`, firstSura: 'Start again from al-Fatiha',
   },
 };
 const XS = () => X[state.lang] || X.ar;
@@ -322,10 +325,16 @@ async function boot() {
   } else if (!sp.get('q')) {
     // the reference view once the galaxy zone has its final size (the first one used a provisional size)
     state.galaxy.home();
-    if (!sp.get('tool')) onboarding();
+    if (!sp.get('tool') && !sp.get('tk')) onboarding();
   }
   // a link to a tool (the QR code of the qibla on a computer opens the qibla on the phone)
   if (sp.get('tool') && state.panels && (state.toolIds || []).includes(sp.get('tool'))) state.panels.open(sp.get('tool'));
+  // (6 Oct) a friend's invitation to memorise: ?tk=surah.from.count opens the repetition on those verses
+  if (sp.get('tk') && state.panels) {
+    const [ts, tf, tc] = sp.get('tk').split('.').map(Number), S1 = core.suras[Math.min(114, Math.max(1, ts || 1)) - 1];
+    const from = Math.min(S1.ayas, Math.max(1, tf || 1));
+    state.panels.open('tekrar', { sura: S1.n, from, count: Math.min(S1.ayas - from + 1, Math.max(1, tc || 1)) });
+  }
 }
 
 // ------------------------------------------------------------ entry gate
@@ -1134,7 +1143,7 @@ function setTafsirOpen(on) {
   state.tafClosed = !on;
   document.body.classList.toggle('taf-closed', !on);
   document.body.classList.toggle('has-res', !!state.result);
-  if (!on) { stopSpeech(); if (state.pane === 't') showPane('r'); }
+  if (!on) { stopSpeech(); document.body.classList.remove('taf-full'); if (state.pane === 't') showPane('r'); }
   else { if (isPhone()) showPane('t'); if (state.reader.cur != null && state.taf.idx !== state.reader.cur) renderTafsir(state.reader.cur); }
   if (state.galaxy && state.galaxy.resize) setTimeout(() => state.galaxy.resize(), 520);
 }
@@ -1322,6 +1331,7 @@ function renderReader() {
     <div class="rd-body" id="rdBody">
       ${state.tjOn && !state.tjBoxHidden ? tajweedLegend() : ''}
       <div class="mushaf${en ? ' en' : ''}" id="mushaf">${basmala}${body}</div>
+      ${suraEndHtml(sura)}
       ${en && state.showTr && trSrc ? `<p class="rd-src">${esc(trSrc.title)} · QuranEnc.com</p>` : ''}
     </div>`;
   $('#rzone').style.setProperty('--qs', state.qs);
@@ -1331,7 +1341,8 @@ function renderReader() {
   $('#rPlayAll').onclick = () => togglePlay('all');
   $('#rFirst').onclick = () => { const was = state.playing; selectVerse(S.first, { scroll: true, keepAudio: true }); if (was) play(S.first, true); };
   $('#rClose').onclick = closeReader;
-  $('#rTaf').onclick = () => setTafsirOpen(true);
+  $('#rTaf').onclick = () => { if (document.body.classList.contains('read-full')) setTafFull(!document.body.classList.contains('taf-full')); else setTafsirOpen(true); };
+  wireSuraEnd(sura);
   $('#rMore').onclick = () => { const o = $('#rOpts').hidden; $('#rOpts').hidden = !o; $('#rMore').setAttribute('aria-expanded', o); store.set(isPhone() ? 'rdMoreM' : 'rdMoreD', o ? '1' : '0'); };
   $('#rStats').onclick = () => openVerseStats();
   $('#rFull').onclick = () => setReadFull(!document.body.classList.contains('read-full'));
@@ -1692,6 +1703,7 @@ async function play(i, fromUser = false) {
     if (state.repeatLeft > 1) { state.repeatLeft--; play(i); return; }       // تكرار
     state.repeatLeft = state.repeat || 1;
     if (state.continuous && i + 1 < S.first + S.ayas) { selectVerse(i + 1, { scroll: true, fly: false, keepAudio: true }); play(i + 1); }
+    else if (state.continuous && i + 1 === S.first + S.ayas) { const e = $('#rdEnd'); if (e) e.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
   };
   au.play().catch(() => { stopAudio(true); alertNote(T().audioError); });
 }
@@ -1783,10 +1795,11 @@ function setupLongPress() {
 // ------------------------------------------------------------- tools: dock + exclusive panels
 // A dock of icon buttons under the search bar opens the tool panels (js/panels.js): one panel at a time,
 // a second click or Escape closes it, the galaxy stays visible. Contents: js/toolpanels.js (ar + en).
-const DOCK = ['athkar', 'prayer', 'qibla', 'mosques', 'khatma', 'tekrar', 'stats', 'hijri', 'links', 'settings'];
+const DOCK = ['athkar', 'tasbih', 'prayer', 'qibla', 'mosques', 'khatma', 'tekrar', 'stats', 'hijri', 'links', 'settings'];
 const DOCK_ICON = {
   tekrar: 'M4 12a8 8 0 0 1 14-5.3M20 4v4h-4M20 12a8 8 0 0 1-14 5.3M4 20v-4h4M10 9.5l4 2.5-4 2.5z',
   stats: 'M4 20V11M10 20V5M16 20v-6M21 20H3',
+  tasbih: 'M12 4a1.6 1.6 0 1 0 0 .1M7.5 6a1.6 1.6 0 1 0 0 .1M16.5 6a1.6 1.6 0 1 0 0 .1M5 10.5a1.6 1.6 0 1 0 0 .1M19 10.5a1.6 1.6 0 1 0 0 .1M6.5 15a1.6 1.6 0 1 0 0 .1M17.5 15a1.6 1.6 0 1 0 0 .1M12 17v5M10 20h4',
   khatma: 'M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z',
   hijri: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
   prayer: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2',
@@ -1797,9 +1810,11 @@ const DOCK_ICON = {
   settings: 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',
 };
 const TS = () => TOOL_S[state.lang] || TOOL_S.ar;
-const toolTitle = (id) => id === 'tekrar' ? (TK[state.lang] || TK.ar).title : id === 'stats' ? (ST[state.lang] || ST.ar).title
+const toolTitle = (id) => id === 'tekrar' ? (TK[state.lang] || TK.ar).title : id === 'tasbih' ? (TASBIH_S[state.lang] || TASBIH_S.ar).title : id === 'stats' ? (ST[state.lang] || ST.ar).title
   : TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id] || (id === 'athkar' ? (ATHKAR_S[state.lang] || ATHKAR_S.ar).title : id);
 const isPhone = () => matchMedia('(max-width: 860px)').matches;
+// the test of the repetition: a recitation turned into text (Whisper on the server, or the browser)
+const listenRecite = (onPartial) => listen({ lang: 'ar', serverStt: state.stt, mode: 'recite', maxMs: 30000, silenceMs: 2200, onPartial });
 function setupTools() {
   state.tools = createToolPanels({
     lang: () => state.lang, core: state.core,
@@ -1847,12 +1862,19 @@ function setupTools() {
     athkar: (body, args) => state.athkar(body, args || {}),
     // T095 repetition, T094 statistics
     tekrar: (body, args) => state.tekrar.render(body, args || {}),
+    tasbih: (body, args) => state.tasbih.render(body, args || {}),
     stats: (body, args) => state.stats.render(body, args || {}),
   };
   state.tekrar = createTekrar({ lang: () => state.lang, core: state.core, get prefs() { return state.prefs; }, save: () => savePrefs(state.prefs),
     timing: (s) => suraFile('timing', s), audioBase: AUDIO_BASE, digits: dig,
     onProgress: () => { applyHighlight(); refreshHud(); refreshMiniLamp(); },
-    focus: (i) => { try { state.galaxy.setFocusVerse(i); } catch (e) { /* ignore */ } } });
+    focus: (i) => { try { state.galaxy.setFocusVerse(i); } catch (e) { /* ignore */ } },
+    // (6 Oct) the tajweed rules of the verses repeated, the test (simple spelling, voice), sharing and inviting
+    tajweed: (s) => state.tajweedData.has(s) ? Promise.resolve(state.tajweedData.get(s)) : getJSON(`data/tajweed/${s}.json`).then(d => { state.tajweedData.set(s, d); return d; }),
+    plain: () => (state.plainP = state.plainP || getJSON('data/search_ar.json')),
+    get listen() { return voiceSupported(state.stt) ? listenRecite : null; },
+    stopListen: () => stopListening(), note: alertNote, site: () => 'https://mishkatquran.org/' });
+  state.tasbih = createTasbih({ lang: () => state.lang, get prefs() { return state.prefs; }, save: () => savePrefs(state.prefs), digits: dig, ymd: () => ymd(new Date()) });
   state.stats = createStats({ lang: () => state.lang, core: state.core, digits: dig,
     plain: () => (state.plainP = state.plainP || getJSON('data/search_ar.json')), meta: () => (metaP = metaP || getJSON('data/mushaf_meta.json')),
     openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); }, search: (q) => { $('#q').value = q; run(q, 'topic'); },
@@ -1865,8 +1887,9 @@ function setupTools() {
   state.panels = createPanels({
     dock: $('#dock'), tray: $('#tray'), renderers,
     titles: Object.fromEntries(DOCK.map(id => [id, () => toolTitle(id)])), closeLabel: () => TS().close, maxLabel: (on) => on ? XS().pMin : XS().pMax,
-    onOpen: (id) => { document.body.dataset.panel = id; if (id === 'khatma' || id === 'tekrar') applyHighlight(); },
-    onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma' || id === 'tekrar') applyHighlight(); if (id === 'tekrar') state.tekrar.stop(); state.practical.stop(); },
+    // (6 Oct, author's request) repetition opens full size (the ⤢ button of the panel makes it smaller)
+    onOpen: (id) => { document.body.dataset.panel = id; state.panels.setMax(id === 'tekrar'); if (id === 'khatma' || id === 'tekrar') applyHighlight(); },
+    onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma' || id === 'tekrar') applyHighlight(); if (id === 'tekrar') state.tekrar.stop(); if (id === 'tasbih') state.tasbih.stop(); state.practical.stop(); },
   });
   labelDock();
 }
@@ -1879,6 +1902,7 @@ function markRecited(i, how = 'audio') {
   const before = surasRead(bits, state.core.suras).length;
   markRead(bits, i);
   P.read = encodeRead(bits);
+  P.khRec = addRecord(P.khRec, [i]);                 // (6 Oct) the reading record of the khatma panel
   const day = ymd(new Date());
   P.log = P.log || {}; P.log[day] = (P.log[day] || 0) + 1;
   noteRead(P, i);                                    // this month's percentage (reader mode)
@@ -1987,8 +2011,44 @@ function startReading(i, how) {
   setReadFull(how === 'only' || how === 'listen');
   if (how === 'with' || how === 'listen') setTimeout(() => { state.playMode = 'all'; play(i, true); }, 700);
 }
+// (6 Oct, author's request) the end of a surah in the reader: «I finished this surah ✓» (recorded in the khatma, its
+// record and this month's reading — an explicit choice, whatever the automatic settings) and the next surah
+function suraEndHtml(sura) {
+  const x = XS(), S = state.core.suras[sura - 1], en = state.lang === 'en', nm = (s) => en ? s.tr : s.ar;
+  const all = countRead(decodeRead(state.prefs.read), S.first, S.first + S.ayas - 1) === S.ayas;
+  const nx = state.core.suras[sura] || null;
+  return `<div class="rd-end" id="rdEnd"><p class="rd-end-t">✦ ${esc(x.suraEnd(nm(S)))}</p>
+    <div class="rd-end-b"><button type="button" class="btn ${all ? 'on' : 'gold'}" id="rDoneSura" ${all ? 'disabled' : ''}>${esc(all ? x.suraDoneOk : x.suraDone)}</button>
+    <button type="button" class="btn ${all ? 'gold' : ''}" id="rNextSura">${esc(nx ? x.nextSura(nm(nx)) : x.firstSura)} ${state.lang === 'ar' ? '←' : '→'}</button></div>
+    <p class="p-small">${esc(x.suraDoneHelp)}</p></div>`;
+}
+function markSuraRead(sura) {
+  const P = state.prefs, S = state.core.suras[sura - 1], bits = decodeRead(P.read), nw = [];
+  for (let i = S.first; i < S.first + S.ayas; i++) if (!isRead(bits, i)) nw.push(i);
+  if (!nw.length) return;
+  markRead(bits, S.first, S.first + S.ayas - 1);
+  P.read = encodeRead(bits);
+  P.khRec = addRecord(P.khRec, nw);
+  const day = ymd(new Date()); P.log = P.log || {}; P.log[day] = (P.log[day] || 0) + nw.length;
+  for (const i of nw) noteRead(P, i);
+  const finished = checkKhatma(P);
+  savePrefs(P); refreshHud(); refreshMiniLamp(); applyHighlight();
+  if (finished) celebrateKhatma();
+  if (state.panels.current === 'khatma') state.tools.khatma($('#p-khatma .p-body'));
+}
+function wireSuraEnd(sura) {
+  const d = $('#rDoneSura'), n = $('#rNextSura');
+  if (d) d.onclick = () => { markSuraRead(sura); const box = $('#rdEnd'); if (box) { box.outerHTML = suraEndHtml(sura); wireSuraEnd(sura); } $('#rNextSura') && $('#rNextSura').focus(); };
+  if (n) n.onclick = () => { const was = state.playing && state.continuous; const to = sura < 114 ? sura + 1 : 1; openReader(to, null, { autoplay: was ? 'all' : false }); };
+}
+// (6 Oct) the tafsir while reading full screen: a side sheet (a bottom sheet on a phone) over the Mushaf
+function setTafFull(on) {
+  document.body.classList.toggle('taf-full', on);
+  if (on) { state.tafClosed = false; document.body.classList.remove('taf-closed'); if (state.reader.cur != null) renderTafsir(state.reader.cur); }
+}
 function setReadFull(on) {
   document.body.classList.toggle('read-full', on);
+  if (!on) document.body.classList.remove('taf-full');
   const b = $('#rFull'); if (b) b.setAttribute('aria-pressed', String(on));
   if (state.galaxy && state.galaxy.resize) setTimeout(() => state.galaxy.resize(), 80);
 }

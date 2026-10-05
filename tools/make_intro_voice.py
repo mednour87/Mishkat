@@ -14,6 +14,15 @@ LINES = json.loads(subprocess.run(['node', '--input-type=module', '-e', JS], cwd
                                   text=True, encoding='utf-8').stdout)
 VOICE = {'ar': 'ar-SA-HamedNeural', 'en': 'en-US-GuyNeural'}
 RATE = {'ar': '-2%', 'en': '+0%'}
+# (6 Oct, author's remark) the voice misread the name («مشككت», «مشكيات» heard by a speech-to-text check): for the VOICE
+# only, the name is written as it is said in pause, «مِشكاه» (the only spelling the check heard right); the cards and
+# lines.json keep the correct spelling
+import re
+def spoken(text, lang):
+    if lang != "ar": return text
+    text = re.sub(r"الْمِشْكَاة[ًٌٍَُِ]?", "المِشكاه", text)
+    return re.sub(r"مِشْكَاة[ًٌٍَُِ]?", "مِشكاه", text)
+
 
 async def main():
     meta = {}
@@ -23,7 +32,7 @@ async def main():
         meta[lang] = {}
         for k, text in lines.items():
             f = out / f'{k}.mp3'
-            await edge_tts.Communicate(text, VOICE[lang], rate=RATE[lang]).save(str(f))
+            await edge_tts.Communicate(spoken(text, lang), VOICE[lang], rate=RATE[lang]).save(str(f))
             meta[lang][k] = text
             print(lang, k, f.stat().st_size)
     (ROOT / 'public' / 'audio' / 'intro' / 'lines.json').write_text(json.dumps({'voices': VOICE, 'lines': meta}, ensure_ascii=False, indent=1), encoding='utf-8')

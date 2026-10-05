@@ -192,13 +192,16 @@ html[data-theme=light] #suggest .fy-pick select, html[data-theme=light] #suggest
 html[data-theme=light] #suggest .btn { background: rgba(255, 255, 255, .06); color: #eceff5; border-color: rgba(255, 255, 255, .14); }
 html[data-theme=light] #suggest .btn.gold { background: linear-gradient(135deg, rgba(255, 214, 107, .22), rgba(232, 169, 60, .14)); color: #ffd66b; }
 html[data-theme=light] #lampMap .lm-orders button, html[data-theme=light] #lampMap .lm-ctrl button { color: #eceff5; }
+/* (6 Oct, author's remark) the chosen order stays readable in the light theme: dark text on the gold pill (it was white on light gold) */
+html[data-theme=light] #lampMap .lm-orders button[aria-checked=true] { color: #1a1406; background: #ffd66b; border-color: #ffd66b; font-weight: 600; }
+html[data-theme=light] #lampMap .lm-ctrl button b { color: #ffd66b; }
 /* the drawer in the light theme: paper */
 html[data-theme=light] #navDrawer { background: linear-gradient(180deg, #fbf6ea, #f3ead6); border-color: rgba(168, 111, 12, .25); box-shadow: 0 0 50px rgba(60, 40, 10, .25); }
 html[data-theme=light] #navDrawer .nd-head h2 { color: #8a5a06; }
 html[data-theme=light] #ndDock #dock button { background: #fffaf0; color: #8a5a06; }
 html[data-theme=light] .nd-item .ni, html[data-theme=light] .nd-theme .ti { color: #8a5a06; }
 html[data-theme=light] .navb { color: #8a5a06; background: #fff; }
-html[data-theme=light] .rd-main .rd-p1 { background: linear-gradient(135deg, #c8901f, #a86f0c); color: #fff; }
+html[data-theme=light] .rd-main .rd-p1 { background: linear-gradient(135deg, #9a6508, #7a4f06); color: #fff; }   /* (6 Oct) 4.9:1 */
 html[data-theme=light] .st-w b { color: #241d12; }
 html[data-theme=light] .st-pos { background: rgba(60, 40, 10, .06); }
 html[data-theme=light] .st-pos i, html[data-theme=light] .st-w small { background: #b8790f; color: #8a5a06; }
@@ -356,3 +359,31 @@ body.read-full[data-mode=study] #rzone { display: flex !important; grid-row: 1 /
 @media (min-width: 861px) { body.read-full[data-mode=study] #work { grid-template-columns: minmax(0, 1fr) 0 !important; column-gap: 0; } body.read-full[data-mode=study] .col-side { display: none; } }
 @media (max-width: 860px) { body.read-full[data-mode=study] #work { grid-template-rows: 0 minmax(0, 1fr) !important; } body.read-full[data-mode=study] #mtabs { display: none; } body.read-full[data-mode=study] #work { bottom: 0; } }
 #rFull[aria-pressed=true] { color: var(--gold); border-color: rgba(255, 214, 107, .55); }
+
+/* (6 Oct, author's request) the end of a surah in the reader: «I finished this surah ✓» and the next surah */
+.rd-end { margin: 26px auto 34px; max-width: 640px; padding: 16px 18px; border-radius: 16px; text-align: center; border: 1px solid rgba(255, 214, 107, .35); background: rgba(255, 214, 107, .06); }
+.rd-end-t { margin: 0 0 10px; color: var(--gold); font-weight: 600; }
+.rd-end-b { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.rd-end .btn[disabled] { opacity: 1; cursor: default; border-color: #5EE6A0; color: #5EE6A0; }
+html[data-theme=light] .rd-end { background: #fff8e8; border-color: rgba(168, 111, 12, .35); }
+html[data-theme=light] .rd-end-t { color: #8a5a00; }
+html[data-theme=light] .rd-end .btn[disabled] { color: #1d7a4a; border-color: #1d7a4a; }
+/* the tafsir while reading full screen: a side sheet (a bottom sheet on a phone) */
+body.read-full.taf-full[data-mode=study] .col-side { display: contents !important; }
+body.read-full.taf-full[data-mode=study] #szone, body.read-full.taf-full[data-mode=study] #splitSide { display: none !important; }
+body.read-full.taf-full[data-mode=study] #tzone { display: flex !important; flex-direction: column; position: fixed; z-index: 62; top: 70px; bottom: 12px; inset-inline-end: 12px; width: min(520px, 44vw); border-radius: 16px; box-shadow: 0 20px 70px rgba(0, 0, 0, .55); overflow: hidden; }
+body.read-full.taf-full[data-mode=study] #viewTaf { flex: 1; min-height: 0; overflow: auto; }
+@media (min-width: 861px) { body.read-full.taf-full[data-mode=study] #rzone { margin-inline-end: min(540px, 46vw); } }
+@media (max-width: 860px) {
+  body.read-full.taf-full[data-mode=study] #tzone { top: auto; inset-inline: 0; bottom: 0; width: auto; height: 58vh; border-radius: 16px 16px 0 0; }
+}
+/* (6 Oct) a tool panel open on a phone: the engagement note waits (it covered the panel header) */
+@media (max-width: 860px) { body[data-panel] #engToast { display: none !important; } }
+/* (6 Oct) contrast audit, light theme: verse numbers and ▶ of the Mushaf, the loader's word, the first preferences,
+   the count of the tasbih — all at least 4.5:1 on the paper background */
+html[data-theme=light] .mushaf .end { color: #8a5a00; }
+html[data-theme=light] .vplay { color: #8a5a00; opacity: .85; }
+html[data-theme=light] #loadMsg { color: #5b6170; }
+html[data-theme=light] .wprefs .wp > span:first-child { color: #4a4f5c; }
+html[data-theme=light] .ts-btn small { color: #5b6170; }
+html[data-theme=light] .g-orn { color: #8a5a00; }

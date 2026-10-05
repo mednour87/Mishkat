@@ -323,3 +323,44 @@ body.child .tj-madd6 { color: #c9a2ff; } body.child .tj-maddw { color: #ffb4d2; 
   #intro.feat .in-stage { inset: 62px 8px 46px; width: auto; }
   #intro.feat .in-card { padding: 16px 14px; justify-content: safe center; }
 }
+
+/* (6 Oct) khatma: today's portion done, the reading record */
+.k-daydone { margin: 8px 0 4px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(94, 230, 160, .45); background: rgba(94, 230, 160, .07); }
+.k-daydone p { margin: 4px 0; }
+.k-rec { margin: 4px 0 8px; padding-inline-start: 18px; line-height: 1.8; font-size: 13.5px; }
+.k-rec small { color: var(--muted, #9aa3b5); }
+html[data-theme=light] .k-daydone { background: #eefaf3; border-color: #1d7a4a; }
+/* (6 Oct) repetition: tajweed rules, the next session's settings, the test */
+.tk-tj { margin: 6px 0 4px; padding: 8px 12px; border-radius: 12px; border: 1px solid var(--line); font-size: 13.5px; line-height: 1.7; }
+.tk-tj ul { margin: 0; padding-inline-start: 14px; list-style: none; } .tk-tj li { margin: 4px 0; }
+.tk-tjw { font-family: var(--quran); font-size: 16px; }
+.tk-next { margin-top: 14px; text-align: start; border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; }
+.tk-next summary { cursor: pointer; color: var(--gold); font-weight: 600; }
+.tk-test h3 { margin: 4px 0; color: var(--gold); }
+.tt-v { margin: 10px 0; padding: 10px 12px; border-radius: 14px; border: 1px solid var(--line); background: rgba(255, 255, 255, .03); }
+.tt-v.good { border-color: #5EE6A0; } .tt-v.bad { border-color: #ff9a6b; }
+.tt-h { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.tt-v textarea { width: 100%; box-sizing: border-box; margin: 6px 0; font-family: var(--quran); font-size: 20px; line-height: 1.9; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255, 255, 255, .05); color: var(--txt); resize: vertical; }
+.tt-hint { font-family: var(--quran); font-size: 19px; color: var(--gold); margin: 4px 0; }
+.tt-ans { font-family: var(--quran); font-size: 20px; line-height: 2; margin: 4px 0; }
+.tt-ans mark { background: rgba(255, 154, 107, .35); color: inherit; border-radius: 4px; padding: 0 2px; }
+.tt-ok { color: #5EE6A0; margin: 4px 0; } .tt-mid { color: #ffc46b; margin: 4px 0; } .tt-no { color: #ff9a6b; margin: 4px 0; }
+.tt-mic.rec { border-color: #ff6b6b; color: #ff6b6b; }
+.tt-final { margin: 14px 0; padding: 12px 14px; border-radius: 14px; border: 1px solid rgba(255, 214, 107, .45); background: rgba(255, 214, 107, .06); }
+.tt-final.good { border-color: #5EE6A0; } .tt-final.bad { border-color: #ff9a6b; }
+.tt-final h3 { margin: 0 0 6px; }
+html[data-theme=light] .tt-v { background: #fffdf7; } html[data-theme=light] .tt-v textarea { background: #fff; color: #1d2433; }
+html[data-theme=light] .tt-ok { color: #1d7a4a; } html[data-theme=light] .tt-mid { color: #8a5a00; } html[data-theme=light] .tt-no { color: #b4441b; }
+html[data-theme=light] .tt-hint, html[data-theme=light] .tk-test h3, html[data-theme=light] .tk-next summary { color: #8a5a00; }
+html[data-theme=light] .tt-final { background: #fff8e8; }
+/* (6 Oct) tasbih */
+.ts-pick .chip { font-family: var(--quran), var(--ui); }
+.ts-box { display: grid; justify-items: center; text-align: center; gap: 6px; margin-top: 10px; }
+.ts-text { font-family: var(--quran); font-size: 22px; line-height: 2; margin: 0; max-width: 640px; }
+.ts-part { font-family: var(--quran); font-size: 26px; color: var(--gold); margin: 0; }
+.ts-btn { position: relative; width: 170px; height: 170px; border-radius: 50%; border: 0; background: radial-gradient(circle, rgba(255, 214, 107, .14), rgba(255, 214, 107, .02)); color: var(--txt); cursor: pointer; display: grid; place-items: center; align-content: center; font: inherit; touch-action: manipulation; }
+.ts-btn svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.ts-btn .tk-ring0 { fill: none; stroke: rgba(255, 255, 255, .12); stroke-width: 6; } .ts-btn .tk-ring { fill: none; stroke: var(--gold); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 100; transition: stroke-dashoffset .2s; }
+.ts-btn b { font-size: 44px; color: #fff3cf; position: relative; } .ts-btn small { position: relative; color: #9aa3b5; }
+.ts-btn.done .tk-ring { stroke: #5EE6A0; } .ts-btn.pop { animation: tkpop .25s; }
+html[data-theme=light] .ts-btn b { color: #6b4500; } html[data-theme=light] .ts-btn .tk-ring0 { stroke: rgba(0, 0, 0, .12); } html[data-theme=light] .ts-btn .tk-ring { stroke: #b07a06; } html[data-theme=light] .ts-part { color: #8a5a00; }

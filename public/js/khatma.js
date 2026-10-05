@@ -151,16 +151,44 @@ function splitMoments(list, moments) {
 }
 // today's portion: the next unread units up to the day's share (what is left spread over the days left — automatic
 // catch-up — or the fixed daily amount), split over the moments
-export function todayPortion2(plan, bits, units, date = new Date()) {
+// (6 Oct, author's request) snap = { day: 'YYYY-MM-DD', start, doneW } — what was read when the day began. The day's
+// share is fixed from it, so reading more than the portion is not swallowed by a new portion: it is shown as today's
+// extra, kept, and the plan is spread again over what is left (the next days' portions get smaller). Without a snap
+// (or a snap of another day / another plan) the day begins now. The result carries the snap to keep.
+export function todayPortion2(plan, bits, units, date = new Date(), snap = null) {
   const p = planOf(plan), k = dayIndex(p.start, date), days = planDays(p, units), total = planTotal(units);
   const doneW = units.reduce((s, u) => s + (unitDone(bits, u) ? u.w : 0), 0), left = total - doneW;
-  if (left <= 1e-9) return { finished: true, day: k + 1, days, total, doneW, parts: [] };
+  const day = ymd(date);
+  const snap2 = snap && snap.day === day && snap.start === p.start && snap.doneW <= doneW + 1e-9 ? snap : { day, start: p.start, doneW };
   const daysLeft = Math.max(1, days - Math.max(0, k));
-  const share = p.mode === 'amount' ? Math.max(0.01, +p.perDay || 1) : left / daysLeft;
+  const readToday = Math.max(0, doneW - snap2.doneW);
+  if (left <= 1e-9) return { finished: true, day: k + 1, days, total, doneW, parts: [], snap: snap2, readToday };
+  const share = p.mode === 'amount' ? Math.max(0.01, +p.perDay || 1) : (total - snap2.doneW) / daysLeft;
+  // done when what is left of the share is less than half the next unit (the portion is cut on whole units)
+  const next = units.find(u => !unitDone(bits, u)), rest = share - readToday, dayDone = !next || rest < next.w / 2 + 1e-9;
+  // the units still to read today; once the day is done: the next units of one more day's share («read more»)
+  const goal = dayDone ? (p.mode === 'amount' ? share : left / Math.max(1, daysLeft - 1)) : rest;
   const list = []; let w = 0;
-  for (const u of units) { if (unitDone(bits, u)) continue; if (list.length && w + u.w / 2 > share + 1e-9) break; list.push(u); w += u.w; }
+  for (const u of units) { if (unitDone(bits, u)) continue; if (list.length && w + u.w / 2 > goal + 1e-9) break; list.push(u); w += u.w; }
   const expected = total * Math.min(days, Math.max(0, k)) / days;
-  return { finished: false, day: k + 1, days, daysLeft, total, doneW, share, w, parts: splitMoments(list, p.moments), behind: Math.max(0, expected - doneW) };
+  // the next days' portion as it stands now (it shrinks when the visitor reads ahead)
+  const nextShare = p.mode === 'amount' ? share : left / Math.max(1, daysLeft - (dayDone ? 1 : 0));
+  return { finished: false, day: k + 1, days, daysLeft, total, doneW, share, w, parts: splitMoments(list, p.moments), behind: Math.max(0, expected - doneW),
+    snap: snap2, readToday, dayDone, extra: Math.max(0, readToday - share), nextShare };
+}
+
+// (6 Oct) the record of what was read: one entry per day and run of consecutive verses, newest last
+//   rec = [{ d: 'YYYY-MM-DD', a, b }] (verse indexes); at most `max` entries kept
+export function addRecord(rec, idxs, date = new Date(), max = 400) {
+  const out = Array.isArray(rec) ? rec.slice() : [], d = ymd(date);
+  for (const i of [...new Set(idxs)].sort((x, y) => x - y)) {
+    const l = out[out.length - 1];
+    if (l && l.d === d && i >= l.a && i <= l.b) continue;
+    if (l && l.d === d && i === l.b + 1) l.b = i;
+    else if (l && l.d === d && i === l.a - 1) l.a = i;
+    else out.push({ d, a: i, b: i });
+  }
+  return out.slice(-max);
 }
 // .ics reminders of a v2 plan: day d reads the units of its share (ignoring what is already read)
 export function planToIcs2(plan, units, { title = 'Mishkat', describe = (part) => '', url = '' } = {}) {
