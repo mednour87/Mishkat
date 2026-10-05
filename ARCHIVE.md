@@ -7,14 +7,14 @@ it proves what existed and when.
 
 | | |
 |---|---|
-| Label | `v2026-10-06-final` |
-| Commit | `baa54c382e90da828fb97eee76017bfe5bbc8ae3` |
-| Commit date | 2026-10-06T00:39:12+02:00 |
-| Files | 1873 |
-| SHA-256 of the table below | `63a0dc320c5c6dce2155701c44f864232b34fbb83a21deb47363c7eb915d4de3` |
-| ZIP of this commit (`git archive`) | `mishkat-v2026-10-06-final-baa54c3.zip` — SHA-256 `05c4554fbd7ac5a2ab35cbcdfddf875fe09b60397acce5d2b3a8fcc5f98852ad` (kept by the author) |
+| Label | `v2026-10-06-t113` |
+| Commit | `ae3cdf0167cf926daf43a8926d63c1c68f438489` |
+| Commit date | 2026-10-06T01:41:26+02:00 |
+| Files | 1876 |
+| SHA-256 of the table below | `54763cb509a86c77fad736adaaee55fc1c808c7511b60791197ad8f1af2ea4ec` |
+| ZIP of this commit (`git archive`) | `mishkat-v2026-10-06-t113-ae3cdf0.zip` — SHA-256 `d6d977d46bc321009f490f237fc307be8e7d997e4acbc9a713cad6798fed37d1` (kept by the author) |
 
-Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the same fingerprints, and
+Check: `git checkout ae3cdf0167cf && node tools/archive.mjs check` gives the same fingerprints, and
 `sha256sum` of a file must match its line below.
 
 | File | Bytes | SHA-256 |
@@ -49,13 +49,13 @@ Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the sam
 | `.claude/skills/workers-best-practices/references/runtime-patterns.md` | 13983 | `f736b94a58dd4d78cd05721b11b3212d62e98c471faf243116282b6a36014458` |
 | `.claude/skills/wrangler/SKILL.md` | 11247 | `e7b27421bcee8db46ccb4149a8c0626ba4b887cbe8ef1ed86b7fc860d4cb63b4` |
 | `.gitignore` | 726 | `d8a6dee7e13a678b244c81ab79130091321c20e18d6225757d955823c54c6b54` |
-| `ARCHIVE.md` | 270791 | `815951de5d12e6d009883d050ab19aeed7bcb0530d32f729b8fa5c774fa0710c` |
+| `ARCHIVE.md` | 271227 | `175c02744d48791352d333fde2511dd5fc19c2cbb6c73de19c2c1f2325f22264` |
 | `BASELINE.md` | 40925 | `174fc381c3669375c908a436fcda8907659fa04613df67717ee3969426816afa` |
-| `CHANGELOG.md` | 43609 | `afd5e672af4889db978b24a7f2fb0ee645ca09dffdb09025d87f418c74dd6b0b` |
+| `CHANGELOG.md` | 45974 | `f7cde64cae6daac1d413582a914040ae94ec113848ecb3f97dcbfd22c86659c2` |
 | `DEPLOY.md` | 2216 | `4bef6d65ea7658c0321ac07f207996d1b59b3d6817f4f5744f2d6412de973545` |
 | `LICENSE` | 2604 | `b764158f63cf78352ee76b752b344a11a7909466d2c06c7ce9791d75c231d23c` |
 | `NOTICE.md` | 2304 | `195cbcd69bb80a2aa9a8fc2741005cb55d6460e0ba636933b1bb938a7974460b` |
-| `README.md` | 18942 | `748d02767c2013bddf8adcad7a4d7faf76bcc802024fc0e5c9823f6145aae3b7` |
+| `README.md` | 21102 | `1be3e58f618821b2a325c904592b4ed283740cf4781a3b2b8352246cfb200e63` |
 | `SOURCES.md` | 18380 | `3db5515d4cf4594ce2b7a49231159b63ae755e5db4feeac765d6e91ca1c1a1d5` |
 | `TOOLS.md` | 5928 | `71fca718e0426e8d37b6da742c33c04048dd8124e7f5cd0e6fa0743ee1d1b42e` |
 | `data_build/baseline_snapshot.py` | 6460 | `7154f0458b7eed1f1b190e09bf04e0b4178145cf9949ed67bfda26fff95f1cdf` |
@@ -699,11 +699,11 @@ Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the sam
 | `data_build/quran-uthmani.txt` | 1370878 | `bf4f57b968d03f4131c070b1e285da9be0e0a108a21c910e872801ca273312c8` |
 | `docs/GUIDE_DETAILLE.md` | 18251 | `b43fa8256191bc72396cc40fbfcf1d4b999d6c6d52e5a65e22eb3c41442bf3bf` |
 | `docs/MOTEUR_RECHERCHE_RAG.md` | 16457 | `b832e8f4d570cf68bebac5b89f0fdc3427dc6ff8cce58d4ef567e03c8ec5d4bd` |
-| `docs/TRACEABILITY.md` | 122772 | `0907cdabdeefef14bfda153f5558a1cb0a460b2e6452ca0816cae1e0b3cfbba2` |
+| `docs/TRACEABILITY.md` | 124571 | `16d7724788ad5ff38012ba8ee221b6dbebe3caa4af094bd3c2a59d78b0ad45cd` |
 | `docs/deck_to_pdf.ps1` | 627 | `9becfd06174c0b340482b4b0f71515e8d2184cc795d22ad914b87a44cbe1682c` |
 | `docs/make_deck.py` | 25065 | `bb9ec770dfb0dd57e665f0122f24e96157ca9ed0daf75124bd595b1ca11a3d32` |
 | `docs/pipeline_rag.png` | 1358371 | `efc517e14696160457176a13e13f83c3b3e32d45059d8e58b0666ef4fdea6876` |
-| `docs/traceability.html` | 256170 | `3f3efba46fad823a2f07dbb3ae70ab350b33a94dde2104f6efca266462baf533` |
+| `docs/traceability.html` | 261105 | `66baf67a94e3858896d1fdccef41d2feb5b4d89a5f45ee166d0b4fcf6e2a3e54` |
 | `eval/audit_relevance.mjs` | 2290 | `02e04f67c1e0fc8f31668c7b8406318821c9179c44562d34d78616aca46908df` |
 | `eval/bench_llm.mjs` | 3042 | `2590049a1a4dd808339961abb8128e2eda1dd548983c2fecd846b964a15d716f` |
 | `eval/collect_forum.py` | 1489 | `71c15a0bf5e1ecc3aa10ba2711ab58ec2ee69db0d964832c51c4d70869319646` |
@@ -834,29 +834,29 @@ Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the sam
 | `public/_headers` | 1489 | `026f3d742d9bd3ad83dc1a21bb5e32d7adf7c9956b67fea2b164548e08a919ef` |
 | `public/audio/LICENSE-adhan.txt` | 656 | `bbc2dc37ee07dc82b50214557b56993e77ffc13e80ff1cf7d5cc441d125a2403` |
 | `public/audio/adhan.mp3` | 1448294 | `0faa59e2028bbb2f60a670b53ec89ffcf628f3c195b43fb41d9bdbc99000c1b3` |
-| `public/audio/intro/ar/child.mp3` | 54000 | `7368bc01ac6edc2f25c3e5a3b322eea2dbe21fb6ce9bb4e37f14f19b949aa360` |
-| `public/audio/intro/ar/galaxy.mp3` | 67248 | `e113a8bb77a60db0932da186dfcfe362e442f433c5bc921348436b7565cbf8c2` |
-| `public/audio/intro/ar/greet.mp3` | 33120 | `08b596c19955cf871ec3e8242a2e0369df49ccafd63d233081ebfeac812ac6bb` |
-| `public/audio/intro/ar/install.mp3` | 58608 | `7d5204d5818553e93cafaf367fa7f9c35616c1ca9706720e8b121655d5179c0d` |
-| `public/audio/intro/ar/khatma.mp3` | 63216 | `54e4a1a4b1e6350f8d2e24341778a440482f0d368a001cca738e5b19aa94a788` |
-| `public/audio/intro/ar/prayer.mp3` | 63936 | `8e2fb7df6d94894de7d8927a98a2d3dd399c2514064b85a783dd20f24adc5327` |
-| `public/audio/intro/ar/recite.mp3` | 64080 | `f0f43a78d359d781fda0bf2200e67b7a700879485698c98e6a27b23aef357cbf` |
-| `public/audio/intro/ar/search.mp3` | 115776 | `07135ad50a63e71375d7830d5f2bd505b885c7f4161e81dc8cc2fcc81af80064` |
-| `public/audio/intro/ar/tekrar.mp3` | 54720 | `55711cde1fe9d86499e5db3e7aa0c72af0c7750142d4d32f2d2098f525abcc88` |
-| `public/audio/intro/en/child.mp3` | 41904 | `7801a86dfccb35809bde25ab384a2ddebf8cdc18bc6cb9925bad2446afb4d377` |
-| `public/audio/intro/en/galaxy.mp3` | 54576 | `af58d8fa2bd91ceada27550b4a3272422adc37099435391a5473ec1537109082` |
-| `public/audio/intro/en/greet.mp3` | 24048 | `047c7c87d6460d90957bb4a17893b7625db29eae171ed76c3d76ba64f7a149cf` |
-| `public/audio/intro/en/install.mp3` | 47664 | `5c79572779dc27e8b4638902601051a168519c1af02888084696d7976b5e6300` |
-| `public/audio/intro/en/khatma.mp3` | 53136 | `dee3750ce16cb84b2214d06777d94464da37514114516fbb83bfed45ba273141` |
-| `public/audio/intro/en/prayer.mp3` | 42624 | `5d3d527e495b73ccfc826764774d3940640201f527ca7ebfe0946c1f48a0186e` |
-| `public/audio/intro/en/recite.mp3` | 57024 | `ea18673439997a1c67d98e07597f5188486f66567bf6f8f7dedf1ccb14cfc348` |
-| `public/audio/intro/en/search.mp3` | 92304 | `65101798e34c962f9a998ba6d7e7050764b222aa619b754d30502187d4af8d3b` |
-| `public/audio/intro/en/tekrar.mp3` | 47664 | `7b4ef6d0d1b5fdcc6438e81719239c7b768cdc228d216097f247207516bb1317` |
+| `public/audio/intro/ar/child.mp3` | 54000 | `5bbf9607e706feea414b4811abb9f249edae62c804173d8b8f332921bd8e088b` |
+| `public/audio/intro/ar/galaxy.mp3` | 66960 | `759630d7d5a9e66b0aabbe2915dcac44df25d2c32066b126eed8b07e401a02d2` |
+| `public/audio/intro/ar/greet.mp3` | 32544 | `fc5a67c8c145700c35c16b39d757432b592331e8f4861953d68a1851b099324b` |
+| `public/audio/intro/ar/install.mp3` | 59328 | `155616fcf87f7b5c542a9f60f68ad2e9f0a83aba01098f0f7f3b4e696dac95c9` |
+| `public/audio/intro/ar/khatma.mp3` | 63360 | `5514c3c1e88b698cf033a1ace96260b2fe551cb0c666b815236b5a514414bdf2` |
+| `public/audio/intro/ar/prayer.mp3` | 63936 | `9652ab2969eb53540e0e65181857e6866f4978d4f7d55c544794dec22490ba0b` |
+| `public/audio/intro/ar/recite.mp3` | 64080 | `9f03b6bfc84b06435bceb27e0d21eaba9fc6e0be05ea5569795b2fda708e2770` |
+| `public/audio/intro/ar/search.mp3` | 116208 | `7c7bdbab87d87b0ac19b602d2ec938c5943a5cdcc2388de6010dd45d93438247` |
+| `public/audio/intro/ar/tekrar.mp3` | 54864 | `7af9a6ec2600253227af0428bc508902926773353b6c26de79ea4ef6d1a12741` |
+| `public/audio/intro/en/child.mp3` | 41904 | `0f123c3c8a5c3756922bec33c26be296073140946cffcd4df44b6953d87bf403` |
+| `public/audio/intro/en/galaxy.mp3` | 54576 | `afd368666db270d373bfbf6d69cd771b7c41b118e034b2da0d8c4b8beb45d4ea` |
+| `public/audio/intro/en/greet.mp3` | 24048 | `fc4701c37e377342568991dd496edcbb3ee3a462098dd599ae4c4bfec021889e` |
+| `public/audio/intro/en/install.mp3` | 47664 | `76846602b653246aa8ca96af26b8dac6b885d22b550af08cecea11bea62536be` |
+| `public/audio/intro/en/khatma.mp3` | 53136 | `8db57399e10cb72d48ec0ae40bcf273902d1b1c88117ce2932681db7b20237cc` |
+| `public/audio/intro/en/prayer.mp3` | 42624 | `f740a744d987bc95a89102e9e50cc31705e275a291f23a52ebd7b53774048c08` |
+| `public/audio/intro/en/recite.mp3` | 57024 | `cded6d1b6aaa87966b52145a37ce31dfcb1090691c7a76079bb3052866376b8f` |
+| `public/audio/intro/en/search.mp3` | 92304 | `be6defc68308a255a4bacbc4c216efe55742660953daf27ae2ea4cef94d50b12` |
+| `public/audio/intro/en/tekrar.mp3` | 47664 | `fe08238bbf22dc454f027705c02c52ba79adf0bea2d60eb63999c960b4295a8b` |
 | `public/audio/intro/lines.json` | 4364 | `f10aa51a4ed63df7b2a558dd7e685cfcf40b62d12740ab98c46f00d5f71865e6` |
 | `public/audio/welcome_ar.mp3` | 35424 | `062472c19964ecccaa20f62d46fdba001d32400611fe551d9ac21fef84a51bf9` |
 | `public/css/app.css` | 89923 | `72e9e6fb2b52f5172ab38be979d5c6370614bfd51e61753094f8fa8bc517cbe8` |
-| `public/css/features.css` | 33745 | `ec96ceacd08e742ed83c4c3752db48a8a8a6ec9053125186085511aa6d075538` |
-| `public/css/refonte.css` | 28555 | `227e8bccc558fa35a17f9d34a366d17ee6696e5dc57eff05ae5c5e4bb977fedd` |
+| `public/css/features.css` | 38089 | `09d8f1bc47741549574981fe874e41f00b168fe74b7a1bbe66203cd3543f38fd` |
+| `public/css/refonte.css` | 31483 | `b36870e8544b2b4db3f14bdb3fc9d420552c6e2c1e5d30f32a8614fed4267c87` |
 | `public/css/tajweed-page.css` | 3483 | `e291d9e35fa2c504f8079a5b85a5da938db185879c2766fe21f2ecd7d2b8d199` |
 | `public/data/athkar.json` | 532394 | `92bb00523f30905a94c381b30dbb39bca1ae0a9f88ec31ab26bbe79ef6519fc2` |
 | `public/data/bayenat_index.json` | 205638 | `2cb47793398d78f8e6723d0ff117ebc3f9aa8c8c956e240f50912d893d7a98b4` |
@@ -1774,7 +1774,7 @@ Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the sam
 | `public/img/logo_render.html` | 322 | `540da67f19db5baf90e8cfd456b4106e6ea92d92e2bf43b6493eb046edfda45f` |
 | `public/img/og.png` | 718998 | `c674a5fb9f1780c7eafe3dfb5b7a8139bed0fba9ac37de07b1cca2d51d9b0eb8` |
 | `public/index.html` | 14966 | `530e39d729ee55b05267327ef6313a4cb8a71c2608531ce01c9064c2f234b6eb` |
-| `public/js/app.js` | 170386 | `a6d4d101abd875bd02ab444fd9a468c73064afc64f8cf6cd0b66c2c7d3c466a5` |
+| `public/js/app.js` | 176188 | `fdd84548e35e8fa747c0eaf5723e76288329d42ed4180e53708563381d8cc0f7` |
 | `public/js/athkar.js` | 10348 | `f2781ffafde726a717f8b7dbc5ea226ac9b6c5fcc91b2c7ceea32b1887795375` |
 | `public/js/basmala.js` | 2055 | `1327d1d9a44d52c4d7d3693bd702c71d6295443d8fa54b2482361ffa11742dc3` |
 | `public/js/dense-rank.js` | 1948 | `a0b7e7a6b2089141be0bbf746fa8f523b509586dbc21cc3c4c67ed2b465be5ba` |
@@ -1783,11 +1783,12 @@ Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the sam
 | `public/js/engine.js` | 153338 | `c9309a2a68c4b3ab84dd46d0d3daea9580354eb5c013ea1bad6e67b8e66b738f` |
 | `public/js/galaxy.js` | 42950 | `c56811022c9a0984daaa479cbd80b62a82de0be7b3f19184abc79d1afeefc995` |
 | `public/js/glossary.js` | 5807 | `af51eb753255844ecbf8fba3d540536a83a2a1e4a84f7c38b2de1a3e16ec8ed9` |
+| `public/js/hifztest.js` | 2843 | `aa087cbba8fc377c78e01bfa469ff0ec6e44987f54c3407023359cec58b02e2c` |
 | `public/js/hijri.js` | 6120 | `975f37524c491841df21744103488b1e60a4267c03b2a5e4409adf0ddad5a2f7` |
 | `public/js/i18n.js` | 62832 | `190ca073c0b705bd6c9f382f118ca902df00ef20a5bcfce3abef8349729615ad` |
 | `public/js/injection.js` | 4494 | `93e01c7f25a46037f69062930096d2aefd41633f6901a97392960013942eb6e3` |
 | `public/js/intro.js` | 42023 | `ea5519a3f7252902409e523c6e04afa2f672e6b8b133cb40ad3799c3bb584b96` |
-| `public/js/khatma.js` | 14112 | `cf112f1de15a16351b356f001bc53872aa72c22d9e9b7afbee287af92fbe0f61` |
+| `public/js/khatma.js` | 16431 | `6af151b0831518382199edb2a8a953d789d0c5c558031f454ff9dead2f44ea14` |
 | `public/js/lamp.js` | 12471 | `92d39c88c5c19781889ebc7fc0a469b4096179de4e6317bba0dd3084ea044c8e` |
 | `public/js/lampmap.js` | 19816 | `5fb976e772c83049805e4e5f66513c17aa344f20c1a5206aa26ba0d26a916a5c` |
 | `public/js/layout-worker.js` | 1065 | `412b3d6ebf087f92d648992c16c5d36a8c509a56c63074d55e11c80fa90e79d9` |
@@ -1807,8 +1808,9 @@ Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the sam
 | `public/js/stories.js` | 11982 | `64031495a4baaa0efc914ef31b65311b7c1527590b2f9b5182e6bac742fd3537` |
 | `public/js/tajweed-page.js` | 6861 | `fcd5360cbf76f7bd78914a940f6228bab43a0192c196a50c2ef8c3cd4b988c96` |
 | `public/js/tajweed.js` | 11399 | `2d57d7e628b93b99cca04e833ac810309967d652ac0a4ce898f49f66f43d8d36` |
-| `public/js/tekrar.js` | 19292 | `d633d0af05be0b4634a7615667249a660d46b30870b79365d4f4a9974221f04e` |
-| `public/js/toolpanels.js` | 53532 | `35628fdf003f3cdb58db605c2f27d95601584fef96d51969af96b758cc715f4a` |
+| `public/js/tasbih.js` | 8913 | `7fb8b20bd4e29783eb192891962e3267269cecc3df6bc4245086fd1c3ba06400` |
+| `public/js/tekrar.js` | 33358 | `130aaf0171bd61f07bc9ddc2fa5bca7186fde0aaa7fe7e8a5c5ec6523fef5af2` |
+| `public/js/toolpanels.js` | 57730 | `b91eba8e087fdafb084c1c71a0f070f90ae03464257c0daa580684d47c3e02b6` |
 | `public/js/tools.js` | 6799 | `135572fcb2b73ebdd71131b13993529b4f1b7a86bdc7a80284f578aefbf6c737` |
 | `public/js/voice.js` | 6543 | `2431449a3a80a0e2e5f53d3a7a61c2c16c90e095924e5721cc45214d5f440ed2` |
 | `public/js/wake.js` | 1928 | `ddf5fc6c68d6a711d1009dffa20403563d296db02de96990067457fbd1e82add` |
@@ -1849,6 +1851,7 @@ Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the sam
 | `tests/mobile_layout.test.mjs` | 1290 | `c0db11fc591286359443fb83c6972b7cf0fc9353d92844e855f2eb79bfa31a00` |
 | `tests/oct5.test.mjs` | 5564 | `35b11e8d1fbdf460772136b32ddd795645a459b80890e63d35c06898b4abd63a` |
 | `tests/oct5b.test.mjs` | 5056 | `544807275ef6dc0ef0dbcd1efc611c3d0bd675da31379d53ac0879fae6c3cea7` |
+| `tests/oct6b.test.mjs` | 7283 | `53c0c92e9dcdb47b772e27ced7917b52e0175acaf87c66a1f8f816546e301dbb` |
 | `tests/pack.test.mjs` | 8297 | `8970326633f2d2222114f67217ee4d465ca5f0216c1b569ebb5953ce6771752d` |
 | `tests/practical.test.mjs` | 5640 | `9f8245efe7c95ab1c99f8433ea4ed74f6e4c01183fcf71599eff51a7bc26aaad` |
 | `tests/prefs.test.mjs` | 2065 | `c33e5580c7ead649140a40e9689f780e4a6e1da1fa742755fdb2b9079d6935fc` |
@@ -1874,14 +1877,14 @@ Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the sam
 | `tools/check_features.mjs` | 9234 | `84441b4d0753d1caae11bcd16672e90f8657211fcec610cddf35e3eda4769311` |
 | `tools/contrast_probe.js` | 2730 | `86d4926a94fc3f55201a297b1b88cc021423f0d2e205b5538a772cee7c65282b` |
 | `tools/make_icons.mjs` | 2005 | `be3ced2c46cfb4dd24b140713335f4eac1767cef6c764b37f3fbd7ecc2b7c497` |
-| `tools/make_intro_voice.py` | 1739 | `85c5cdcbfed4dd3dfbef95346d21322cf42b1264de61d51cd8e167ac40ce5340` |
+| `tools/make_intro_voice.py` | 2293 | `58204dae877b80ef6eed3aafbcd2a108ede3bb0ddb51a16a28180823eff639c4` |
 | `tools/make_lamp.py` | 4232 | `bc091c26a4c5f9ee0edca0d053327e1c5bdf188e1a27c29e42abb8d1b1dcb3f3` |
 | `tools/make_pipeline.mjs` | 14120 | `ec0188290c540f01415158e00d4ac849dfe3eb1dce5222cf102f5eb063aa4faa` |
 | `tools/make_social.mjs` | 7207 | `de84da8a8ace1ba3ac38a8368e9c6f93757e4e0316219519b0c78f389b9c2bcd` |
 | `tools/make_welcome_audio.py` | 2082 | `a1f6d270d5faaf56e20d4f03f0862c2e14722e91cc2fe9b96eddfbb5150dd9c5` |
 | `tools/shots.mjs` | 5451 | `8a72c88a8ecf5ba168bb58d37f370ce6ad1134f029f108ac6e8079b3f5ace722` |
 | `tools/trace.mjs` | 64676 | `4e4e5bb72ecdba7bc7d8f726180461762389e805e0e2e56ae3f93878d5372106` |
-| `tools/ui_shots.mjs` | 27586 | `117a36011f294597014d83ffa01b8867220dfb52d2c63e527786c8071c6ca941` |
+| `tools/ui_shots.mjs` | 31443 | `2169839f94bdc1f173f14a2e3e7f0d4096ad8ffb23aa42544c0dc7cae46b124d` |
 | `tools/video/build.mjs` | 14007 | `82d3d7e712dfee3454e212941a0672832c8b8ed095dc7fb89053f62c4dc2178f` |
 | `tools/video/build2.mjs` | 17467 | `b02eb5ec67851c060c618085d4aa287541af498dd623d1256c0a606cbe414ba4` |
 | `tools/video/capture.mjs` | 14348 | `119df4920ecb5e0969aec8ce74df891ae25c05a50618f6a820ff57f47657b5dc` |
@@ -1890,5 +1893,5 @@ Check: `git checkout baa54c382e90 && node tools/archive.mjs check` gives the sam
 | `tools/video/check_voice.mjs` | 973 | `42fc8ffb7df00ee74fa3aa04420a561af1fbaacb658467093a882bf7030ffab8` |
 | `tools/video/overlay.html` | 20377 | `17a3eacdcc7cb29141d5787a0b83a23dc6a2748d5df187cc63d0f8493872b872` |
 | `tools/video/voice.mjs` | 2198 | `5380598714c3b10f4a30d11484cd7fb7a01f38a7dcfda7b173f31711c868ea5f` |
-| `tools/video/voice_fusha.py` | 1674 | `854b0e6250773c8eccc7760c6358d3a7cec137f4907676f29561b7446fa7d7d7` |
+| `tools/video/voice_fusha.py` | 2135 | `b6e24b661d1a275e0a339e50378f015a08ebb50f7c03f6fb26118c56ca4877fa` |
 | `wrangler.toml` | 106 | `6fbdf536952ae4133f3d4ffbb657cca77211f979e2b41bd314f7fdf98302333b` |
