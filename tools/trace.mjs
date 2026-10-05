@@ -122,6 +122,7 @@ const HOSTS = {
   'overpass.private.coffee': { name: 'Overpass mirror (private.coffee)', ar: 'خريطة الشارع المفتوحة', ref: 'S28', role: 'last mirror of /api/mosques', licence: 'ODbL data' },
   'maps.google.com': { name: 'Google Maps (embed)', ar: 'خرائط Google', ref: 'S28', role: 'the map of the nearby mosques inside the panel (iframe, no key; allowed by the CSP frame-src)', licence: 'Google Maps terms' },
   'github.com': { name: 'GitHub', ar: 'غيت هب', ref: '—', role: 'links to the public source code and to open data projects (no call at run time)', licence: '—' },
+  'mishkatquran.org': { name: 'Mishkat (own domain, Cloudflare Pages)', ar: 'مشكاة', ref: '—', role: 'the site itself (canonical address, share card, www redirect)', licence: 'All Rights Reserved' },
   'mishkat-4m1.pages.dev': { name: 'Mishkat (Cloudflare Pages)', ar: 'مشكاة', ref: '—', role: 'the site itself (named in the User-Agent of server calls and in links)', licence: '—' },
   'overpass.kumi.systems': { name: 'Overpass mirror (kumi.systems)', ar: 'خريطة الشارع المفتوحة', ref: 'S28', role: 'mirror of Overpass when the main instance is busy', licence: 'ODbL data' },
   'nominatim.openstreetmap.org': { name: 'Nominatim (OpenStreetMap)', ar: 'خريطة الشارع المفتوحة', ref: 'S28', role: 'city search for prayer / qibla / mosques', licence: 'ODbL data, Nominatim usage policy' },
