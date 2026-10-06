@@ -1,5 +1,6 @@
 import { createEngine, detectLang, guardCheck, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens, isCrisis, isSensitiveText } from './engine.js';
 import { routeTool } from './tools.js';
+import { socialHTML } from './social.js';
 import { wordFacts } from './dwell.js';
 import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
 import { SHAPES, ORDERS, buildLayout } from './layouts.js';
@@ -125,7 +126,8 @@ function applyLang(lang) {
   { const l = $('#themeBtn .tl2'); if (l) l.textContent = t[document.documentElement.dataset.theme === 'light' ? 'themeLight' : 'themeDark']; }
   fillViewPickers();
   $('#legendBox').innerHTML = t.legendItems.map(([c, x]) => `<div><i style="background:${c};color:${c}"></i>${esc(x)}</div>`).join('');
-  $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice())) + `<p class="rights">${esc(T().rights)} · <a href="https://mishkatquran.org">mishkatquran.org</a></p>`;
+  $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice())) + socialHTML(lang, esc) + `<p class="rights">${esc(T().rights)} · <a href="https://mishkatquran.org">mishkatquran.org</a> · <a href="judges.html?lang=${lang}" target="_blank" rel="noopener">${esc(t.judgesLink)}</a></p>`;
+  { const r = $('#ndSocialRow'); if (r) r.innerHTML = socialHTML(lang, esc); const j = $('#btnJudges'); if (j) j.href = `judges.html?lang=${lang}`; }
   $('#aiBadge').textContent = t.ai(state.llmModel);
   labelDock();
   if (state.core) refreshHud();
@@ -778,7 +780,7 @@ function renderResults() {
     const s0 = e.suraOf[res.verses[0].idx], a0 = e.ayaOf[res.verses[0].idx];
     h += `<div class="svc"><span>${esc(XS().svcTitle)}</span><button class="mini gold" data-svc="tekrar" data-s="${s0}" data-a="${res.type === 'sura' ? 1 : a0}">${esc(XS().svcTekrar)}</button><button class="mini" data-svc="stats" data-s="${s0}">${esc(XS().svcStats)}</button></div>`;
   }
-  if (res.type !== 'empty') h += `<p class="disclose">${esc(t.disclosure)}</p>`;
+  if (res.type !== 'empty') h += feedbackBar() + `<p class="disclose">${esc(t.disclosure)}</p>`;
   const v = $('#viewRes');
   v.innerHTML = h;
   v.scrollTop = 0;
@@ -791,6 +793,7 @@ function renderResults() {
   v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playv, { play: 'one', pane: 'r' }); });
   v.querySelectorAll('[data-open]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.open, { pane: 'r' }); });
   const at = $('#ansTts'); if (at) at.onclick = () => speakAnswer(res.lang);
+  wireFeedback(v, res);
   v.querySelectorAll('[data-playfrom]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playfrom, { play: 'all', pane: 'r' }); });
   if (res.sensitive) { const first = v.querySelector('[data-ctx]'); if (first) toggleContext(first); }
   v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => goVerse(+li.dataset.idx, { pane: 'r' }));
@@ -2508,3 +2511,39 @@ function doPick(d) {
 }
 
 boot().catch(err => { $('#loadMsg').textContent = 'Error: ' + err.message; console.error(err); });
+
+// ------------------------------------------------------------ feedback (6 Oct, T118)
+// «هل أفادك هذا الجواب؟» under every answer: useful / not useful / report an error (with a short note). Sent only when
+// pressed: the question, the route, the references shown and the verdict — no identifier (functions/_lib/feedback.js).
+const FB = {
+  ar: { ask: 'هل أفادك هذا الجواب؟', up: 'نعم، أفادني', down: 'لم يُفدني', report: 'أبلغ عن خطأ', notePh: 'ما الخطأ؟ (آية في غير موضعها، نص غير مطابق، جواب خارج السؤال…)', send: 'أرسل', thanks: 'جزاك الله خيرًا — وصل تقييمك وسيراجعه صاحب المشروع.', thanksLocal: 'شكرًا لك.', fail: 'تعذّر الإرسال الآن؛ حاول لاحقًا.', privacy: 'يُرسل السؤال ومراجع الجواب وتقييمك فقط، دون أي معرّف شخصي.' },
+  en: { ask: 'Was this answer useful?', up: 'Yes, useful', down: 'Not useful', report: 'Report an error', notePh: 'What is wrong? (verse out of place, text not matching, answer off the question…)', send: 'Send', thanks: 'Thank you — your feedback was received and will be reviewed by the author.', thanksLocal: 'Thank you.', fail: 'Could not send now; please try later.', privacy: 'Only the question, the references of the answer and your verdict are sent — no personal identifier.' },
+};
+function feedbackBar() {
+  const f = FB[state.lang] || FB.ar;
+  return `<section class="fb" id="fbBox" aria-label="${esc(f.ask)}"><span class="fb-q">${esc(f.ask)}</span>
+    <button type="button" class="mini fb-b" data-fb="up">👍 ${esc(f.up)}</button><button type="button" class="mini fb-b" data-fb="down">👎 ${esc(f.down)}</button><button type="button" class="mini fb-b fb-rep" data-fb="report">⚑ ${esc(f.report)}</button>
+    <form class="fb-note" hidden><textarea maxlength="500" rows="2" placeholder="${esc(f.notePh)}" aria-label="${esc(f.notePh)}"></textarea><button type="submit" class="mini gold">${esc(f.send)}</button></form>
+    <p class="fb-msg note" aria-live="polite"></p><p class="fb-priv">${esc(f.privacy)}</p></section>`;
+}
+function wireFeedback(v, res) {
+  const box = v.querySelector('#fbBox'); if (!box) return;
+  const f = FB[state.lang] || FB.ar, form = box.querySelector('.fb-note'), msg = box.querySelector('.fb-msg');
+  const refs = () => [...new Set([...v.querySelectorAll('[data-idx]')].map(el => { const i = +el.dataset.idx; return state.engine ? `${state.engine.suraOf[i]}:${state.engine.ayaOf[i]}` : ''; }).filter(Boolean))].slice(0, 20);
+  let vote = null;
+  const send = async (note = '') => {
+    box.querySelectorAll('.fb-b').forEach(b => { b.disabled = true; b.classList.toggle('on', b.dataset.fb === vote); });
+    form.hidden = true;
+    try {
+      const r = await fetch('api/feedback', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ q: res.query, lang: res.lang || state.lang, vote, route: res.type || '', refs: refs(), note, model: state.llmModel || '' }) });
+      const j = r.ok ? await r.json() : null;
+      msg.textContent = j && j.ok ? (j.stored ? f.thanks : f.thanksLocal) : f.fail;
+    } catch (e) { msg.textContent = f.fail; }
+  };
+  box.querySelectorAll('.fb-b').forEach(b => b.onclick = () => {
+    vote = b.dataset.fb;
+    if (vote === 'up') return send();
+    form.hidden = false; form.querySelector('textarea').focus();
+  });
+  form.onsubmit = (ev) => { ev.preventDefault(); send(form.querySelector('textarea').value); };
+}

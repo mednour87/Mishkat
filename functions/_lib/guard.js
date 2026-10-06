@@ -37,7 +37,7 @@ export function dailyCapReached(name, env = {}, now = new Date()) {
   return calls > (+env.DAILY_AI_CALLS || 1500);
 }
 
-export const LIMITS = { expand: 40, select: 40, transcribe: 12, hadith: 30, fatwa: 30, pick: 40, answer: 30, dense: 40, tafsir: 60, tts: 40, mosques: 20, maxJsonBytes: 64 * 1024, maxAudioBytes: 4 * 1024 * 1024 };
+export const LIMITS = { expand: 40, select: 40, transcribe: 12, hadith: 30, fatwa: 30, pick: 40, answer: 30, dense: 40, tafsir: 60, tts: 40, mosques: 20, feedback: 10, maxJsonBytes: 64 * 1024, maxAudioBytes: 4 * 1024 * 1024 };
 
 // T082: the routes that put the visitor's text in a model prompt refuse instruction-like text even when a
 // script calls them directly (the page never sends it: the engine answers it without AI)

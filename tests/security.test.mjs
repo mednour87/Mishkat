@@ -31,7 +31,9 @@ test('CSP allows only our inline importmap (hash matches index.html) and no remo
   assert.ok(!/unsafe-eval/.test(csp));
   assert.ok(csp.includes("frame-ancestors 'none'"));
   // only one inline script and no inline event handlers in the page
-  assert.equal((html.match(/<script(?![^>]*src=)/g) || []).length, 1);
+  // (T118) the JSON-LD block (official pages for search engines) is data, never executed: it must parse as JSON
+  assert.equal((html.match(/<script(?![^>]*src=)(?![^>]*application\/ld\+json)/g) || []).length, 1);
+  for (const m of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) JSON.parse(m[1]);
   assert.ok(!/\son[a-z]+=/i.test(html));
   // _headers (Cloudflare) and the local server use the same CSP
   const hdr = readFileSync(new URL('../public/_headers', import.meta.url), 'utf8');

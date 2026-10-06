@@ -98,6 +98,9 @@ export const S = {
 
 // reviewed list (challenge reference pack + sources of Mishkat); labels are names of the sites
 export const LINKS = [
+  { cat: { ar: 'صفحات مشكاة الرسمية', en: 'Mishkat official pages' }, items: [
+    ['https://www.youtube.com/@mishketquran', 'قناة مشكاة على يوتيوب', 'Mishkat on YouTube'],
+    ['https://www.facebook.com/profile.php?id=61594931830065', 'صفحة مشكاة على فيسبوك', 'Mishkat on Facebook'] ] },
   { cat: { ar: 'القرآن والتفسير', en: 'Quran and tafsir' }, items: [
     ['https://quranenc.com', 'موسوعة القرآن الكريم المترجمة', 'QuranEnc — translated Quran encyclopedia'],
     ['https://quranpedia.net', 'قرآنبيديا', 'Quranpedia'],

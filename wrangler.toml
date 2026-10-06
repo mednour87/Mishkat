@@ -4,3 +4,8 @@ compatibility_date = "2026-09-01"
 
 [ai]
 binding = "AI"
+
+# (6 Oct, T118) visitors' feedback on answers (functions/_lib/feedback.js), free tier
+[[kv_namespaces]]
+binding = "FEEDBACK"
+id = "f8822beae5f846ebbfe57f2aad2e784d"

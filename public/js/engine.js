@@ -1840,7 +1840,13 @@ export function createEngine({ core, searchAr, sources = {} }) {
       const cands = candIdx.map(i => ({ id: ref(i), text: snippet(L, i) }));
       if (cands.length) {
         try {
-          const out = await withTimeout(llm.select({ query: q, lang: L, candidates: cands }), llmTimeoutMs);
+          let out = await withTimeout(llm.select({ query: q, lang: L, candidates: cands }), llmTimeoutMs);
+          // (6 Oct, T118) second opinion: when the selection keeps NO candidate («حق الجار في الاسلام» → nothing, while
+          // 4:36 was in the list), a model of another family reads the same closed list once; still nothing → abstain
+          if (out && typeof out === 'object' && Array.isArray(out.ids) && !verifyLLM(out, cands).ids.length) {
+            const o2 = await withTimeout(llm.select({ query: q, lang: L, candidates: cands, second: true }), llmTimeoutMs).catch(() => null);
+            if (o2 && typeof o2 === 'object' && verifyLLM(o2, cands).ids.length) { out = { ...o2, second: true }; base.meta.secondOpinion = true; }
+          }
           const v = verifyLLM(out, cands);
           // a proposed verse that shares no word with the question is kept only if the selection says it ANSWERS (score 2)
           const loose = new Set(proposedLoose.map(i => ref(i)));

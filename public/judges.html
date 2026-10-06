@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>دليل التحقّق للمحكّمين · Judges' guide — Mishkat</title>
+<meta name="description" content="How to verify Mishkat in a few minutes: scenarios, measured results with confidence intervals, and where every claim can be checked.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="css/judges.css">
+<script src="js/judges.js" defer></script>
+</head>
+<body>
+<header class="jh">
+  <a class="brand" href="./"><img src="img/logo.svg" alt="" width="40" height="40"><span>مِشكاة · Mishkat</span></a>
+  <nav class="lg" aria-label="Language"><a href="?lang=ar" data-l="ar">ع</a><a href="?lang=en" data-l="en">EN</a></nav>
+</header>
+
+<!-- ============================== ARABIC ============================== -->
+<main lang="ar" dir="rtl" data-lang="ar">
+<h1>دليل التحقّق للمحكّمين</h1>
+<p class="lead">محرّك بحث قرآني معزَّز بالذكاء الاصطناعي، <b>لا يكتب فيه النموذج حرفًا دينيًّا</b>: يفهم السؤال ثم يختار أرقام نصوص من قائمة مغلقة (آيات تنزيل، التفسير الميسر والمختصر، أحاديث HadeethEnc المحكوم عليها، الموسوعة الفقهية في الدرر السنية)، ويتحقق نموذج ثانٍ وقواعد ثابتة من الاختيار، ويُعرض النص بحروفه مع مصدره.</p>
+
+<h2>١. تحقّق بنفسك في ثلاث دقائق</h2>
+<p class="note">عند أول زيارة تظهر بوابة البسملة: اضغط «الصق البسملة وادخل». تُفتح كل تجربة في صفحة جديدة.</p>
+<table class="sc">
+<thead><tr><th>جرّب</th><th>ما الذي تلاحظه</th></tr></thead>
+<tbody>
+<tr><td><a target="_blank" rel="noopener" href="./?q=كيف+أتعامل+مع+الحزن">كيف أتعامل مع الحزن</a></td><td>«الجواب باختصار» جملٌ منقولة بحروفها، كل جملة مع آيتها أو حديثها؛ ثم الآيات بتفسيرها كاملًا والسور مرتبة حسب الصلة. وسم «اختارها الذكاء الاصطناعي من قائمة مغلقة».</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=ما+حكم+الموسيقى">ما حكم الموسيقى؟</a></td><td>شريط أحمر «سؤال حساس»؛ لا فتوى من «مشكاة»: نصّ الموسوعة الفقهية (الدرر السنية) بحروفه مع رابطه، وذكر الإجماع أو الخلاف.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=وجعلنا+من+الماء+كل+شيء+حي">وجعلنا من الماء كل شيء حي</a></td><td>التحقق من نصٍّ منسوب إلى القرآن: موضعه بالضبط (الأنبياء 21:30)، أو بيان التحريف أو الدمج إن وُجد.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=اكتب+لي+آية+عن+الصبر">اكتب لي آية عن الصبر</a></td><td>رفضٌ بجواب ثابت دون أي نموذج: «مشكاة» لا تكتب آيةً ولا حديثًا ولا فتوى، وتدلّك على البحث.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=قصة+يوسف">قصة يوسف</a></td><td>ملخّص منقول من موسوعة الجمهرة، ثم مراحل القصة بآياتها من نص المصحف.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=patience&amp;lang=en">patience (English)</a></td><td>الواجهة نفسها بالإنجليزية: المختصر بالإنجليزية وترجمة صحيح إنترناشونال.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?s=36&amp;a=1">سورة يس</a></td><td>المصحف مع تلاوة العفاسي المتزامنة كلمةً كلمة، والكلمة المتلوّة تضيء في المجرّة ثلاثية الأبعاد.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=متى+رمضان">متى رمضان</a></td><td>أداة يومية دون أي نموذج: التقويم الهجري (أم القرى). ومثلها: مواقيت الصلاة، القبلة، المساجد القريبة، الأذكار، الختمة، التكرار.</td></tr>
+</tbody></table>
+<p>تحت كل جواب: «هل أفادك هذا الجواب؟» و«أبلغ عن خطأ» — تُحفظ التقييمات بلا أي معرّف شخصي لقياس النفع بعد الإطلاق (<code>tools/feedback_report.mjs</code>).</p>
+
+<h2>٢. نتائج مقيسة (بفواصل ثقة 95 %)</h2>
+<table class="res">
+<thead><tr><th>القياس</th><th>النتيجة</th><th>الملف</th></tr></thead>
+<tbody>
+<tr><td>اختبار المسار الكامل على 1,000 سؤال (حَكَمٌ آلي من عائلة نماذج أخرى)</td><td>الآية الأولى تجيب مباشرة: 84.5 % [81.9–87.1]؛ الجواب القصير في الموضوع: 99.5 % [98.8–100]؛ حالات حرجة: 15 → 2</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/rag1000/REPORT_v1-v1j2_v4-v4j2.md">eval/rag1000</a></td></tr>
+<tr><td>نصوص منقولة غير مطابقة لمصدرها حرفيًّا</td><td>0 من 1,058</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/rag1000/README.md">eval/rag1000/README.md</a></td></tr>
+<tr><td>معيار عام: Qur'an QA 2023 (المهمة أ، 51 سؤالًا)</td><td>MRR@10 0.616 [0.490–0.742]، MAP@10 0.300 [0.210–0.402] — <b>مماثل</b> لأفضل منشور (0.576 / 0.313)، لا أفضل منه</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/qqa23/RESULTS.md">eval/qqa23/RESULTS.md</a></td></tr>
+<tr><td>روبوت محادثة عادي (النموذج نفسه بلا استرجاع)، 60 سؤالًا</td><td>من 121 اقتباسًا قدّمها على أنها قرآن: 26 مطابقة فقط، و72 لا تطابق أي آية (في «مشكاة»: 0 بالبناء)</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/human/auto_metrics.json">eval/human/auto_metrics.json</a></td></tr>
+<tr><td>الإفراط في الرفض: 50 سؤالًا مشروعًا يبدو حساسًا</td><td>50/50 أُجيب عنها</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/overrefusal.json">eval/overrefusal.json</a></td></tr>
+<tr><td>الاختبارات الآلية</td><td><code>npm test</code> — كلها ناجحة قبل كل نشر</td><td><a href="https://github.com/mednour87/Mishkat/tree/main/tests">tests/</a></td></tr>
+</tbody></table>
+<p class="note">حدود معلنة: الحَكَم آلي (التقييم البشري المعمّى جاهز في <code>eval/human/</code> ولم يُملأ بعد)؛ أسئلة المعيار العام رُئيت أثناء التطوير دون ضبطٍ عليها.</p>
+
+<h2>٣. أين تتحقّق من كل ادّعاء</h2>
+<ul class="links">
+<li><a href="https://github.com/mednour87/Mishkat/blob/main/README.md">README</a> — طريقة العمل والأرقام والحدود (عربي/إنجليزي)</li>
+<li><a href="https://github.com/mednour87/Mishkat/blob/main/docs/MOTEUR_RECHERCHE_RAG.md">محرّك RAG الاستخراجي</a> والقواعد R1–R13</li>
+<li><a href="https://github.com/mednour87/Mishkat/blob/main/SOURCES.md">سجلّ المصادر وتراخيصها</a> · <a href="https://github.com/mednour87/Mishkat/blob/main/TOOLS.md">النماذج والأدوات والتكلفة</a> · <a href="https://github.com/mednour87/Mishkat/blob/main/docs/TRACEABILITY.md">التتبّع (SHA-256 لكل ملف بيانات)</a></li>
+<li><a href="https://github.com/mednour87/Mishkat/blob/main/BASELINE.md">خطّ الأساس المعلن</a> · <a href="https://github.com/mednour87/Mishkat/blob/main/CHANGELOG.md">سجلّ التغييرات (عمل نافذة التحدي)</a></li>
+<li><a href="api/health">api/health</a> — حالة الخدمة الحيّة (النموذج المتاح، الطبقة المجانية)</li>
+</ul>
+
+<h2>٤. التشغيل والكلفة</h2>
+<p>Cloudflare Pages (طبقة مجانية) + Groq (طبقة مجانية أولًا) + OpenRouter احتياطيًّا بسقف سعر (≈ 0.0014 $ للسؤال المقيس). تخزين مؤقت على الحافة للطلبات المتطابقة، حدّ لكل عنوان IP، قاطع دائرة، وضع معجمي بلا ذكاء اصطناعي عند تعطّله.</p>
+
+<p class="rights">© 2026 مِشكاة — محمد نور بو علي. جميع الحقوق محفوظة. المستودع مفتوح للاطلاع والتحكيم فقط؛ يُمنع النسخ وإعادة الاستعمال دون إذن كتابي (انظر <a href="https://github.com/mednour87/Mishkat/blob/main/LICENSE">LICENSE</a>).</p>
+</main>
+
+<!-- ============================== ENGLISH ============================== -->
+<main lang="en" dir="ltr" data-lang="en" hidden>
+<h1>Judges' verification guide</h1>
+<p class="lead">An AI-augmented Quran search engine where <b>the model never writes a religious word</b>: it understands the question, then picks the numbers of texts from a closed list (Tanzil verses, At-Tafsir Al-Muyassar / Al-Mukhtasar, graded HadeethEnc hadiths, the Fiqh Encyclopedia of Ad-Durar As-Saniyyah); a second model and fixed rules check the choice, and the text is shown verbatim with its source.</p>
+
+<h2>1. Check it yourself in three minutes</h2>
+<p class="note">On a first visit the basmala gate appears: press «Paste the basmala and enter». Each scenario opens in a new tab.</p>
+<table class="sc">
+<thead><tr><th>Try</th><th>What to look at</th></tr></thead>
+<tbody>
+<tr><td><a target="_blank" rel="noopener" href="./?q=how+do+I+deal+with+sadness&amp;lang=en">how do I deal with sadness</a></td><td>«In short»: verbatim sentences, each with its verse or hadith; then the key verses with their full tafsir and the surahs ranked by relevance. Tag «chosen by the AI from a closed list».</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=is+music+haram&amp;lang=en">is music haram?</a></td><td>A red «sensitive question» banner; no fatwa from Mishkat: the Fiqh Encyclopedia (Dorar) statement verbatim with its link, consensus or difference of opinion stated.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=وجعلنا+من+الماء+كل+شيء+حي&amp;lang=en">وجعلنا من الماء كل شيء حي</a></td><td>Checking a text attributed to the Quran: its exact place (21:30), or the alteration / merge shown.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=write+me+a+verse+about+patience&amp;lang=en">write me a verse about patience</a></td><td>A fixed refusal, no model called: Mishkat never writes a verse, a hadith or a fatwa.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=story+of+Joseph&amp;lang=en">story of Joseph</a></td><td>A summary quoted from the Al-Jamhara encyclopedia (Arabic), then the stages of the story with their verses.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?s=36&amp;a=1&amp;lang=en">Surah Ya-Sin</a></td><td>The Mushaf with Alafasy's word-synchronised recitation; the recited word lights up in the 3D galaxy.</td></tr>
+<tr><td><a target="_blank" rel="noopener" href="./?q=when+is+ramadan&amp;lang=en">when is Ramadan</a></td><td>A daily tool, no model: the Hijri calendar (Umm al-Qura). Also prayer times, qibla, nearby mosques, adhkar, khatma, memorisation.</td></tr>
+</tbody></table>
+<p>Under every answer: «Was this answer useful?» and «Report an error» — stored with no personal identifier, to measure the benefit after launch (<code>tools/feedback_report.mjs</code>).</p>
+
+<h2>2. Measured results (95 % confidence intervals)</h2>
+<table class="res">
+<thead><tr><th>Measure</th><th>Result</th><th>File</th></tr></thead>
+<tbody>
+<tr><td>Whole answer path on 1,000 questions (automatic judge of another model family)</td><td>First verse answers directly: 84.5 % [81.9–87.1]; short answer on topic: 99.5 % [98.8–100]; critical cases: 15 → 2</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/rag1000/REPORT_v1-v1j2_v4-v4j2.md">eval/rag1000</a></td></tr>
+<tr><td>Quoted passages not found word for word in their source</td><td>0 of 1,058</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/rag1000/README.md">eval/rag1000/README.md</a></td></tr>
+<tr><td>Public benchmark: Qur'an QA 2023 (Task A, 51 questions)</td><td>MRR@10 0.616 [0.490–0.742], MAP@10 0.300 [0.210–0.402] — <b>comparable</b> to the best published (0.576 / 0.313), not shown better</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/qqa23/RESULTS.md">eval/qqa23/RESULTS.md</a></td></tr>
+<tr><td>Plain chatbot (same model, no retrieval), 60 questions</td><td>Of 121 quotations it presented as Quran: only 26 exact, 72 match no verse (Mishkat: 0 by construction)</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/human/auto_metrics.json">eval/human/auto_metrics.json</a></td></tr>
+<tr><td>Over-refusal: 50 legitimate questions that look sensitive</td><td>50/50 answered</td><td><a href="https://github.com/mednour87/Mishkat/blob/main/eval/overrefusal.json">eval/overrefusal.json</a></td></tr>
+<tr><td>Automated tests</td><td><code>npm test</code> — all green before every deployment</td><td><a href="https://github.com/mednour87/Mishkat/tree/main/tests">tests/</a></td></tr>
+</tbody></table>
+<p class="note">Stated limits: the judge is automatic (the blind human rating kit is ready in <code>eval/human/</code>, not filled yet); the benchmark questions were seen during development, with no tuning on them.</p>
+
+<h2>3. Where to check every claim</h2>
+<ul class="links">
+<li><a href="https://github.com/mednour87/Mishkat/blob/main/README.md">README</a> — how it works, figures, limits (Arabic/English)</li>
+<li><a href="https://github.com/mednour87/Mishkat/blob/main/docs/MOTEUR_RECHERCHE_RAG.md">The extractive RAG engine</a> and rules R1–R13</li>
+<li><a href="https://github.com/mednour87/Mishkat/blob/main/SOURCES.md">Sources registry and licences</a> · <a href="https://github.com/mednour87/Mishkat/blob/main/TOOLS.md">Models, tools, cost</a> · <a href="https://github.com/mednour87/Mishkat/blob/main/docs/TRACEABILITY.md">Traceability (SHA-256 of every data file)</a></li>
+<li><a href="https://github.com/mednour87/Mishkat/blob/main/BASELINE.md">Declared baseline</a> · <a href="https://github.com/mednour87/Mishkat/blob/main/CHANGELOG.md">Changelog (challenge-window work)</a></li>
+<li><a href="api/health">api/health</a> — live service status (model available, free tier)</li>
+</ul>
+
+<h2>4. Operation and cost</h2>
+<p>Cloudflare Pages (free tier) + Groq (free tier first) + OpenRouter as a capped-price backup (≈ $0.0014 per question, measured). Edge cache for identical requests, per-IP rate limits, circuit breaker, lexical mode without AI when it is down.</p>
+
+<p class="rights">© 2026 Mishkat — Mohamed Nour Bou Ali. All rights reserved. The repository is open for viewing and judging only; copying or reuse without written permission is not allowed (see <a href="https://github.com/mednour87/Mishkat/blob/main/LICENSE">LICENSE</a>).</p>
+</main>
+</body>
+</html>

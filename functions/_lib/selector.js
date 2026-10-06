@@ -258,7 +258,10 @@ async function run(kind, body, env, fetchImpl) {
   const messages = buildMessages(p, kind);
   const errors = [];
   const t0 = Date.now();
-  for (const pr of providers(env, kind)) {
+  // (6 Oct, T118) «second opinion» (the first selection kept nothing): a model of ANOTHER family first (not gpt-oss)
+  let list = providers(env, kind);
+  if (kind === 'select' && body && body.second === true) list = [...list.filter(pr => !/gpt-oss/.test(pr.model)), ...list.filter(pr => /gpt-oss/.test(pr.model))];
+  for (const pr of list) {
     if ((coolDown.get(ckey(pr)) || 0) > Date.now()) { errors.push(`${ckey(pr)} cooling down`); continue; }
     const left = BUDGET_MS - (Date.now() - t0);
     if (left < MIN_TRY_MS) { errors.push('time budget spent'); break; }
