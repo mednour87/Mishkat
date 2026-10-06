@@ -1,6 +1,6 @@
 # Mishkat — Traceability · مِشكاة — سجلّ التتبّع
 
-> Generated **2026-10-06T12:05:31Z** by `node tools/trace.mjs` (Node v22.17.0) from git HEAD `10686a60fb43e8fed416926c7b275a4a8c4983d1` (branch main, committed 2026-10-06T13:57:33+02:00) with **25 uncommitted change(s)** in the working tree.
+> Generated **2026-10-06T12:13:55Z** by `node tools/trace.mjs` (Node v22.17.0) from git HEAD `4e00b33bc8cac6a9afc05df4e5ca9b030d651408` (branch main, committed 2026-10-06T14:13:53+02:00), clean working tree.
 > Do not edit by hand: every value below is derived from the repository files. Re-run the tool to refresh it.
 
 [Summary](#summary) · [External services & APIs](#external) · [Internal API endpoints](#api) · [AI models](#models) · [Data files](#data) · [Code inventory](#code) · [Tools & libraries](#tools) · [Tests & evaluation](#tests) · [Git history](#git)
@@ -20,10 +20,10 @@ Every number on this page is computed from the repository by `tools/trace.mjs`; 
 | Data files in public/data (top level) | 20 |
 | Data sub-folders (files) | hadeeth/ 62 · saadi/ 114 · tajweed/ 115 · timing/ 114 · translit/ 114 · tts/ 342 · vec/ 5 |
 | Data total size | 60.66 MiB |
-| Source files (js/mjs/py/html/css) | 224 files · 39,266 non-blank lines |
-| Tests (`test(` calls) | 270 in 47 files |
-| Commits | 131 — challenge window: 66 · baseline (declared): 65 |
-| Uncommitted changes in the working tree | 25 |
+| Source files (js/mjs/py/html/css) | 224 files · 39,276 non-blank lines |
+| Tests (`test(` calls) | 271 in 47 files |
+| Commits | 133 — challenge window: 68 · baseline (declared): 65 |
+| Uncommitted changes in the working tree | 0 |
 
 <a id="external"></a>
 ## External services & APIs · الخدمات والواجهات الخارجية
@@ -429,8 +429,8 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | public | 4 | 398 |
 | public/js | 46 | 11,780 |
 | (root) | 1 | 99 |
-| tests | 54 | 15,476 |
-| tools | 34 | 3,941 |
+| tests | 54 | 15,484 |
+| tools | 34 | 3,943 |
 
 **Files** (224)
 
@@ -456,7 +456,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `data_build/fetch_sources.py` | Python | 109 | 91 | f0b1b80 · 2026-09-29 | committed | get_json(), save(), main() |
 | `data_build/fetch_translit.py` | Python | 61 | 57 | af1761b · 2026-10-01 | committed | — |
 | `data_build/make_pc_bundle.py` | Python | 71 | 64 | af1761b · 2026-10-01 | committed | — |
-| `docs/make_deck.py` | Python | 322 | 287 | bebf39c · 2026-10-05 | modified | text(), card(), slide(), pic(), stat(), table() |
+| `docs/make_deck.py` | Python | 322 | 287 | 5687b04 · 2026-10-06 | committed | text(), card(), slide(), pic(), stat(), table() |
 | `eval/audit_relevance.mjs` | JavaScript (ESM) | 28 | 27 | 6bd8633 · 2026-09-29 | committed | — |
 | `eval/bench_llm.mjs` | JavaScript (ESM) | 49 | 46 | f0b1b80 · 2026-09-29 | committed | — |
 | `eval/collect_forum.py` | Python | 31 | 29 | d74d462 · 2026-10-01 | committed | — |
@@ -473,11 +473,11 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `eval/qqa23/bootstrap_ci.py` | Python | 70 | 62 | 1b256d2 · 2026-10-03 | committed | per_question() |
 | `eval/qqa23/score_all.py` | Python | 17 | 17 | cfffa3e · 2026-10-02 | committed | — |
 | `eval/qqa23/score_free3.py` | Python | 71 | 65 | 0089103 · 2026-10-04 | committed | per_question() |
-| `eval/rag1000/answers_book.mjs` | JavaScript (ESM) | 65 | 60 | — (never committed) | untracked | — |
+| `eval/rag1000/answers_book.mjs` | JavaScript (ESM) | 65 | 60 | 5687b04 · 2026-10-06 | committed | — |
 | `eval/rag1000/grade.mjs` | JavaScript (ESM) | 101 | 95 | 6030a6d · 2026-10-05 | committed | DETERMINISTIC, describe |
 | `eval/rag1000/pipeline.mjs` | JavaScript (ESM) | 205 | 197 | 6030a6d · 2026-10-05 | committed | env, stats, preRoute, runQuestion, engine, core, sources |
 | `eval/rag1000/questions.mjs` | JavaScript (ESM) | 41 | 38 | 6030a6d · 2026-10-05 | committed | buildQuestions, checkExpect |
-| `eval/rag1000/report.mjs` | JavaScript (ESM) | 112 | 107 | 6030a6d · 2026-10-05 | modified | summarize |
+| `eval/rag1000/report.mjs` | JavaScript (ESM) | 112 | 107 | 5687b04 · 2026-10-06 | committed | summarize |
 | `eval/rag1000/run.mjs` | JavaScript (ESM) | 94 | 90 | 6030a6d · 2026-10-05 | committed | — |
 | `eval/rag_pipeline.mjs` | JavaScript (ESM) | 70 | 68 | 7732b93 · 2026-10-04 | committed | env, engine, runQuestion |
 | `eval/report.mjs` | JavaScript (ESM) | 46 | 44 | 6bd8633 · 2026-09-29 | committed | — |
@@ -568,7 +568,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `public/js/tools.js` | JavaScript | 74 | 68 | 73f93ae · 2026-10-04 | committed | TOOLS, routeTool, toolIntent |
 | `public/js/voice.js` | JavaScript | 124 | 116 | 9d0b43b · 2026-10-04 | committed | voiceSupported, listen, stopListening, cancelListening |
 | `public/js/wake.js` | JavaScript | 31 | 30 | 2fd2af9 · 2026-10-05 | committed | IDLE_MS, setupWake |
-| `public/judges.html` | HTML | 117 | 105 | 7f0814e · 2026-10-06 | modified | — |
+| `public/judges.html` | HTML | 117 | 105 | 5687b04 · 2026-10-06 | committed | — |
 | `public/sw.js` | JavaScript | 56 | 53 | f5e9d23 · 2026-10-06 | committed | — |
 | `public/tajweed.html` | HTML | 36 | 36 | 2fd2af9 · 2026-10-05 | committed | — |
 | `server.mjs` | JavaScript (ESM) | 102 | 99 | 7f0814e · 2026-10-06 | committed | — |
@@ -625,7 +625,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `tests/voice_welcome.test.mjs` | JavaScript (ESM) | 43 | 37 | 69ccb86 · 2026-10-04 | committed | — |
 | `tests/words.test.mjs` | JavaScript (ESM) | 54 | 47 | ea77675 · 2026-10-02 | committed | — |
 | `tests/world_oct6.test.mjs` | JavaScript (ESM) | 65 | 58 | f5e9d23 · 2026-10-06 | committed | — |
-| `tests/worship.test.mjs` | JavaScript (ESM) | 42 | 38 | 10686a6 · 2026-10-06 | committed | — |
+| `tests/worship.test.mjs` | JavaScript (ESM) | 51 | 46 | 4e00b33 · 2026-10-06 | committed | — |
 | `tools/archive.mjs` | JavaScript (ESM) | 47 | 41 | 665a79c · 2026-10-05 | committed | — |
 | `tools/build_tts_passages.mjs` | JavaScript (ESM) | 21 | 20 | 64e955b · 2026-10-04 | committed | TTS_BOOKS |
 | `tools/check_features.mjs` | JavaScript (ESM) | 142 | 140 | 56c8e66 · 2026-10-04 | committed | — |
@@ -633,9 +633,9 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `tools/check_world.mjs` | JavaScript (ESM) | 63 | 61 | f5e9d23 · 2026-10-06 | committed | — |
 | `tools/contrast_probe.js` | JavaScript | 40 | 40 | 40f259b · 2026-10-05 | committed | — |
 | `tools/feedback_report.mjs` | JavaScript (ESM) | 32 | 31 | 7f0814e · 2026-10-06 | committed | — |
-| `tools/make_deck_ar.py` | Python | 232 | 211 | f62c32f · 2026-10-06 | modified | n(), pct(), img(), slide() |
+| `tools/make_deck_ar.py` | Python | 232 | 211 | 5687b04 · 2026-10-06 | committed | n(), pct(), img(), slide() |
 | `tools/make_dossier.py` | Python | 133 | 126 | 928dcfc · 2026-10-06 | committed | inline(), md2html(), check_verses(), build() |
-| `tools/make_drive.py` | Python | 131 | 119 | 928dcfc · 2026-10-06 | modified | cp(), size() |
+| `tools/make_drive.py` | Python | 133 | 121 | 4e00b33 · 2026-10-06 | committed | cp(), size() |
 | `tools/make_icons.mjs` | JavaScript (ESM) | 26 | 25 | d6710f2 · 2026-10-04 | committed | — |
 | `tools/make_intro_voice.py` | Python | 40 | 36 | ae3cdf0 · 2026-10-06 | committed | spoken() |
 | `tools/make_lamp.py` | Python | 62 | 60 | 5549e35 · 2026-10-05 | committed | — |
@@ -644,7 +644,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `tools/make_welcome_audio.py` | Python | 32 | 29 | 46df41c · 2026-10-04 | committed | — |
 | `tools/md_pdf.py` | Python | 11 | 10 | 928dcfc · 2026-10-06 | committed | — |
 | `tools/shots.mjs` | JavaScript (ESM) | 89 | 86 | 0089103 · 2026-10-04 | committed | — |
-| `tools/trace.mjs` | JavaScript (ESM) | 750 | 717 | 928dcfc · 2026-10-06 | modified | — |
+| `tools/trace.mjs` | JavaScript (ESM) | 750 | 717 | 5687b04 · 2026-10-06 | committed | — |
 | `tools/ui_shots.mjs` | JavaScript (ESM) | 398 | 396 | 10686a6 · 2026-10-06 | committed | evalJs |
 | `tools/video/build.mjs` | JavaScript (ESM) | 181 | 173 | 6030a6d · 2026-10-05 | committed | — |
 | `tools/video/build2.mjs` | JavaScript (ESM) | 206 | 197 | 4427293 · 2026-10-05 | committed | — |
@@ -779,7 +779,7 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 | `tests/voice_welcome.test.mjs` | 5 | 37 | 69ccb86 · 2026-10-04 | committed | welcome_ar.mp3 is a small MP3 file ‖ the welcome generator reads the hand-written sentence of i18n.js (no other text) ‖ the gate accepts the basmala only once ‖ answer read by the server voice: only tafsir books shipped in public/data/tts, never a verse text ‖ T061: first preferences at the first visit (theme, digits, spoken welcome) in ar and en |
 | `tests/words.test.mjs` | 6 | 47 | ea77675 · 2026-10-02 | committed | a rare word of the Quran brings its verse first, whatever its clitics or spelling ‖ the word is highlighted at its place in the Uthmani text ‖ a misspelt word: a sure correction is applied and announced; otherwise suggestions ‖ real words that are not in the Quran are not "corrected" ‖ ta marbuta / ta / ha as the last letter only (يتم is not يهم) ‖ several words of the Quran that never meet in one verse: no crash, no correction |
 | `tests/world_oct6.test.mjs` | 6 | 58 | f5e9d23 · 2026-10-06 | committed | qibla: same as Aladhan qibla API on every continent (checked live on 6 Oct, eval/world) ‖ qibla: the magnetic declination is applied (Auckland ≈ +20°, Iqaluit ≈ −24°); blackout near the magnetic pole ‖ country of any position or time zone of the world (method proposal) ‖ prayer month = the month of the PLACE (a city across the date line may be in another month) ‖ Hijri: Umm al-Qura in Node; tabular fallback within one day of it ‖ the site opens on the rose of surahs; a shape picked by the visitor is remembered |
-| `tests/worship.test.mjs` | 4 | 38 | 10686a6 · 2026-10-06 | committed | light of the month: shares add up to 1, each part capped, a new month starts again ‖ the Names: 99 names in order, times inside the recording, the learning queue ‖ prayer break: no basmala when resuming in Surah at-Tawbah; three licensed adhans exist ‖ the judges\' guide is not linked from the site (it is linked from GitHub) |
+| `tests/worship.test.mjs` | 5 | 46 | 4e00b33 · 2026-10-06 | committed | light of the month: shares add up to 1, each part capped, a new month starts again ‖ the Names: 99 names in order, times inside the recording, the learning queue ‖ prayer break: no basmala when resuming in Surah at-Tawbah; three licensed adhans exist ‖ the judges\' guide is not linked from the site (it is linked from GitHub) ‖ every verse quoted in the documents of the 3D design is a slice of the Tanzil text |
 
 **Evaluation scripts** (15)
 
@@ -847,10 +847,12 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 <a id="git"></a>
 ## Git history · سجل git
 
-The challenge evaluates only the work done in the build window (2026-10-04 → 2026-10-06). Commits dated before 2026-10-04 are the declared baseline (see BASELINE.md). Phase uses the commit date. Showing the last 30 of 131 commits.
+The challenge evaluates only the work done in the build window (2026-10-04 → 2026-10-06). Commits dated before 2026-10-04 are the declared baseline (see BASELINE.md). Phase uses the commit date. Showing the last 30 of 133 commits.
 
 | Hash | Date | Time | Phase | Subject |
 |---|---|---|---|---|
+| `4e00b33` | 2026-10-06 | 14:13:53+02:00 | challenge window | T121: verses of the 3D design documents set from the Tanzil text (a hand-typed madda differed) with a test; Drive builder includes the design and guide |
+| `5687b04` | 2026-10-06 | 14:05:32+02:00 | challenge window | T121: documents in English (guide, RAG engine), design of the 3D sky and its laws (en/ar), the 1,000 test questions with their answers, test reports in English, README origin and new services, sources S35-S37 |
 | `10686a6` | 2026-10-06 | 13:57:33+02:00 | challenge window | T120: light of the month on the logo with rays from every completed act; tasbih menu of verbatim formulas, counting past the goal, keyboard and undo; the Most Beautiful Names (list, synchronised full-screen listening, learning with repetition and test); prayer break of the reader (finish the verse, adhan, basmala, next verse); clearer adhan recordings; resting sweep of the 3D; pure full-screen view; X and TikTok pages, icons for both themes; judges' guide no longer linked from the site |
 | `f62c32f` | 2026-10-06 | 11:29:41+02:00 | challenge window | T119: Arabic presentation — feedback after launch, judges' guide and official pages on the closing slide |
 | `6c4f77a` | 2026-10-06 | 11:27:26+02:00 | challenge window | Archive v2026-10-06-t119: SHA-256 of every file (all rights reserved) |
@@ -879,35 +881,3 @@ The challenge evaluates only the work done in the build window (2026-10-04 → 2
 | `2fd2af9` | 2026-10-05 | 12:27:56+02:00 | challenge window | T101: author's review — reading camera in sync with the recited word (readcam.js), no turning ring, one statistics button, brief tajweed box + tajweed.html, mosques through /api/mosques with Google Maps inside the panel, screen kept on (wake lock), lighter on phones (paused off-screen rendering, lazy Mushaf pages, deferred tafsir, precompiled shaders), sharp letters in the film, phone layout fixes; tests 224/224 |
 | `40f259b` | 2026-10-05 | 08:28:26+02:00 | challenge window | T100: UI refonte — menu drawer, one-line reading and tafsir bars, verse statistics, paper light theme with night around the 3D, continuous reading thread in every shape, worker layouts and smooth shape changes while reciting, basmala film, tajweed rule names and keys, engagement beads; tests 218/218 |
 | `ed5de67` | 2026-10-04 | 21:54:22+02:00 | challenge window | T071: README (ar + en), SOURCES (S31 tajweed), CHANGELOG for the evening of 4 October |
-| `56c8e66` | 2026-10-04 | 21:54:21+02:00 | challenge window | T090, T092, T093, T098: tafsir close/reopen; child mode (no fatwa, no red, redirection to memorising); search linked to the services (proposed khatma plan, repetition, statistics, engagement, install); first visit basmala → place → film → preferences (age); progress under the lamp and khatma count in the top bar; tests 213/213 |
-| `7f6a42d` | 2026-10-04 | 21:54:21+02:00 | challenge window | T099: optional tajweed colours from cpfair/quran-tajweed (CC BY 4.0), each verse checked letter by letter on the Tanzil text (5,942/6,236 kept) |
-
-**Uncommitted changes at generation time** (25)
-
-| Path | git status |
-|---|---|
-| `NOTICE.md` | M |
-| `README.md` | M |
-| `SOURCES.md` | M |
-| `docs/GUIDE_DETAILLE.md` | D |
-| `docs/MOTEUR_RECHERCHE_RAG.md` | D |
-| `docs/TRACEABILITY.md` | M |
-| `docs/make_deck.py` | M |
-| `docs/traceability.html` | M |
-| `eval/rag1000/REPORT_v1-v1j2.md` | M |
-| `eval/rag1000/REPORT_v1-v1j2_v2-v2j2.md` | M |
-| `eval/rag1000/REPORT_v1-v1j2_v3-v3j2.md` | M |
-| `eval/rag1000/REPORT_v1-v1j2_v4-v4j2.md` | M |
-| `eval/rag1000/REPORT_v1.md` | M |
-| `eval/rag1000/REPORT_v2-v2j2_v3-v3j2.md` | M |
-| `eval/rag1000/report.mjs` | M |
-| `public/judges.html` | M |
-| `tools/make_deck_ar.py` | M |
-| `tools/make_drive.py` | M |
-| `tools/trace.mjs` | M |
-| `docs/DESIGN_3D.md` | ?? |
-| `docs/DESIGN_3D_AR.md` | ?? |
-| `docs/GUIDE.md` | ?? |
-| `docs/RAG_ENGINE.md` | ?? |
-| `eval/rag1000/QUESTIONS_AND_ANSWERS.md` | ?? |
-| `eval/rag1000/answers_book.mjs` | ?? |
