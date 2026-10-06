@@ -52,6 +52,8 @@ export function glowLevel(P, monthPct, now = new Date()) {
 
 // the logo that receives the light: the big lamp beside the galaxy when it is on screen, otherwise the one in the header
 function target() {
+  // T123: the pure full-screen view hides the header: its own logo receives the light
+  if (document.body.classList.contains('gpure')) { const p = document.querySelector('#pureBrand img'); if (p && p.offsetParent) return p; }
   const big = document.querySelector('#lampSlot');
   if (big && big.offsetParent) {
     const r = big.getBoundingClientRect();

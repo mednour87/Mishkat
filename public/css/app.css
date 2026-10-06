@@ -1011,3 +1011,25 @@ body.taf-closed #rTaf { display: inline-flex; }
 @media (max-width: 860px) {
   body[data-mode=study].taf-closed #mtabs [data-pane=t] { display: none; }
 }
+
+/* T123: practical fiqh — the encyclopedia's headings, each linked */
+.fiqh.pf { border-color: rgba(255, 214, 107, .3); }
+.fiqh.pf h4 a { color: var(--txt); text-decoration: none; }
+.fiqh .pf-list { margin: 6px 0; padding-inline-start: 22px; font-family: 'Amiri', var(--ui); font-size: 18px; line-height: 1.8; }
+.fiqh .pf-list ol { padding-inline-start: 20px; font-size: 16px; list-style: arabic-indic; }
+.fiqh .pf-list a { color: var(--txt); text-decoration: underline dotted rgba(255, 214, 107, .5); text-underline-offset: 4px; }
+.fiqh .pf-list a:hover { color: var(--gold); }
+
+/* T123 (author's report, phone photo): the welcome box showed a horizontal band where the contrast changed half-way
+   down the tiles — Android Chrome composites a translucent scrolling box over a blurred backdrop in tiles. The box is
+   now opaque and the backdrop is not blurred on phones (the look is the same, without the band). */
+.wbox { background: linear-gradient(180deg, #131929, #0a0d16); }
+@media (max-width: 860px) {
+  #welcome, .onb { backdrop-filter: none; -webkit-backdrop-filter: none; background: rgba(3, 5, 10, .86); }
+  .wbox { animation: none; transform: none; will-change: auto; -webkit-overflow-scrolling: touch; }
+  .wtile:hover { transform: none; }
+}
+.fiqh .pf-list details summary { cursor: pointer; color: var(--txt); }
+.fiqh .pf-list details summary::marker { color: var(--gold); }
+.fiqh .pf-list .pf-open { margin: 2px 0; font-size: 14px; }
+.fiqh .pf-list { list-style: arabic-indic; }

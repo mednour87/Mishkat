@@ -407,3 +407,10 @@ html[data-theme=light] .g-orn { color: #8a5a00; }
 .fb-msg { flex-basis: 100%; margin: 0; }
 .fb-msg:empty { display: none; }
 .fb-priv { flex-basis: 100%; margin: 0; font-size: 11.5px; color: var(--mut, #9aa); }
+
+/* T123: on a phone the arrow of the reading bar enlarges the reading panel (the galaxy stays as a thin strip) */
+@media (max-width: 860px) {
+  body.rd-tall[data-mode=study] #work, body.rd-tall[data-mode=study][data-pane] #work { grid-template-rows: 8vh minmax(0, 1fr) !important; }
+  body.rd-tall[data-mode=study] #gtools, body.rd-tall[data-mode=study] #gcam, body.rd-tall[data-mode=study] #lampDock { display: none !important; }
+  body.rd-tall .rd-fold svg { transform: rotate(180deg); }
+}

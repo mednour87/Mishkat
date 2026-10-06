@@ -10,6 +10,10 @@ Live demo: https://mishkatquran.org (backup https://mishkat-4m1.pages.dev) · **
 
 > **Rights / الحقوق** — This repository is public **for viewing and judging only**. All rights reserved: no copying, reuse, redistribution or derivative work without the author's written permission ([LICENSE](LICENSE)). المستودع مفتوح للاطلاع والتحكيم فقط؛ جميع الحقوق محفوظة، ويُمنع النسخ أو إعادة الاستعمال أو النشر دون إذن كتابي من المؤلف.
 
+### Files and documents · الملفات والمستندات
+- **[FILES.md](FILES.md)** — every folder and file of the repository explained, in Arabic and English · دليل كل مجلد وملف في المستودع بالعربية والإنجليزية.
+- **[docs/deliverables/](docs/deliverables/)** — the full project file (الملف الكامل) [AR](docs/deliverables/Mishkat_Dossier_AR.pdf) · [EN](docs/deliverables/Mishkat_Dossier_EN.pdf); the presentation (العرض التقديمي) [AR](docs/deliverables/Mishkat_Presentation_AR.pdf) · [EN](docs/deliverables/Mishkat_Presentation_EN.pdf) · [PPTX](docs/deliverables/Mishkat_Presentation_EN.pptx); the 3D design and why (التصميم ثلاثي الأبعاد ومبرراته) [AR](docs/deliverables/DESIGN_3D_AR.pdf) · [EN](docs/deliverables/DESIGN_3D.pdf); the statistical results (النتائج) [AR](docs/deliverables/RESULTS_SUMMARY_AR.pdf) · [EN](docs/deliverables/RESULTS_SUMMARY_EN.pdf).
+
 ### Origin of the project · أصل المشروع
 - **Before the challenge** the author had mapped the Quran and studied it statistically: *Quran Cartography* (July–August 2026), a database of its words and letters with an atlas of figures — no search, no AI, no tafsir, nothing online.
 - **Mishkat itself was born from the challenge**: the idea of an AI search that never writes a religious word came after learning about the Islamic AI Challenge, and its first line of code was written at the end of September 2026, during the registration period. It is not a product developed earlier and brought to the competition.
@@ -155,7 +159,7 @@ Deployment (Cloudflare Pages + Functions): [DEPLOY.md](DEPLOY.md).
 ### Known limits
 - Thematic search can miss a passage worded differently; English questions without AI reach fewer verses (193 of the 1,000-question map get none without AI).
 - Free AI quotas are limited (Groq: 200,000 tokens a day per model, a few dozen full answers on the large model); beyond them the paid backup (OpenRouter, capped) or the deterministic engine answers.
-- Rulings appear only when the Fiqh Encyclopedia has a section naming the subject; otherwise none is shown (referral only).
+- Rulings appear only when the Fiqh Encyclopedia has a section naming the subject; otherwise none is shown (referral only). Practical questions («شروط الصلاة», «كيف أتوضأ») are matched with the encyclopedia's own headings (worship books, 2,095 sections); a subject without its own heading («أركان الحج») shows no section.
 - Prayer times are astronomical calculations (method shown); the official calendar of your country prevails.
 - As-Sa‘di comments some verses in groups; 6 verses have no word-level recitation timing.
 - The English Orpheus voice is not enabled: English is read by the browser's voice.

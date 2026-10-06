@@ -22,7 +22,7 @@ test('the Names: 99 names in order, times inside the recording, the learning que
   const d = JSON.parse(fs.readFileSync('public/data/asma.json', 'utf8'));
   assert.equal(d.names.length, 99);
   d.names.forEach((x, i) => { assert.equal(x.n, i + 1); assert.ok(x.end > x.start, x.ar); if (i) assert.ok(x.start >= d.names[i - 1].start); });
-  assert.ok(fs.existsSync('public/' + d.audio));
+  assert.ok(fs.existsSync('public/' + d.audio.split('?')[0]))   // T123: the path carries a version query;
   assert.deepEqual(learnQueue(1, 3, 2), [1, 1, 2, 2, 3, 3, 1, 2, 3]);
   assert.deepEqual(learnQueue(97, 5, 1), [97, 98, 99, 97, 98, 99], 'never beyond 99');
 });

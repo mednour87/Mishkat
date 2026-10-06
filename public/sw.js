@@ -2,7 +2,7 @@
 // at once), the cached copy when offline. Data files, fonts, images, libraries: cached copy first, refreshed in the
 // background. The API (/api/*) and other sites (recitation audio, prayer times, maps) are never cached here: answers
 // stay live and the visitor's place never passes through this file.
-const VERSION = 'mishkat-2026-10-06b';
+const VERSION = 'mishkat-2026-10-06c';
 const SHELL = ['./', 'index.html', 'css/app.css', 'css/features.css', 'css/refonte.css', 'fonts/fonts.css', 'img/logo.svg', 'img/icon-192.png', 'manifest.webmanifest',
   'js/app.js', 'js/engine.js', 'js/i18n.js', 'js/galaxy.js', 'js/layouts.js', 'js/layout-worker.js', 'js/letters3d.js', 'js/lamp.js', 'js/lampmap.js', 'js/search-worker.js', 'js/readcam.js', 'js/wake.js',
   'tajweed.html', 'js/tajweed-page.js', 'js/tajweed.js', 'css/tajweed-page.css',
@@ -53,4 +53,17 @@ self.addEventListener('fetch', (ev) => {
   if (req.headers.has('range')) return;                             // media byte ranges
   if (req.mode === 'navigate' || /\.(html|js|css|webmanifest)$/.test(url.pathname)) { ev.respondWith(networkFirst(req)); return; }
   if (/\/(data|fonts|img|vendor|audio)\//.test(url.pathname)) { ev.respondWith(cacheFirst(req, ev)); return; }
+});
+
+// T123: a tap on a reminder (js/notify.js) brings Mishkat forward on the right panel (prayer, calendar, khatma)
+self.addEventListener('notificationclick', (ev) => {
+  ev.notification.close();
+  const rel = (ev.notification.data && ev.notification.data.url) || './';
+  const tool = new URLSearchParams(rel.split('?')[1] || '').get('tool');
+  ev.waitUntil((async () => {
+    const list = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    const mine = list.find(c => c.url.startsWith(self.registration.scope));
+    if (mine) { await mine.focus(); if (tool) mine.postMessage({ type: 'mishkat-open-tool', tool }); return; }
+    await self.clients.openWindow(new URL(rel, self.registration.scope).href);
+  })());
 });

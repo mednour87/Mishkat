@@ -106,13 +106,14 @@ export function headingOf(ev) {
 
 export const PRAYERS = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
 
-// adhan recordings with an open licence (Wikimedia Commons), loudness evened out (-14 LUFS) by ffmpeg
+// adhan recordings with an open licence (Wikimedia Commons), loudness evened out (-14 LUFS) by ffmpeg; T123: each one is
+// named by its muezzin only (the name given by the recording's page; the Prophet's Mosque recording names none)
 export const ADHAN_VOICES = [
-  { id: 'madinah', file: 'audio/adhan_madinah.mp3', ar: 'أذان المسجد النبوي (تسجيل ميداني)', en: 'The Prophet\u2019s Mosque (field recording)',
+  { id: 'madinah', file: 'audio/adhan_madinah.mp3', ar: 'مؤذّن المسجد النبوي', en: 'Muezzin of the Prophet\u2019s Mosque',
     page: 'https://commons.wikimedia.org/wiki/File:33937_ejaz215_call-to-prayer-from-the-prophet-s-mo.ogg', licence: 'CC BY 3.0 · ejaz215 (freesound.org)' },
-  { id: 'clear', file: 'audio/adhan_clear.mp3', ar: 'أذان بصوت صافٍ', en: 'A clear voice',
+  { id: 'clear', file: 'audio/adhan_clear.mp3', ar: 'Adam-synagda', en: 'Adam-synagda',
     page: 'https://commons.wikimedia.org/wiki/File:Beautiful_adhan.ogg', licence: 'CC0 · Adam-synagda' },
-  { id: 'classic', file: 'audio/adhan.mp3', ar: 'الأذان السابق (عاقب عزيز)', en: 'The previous one (Aaqib Azeez)',
+  { id: 'classic', file: 'audio/adhan.mp3', ar: 'عاقب عزيز', en: 'Aaqib Azeez',
     page: 'https://commons.wikimedia.org/wiki/File:The_Adhan_-_Muslim_Call_to_Prayer_-_Aaqib_Azeez.mp3', licence: 'CC BY-SA 4.0 · Atcovi' },
 ];
 // Aladhan calendar (iso8601=true) → [{ date:'YYYY-MM-DD', times:{Fajr:ms,…,Sunrise}, hijri }]
@@ -167,8 +168,8 @@ export const PS = {
     highLat: 'في العروض العالية (الصيف القطبي) قد لا يغيب الشفق، فتُقدَّر مواقيت الفجر والعشاء بطريقة «الزاوية» (Angle Based) في خدمة Aladhan؛ ارجع إلى المركز الإسلامي في مدينتك.',
     names: { Fajr: 'الفجر', Sunrise: 'الشروق', Dhuhr: 'الظهر', Asr: 'العصر', Maghrib: 'المغرب', Isha: 'العشاء' },
     next: (p) => `الصلاة القادمة: ${p}`, until: (p) => `بقي على صلاة ${p}:`, left: 'الوقت المتبقي', today: 'اليوم', loading: 'جارٍ جلب المواقيت…', fail: 'تعذّر جلب المواقيت (لا اتصال؟).', cached: 'محفوظة لهذا الشهر في متصفحك.',
-    tone: '', toneNote: '', sound: 'عند دخول الوقت (والصفحة مفتوحة)', soundNone: 'بلا صوت', soundTone: 'تنبيه هادئ', soundAdhan: 'الأذان', adhanTry: 'استمع إلى الأذان',
-    adhanNote: 'تسجيل أذان برخصة مفتوحة من', adhanVoice: 'صوت الأذان', readerBreak: 'إذا دخل الوقت أثناء التلاوة في المصحف: تُتمّ الآية، ثم يُرفع الأذان (إن اخترته)، ثم تُستأنف التلاوة بالبسملة.', digits: 'الأرقام', country: 'البلد', city: 'المدينة', mAllMaps: 'كل المساجد القريبة في Google Maps',
+    tone: '', toneNote: '', sound: 'عند دخول الوقت (والصفحة مفتوحة)', soundNone: 'بلا صوت', soundTone: 'تنبيه هادئ', soundAdhan: 'الأذان', adhanTry: 'استمع إلى الأذان', notify: 'التنبيهات على الهاتف والحاسوب',
+    adhanNote: 'تسجيل أذان برخصة مفتوحة من', adhanVoice: 'المؤذّن', readerBreak: 'إذا دخل الوقت أثناء التلاوة في المصحف: تُتمّ الآية، ثم يُرفع الأذان (إن اخترته)، ثم تُستأنف التلاوة بالبسملة.', digits: 'الأرقام', country: 'البلد', city: 'المدينة', mAllMaps: 'كل المساجد القريبة في Google Maps',
     placesSrc: 'قائمة المدن: GeoNames (رخصة CC BY 4.0). يُحفظ اسم المدينة والبلد فقط في ملف تعريف ارتباط (cookie) في متصفحك لسنة، دون الإحداثيات.',
     qDeg: (d) => `القبلة على ${d}° من الشمال الجغرافي`, qDist: (k) => `المسافة إلى الكعبة المشرفة: ${k} كم`, qCompass: 'تفعيل البوصلة', qAlign: 'وجّه أعلى الهاتف حتى يصير السهم الذهبي إلى الأعلى.',
     qCalib: 'البوصلة الإلكترونية تتأثر بالمعادن والمغناطيس: حرّك الهاتف على شكل ٨ لمعايرتها، وتحقّق بعلامة معروفة (محراب مسجد).', qNoSensor: 'لا تتوفر بوصلة في هذا الجهاز؛ استعمل الزاوية المعروضة أو افتح الصفحة على هاتفك:', qNoAbs: 'لم يُرسل الهاتف اتجاهًا مطلقًا من البوصلة، فلن نُدير القرص حتى لا نُريك اتجاهًا خاطئًا. استعمل الزاوية المكتوبة مع بوصلة الهاتف أو علامة معروفة.',
@@ -189,8 +190,8 @@ export const PS = {
     highLat: 'At high latitudes (polar summer) twilight may never end: Fajr and Isha are then estimated with the «angle-based» rule of the Aladhan service; follow the Islamic centre of your city.',
     names: { Fajr: 'Fajr', Sunrise: 'Sunrise', Dhuhr: 'Dhuhr', Asr: 'Asr', Maghrib: 'Maghrib', Isha: 'Isha' },
     next: (p) => `Next prayer: ${p}`, until: (p) => `Time left until ${p}:`, left: 'Time left', today: 'Today', loading: 'Loading the times…', fail: 'The times could not be loaded (offline?).', cached: 'Saved for this month in your browser.',
-    tone: '', toneNote: '', sound: 'When the time comes (page open)', soundNone: 'No sound', soundTone: 'Calm tone', soundAdhan: 'Adhan', adhanTry: 'Listen to the adhan',
-    adhanNote: 'Openly licensed adhan recording from', adhanVoice: 'Adhan voice', readerBreak: 'If the time comes during a recitation in the Mushaf: the verse is finished, then the adhan (if chosen), then the recitation resumes with the basmala.', digits: 'Digits', country: 'Country', city: 'City', mAllMaps: 'All nearby mosques in Google Maps',
+    tone: '', toneNote: '', sound: 'When the time comes (page open)', soundNone: 'No sound', soundTone: 'Calm tone', soundAdhan: 'Adhan', adhanTry: 'Listen to the adhan', notify: 'Reminders on phone and computer',
+    adhanNote: 'Openly licensed adhan recording from', adhanVoice: 'Muezzin', readerBreak: 'If the time comes during a recitation in the Mushaf: the verse is finished, then the adhan (if chosen), then the recitation resumes with the basmala.', digits: 'Digits', country: 'Country', city: 'City', mAllMaps: 'All nearby mosques in Google Maps',
     placesSrc: 'City list: GeoNames (CC BY 4.0). Only the city and country names are kept in a cookie in your browser for one year, never the coordinates.',
     qDeg: (d) => `Qibla at ${d}° from true north`, qDist: (k) => `Distance to the Kaaba: ${k} km`, qCompass: 'Turn on the compass', qAlign: 'Turn the top of the phone until the golden arrow points up.',
     qCalib: 'Phone compasses are disturbed by metal and magnets: move the phone in a figure 8 to calibrate it, and check against a known mark (a mosque’s mihrab).', qNoSensor: 'This device has no compass; use the angle shown or open the page on your phone:', qNoAbs: 'The phone sent no absolute compass heading, so the dial is not turned (it would show a wrong direction). Use the angle above with the phone’s compass app or a known mark.',
@@ -396,7 +397,7 @@ export function createPractical(ctx) {
       <div class="p-row"><label>${esc(t.school)} <select data-school><option value="0" ${!school ? 'selected' : ''}>${esc(t.schoolStd)}</option><option value="1" ${school ? 'selected' : ''}>${esc(t.schoolHanafi)}</option></select></label></div>
       <div class="p-row"><label>${esc(t.sound)} <select data-sound>${[['none', t.soundNone], ['tone', t.soundTone], ['adhan', t.soundAdhan]].map(([v, l]) => `<option value="${v}" ${store.get('prayerSound', store.get('prayerTone', false) ? 'tone' : 'none') === v ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>
         <label>${esc(t.adhanVoice)} <select data-voice>${ADHAN_VOICES.map(v => `<option value="${v.id}" ${store.get('adhanVoice', 'madinah') === v.id ? 'selected' : ''}>${esc(ar() ? v.ar : v.en)}</option>`).join('')}</select></label>
-        <button type="button" class="mini" data-listen-adhan>▶ ${esc(t.adhanTry)}</button></div>
+        <button type="button" class="mini" data-listen-adhan>▶ ${esc(t.adhanTry)}</button>${ctx.openNotify ? `<button type="button" class="mini gold" data-notify>🔔 ${esc(t.notify)}</button>` : ''}</div>
       <p class="p-small">${esc(t.adhanNote)} ${(() => { const v = ADHAN_VOICES.find(x => x.id === store.get('adhanVoice', 'madinah')) || ADHAN_VOICES[0]; return `<a href="${v.page}" target="_blank" rel="noopener">Wikimedia Commons</a> · ${v.licence}`; })()}</p>
       <p class="p-small">${esc(t.readerBreak)}</p>
       ${ar() ? `<div class="p-row"><span>${esc(t.digits)}</span> <span class="seg" role="group"><button type="button" data-dg="arab" aria-pressed="${indic()}">١٢٣</button><button type="button" data-dg="latn" aria-pressed="${!indic()}">123</button></span></div>` : ''}
@@ -413,6 +414,7 @@ export function createPractical(ctx) {
     body.querySelector('[data-school]').onchange = (ev) => { store.set('prayerPrefs', { ...pr, school: +ev.target.value }); prayer(body); };
     body.querySelector('[data-sound]').onchange = (ev) => store.set('prayerSound', ev.target.value);
     body.querySelector('[data-listen-adhan]').onclick = () => adhan(true);
+    const nb = body.querySelector('[data-notify]'); if (nb) nb.onclick = () => ctx.openNotify();   // T123
     body.querySelector('[data-voice]').onchange = (ev) => { store.set('adhanVoice', ev.target.value); if (adhanAudio) adhanAudio.pause(); prayer(body); };
     body.querySelectorAll('[data-dg]').forEach(b => b.onclick = () => { store.set('digits', b.dataset.dg); prayer(body, args); });
     draw();

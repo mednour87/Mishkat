@@ -40,7 +40,7 @@ export function createAsma(ctx) {
   let dataP = null, audio = null, stage = null, raf = 0;
   const L = () => AS[ctx.lang()] || AS.ar;
   const num = (n) => ctx.digits ? ctx.digits(n) : String(n);
-  const load = () => (dataP = dataP || fetch('data/asma.json').then(r => { if (!r.ok) throw new Error('asma'); return r.json(); }));
+  const load = () => (dataP = dataP || fetch('data/asma.json?v=t123').then(r => { if (!r.ok) throw new Error('asma'); return r.json(); }));
 
   function player(src) {
     if (!audio) { audio = new Audio(src); audio.preload = 'auto'; }

@@ -45,18 +45,20 @@ const VERT = /* glsl */`
     float pulse = strong > 0.5 ? 1.0 + 0.18 * sin(uTime * 2.4 + p.x * 0.05) : 1.0;
     // stars never become large blurred discs in front of the camera (a size ceiling, and the stars that
     // almost touch the camera fade out), nor dissolve far away (a floor of 1.6 px, so the core stays sharp)
-    // the resting sweep: a bar turning around the centre of the shape, on the screen; the stars it crosses light up
-    // and fade behind it, like the trace of a lighthouse (only while nothing is read)
+    // the resting sweep: a thin bar turning slowly around the centre of the shape, on the screen (one turn a minute);
+    // T123: only the stars the bar crosses at this moment light up, in their own colour (no wide trail, no white)
     vSweep = 0.0;
     if (uSweepOn > 0.001) {
       vec4 c = projectionMatrix * modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
       vec4 q = projectionMatrix * mv;
       vec2 d = q.xy / q.w - c.xy / c.w;
       d.x *= uAspect;
-      float behind = mod(uSweep - atan(d.y, d.x), 6.2831853);
-      vSweep = uSweepOn * smoothstep(0.0, 0.03, behind) * exp(-behind * 1.7) * smoothstep(0.02, 0.08, length(d));
+      vec2 dir = vec2(cos(uSweep), sin(uSweep));
+      float along = dot(d, dir);
+      float across = abs(d.x * dir.y - d.y * dir.x);
+      vSweep = uSweepOn * step(0.0, along) * exp(-pow(across / 0.0075, 2.0)) * smoothstep(0.02, 0.08, length(d));
     }
-    float px = size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (520.0 / -mv.z) * (1.0 + 0.9 * vSweep);
+    float px = size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (520.0 / -mv.z) * (1.0 + 1.1 * vSweep);
     gl_PointSize = clamp(px, 1.6 * uPx, (strong > 0.5 ? 15.0 : 10.0) * uPx);
     // only a star almost touching the lens fades (it faded below 40 units: zooming in on the recited word, at the
     // minimum distance of 12, made it vanish)
@@ -71,7 +73,7 @@ const VERT = /* glsl */`
     vHl = strong > 0.5 ? 1.0 : soft > 0.5 ? 0.5 : 0.0;
   }`;
 const FRAG = /* glsl */`
-  uniform float uDim;
+  uniform float uDim, uTime;
   varying float vSweep;
   varying vec3 vColor;
   varying float vHl;
@@ -90,7 +92,10 @@ const FRAG = /* glsl */`
     vec3 col = vHl > 0.75 ? vColor * 1.9 : vHl > 0.25 ? vColor * 1.15 : vColor * mix(1.22, 0.6, uDim);
     col = mix(col, vec3(1.0), core * 0.28);                 // a whiter core, but the stars keep their colour
     col *= vTw;
-    col = mix(col, vec3(1.0, 0.93, 0.75), 0.45 * vSweep) * (1.0 + 2.4 * vSweep);
+    // crossed by the sweep: the star's own hue at its full brightness, twinkling fast (it sparkles, it does not whiten)
+    vec3 vivid = vColor / max(max(vColor.r, vColor.g), max(vColor.b, 0.001));
+    float spark = 0.75 + 0.25 * sin(uTime * 23.0 + vTw * 97.0);
+    col = mix(col, vivid * (1.0 + 0.6 * spark), vSweep);
     float alpha = a * vNear * vFar * vTw * (vHl > 0.75 ? 1.0 : vHl > 0.25 ? 0.9 : mix(0.9, 0.6, uDim));
     gl_FragColor = vec4(col, clamp(alpha + 0.35 * vSweep * a, 0.0, 1.0));
   }`;
@@ -266,7 +271,9 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     const Q = layouts[morph.to], m = morph.e;
     return out.set(P[i * 3] + (Q[i * 3] - P[i * 3]) * m, P[i * 3 + 1] + (Q[i * 3 + 1] - P[i * 3 + 1]) * m, P[i * 3 + 2] + (Q[i * 3 + 2] - P[i * 3 + 2]) * m);
   };
-  const put = (el, x, y) => { el.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) translate(-50%, -50%)`; };
+  // T123: whole pixels (a text moved by fractions of a pixel at every frame shimmers on a phone), and the style is
+  // written only when the place changed
+  const put = (el, x, y) => { const v = `translate(${Math.round(x)}px, ${Math.round(y)}px) translate(-50%, -50%)`; if (el._t !== v) { el._t = v; el.style.transform = v; } };
   const tmpV = new THREE.Vector3();
 
   // the controls drawn over the galaxy (toolbar, camera pad, lamp): labels keep out of them (on a phone the
@@ -317,11 +324,22 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
         if (!p) { g.el.hidden = true; continue; }
         const bw = g.el.offsetWidth || 140, bh = g.el.offsetHeight || 34;
         const x = Math.min(w - bw / 2 - 4, Math.max(bw / 2 + 4, p.x)), clampY = (y) => Math.min(h - bh / 2 - 4, Math.max(bh / 2 + 4, y));
-        // the nearest free place below or above the surah, else the label is not shown (never over a control)
-        let y = null;
-        for (let t = 0; t < 7 && y == null; t++) for (const sgn of t ? [1, -1] : [1]) { const yy = clampY(p.y + sgn * t * (bh + 4)); if (free(x, yy, bw, bh, false)) { y = yy; break; } }
+        // the nearest free place below or above the surah, else the label is not shown (never over a control).
+        // T123 (author's report: on a phone the surah names of an answer trembled): the place found last time is tried
+        // first — the slow rotation no longer makes two labels swap places at every frame — and the label glides to
+        // its place instead of jumping (a label that appears is put there at once)
+        const slots = [[0, 1]];
+        for (let t = 1; t < 7; t++) slots.push([t, 1], [t, -1]);
+        if (g.slot) slots.unshift(g.slot);
+        let y = null, slot = null;
+        for (const sl of slots) { const yy = clampY(p.y + sl[1] * sl[0] * (bh + 4)); if (free(x, yy, bw, bh, false)) { y = yy; slot = sl; break; } }
+        const was = !g.el.hidden && g.pos;
         g.el.hidden = y == null;
-        if (y != null) put(g.el, x, y);
+        g.slot = slot;
+        if (y == null) { g.pos = null; continue; }
+        if (!was) g.pos = { x, y };
+        else { const k = 1 - Math.exp(-dt * 9); g.pos.x += (x - g.pos.x) * k; g.pos.y += (y - g.pos.y) * k; }
+        put(g.el, Math.round(g.pos.x), Math.round(g.pos.y));
       }
       // 3. the words of the focused verse, beside their stars (close views)
       if (focusV != null && vStart[focusV] >= 0 && d < WORDS_DIST) {
@@ -633,10 +651,10 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     }
     uniforms.uTime.value = clock.getElapsedTime();
     const dimGoal = reciting ? Math.max(dimTarget, 0.7) : dimTarget;
-    // the resting sweep turns once every 9 s, and fades out as soon as a recitation starts
+    // the resting sweep turns once a minute (T123, was 9 s), and fades out as soon as a recitation starts
     const sweepGoal = sweepWanted && !reciting && !follow && !morph ? 1 : 0;
     uniforms.uSweepOn.value += (sweepGoal - uniforms.uSweepOn.value) * (1 - Math.exp(-dt * 2.5));
-    uniforms.uSweep.value = (uniforms.uSweep.value + dt * Math.PI * 2 / 9) % (Math.PI * 2);
+    uniforms.uSweep.value = (uniforms.uSweep.value + dt * Math.PI * 2 / 60) % (Math.PI * 2);   // one turn a minute
     uniforms.uAspect.value = camera.aspect;
     uniforms.uDim.value += (dimGoal - uniforms.uDim.value) * (1 - Math.exp(-dt * 4));
     if (anim) {
@@ -746,6 +764,13 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     // (6 Oct) the film turns the shapes faster (at 0.35 a whole turn takes ≈ 3 min: the flower looked frozen)
     setAutoRotate(v, speed) { controls.autoRotate = v; if (speed) controls.autoRotateSpeed = speed; },
     wordsOfVerse: (v) => [vStart[v], vEnd[v]],
+    // T123: where a word is on the screen (client coordinates), or null when it is behind the camera
+    wordPoint(i) {
+      if (i == null || i < 0 || i >= N) return null;
+      const r = canvas.getBoundingClientRect();
+      const p = screen(wpos(i), r.width, r.height);
+      return p ? { x: r.left + p.x, y: r.top + p.y } : null;
+    },
     wordVerse,
     // T051: a scene at the centre of the galaxy while a tool panel is open —
     //   'qibla'  { bearing }: the Kaaba (black cube, gold band) and a gold arrow along the galaxy's plane

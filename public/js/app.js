@@ -1,24 +1,25 @@
 import { createEngine, detectLang, guardCheck, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens, isCrisis, isSensitiveText } from './engine.js';
 import { routeTool } from './tools.js';
 import { socialHTML } from './social.js';
-import { glowOf, glowLevel, addListen, addTasbih, addName, paintGlow, ray } from './glow.js';
-import { createAsma, AS as ASMA_S } from './asma.js';
+import { glowOf, glowLevel, addListen, addTasbih, addName, paintGlow, ray } from './glow.js?v=t123';
+import { createAsma, AS as ASMA_S } from './asma.js?v=t123';
 import { createPrayerBreak, resumesWithBasmala } from './prayerbreak.js';
 import { wordFacts } from './dwell.js';
-import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
+import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js?v=t123';
 import { SHAPES, ORDERS, buildLayout } from './layouts.js';
 import { isBasmala } from './basmala.js';
 import { lampSVG, setLampWord } from './lamp.js';
 import { listen, stopListening, cancelListening, voiceSupported } from './voice.js?v=t122';
-import { encycKinds, ENC_S } from './encyc.js';
+import { encycKinds, ENC_S } from './encyc.js?v=t123';
+import { practicalTopic, findSection, practicalHtml } from './fiqhpractical.js?v=t123';
 import { createSpeaker, browserVoice } from './speech.js';
-import { PALETTE } from './galaxy.js';
+import { PALETTE } from './galaxy.js?v=t123';
 import { createPanels } from './panels.js';
-import { createToolPanels, S as TOOL_S } from './toolpanels.js';
+import { createToolPanels, S as TOOL_S } from './toolpanels.js?v=t123';
 import { loadPrefs, savePrefs } from './prefs.js';
 import { decodeRead, encodeRead, markRead, isRead, surasRead, ymd, addRecord, countRead } from './khatma.js';
 import { miniLamp, openLampMap, progressOf } from './lampmap.js';
-import { createPractical, PS as PRACT_S, qiblaBearing } from './practical.js';
+import { createPractical, PS as PRACT_S, qiblaBearing } from './practical.js?v=t123';
 import { createAthkar, AS as ATHKAR_S } from './athkar.js';
 import qrcode from '../vendor/qrcode/qrcode.js';
 import { mapQuestion, islamicRest, normQ, SCOPE_S } from './scope.js';
@@ -29,6 +30,7 @@ import { createStats, ST } from './stats.js';
 import { drawMini, animateMini, EG } from './engage3d.js';
 import { setupPWA, openInstall, canPrompt, isStandalone, onInstallChange, PW } from './pwa.js';
 import { setupWake } from './wake.js';
+import { createNotify } from './notify.js?v=t123';
 import { toHijri, formatHijri } from './hijri.js';
 import { colourToken, tokenOffsets, GROUPS as TJ_GROUPS, TJ_S, RULE_INFO, verseRules } from './tajweed.js';
 
@@ -42,7 +44,7 @@ const X = {
     placeTitle: 'أين أنت؟', placeLead: 'اختر بلدك ومدينتك، أو اسمح باستعمال موقعك، ليُضبط التقويم ومواقيت الصلاة والمساجد القريبة والتذكير. يُحفظ في متصفحك فقط.', placeLater: 'لاحقًا', placeOk: (p) => `تم: ${p}`,
     svcTitle: 'خدمات مشكاة لهذه السورة:', svcTekrar: '↻ احفظها بالتكرار', svcStats: '📊 إحصاءاتها',
     engBtn: 'مستوى التزامك', install: 'ثبّت', age: 'العمر', childAge: 'أقل من ١٨', adultAge: '١٨ فأكثر',
-    rdFold: 'اطوِ شريط القراءة إلى سطر واحد / افتحه', readFull: 'قراءة فقط', readFullT: 'المصحف بملء الشاشة (اضغط مرة أخرى لإظهار المجرّة)', galaxyBack: 'أظهر المجرّة', tjClose: 'أغلق أحكام التجويد (تبقى الألوان)', pMax: 'كبّر اللوحة', pMin: 'أعدها إلى حجمها',
+    rdFold: 'اطوِ شريط القراءة إلى سطر واحد / افتحه', rdTall: 'كبّر لوحة القراءة / أعدها إلى حجمها', readFull: 'قراءة فقط', readFullT: 'المصحف بملء الشاشة (اضغط مرة أخرى لإظهار المجرّة)', galaxyBack: 'أظهر المجرّة', tjClose: 'أغلق أحكام التجويد (تبقى الألوان)', pMax: 'كبّر اللوحة', pMin: 'أعدها إلى حجمها',
     suraEnd: (n) => `نهاية سورة ${n}`, suraDone: 'أتممت السورة ✓', suraDoneOk: 'سُجّلت السورة مقروءة ✓', suraDoneHelp: 'تُسجَّل في الختمة وفي سجلّ قراءتك، ويُعاد توزيع الباقي من خطتك.', nextSura: (n) => `السورة التالية: ${n}`, firstSura: 'ابدأ من الفاتحة',
   },
   en: {
@@ -53,7 +55,7 @@ const X = {
     placeTitle: 'Where are you?', placeLead: 'Choose your country and city, or allow your location, to set the calendar, prayer times, nearby mosques and reminders. Kept in your browser only.', placeLater: 'Later', placeOk: (p) => `Done: ${p}`,
     svcTitle: 'Mishkat services for this surah:', svcTekrar: '↻ Memorise it by repetition', svcStats: '📊 Its statistics',
     engBtn: 'Your engagement level', install: 'Install', age: 'Age', childAge: 'Under 18', adultAge: '18 or over',
-    rdFold: 'Fold the reading bar to one line / unfold it', readFull: 'Reading only', readFullT: 'The Mushaf full screen (press again to see the galaxy)', galaxyBack: 'Show the galaxy', tjClose: 'Close the tajweed rules (the colours stay)', pMax: 'Enlarge the panel', pMin: 'Back to the normal size',
+    rdFold: 'Fold the reading bar to one line / unfold it', rdTall: 'Enlarge the reading panel / back to its size', readFull: 'Reading only', readFullT: 'The Mushaf full screen (press again to see the galaxy)', galaxyBack: 'Show the galaxy', tjClose: 'Close the tajweed rules (the colours stay)', pMax: 'Enlarge the panel', pMin: 'Back to the normal size',
     suraEnd: (n) => `End of surah ${n}`, suraDone: 'I finished this surah ✓', suraDoneOk: 'Surah recorded as read ✓', suraDoneHelp: 'It counts in your khatma and in your reading record; the rest of your plan is spread again.', nextSura: (n) => `Next surah: ${n}`, firstSura: 'Start again from al-Fatiha',
   },
 };
@@ -757,6 +759,9 @@ function renderResults() {
   if (res.suggest && res.suggest.length) {
     h += `<div class="suggest-box"><span>${esc(res.suggestFor ? t.notQuranWord(res.suggestFor) : t.maybeAlso)}</span> ${res.suggest.map(x => `<button class="sugg" data-sq="${esc(x.q || x.word)}"><b>${esc(x.word)}</b> <small>${esc(t.inVerses(x.count))}</small></button>`).join('')}</div>`;
   }
+  // T123: practical fiqh («شروط الصلاة», «كيف أتوضأ»): the Fiqh Encyclopedia's own section, found by its headings,
+  // first — it is the direct answer to such a question
+  if (practicalOk(res)) h += `<section class="hbox encbox" id="pfBox" aria-live="polite" hidden></section>`;
   // 1 — the short answer: glossary definition and/or 2–3 sentences copied from the vetted tafsir
   //     of the verses that answer (each with its verse), never generated
   const ragOn = ragWanted(res);
@@ -865,6 +870,7 @@ function renderResults() {
   v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx));
   v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
   if ((res.type === 'topic' || res.type === 'term' || res.type === 'notfound') && state.worker) loadSunnah(res).finally(() => loadRag(res));
+  if (practicalOk(res)) loadPractical(res);
   if (encycKinds(res, res.query).length) loadEncyc(res, encycKinds(res, res.query));
   // the AI's Arabic fiqh search terms (never shown) when available; else the words of an Arabic question
   if (isRulingRes(res) && res.reason === 'ruling') {
@@ -1041,6 +1047,21 @@ async function loadFiqh(q, kw = []) {
   if (!docs.length) { box.innerHTML = `<p class="lead">${esc(t.fiqhFail)}</p><p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fiqhSearchSite)}</a></p>`; return; }
   box.innerHTML = (state.lang === 'en' ? `<p class="note">${esc(t.fiqhArabicOnly)}</p>` : '') + docs.map(f => fiqhCard(f, t)).join('')
     + `<p class="note">${j.by === 'ai' ? esc(t.fiqhByAi) + ' · ' : ''}<a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fiqhSearchSite)}</a></p>`;
+}
+// T123: practical fiqh from the headings of the Fiqh Encyclopedia (js/fiqhpractical.js, data/feqhia_toc.json)
+const PF_NO = new Set(['sura', 'verse', 'range', 'verify', 'hadith', 'card', 'empty']);
+function practicalOk(res) { return !!res && !PF_NO.has(res.type) && !res.crisis && !res.polemic && !isRulingRes(res) && !!practicalTopic(res.query || ''); }
+let tocP = null;
+async function loadPractical(res) {
+  const box = $('#pfBox');
+  if (!box) return;
+  const toc = await (tocP = tocP || getJSON('data/feqhia_toc.json').catch(() => { tocP = null; return null; }));
+  if (box !== $('#pfBox') || !toc) return;
+  const hit = findSection(toc, res.query || '');
+  if (!hit) return;
+  box.innerHTML = practicalHtml(hit, state.lang);
+  box.hidden = false;
+  softenNotFound(res);
 }
 // T122: creed (dorar.net/aqeeda) and Sira/history (dorar.net/history) — the encyclopedia's own text, verbatim, with
 // its link; the AI only chose among the encyclopedia's own search results. Shown only when something was found.
@@ -1426,7 +1447,7 @@ function renderReader() {
       <span class="rd-meta">${esc(S.type === 'meccan' ? t.meccan : t.medinan)} · ${esc(t.ayas(S.ayas))}</span>
       <button class="mini" id="rTaf" title="${esc(t.openTafsir)}">📖 ${esc(t.zTafsir)}</button>
       <button class="icon rd-more" id="rMore" aria-expanded="${moreOpen}" aria-controls="rOpts" title="${esc(t.readMore)}" aria-label="${esc(t.readMore)}">⋯</button>
-      <button class="icon rd-fold" id="rFold" aria-pressed="${document.body.classList.contains('rd-folded')}" title="${esc(XS().rdFold)}" aria-label="${esc(XS().rdFold)}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 14l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button class="icon rd-fold" id="rFold" aria-pressed="${document.body.classList.contains(isPhone() ? 'rd-tall' : 'rd-folded')}" title="${esc(isPhone() ? XS().rdTall : XS().rdFold)}" aria-label="${esc(isPhone() ? XS().rdTall : XS().rdFold)}"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M6 14l6-6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button class="icon" id="rClose" title="${esc(t.closeReader)}" aria-label="${esc(t.closeReader)}">✕</button>
     </div>
     <div class="rd-ctrl" id="rOpts" role="toolbar" aria-label="${esc(t.readMore)}"${moreOpen ? '' : ' hidden'}>
@@ -1460,7 +1481,14 @@ function renderReader() {
   $('#rMore').onclick = () => { const o = $('#rOpts').hidden; $('#rOpts').hidden = !o; $('#rMore').setAttribute('aria-expanded', o); store.set(isPhone() ? 'rdMoreM' : 'rdMoreD', o ? '1' : '0'); };
   $('#rStats').onclick = () => openVerseStats();
   $('#rFull').onclick = () => setReadFull(!document.body.classList.contains('read-full'));
-  $('#rFold').onclick = () => { const on = !document.body.classList.contains('rd-folded'); document.body.classList.toggle('rd-folded', on); $('#rFold').setAttribute('aria-pressed', on); store.set('rdFold', on ? '1' : '0'); if (state.galaxy && state.galaxy.resize) setTimeout(() => state.galaxy.resize(), 60); };
+  // T123: on a phone the bar is already one line — the arrow there enlarges the reading panel (the galaxy becomes a thin
+  // strip above it) and brings it back; on a computer it folds the reading bar to one line, as before
+  $('#rFold').onclick = () => {
+    const k = isPhone() ? 'rd-tall' : 'rd-folded', on = !document.body.classList.contains(k);
+    document.body.classList.toggle(k, on); $('#rFold').setAttribute('aria-pressed', on);
+    if (k === 'rd-folded') store.set('rdFold', on ? '1' : '0');
+    if (state.galaxy && state.galaxy.resize) { setTimeout(() => state.galaxy.resize(), 60); setTimeout(() => state.galaxy.resize(), 400); }
+  };
   $('#rTj').onclick = () => {
     if (state.tjOn && state.tjBoxHidden) { state.tjBoxHidden = false; rerenderReader(); return; }   // colours on, box closed: reopen the box
     state.tjOn = !state.tjOn; state.tjBoxHidden = false; store.set('tj', state.tjOn ? '1' : '0'); rerenderReader();
@@ -1816,7 +1844,7 @@ async function play(i, fromUser = false) {
     stopAudio(true);
     addListen(state.prefs, heard); savePrefs(state.prefs);
     markRecited(i);
-    ray(document.querySelector(`#mushaf .v[data-i="${i}"]`) || $('#rdBody'));
+    ray(verseRayFrom(i));
     refreshGlow();
     // the time of prayer came during this verse: pause now, the adhan, then the basmala and the next verse
     if (state.prayerDue) {
@@ -1980,6 +2008,8 @@ function setupTools() {
       setSpeed: (v) => { state.speed = v; store.set('speed', v); if (state.audio) state.audio.playbackRate = v; const s = $('#rSpeed'); if (s) s.value = v; },
       font: (d) => { state.qs = Math.round(Math.min(1.8, Math.max(0.7, state.qs + d)) * 10) / 10; store.set('qs', state.qs); $('#rzone').style.setProperty('--qs', state.qs); },
       open: (id) => state.panels.open(id),
+      // T123: reminders on the phone and the computer (js/notify.js)
+      notify: (el) => state.notify && state.notify.render(el),
       age: () => state.prefs.age, setAge: (v) => { state.prefs.age = v; savePrefs(state.prefs); applyChild(); },
       replayIntro: () => { state.panels.close(); runIntro().then(q => { if (q) { $('#q').value = q; run(q); } }); }, install: () => openInstall(state.lang),
     },
@@ -1988,7 +2018,7 @@ function setupTools() {
     khatma: (body, args) => state.tools.khatma(body, args),
     hijri: (body, args) => state.tools.hijri(body, args),
     links: (body) => state.tools.links(body),
-    settings: (body) => state.tools.settings(body),
+    settings: (body, args) => state.tools.settings(body, args),
     // T064–T066: prayer times (Aladhan), qibla (computed here), nearby mosques (OpenStreetMap) — the position
     // stays in the browser and goes only to those public services, never to Mishkat's server
     prayer: (body, args) => state.practical.prayer(body, args),
@@ -2023,13 +2053,16 @@ function setupTools() {
     openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); }, search: (q) => { $('#q').value = q; run(q, 'topic'); },
     current: () => (state.mode === 'study' && state.reader.sura ? state.reader.cur : null) });
   state.athkar = createAthkar({ lang: () => state.lang });
-  state.practical = createPractical({ lang: () => state.lang, qrcode, scene: (k, o) => state.galaxy && state.galaxy.setScene && state.galaxy.setScene(k, o),
+  state.practical = createPractical({ lang: () => state.lang, qrcode, openNotify: () => state.panels.open('settings', { focus: 'notify' }), scene: (k, o) => state.galaxy && state.galaxy.setScene && state.galaxy.setScene(k, o),
     // the time of prayer during a recitation: the verse is finished first (play → onended → prayerBreak)
     onPrayerTime: (prayer, mode) => {
       if (!state.playing || !state.continuous) return false;
       state.prayerDue = { prayer, withAdhan: mode === 'adhan' };
       return true;
     } });
+  // T123: reminders (prayer times, remarkable days, khatma moments) as notifications of the device, and a calendar file
+  state.notify = createNotify({ lang: () => state.lang, get prefs() { return state.prefs; }, tone: () => state.practical.tone(),
+    open: (id) => { if (id && state.panels && (state.toolIds || []).includes(id)) state.panels.open(id); } });
   state.prayerBreak = createPrayerBreak({
     lang: () => state.lang,
     verse: (sura, aya) => state.core.verses[state.core.suras[sura - 1].first + aya - 1],
@@ -2338,6 +2371,16 @@ $('#gOut').onclick = () => state.galaxy.zoom(1.6);
 $('#gRot').onclick = () => { const v = !state.galaxy.autoRotate; state.galaxy.setAutoRotate(v); $('#gRot').setAttribute('aria-pressed', v); };
 $('#gNames').onclick = () => setNames($('#gNames').getAttribute('aria-pressed') !== 'true');
 $('#gLegend').onclick = () => { const b = $('#legendBox'); b.hidden = !b.hidden; $('#gLegend').setAttribute('aria-expanded', !b.hidden); };
+// T123: where the ray of a finished verse starts: its text in the Mushaf; in the pure view (no text on screen) its
+// last word on the stars
+function verseRayFrom(i) {
+  if (document.body.classList.contains('gpure') && state.galaxy && state.galaxy.wordPoint) {
+    const [, end] = state.galaxy.wordsOfVerse(i);
+    const p = state.galaxy.wordPoint(end - 1);
+    if (p) return p;
+  }
+  return document.querySelector(`#mushaf .v[data-i="${i}"]`) || $('#rdBody');
+}
 function setPure(on) {
   document.body.classList.toggle('gpure', on);
   // centred on the whole screen (on a phone the home view is shifted up to leave room for the suggestions)

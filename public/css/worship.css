@@ -66,11 +66,18 @@
 .pure-exit { display: none; }
 body.gpure #top, body.gpure .col-side, body.gpure #tray, body.gpure #navDrawer, body.gpure #mtabs, body.gpure #suggest { display: none !important; }
 body.gpure #gzone { position: fixed; inset: 0; z-index: 2147480000; border-radius: 0; margin: 0; background: #03050b; }
-body.gpure #gzone > *:not(#galaxy):not(.glabels):not(#pureExit) { display: none !important; }
-body.gpure .pure-exit { display: grid; place-items: center; position: absolute; top: calc(12px + env(safe-area-inset-top)); inset-inline-end: 12px; z-index: 5;
-  width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.25); background: rgba(0, 0, 0, 0.35); color: #fff; font-size: 16px; cursor: pointer;
-  opacity: 0.35; transition: opacity 0.3s; }
-body.gpure .pure-exit:hover, body.gpure .pure-exit:focus-visible { opacity: 1; }
+body.gpure #gzone > *:not(#galaxy):not(.glabels):not(#pureExit):not(#pureBrand) { display: none !important; }
+/* T123: a clear, labelled way back (it was a faint ✕), and the logo with its name, as in the header */
+.pure-brand { display: none; }
+body.gpure .pure-brand { display: flex; align-items: center; gap: 10px; position: absolute; top: calc(12px + env(safe-area-inset-top)); inset-inline-start: 14px; z-index: 5; pointer-events: none; }
+body.gpure .pure-brand img { width: 54px; height: 54px; filter: drop-shadow(0 0 12px rgba(255, 214, 107, .5)); }
+body.gpure .pure-brand .name { font-family: 'Amiri', var(--ui); font-size: 28px; font-weight: 700; background: linear-gradient(90deg, var(--gold2), var(--gold));
+  -webkit-background-clip: text; background-clip: text; color: transparent; text-shadow: none; }
+body.gpure .pure-exit { display: inline-flex; align-items: center; gap: 6px; position: absolute; top: calc(14px + env(safe-area-inset-top)); inset-inline-end: 12px; z-index: 5;
+  min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px solid rgba(255, 214, 107, 0.55); background: rgba(3, 5, 11, 0.6); color: #ffe6a8; font: 600 14px var(--ui); cursor: pointer;
+  opacity: 0.85; transition: opacity 0.3s, background 0.3s; }
+body.gpure .pure-exit:hover, body.gpure .pure-exit:focus-visible { opacity: 1; background: rgba(255, 214, 107, 0.16); }
+@media (max-width: 520px) { body.gpure .pure-brand img { width: 40px; height: 40px; } body.gpure .pure-brand .name { font-size: 22px; } body.gpure .pure-exit { font-size: 13px; padding: 0 11px; } }
 body.gpure #galaxy { width: 100vw !important; height: 100vh !important; }
 
 /* ---------- the official pages: brand tints that read on both themes */

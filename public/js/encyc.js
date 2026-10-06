@@ -5,6 +5,7 @@
 // before, Mishkat answered such questions «I found nothing». Rulings keep the Fiqh Encyclopedia (T081); a person in
 // crisis, a polemic with its context pack, a surah or a verse asked by reference get no encyclopedia box.
 import { normQ } from './scope.js';
+import { practicalTopic } from './fiqhpractical.js?v=t123';
 
 const CREED = /(^| )(و|ف|ب|ل)?(ال)?(توحيد|شرك|ايمان|عقيده|عقائد|قضاء|ملائكه|جن|سحر|حسد|قبر|الساعه|ساعه|اشراط|دجال|مهدي|ياجوج|ماجوج|شفاعه|صراط|ميزان|حوض|بعث|حشر|نشور|صحابه|السنه والجماعه|بدعه|بدع|كفر|نفاق|ولاء|براء|اسماء الله|صفات الله|الاسماء والصفات|نبوه|معجزه|معجزات|كرامات|اولياء|نواقض|شروط|اركان|شهادتين|عرش|كرسي|لوح|روح|رؤيه الله|اليوم الاخر|القدر خيره)( |$)/;
 const CREED_EN = /\b(tawhid|tawheed|monotheism|shirk|polytheism|faith|belief|creed|aqeedah|aqida|angels?|jinn|magic|sorcery|evil eye|grave|hour|dajjal|antichrist|mahdi|gog|magog|intercession|sirat|resurrection|companions|sahabah|innovation|bid.?ah|disbelief|kufr|hypocrisy|attributes of allah|names of allah|prophethood|miracles?|predestination|divine decree|qadar|last day|throne|soul)\b/;
@@ -17,6 +18,9 @@ export function encycKinds(res, query) {
   const q = normQ(query || res.query || '');
   if (!q) return [];
   if (/^(قصه|قصة) /.test(q) || /\bstory of\b/.test(q)) return [];   // a story is told by its verses in order
+  // T123: a practical fiqh question («شروط الصلاة», «نواقض الوضوء») is answered by the Fiqh Encyclopedia's own section
+  // (js/fiqhpractical.js); the Creed Encyclopedia answered «شروط» with the conditions of the shahada (off topic)
+  if (practicalTopic(query || res.query || '')) return [];
   const creed = CREED.test(q) || CREED_EN.test(q), hist = HIST.test(q) || HIST_EN.test(q);
   // a question about a battle carries the context pack of war verses: the history encyclopedia (an event, its date and
   // its course, quoted) is kept, the creed one is not needed

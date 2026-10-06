@@ -24,10 +24,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="مشكاة">
 <link rel="stylesheet" href="fonts/fonts.css">
-<link rel="stylesheet" href="css/app.css">
-<link rel="stylesheet" href="css/features.css?v=t122">
-<link rel="stylesheet" href="css/refonte.css">
-<link rel="stylesheet" href="css/worship.css">
+<link rel="stylesheet" href="css/app.css?v=t123">
+<link rel="stylesheet" href="css/features.css?v=t123">
+<link rel="stylesheet" href="css/refonte.css?v=t123">
+<link rel="stylesheet" href="css/worship.css?v=t123">
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 </head>
 <body>
@@ -91,7 +91,9 @@
     <section id="gzone" class="zone" aria-labelledby="gTitle">
       <h2 id="gTitle" class="sr" data-i18n="zGalaxy">المجرّة</h2>
       <canvas id="galaxy" aria-label="Quran galaxy"></canvas>
-      <button type="button" id="pureExit" class="pure-exit" data-i18n-title="pureExit" data-i18n-aria="pureExit">✕</button>
+      <!-- T123: the pure view keeps the logo and its name, and a clear way back to the normal view -->
+      <div id="pureBrand" class="pure-brand" aria-hidden="true"><img src="img/logo.svg" alt="" width="54" height="54"><span class="name" data-i18n="brand">مِشكاة</span></div>
+      <button type="button" id="pureExit" class="pure-exit" data-i18n-title="pureExit" data-i18n-aria="pureExit"><span aria-hidden="true">↩</span> <span data-i18n="pureBack">العودة إلى العرض العادي</span></button>
       <div id="tooltip" role="tooltip"></div>
       <!-- camera: turn and tilt (click = one step, hold = continuous), in a corner far from the middle -->
       <div id="gcam" role="group" data-i18n-aria="camera">
@@ -207,6 +209,6 @@
 </div>
 
 <div id="loader"><img src="img/logo.svg" alt="" width="84" height="84"><div class="lbar" aria-hidden="true"><i></i></div><div id="loadMsg">…</div></div>
-<script type="module" src="js/app.js?v=t122"></script>
+<script type="module" src="js/app.js?v=t123"></script>
 </body>
 </html>

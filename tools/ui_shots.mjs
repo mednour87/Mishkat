@@ -116,6 +116,28 @@ try {
       await evalJs(`document.querySelector('#about').close(), 1`);
     }
   }
+  if (WANT.includes('t123')) {                 // T123: labels of an answer on a phone, welcome box, reader enlarged, pure view, reminders, fiqh
+    await phone(); await open('?q=' + encodeURIComponent('الصبر')); await sleep(7000);
+    const jit = await evalJs(`(async()=>{const L=()=>[...document.querySelectorAll('.gans')].filter(e=>!e.hidden).map(e=>e.style.transform.match(/-?[\\d.]+/g).slice(0,2).map(Number));
+      let prev=L(), small=0, big=0, n=0; for(let i=0;i<80;i++){ await new Promise(r=>setTimeout(r,50)); const c=L(); c.forEach((p,k)=>{ const q=prev[k]; if(!q) return; const d=Math.hypot(p[0]-q[0],p[1]-q[1]); if(d>0) n++; if(d>0&&d<2) small++; if(d>12) big++; }); prev=c; }
+      return JSON.stringify({labels:prev.length, moves:n, tiny:small, jumps:big}); })()`);
+    console.log('phone answer labels', jit);
+    await shot('t123_phone_search.jpg');
+    await open('?q=' + encodeURIComponent('شروط الصلاة')); await sleep(6000);
+    console.log('practical fiqh', await evalJs(`(document.querySelector('#pfBox:not([hidden]) h4')||{}).textContent`), await evalJs(`document.querySelectorAll('#pfBox .pf-list a').length`));
+    await evalJs(`(document.querySelector('#pfBox')||document.body).scrollIntoView(), 1`); await shot('t123_phone_fiqh.jpg', 600);
+    await open('?s=36'); await sleep(3000); await click('#rFold'); await sleep(800);
+    console.log('reader tall', await evalJs(`JSON.stringify([document.body.classList.contains('rd-tall'), Math.round(document.querySelector('#rzone').getBoundingClientRect().height)])`));
+    await shot('t123_phone_reader_tall.jpg');
+    await open(''); await sleep(2500); await click('#gPure'); await sleep(2500); await shot('t123_phone_pure.jpg');
+    await desk(); await open(''); await sleep(2500); await click('#gPure'); await sleep(2500); await shot('t123_desk_pure.jpg');
+    await click('#pureExit'); await sleep(800); console.log('pure after exit', await evalJs(`document.body.classList.contains('gpure')`));
+    await phone(); await open('?tool=settings'); await sleep(2500);
+    await evalJs(`(document.querySelector('#sNotifySec')||document.body).scrollIntoView(), 1`); await shot('t123_phone_notify.jpg', 600);
+    await phone(); await send('Page.navigate', { url: BASE + '/' }); await sleep(800);
+    await evalJs(`localStorage.removeItem('mishkat.welcomed'); 1`); await send('Page.navigate', { url: BASE + '/' }); await sleep(5000);
+    await evalJs(`(document.querySelector('#welcome .wbox')||{}).scrollTop = 400, 1`); await shot('t123_phone_welcome.jpg', 800);
+  }
   if (WANT.includes('oct6')) {                 // (6 Oct) the author's requests: khatma, reader end, tafsir full screen, tekrar, test, tasbih, light mode
     const today = new Date().toISOString().slice(0, 10);
     const KH = { khatma: { v: 2, active: true, start: today, mode: 'days', days: 30, unit: 'pages', scope: 'quran', order: 'mushaf', suras: [], moments: [{ id: 'fajr', time: '05:30' }] } };

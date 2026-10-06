@@ -53,7 +53,7 @@ export const S = {
     sDisplay: 'العرض', sLang: 'اللغة', sTheme: 'المظهر', sDark: 'داكن', sLight: 'فاتح', sNames: 'أسماء السور على المجرّة', sRotate: 'دوران المجرّة تلقائيًا',
     sReading: 'القراءة والتلاوة', sSpeed: 'سرعة التلاوة', sFont: 'حجم خط المصحف', sSmaller: 'أصغر', sLarger: 'أكبر',
     sScroll: 'احسب الآية مقروءة عند قراءتها بالتمرير (تبقى عند سطر القراءة وقتًا كافيًا ثم تتجاوزها)',
-    sKhatmaSec: 'الختمة', sOpenKhatma: 'افتح الختمة', sHijriSec: 'التقويم الهجري', sOpenHijri: 'افتح التقويم والتحويل',
+    sNotify: 'التنبيهات على الهاتف والحاسوب', sKhatmaSec: 'الختمة', sOpenKhatma: 'افتح الختمة', sHijriSec: 'التقويم الهجري', sOpenHijri: 'افتح التقويم والتحويل',
     sYou: 'أنت', sAge: 'العمر', sChild: 'أقل من ١٨ سنة', sAdult: '١٨ سنة فأكثر', sAgeHelp: 'لمن هو أقل من ١٨ سنة: لا تُعرض فتاوى، ويقترح عليك «مشكاة» حفظ سورة وفهم معانيها.',
     sIntro: 'شاهد فيلم التعريف بمشكاة', sInstall: 'ثبّت التطبيق على هذا الجهاز',
     kProposal: (n, p) => `خطة مقترحة: ختمة في ${arCount(n, DAYS)}، نحو ${arCount(p, PAGES)} كل يوم، موزّعة على أوقاتك. عدّل المدة والأوقات حسب التزاماتك ثم اضغط «ابدأ الختمة».`,
@@ -92,7 +92,7 @@ export const S = {
     sIntro: 'Watch the Mishkat presentation film', sInstall: 'Install the app on this device',
     kProposal: (n, p) => `A proposed plan: the whole Quran in ${n} days, about ${p} pages a day, spread over your reading times. Change the length and times to fit your commitments, then press “Start the khatma”.`,
     kProposalActive: 'You already have a khatma plan running; here is your progress. You can cancel it and start a new plan of another length that fits your commitments.',
-    sKhatmaSec: 'Khatma', sOpenKhatma: 'Open the khatma', sHijriSec: 'Hijri calendar', sOpenHijri: 'Open the calendar and converter',
+    sNotify: 'Reminders on your phone and computer', sKhatmaSec: 'Khatma', sOpenKhatma: 'Open the khatma', sHijriSec: 'Hijri calendar', sOpenHijri: 'Open the calendar and converter',
   },
 };
 
@@ -432,7 +432,7 @@ export function createToolPanels(ctx) {
   }
 
   // ------------------------------------------------------------------ settings
-  function settings(body) {
+  function settings(body, args = {}) {
     const t = L(), P = ctx.prefs;
     // sections: display · reading and recitation · khatma · Hijri calendar · your data (the page's own controls
     // through ctx.ui: language, theme, galaxy, recitation speed, Mushaf text size)
@@ -449,6 +449,7 @@ export function createToolPanels(ctx) {
         ${check('sAuto', P.autoMark, t.sAuto)}${check('sScroll', P.scrollMark, t.sScroll)}${check('sWelcome', P.welcomeVoice !== false, t.sWelcome)}`) : sec(t.sReading, check('sAuto', P.autoMark, t.sAuto) + check('sScroll', P.scrollMark, t.sScroll)))
       + (U && U.age ? sec(t.sYou, `<div class="s-line"><span>${esc(t.sAge)}</span>${seg('sAge', [['child', t.sChild], ['adult', t.sAdult]], U.age() || '')}</div><p class="p-small">${esc(t.sAgeHelp)}</p>
         <div class="k-btns"><button type="button" class="mini" id="sIntro">▶ ${esc(t.sIntro)}</button><button type="button" class="mini gold" id="sInst">⤓ ${esc(t.sInstall)}</button></div>`) : '')
+      + (U && U.notify ? `<section class="s-sec" id="sNotifySec"><h3 class="p-sub">🔔 ${esc(t.sNotify)}</h3><div id="sNotify"></div></section>` : '')
       + sec(t.sKhatmaSec, `${check('sGal', P.showReadOnGalaxy, t.sGalaxy)}${U ? `<button type="button" class="mini gold" id="sGoK">${esc(t.sOpenKhatma)}</button>` : ''}`)
       + sec(t.sHijriSec, `<label class="p-row">${esc(t.hAdj)} <select id="sHj">${[-2, -1, 0, 1, 2].map(n => `<option value="${n}" ${n === (+P.hijriAdjust || 0) ? 'selected' : ''}>${esc(t.hAdjN(n))}</option>`).join('')}</select></label>
         <p class="p-small">${esc(t.sHijriHelp)}</p>${U ? `<button type="button" class="mini gold" id="sGoH">${esc(t.sOpenHijri)}</button>` : ''}`)
@@ -471,6 +472,7 @@ export function createToolPanels(ctx) {
       $b('#sGoK').onclick = () => U.open('khatma');
       $b('#sGoH').onclick = () => U.open('hijri');
     }
+    if (U && U.notify && $b('#sNotify')) { U.notify($b('#sNotify')); if (args.focus === 'notify') setTimeout(() => $b('#sNotifySec').scrollIntoView({ block: 'start', behavior: 'smooth' }), 250); }
     $b('#sScroll').onchange = (ev) => { P.scrollMark = ev.target.checked; ctx.save(); };
     body.querySelector('#sHj').onchange = (ev) => { P.hijriAdjust = +ev.target.value; ctx.save(); };
     body.querySelector('#sAuto').onchange = (ev) => { P.autoMark = ev.target.checked; ctx.save(); };
