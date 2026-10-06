@@ -26,7 +26,7 @@ test('never a still frame: the background moves with t, the cards keep moving to
 });
 
 test('the film: under 2 minutes, the same narration and the same figures as v2', () => {
-  const tl = 'timeline3_voice_fusha.json', p = new URL(`../../04_LIVRABLES/video/${tl}`, import.meta.url);
+  const tl = 'timeline3_voice_eleven.json', p = new URL(`../../04_LIVRABLES/video/${tl}`, import.meta.url);
   if (!fs.existsSync(p)) return;                                                             // the deliverables folder is outside the repository
   const T = JSON.parse(fs.readFileSync(p, 'utf8'));
   assert.ok(T.total <= 120, `${T.total} s`);
