@@ -40,3 +40,12 @@ test('prayer break: no basmala when resuming in Surah at-Tawbah; three licensed 
 test('the judges\' guide is not linked from the site (it is linked from GitHub)', () => {
   for (const f of ['public/index.html', 'public/js/app.js']) assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /judges\.html/);
 });
+
+test('every verse quoted in the documents of the 3D design is a slice of the Tanzil text', () => {
+  const core = JSON.parse(fs.readFileSync('public/data/core.json', 'utf8')), all = core.verses.join('\n');
+  for (const f of ['docs/DESIGN_3D.md', 'docs/DESIGN_3D_AR.md']) {
+    const quotes = [...fs.readFileSync(f, 'utf8').matchAll(/﴿([^﴾]+)﴾/g)].map(m => m[1].replace(/^…|…$/g, '').trim());
+    assert.ok(quotes.length >= 3, f);
+    for (const q of quotes) assert.ok(all.includes(q), `${f}: ${q}`);
+  }
+});

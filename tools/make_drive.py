@@ -59,6 +59,8 @@ listing += ['04_…/git_log.txt', '04_…/git_tags.txt', '04_…/npm_test_output
 # 05 project file
 for f in ['Mishkat_Dossier_AR.pdf', 'Mishkat_Dossier_EN.pdf']: cp(L('dossier_complet', f), 'file')
 cp(R('docs', 'RAG_ENGINE.md'), 'file'); cp(R('docs', 'pipeline_rag.png'), 'file')
+for f in ['DESIGN_3D.pdf', 'DESIGN_3D_AR.pdf']: cp(L('CONCEPTION_3D', f), 'file')
+cp(R('docs', 'GUIDE.md'), 'file')
 # 06 sources and licences
 for f in ['SOURCES.md', 'TOOLS.md', 'LICENSE', 'NOTICE.md', 'README.md', 'DEPLOY.md']: cp(R(f), 'src')
 # 07 jury critique

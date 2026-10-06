@@ -4,9 +4,9 @@
 
 ## 1. The image that guided the design
 
-> ﴿وَهُوَ ٱلَّذِى خَلَقَ ٱلَّيْلَ وَٱلنَّهَارَ وَٱلشَّمْسَ وَٱلْقَمَرَ كُلٌّ فِى فَلَكٍ يَسْبَحُونَ﴾ (Al-Anbiya 21:33)
-> ﴿لَا ٱلشَّمْسُ يَنۢبَغِى لَهَآ أَن تُدْرِكَ ٱلْقَمَرَ وَلَا ٱلَّيْلُ سَابِقُ ٱلنَّهَارِ وَكُلٌّ فِى فَلَكٍ يَسْبَحُونَ﴾ (Ya-Sin 36:40)
-> ﴿ٱلشَّمْسُ وَٱلْقَمَرُ بِحُسْبَانٍ﴾ (Ar-Rahman 55:5)
+> ﴿وَهُوَ ٱلَّذِى خَلَقَ ٱلَّيْلَ وَٱلنَّهَارَ وَٱلشَّمْسَ وَٱلْقَمَرَ كُلٌّ فِى فَلَكٍ يَسْبَحُونَ﴾ (Al-Anbiya 21:33)
+> ﴿لَا ٱلشَّمْسُ يَنۢبَغِى لَهَآ أَن تُدْرِكَ ٱلْقَمَرَ وَلَا ٱلَّيْلُ سَابِقُ ٱلنَّهَارِ وَكُلٌّ فِى فَلَكٍ يَسْبَحُونَ﴾ (Ya-Sin 36:40)
+> ﴿ٱلشَّمْسُ وَٱلْقَمَرُ بِحُسْبَانٍ﴾ (Ar-Rahman 55:5)
 
 «Each one swims in an orbit», and «by a precise reckoning»: nothing in the sky is placed at random, nothing overtakes what comes before it. The 3D view of Mishkat takes this as its **rule of design**, not as a claim about the Quran:
 
