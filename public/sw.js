@@ -2,7 +2,7 @@
 // at once), the cached copy when offline. Data files, fonts, images, libraries: cached copy first, refreshed in the
 // background. The API (/api/*) and other sites (recitation audio, prayer times, maps) are never cached here: answers
 // stay live and the visitor's place never passes through this file.
-const VERSION = 'mishkat-2026-10-05a';
+const VERSION = 'mishkat-2026-10-06a';
 const SHELL = ['./', 'index.html', 'css/app.css', 'css/features.css', 'css/refonte.css', 'fonts/fonts.css', 'img/logo.svg', 'img/icon-192.png', 'manifest.webmanifest',
   'js/app.js', 'js/engine.js', 'js/i18n.js', 'js/galaxy.js', 'js/layouts.js', 'js/layout-worker.js', 'js/letters3d.js', 'js/lamp.js', 'js/lampmap.js', 'js/search-worker.js', 'js/readcam.js', 'js/wake.js',
   'tajweed.html', 'js/tajweed-page.js', 'js/tajweed.js', 'css/tajweed-page.css',

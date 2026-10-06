@@ -199,6 +199,31 @@ try {
       await shot(`m_readcam_${t}s.jpg`);
     }
   }
+  if (WANT.includes('oct6')) {                 // (6 Oct) rose of surahs at start; qibla with the magnetic declination
+    await desk(); await open(''); await sleep(5000);
+    console.log('desk shape at start:', await evalJs(`document.querySelector('#shapeSel').value`));
+    await shot('d_start_rose.jpg');
+    await phone(); await open(''); await sleep(5000);
+    console.log('phone shape at start:', await evalJs(`document.querySelector('#shapeSel').value`));
+    await shot('m_start_rose.jpg');
+    // a shape picked by the visitor is kept at the next start
+    await evalJs(`(()=>{const s=document.querySelector('#shapeSel'); s.value='galaxy'; s.dispatchEvent(new Event('change')); return 1})()`); await sleep(3000);
+    await evalJs(`location.reload(), 1`); await sleep(1500);
+    for (let k = 0; k < 60; k++) { if (await evalJs(`!!document.querySelector('#loader.done')`)) break; await sleep(250); }
+    await sleep(2500);
+    console.log('phone shape after the visitor chose galaxy + reload:', await evalJs(`document.querySelector('#shapeSel').value`));
+    const AUCK = JSON.stringify({ id: 'gn:NZ:Auckland', en: 'Auckland', ar: 'أوكلاند', lat: -36.8485, lon: 174.7633, cc: 'NZ', tz: 'Pacific/Auckland' });
+    for (const [lang, nm] of [['ar', 'm_qibla_auckland_ar.jpg'], ['en', 'm_qibla_auckland_en.jpg']]) {
+      await open('', { lang }); await evalJs(`localStorage.setItem('mishkat.place', ${JSON.stringify(AUCK)}); 1`);
+      await click('#navBtn'); await sleep(500); await click('[data-panel=qibla]'); await sleep(1500);
+      console.log('qibla', lang, await evalJs(`JSON.stringify([...document.querySelectorAll('.qb-wrap p, .tp-body .note')].map(x=>x.textContent).slice(0,4))`));
+      await shot(nm);
+    }
+    await open('', { lang: 'en' }); await evalJs(`localStorage.setItem('mishkat.place', ${JSON.stringify(AUCK)}); 1`);
+    await click('#navBtn'); await sleep(500); await click('[data-panel=prayer]'); await sleep(5000);
+    console.log('prayer Auckland:', await evalJs(`JSON.stringify([...document.querySelectorAll('.pr-table tr')].map(r=>r.textContent.trim()).concat([(document.querySelector('.pr-next')||{}).textContent]))`));
+    await shot('m_prayer_auckland_en.jpg');
+  }
   if (WANT.includes('mosques')) {
     await phone(); await open(''); await click('#navBtn'); await sleep(500); await click('[data-panel=mosques]'); await sleep(9000);
     console.log('mosques:', await evalJs(`JSON.stringify({count:(document.querySelector('.mq-count')||{}).textContent, items:document.querySelectorAll('.mq-list li').length, map:!!document.querySelector('.mq-map iframe')})`));

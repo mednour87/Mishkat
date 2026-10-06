@@ -6,6 +6,8 @@
 //
 // Pure functions are exported for the tests; createPractical(ctx) returns the panel renderers.
 
+import { magField, compassZone } from './geomag.js';
+
 export const KAABA = { lat: 21.4225, lon: 39.8262 };
 
 // Aladhan calculation methods (https://aladhan.com/calculation-methods), proposed from the country
@@ -46,6 +48,42 @@ const TZ_CC = { 'Africa/Tunis': 'TN', 'Africa/Algiers': 'DZ', 'Africa/Casablanca
   'Asia/Kuwait': 'KW', 'Asia/Amman': 'JO', 'Europe/Istanbul': 'TR', 'Europe/Paris': 'FR', 'Europe/London': 'GB', 'Asia/Karachi': 'PK', 'Asia/Jakarta': 'ID', 'Asia/Kuala_Lumpur': 'MY',
   'Asia/Bahrain': 'BH', 'Asia/Muscat': 'OM', 'Asia/Baghdad': 'IQ', 'Asia/Damascus': 'SY', 'Asia/Beirut': 'LB', 'Africa/Tripoli': 'LY', 'Africa/Khartoum': 'SD', 'Asia/Dhaka': 'BD' };
 export const countryFromTz = (tz) => TZ_CC[tz] || '';
+
+// (6 Oct) the country of a position = the country of the nearest city of GeoNames cities15000 (data/places.json, every
+// country of the world): the browser's time zone alone left most of the world on the default (and a traveller's
+// phone may keep the time zone of home). Used only to PROPOSE a calculation method, always editable.
+export function nearestCountry(P, lat, lon) {
+  let best = null, bd = Infinity;
+  for (const [cc, list] of Object.entries((P && P.countries) || {})) for (const c of list) {
+    const d = distanceKm({ lat, lon }, { lat: c[2], lon: c[3] });
+    if (d < bd) { bd = d; best = cc; }
+  }
+  return best ? { cc: best, km: bd } : null;
+}
+// the country of a time zone, from the same list (every zone that has a city in it)
+export function countryOfTz(P, tz) {
+  if (!tz) return '';
+  if (TZ_CC[tz]) return TZ_CC[tz];
+  for (const [cc, list] of Object.entries((P && P.countries) || {})) if (list.some(c => c[4] === tz)) return cc;
+  return '';
+}
+// the calendar month (year, month) of a date in a time zone (the place's own today, not the visitor's)
+export function monthIn(tz, date = new Date()) {
+  try {
+    const [y, m] = new Intl.DateTimeFormat('en-CA', { timeZone: tz || undefined, year: 'numeric', month: '2-digit' }).format(date).split('-').map(Number);
+    if (y && m) return { y, m };
+  } catch (e) { /* unknown zone */ }
+  return { y: date.getFullYear(), m: date.getMonth() + 1 };
+}
+// the magnetic correction of the qibla at a place (WMM2025): the bearing to read on a magnetic compass is the true
+// bearing minus the declination (east positive); null outside the model's years
+export function qiblaMagnetic(lat, lon, date = new Date()) {
+  const y = date.getUTCFullYear(), a = Date.UTC(y, 0, 1), b = Date.UTC(y + 1, 0, 1);
+  const f = magField(lat, lon, 0, y + (date.getTime() - a) / (b - a));
+  if (!f) return null;
+  const tb = qiblaBearing(lat, lon);
+  return { decl: f.decl, H: f.H, zone: compassZone(f.H), magnetic: ((tb - f.decl) % 360 + 360) % 360 };
+}
 
 const R = Math.PI / 180;
 // initial great-circle bearing from a point to the Kaaba, degrees clockwise from true north
@@ -116,14 +154,18 @@ export const PS = {
     posFail: 'تعذّر الحصول على موقعك (لم يُسمح أو غير متاح). اختر مدينة من القائمة أو ابحث عنها.', posHere: 'موقعي الحالي', cityPh: 'ابحث عن مدينة…', find: 'بحث', choose: 'اختر مدينة', cityNone: 'لم أجد مدينة بهذا الاسم.',
     method: 'طريقة الحساب', methodAuto: (n) => `مقترحة حسب البلد: ${n}`, school: 'العصر', schoolStd: 'الجمهور (ظل المثل)', schoolHanafi: 'الحنفية (ظل المثلين)',
     by: (m, id) => `حسب: ${m} — طريقة Aladhan رقم ${id}. المواقيت حساب فلكي تقريبي، والمعتمد تقويم الجهة الرسمية في بلدك.`,
+    highLat: 'في العروض العالية (الصيف القطبي) قد لا يغيب الشفق، فتُقدَّر مواقيت الفجر والعشاء بطريقة «الزاوية» (Angle Based) في خدمة Aladhan؛ ارجع إلى المركز الإسلامي في مدينتك.',
     names: { Fajr: 'الفجر', Sunrise: 'الشروق', Dhuhr: 'الظهر', Asr: 'العصر', Maghrib: 'المغرب', Isha: 'العشاء' },
     next: (p) => `الصلاة القادمة: ${p}`, until: (p) => `بقي على صلاة ${p}:`, left: 'الوقت المتبقي', today: 'اليوم', loading: 'جارٍ جلب المواقيت…', fail: 'تعذّر جلب المواقيت (لا اتصال؟).', cached: 'محفوظة لهذا الشهر في متصفحك.',
     tone: '', toneNote: '', sound: 'عند دخول الوقت (والصفحة مفتوحة)', soundNone: 'بلا صوت', soundTone: 'تنبيه هادئ', soundAdhan: 'الأذان', adhanTry: 'استمع إلى الأذان',
     adhanNote: 'تسجيل أذان برخصة مفتوحة من', digits: 'الأرقام', country: 'البلد', city: 'المدينة', mAllMaps: 'كل المساجد القريبة في Google Maps',
     placesSrc: 'قائمة المدن: GeoNames (رخصة CC BY 4.0). يُحفظ اسم المدينة والبلد فقط في ملف تعريف ارتباط (cookie) في متصفحك لسنة، دون الإحداثيات.',
     qDeg: (d) => `القبلة على ${d}° من الشمال الجغرافي`, qDist: (k) => `المسافة إلى الكعبة المشرفة: ${k} كم`, qCompass: 'تفعيل البوصلة', qAlign: 'وجّه أعلى الهاتف حتى يصير السهم الذهبي إلى الأعلى.',
-    qCalib: 'البوصلة الإلكترونية تتأثر بالمعادن والمغناطيس: حرّك الهاتف على شكل ٨ لمعايرتها، وتحقّق بعلامة معروفة (محراب مسجد).', qNoSensor: 'لا تتوفر بوصلة في هذا الجهاز؛ استعمل الزاوية المعروضة أو افتح الصفحة على هاتفك:', qNoAbs: 'لم يُرسل الهاتف اتجاهًا مطلقًا من البوصلة، فلن نُدير القرص حتى لا نُريك اتجاهًا خاطئًا. استعمل الزاوية المكتوبة مع بوصلة الهاتف أو علامة معروفة. ملاحظة: بوصلة الهاتف تشير إلى الشمال المغناطيسي، والفرق عن الشمال الحقيقي بضع درجات في أغلب البلاد العربية.',
+    qCalib: 'البوصلة الإلكترونية تتأثر بالمعادن والمغناطيس: حرّك الهاتف على شكل ٨ لمعايرتها، وتحقّق بعلامة معروفة (محراب مسجد).', qNoSensor: 'لا تتوفر بوصلة في هذا الجهاز؛ استعمل الزاوية المعروضة أو افتح الصفحة على هاتفك:', qNoAbs: 'لم يُرسل الهاتف اتجاهًا مطلقًا من البوصلة، فلن نُدير القرص حتى لا نُريك اتجاهًا خاطئًا. استعمل الزاوية المكتوبة مع بوصلة الهاتف أو علامة معروفة.',
     qQr: 'امسح الرمز لفتح القبلة على هاتفك', qHow: 'الحساب: اتجاه الدائرة العظمى من موقعك إلى الكعبة (21.4225، 39.8262)، يُحسب في متصفحك.',
+    qMag: (m, d, east) => `على البوصلة المغناطيسية: ${m}°، والانحراف المغناطيسي هنا ${d}° ${east ? 'شرقًا' : 'غربًا'}`, qMagHow: 'البوصلة تشير إلى الشمال المغناطيسي؛ يُصحَّح القرص تلقائيًا بالانحراف المغناطيسي لمكانك حسب النموذج المغناطيسي العالمي WMM2025 (الإدارة الوطنية الأمريكية للمحيطات والغلاف الجوي NOAA وهيئة المسح الجيولوجي البريطانية).',
+    qBlack: 'أنت قرب القطب المغناطيسي: المجال الأفقي ضعيف جدًا ولا يُعتمد على أي بوصلة هنا، فلن نُدير القرص. استعمل الزاوية من الشمال الجغرافي مع الشمس أو علامة معروفة.', qCaution: 'تنبيه: المجال المغناطيسي الأفقي ضعيف في مكانك، فقد تنحرف البوصلة؛ تحقّق بعلامة معروفة.',
+    qNoModel: 'خارج سنوات النموذج المغناطيسي (2025–2030): لم يُصحَّح الانحراف المغناطيسي.', qHere: 'أنت في المسجد الحرام أو قريب جدًا من الكعبة المشرفة: استقبل الكعبة بالمعاينة.',
     mRadius: 'نصف القطر', mSearch: 'ابحث عن المساجد', mNone: 'لم تُسجَّل مساجد في هذا النطاق على خريطة OpenStreetMap؛ وسّع النطاق.', mFail: 'تعذّر الوصول إلى خريطة OpenStreetMap الآن.',
     mOnMap: 'على الخريطة', mRoute: 'المسار', mAllMap: 'كل المساجد على الخريطة', mMapTitle: 'خريطة المساجد القريبة (Google Maps)', mMapNote: 'الخريطة من Google Maps داخل الصفحة: تُرسل إليها إحداثيات المكان المختار لعرضه. القائمة من OpenStreetMap عبر خادم «مشكاة» (الموقع مقرَّبًا إلى ١٠٠ م تقريبًا، لا يُحفظ).', mCount: (n) => `${n} مسجدًا في هذا النطاق`,
     mLoading: 'جارٍ البحث…', mMaps: 'Google Maps', mOsm: 'الخريطة', mUnnamed: 'مسجد (بلا اسم في الخريطة)', mSrc: 'البيانات: © مساهمو OpenStreetMap (ODbL) عبر Overpass؛ قد لا تكون كاملة.', km: (k) => `${k} كم`,
@@ -134,14 +176,18 @@ export const PS = {
     posFail: 'Your location could not be read (not allowed or unavailable). Choose a city from the list or search for it.', posHere: 'My current location', cityPh: 'Search a city…', find: 'Search', choose: 'Choose a city', cityNone: 'No city found with this name.',
     method: 'Calculation method', methodAuto: (n) => `proposed for the country: ${n}`, school: 'Asr', schoolStd: 'Majority (shadow = 1×)', schoolHanafi: 'Hanafi (shadow = 2×)',
     by: (m, id) => `According to: ${m} — Aladhan method ${id}. Times are an astronomical approximation; the official calendar of your country prevails.`,
+    highLat: 'At high latitudes (polar summer) twilight may never end: Fajr and Isha are then estimated with the «angle-based» rule of the Aladhan service; follow the Islamic centre of your city.',
     names: { Fajr: 'Fajr', Sunrise: 'Sunrise', Dhuhr: 'Dhuhr', Asr: 'Asr', Maghrib: 'Maghrib', Isha: 'Isha' },
     next: (p) => `Next prayer: ${p}`, until: (p) => `Time left until ${p}:`, left: 'Time left', today: 'Today', loading: 'Loading the times…', fail: 'The times could not be loaded (offline?).', cached: 'Saved for this month in your browser.',
     tone: '', toneNote: '', sound: 'When the time comes (page open)', soundNone: 'No sound', soundTone: 'Calm tone', soundAdhan: 'Adhan', adhanTry: 'Listen to the adhan',
     adhanNote: 'Openly licensed adhan recording from', digits: 'Digits', country: 'Country', city: 'City', mAllMaps: 'All nearby mosques in Google Maps',
     placesSrc: 'City list: GeoNames (CC BY 4.0). Only the city and country names are kept in a cookie in your browser for one year, never the coordinates.',
     qDeg: (d) => `Qibla at ${d}° from true north`, qDist: (k) => `Distance to the Kaaba: ${k} km`, qCompass: 'Turn on the compass', qAlign: 'Turn the top of the phone until the golden arrow points up.',
-    qCalib: 'Phone compasses are disturbed by metal and magnets: move the phone in a figure 8 to calibrate it, and check against a known mark (a mosque’s mihrab).', qNoSensor: 'This device has no compass; use the angle shown or open the page on your phone:', qNoAbs: 'The phone sent no absolute compass heading, so the dial is not turned (it would show a wrong direction). Use the angle above with the phone’s compass app or a known mark. Note: a phone compass points to magnetic north, a few degrees from true north in most Arab countries.',
+    qCalib: 'Phone compasses are disturbed by metal and magnets: move the phone in a figure 8 to calibrate it, and check against a known mark (a mosque’s mihrab).', qNoSensor: 'This device has no compass; use the angle shown or open the page on your phone:', qNoAbs: 'The phone sent no absolute compass heading, so the dial is not turned (it would show a wrong direction). Use the angle above with the phone’s compass app or a known mark.',
     qQr: 'Scan to open the qibla on your phone', qHow: 'Computation: great-circle direction from your position to the Kaaba (21.4225, 39.8262), computed in your browser.',
+    qMag: (m, d, east) => `On a magnetic compass: ${m}° (magnetic declination here ${d}° ${east ? 'E' : 'W'})`, qMagHow: 'A compass points to magnetic north; the dial is corrected automatically by the magnetic declination of your place, from the World Magnetic Model WMM2025 (NOAA and the British Geological Survey).',
+    qBlack: 'You are near the magnetic pole: the horizontal field is too weak for any compass here, so the dial is not turned. Use the angle from true north with the sun or a known mark.', qCaution: 'Caution: the horizontal magnetic field is weak at your place, a compass may stray; check against a known mark.',
+    qNoModel: 'Outside the years of the magnetic model (2025–2030): the magnetic declination is not corrected.', qHere: 'You are in al-Masjid al-Haram or very close to the Kaaba: face the Kaaba by sight.',
     mRadius: 'Radius', mSearch: 'Find mosques', mNone: 'No mosque is mapped in this area on OpenStreetMap; widen the radius.', mFail: 'OpenStreetMap cannot be reached now.',
     mOnMap: 'On the map', mRoute: 'Route', mAllMap: 'All mosques on the map', mMapTitle: 'Map of the nearby mosques (Google Maps)', mMapNote: 'The map is Google Maps inside the page: the chosen place’s coordinates are sent to it to show the area. The list comes from OpenStreetMap through Mishkat’s server (place rounded to about 100 m, never stored).', mCount: (n) => `${n} mosques in this radius`,
     mLoading: 'Searching…', mMaps: 'Google Maps', mOsm: 'Map', mUnnamed: 'Mosque (no name on the map)', mSrc: 'Data: © OpenStreetMap contributors (ODbL) via Overpass; it may be incomplete.', km: (k) => `${k} km`,
@@ -191,7 +237,8 @@ export function createPractical(ctx) {
   const countryName = (cc) => { try { return new Intl.DisplayNames([ar() ? 'ar' : 'en'], { type: 'region' }).of(cc) || cc; } catch (e) { return cc; } };
   function picker(el, done) {
     const t = L(), cur = place();
-    const guess = (cur && cur.cc) || countryFromTz(Intl.DateTimeFormat().resolvedOptions().timeZone || '') || 'TN';
+    const tz0 = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    let guess = (cur && cur.cc) || countryFromTz(tz0) || '';
     el.innerHTML = `<div class="pr-place"><p class="p-small">${esc(t.placeNone)}</p>
       <div class="p-row"><button type="button" class="mini gold" data-pos>${esc(t.usePos)}</button></div>
       <div class="p-row pr-sel"><label>${esc(t.country)} <select data-cc aria-label="${esc(t.country)}"><option>…</option></select></label>
@@ -201,6 +248,7 @@ export function createPractical(ctx) {
     const ccSel = el.querySelector('[data-cc]'), citySel = el.querySelector('[data-city]');
     places().then(P => {
       if (!P) { ccSel.innerHTML = `<option value="">—</option>`; return; }
+      guess = guess || countryOfTz(P, tz0) || 'SA';
       const ccs = Object.keys(P.countries).map(cc => [cc, countryName(cc)]).sort((a, b) => a[1].localeCompare(b[1], ar() ? 'ar' : 'en'));
       ccSel.innerHTML = ccs.map(([cc, n]) => `<option value="${cc}" ${cc === guess ? 'selected' : ''}>${esc(n)}</option>`).join('');
       const fill = () => {
@@ -220,8 +268,12 @@ export function createPractical(ctx) {
       if (!navigator.geolocation) { el.querySelector('.pr-found').innerHTML = `<li class="note">${esc(t.posFail)}</li>`; return; }
       navigator.geolocation.getCurrentPosition((pos) => {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-        const pl = { id: 'here', lat: +pos.coords.latitude.toFixed(4), lon: +pos.coords.longitude.toFixed(4), cc: countryFromTz(tz) || ccSel.value || '' };
-        setPlace(pl); done(pl);
+        const lat = +pos.coords.latitude.toFixed(4), lon = +pos.coords.longitude.toFixed(4);
+        places().then(P => {
+          const near = nearestCountry(P, lat, lon);
+          const pl = { id: 'here', lat, lon, cc: (near && near.km < 300 ? near.cc : '') || countryOfTz(P, tz) || '' };
+          setPlace(pl); done(pl);
+        });
       }, () => { el.querySelector('.pr-found').innerHTML = `<li class="note">${esc(t.posFail)}</li>`; }, { enableHighAccuracy: false, timeout: 15000, maximumAge: 600000 });
     };
     el.querySelector('[data-find]').onsubmit = async (ev) => {
@@ -247,13 +299,13 @@ export function createPractical(ctx) {
   const placeLine = (p, again) => `<p class="p-row pr-at"><b>${esc(L().place)}:</b> ${esc(placeName(p))} <small dir="ltr">(${p.lat.toFixed(3)}, ${p.lon.toFixed(3)})</small> <button type="button" class="mini" data-change>${esc(L().choose)}</button></p>`;
 
   // ------------------------------------------------------------------ T064 prayer times
-  async function loadMonth(p, method, school, date = new Date()) {
-    const y = date.getFullYear(), m = date.getMonth() + 1;
+  async function loadMonth(p, method, school, date = new Date(), ym = null) {
+    const { y, m } = ym || monthIn(p.tz, date);
     const key = `${p.lat.toFixed(3)},${p.lon.toFixed(3)},${method},${school},${y}-${m}`;
     // two months kept (this one and, at the end of a month, the next): the rollover no longer evicts this month
     const cached = monthsCached().find(c => c.key === key);
     if (cached) return cached.days;
-    const r = await doFetch(`https://api.aladhan.com/v1/calendar/${y}/${m}?latitude=${p.lat}&longitude=${p.lon}&method=${method}&school=${school}&iso8601=true`);
+    const r = await doFetch(`https://api.aladhan.com/v1/calendar/${y}/${m}?latitude=${p.lat}&longitude=${p.lon}&method=${method}&school=${school}&latitudeAdjustmentMethod=3&iso8601=true`);
     if (!r.ok) throw new Error('aladhan ' + r.status);
     const days = parseCalendar(await r.json());
     store.set('prayerCache', { months: [{ key, days }, ...monthsCached().filter(c => c.key !== key)].slice(0, 2) });
@@ -296,8 +348,13 @@ export function createPractical(ctx) {
     let days;
     try {
       days = await loadMonth(p, method, school);
-      const nx = nextPrayer(days);
-      if (!nx) days = days.concat(await loadMonth(p, method, school, new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1)));
+      // (6 Oct) the place's own date: a city chosen in another time zone may already be in the next month (or still in
+      // the previous one) — its month is loaded too, so «today» is always the place's today
+      const tzp = days[0] && days[0].tz;
+      const here = monthIn(tzp), key = `${here.y}-${String(here.m).padStart(2, '0')}`;
+      if (tzp && !days.some(d => d.date.startsWith(key))) days = days.concat(await loadMonth(p, method, school, new Date(), here));
+      days.sort((a, b) => a.date < b.date ? -1 : a.date > b.date ? 1 : 0);
+      if (!nextPrayer(days)) { const last = days[days.length - 1].date.split('-').map(Number); days = days.concat(await loadMonth(p, method, school, new Date(), last[1] === 12 ? { y: last[0] + 1, m: 1 } : { y: last[0], m: last[1] + 1 })); }
     } catch (e) { body.innerHTML = placeLine(p) + `<p class="note">${esc(t.fail)}</p>`; body.querySelector('[data-change]').onclick = () => picker(body, () => prayer(body)); return; }
     if (my !== gen) return;
     const tz = days[0].tz || undefined;
@@ -319,7 +376,7 @@ export function createPractical(ctx) {
     body.innerHTML = placeLine(p) + `${args.prayer ? '<p class="pr-ask"></p>' : ''}<div class="pr-next" aria-live="off"></div>
       <table class="pr-table"><caption>${esc(t.today)} — ${esc(new Date(today.times.Fajr).toLocaleDateString(ar() ? 'ar-u-nu-arab' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: tz }))}</caption>
       ${['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'].map(k => `<tr class="${k === 'Sunrise' ? 'pr-sun' : ''}" data-k="${k}"><th>${esc(t.names[k])}</th><td>${esc(fmt(today.times[k]))}</td></tr>`).join('')}</table>
-      <p class="pr-by">${esc(t.by(mName(method), method))}</p>
+      <p class="pr-by">${esc(t.by(mName(method), method))}</p>${Math.abs(p.lat) >= 48 ? `<p class="p-small">${esc(t.highLat)}</p>` : ''}
       <div class="p-row"><label>${esc(t.method)} <select data-method>${Object.keys(METHODS).map(id => `<option value="${id}" ${+id === +method ? 'selected' : ''}>${esc(mName(id))}</option>`).join('')}</select></label></div>
       <p class="p-small">${esc(t.methodAuto(mName(methodFor(cc))))}</p>
       <div class="p-row"><label>${esc(t.school)} <select data-school><option value="0" ${!school ? 'selected' : ''}>${esc(t.schoolStd)}</option><option value="1" ${school ? 'selected' : ''}>${esc(t.schoolHanafi)}</option></select></label></div>
@@ -354,6 +411,7 @@ export function createPractical(ctx) {
     if (orient) { window.removeEventListener('deviceorientationabsolute', orient); window.removeEventListener('deviceorientation', orient); orient = null; }
     if (!p) { picker(body, () => qibla(body)); return; }
     const b = qiblaBearing(p.lat, p.lon), km = Math.round(distanceKm(p, KAABA));
+    const mag = qiblaMagnetic(p.lat, p.lon), decl = mag ? mag.decl : 0;
     if (ctx.scene) ctx.scene('qibla', { bearing: b });
     const touch = matchMedia('(pointer: coarse)').matches;
     body.innerHTML = placeLine(p) + `<div class="qb-wrap"><svg class="qb-dial" viewBox="0 0 200 200" role="img" aria-label="${esc(t.qDeg(Math.round(b)))}">
@@ -362,11 +420,12 @@ export function createPractical(ctx) {
         <text x="100" y="32" text-anchor="middle" class="qb-n">N</text>
         <g transform="rotate(${b.toFixed(1)} 100 100)"><path d="M100 30 L108 92 L100 86 L92 92 Z" fill="#ffd66b"/><rect x="93" y="22" width="14" height="14" rx="1.5" fill="#111" stroke="#ffd66b" stroke-width="1.2"/><line x1="93" y1="27" x2="107" y2="27" stroke="#ffd66b" stroke-width="1.2"/></g></g>
         <circle cx="100" cy="100" r="4" fill="#ffd66b"/><path d="M100 2 L104 12 L96 12 Z" fill="#fff" class="qb-top"/></svg>
-      <p class="qb-deg"><b>${esc(t.qDeg(num(b.toFixed(1))))}</b></p><p>${esc(t.qDist(num(km)))}</p></div>
+      <p class="qb-deg"><b>${esc(t.qDeg(num(b.toFixed(1))))}</b></p>${mag ? `<p class="qb-mag">${esc(t.qMag(num(mag.magnetic.toFixed(1)), num(Math.abs(decl).toFixed(1)), decl >= 0))}</p>` : ''}<p>${esc(t.qDist(num(km)))}</p></div>
+      ${km < 2 ? `<p class="note">${esc(t.qHere)}</p>` : ''}${mag && mag.zone === 'blackout' ? `<p class="note">${esc(t.qBlack)}</p>` : mag && mag.zone === 'caution' ? `<p class="note">${esc(t.qCaution)}</p>` : ''}${mag ? '' : `<p class="note">${esc(t.qNoModel)}</p>`}
       ${touch ? `<p><button type="button" class="mini gold" data-compass>${esc(t.qCompass)}</button></p><p class="p-small">${esc(t.qAlign)}</p>` : ''}
       <p class="note">${esc(t.qCalib)}</p>
       ${touch ? '' : `<p class="p-small">${esc(t.qNoSensor)}</p><div class="qb-qr" aria-label="${esc(t.qQr)}"></div><p class="p-small">${esc(t.qQr)}</p>`}
-      <p class="p-small">${esc(t.qHow)}</p>`;
+      <p class="p-small">${esc(t.qHow)}</p>${mag ? `<p class="p-small">${esc(t.qMagHow)}</p>` : ''}`;
     body.querySelector('[data-change]').onclick = () => picker(body, () => qibla(body));
     const qr = body.querySelector('.qb-qr');
     if (qr && ctx.qrcode) {
@@ -380,6 +439,7 @@ export function createPractical(ctx) {
       } catch (e) { qr.remove(); }
     }
     const cb = body.querySelector('[data-compass]');
+    if (cb && mag && mag.zone === 'blackout') cb.disabled = true;
     if (cb) cb.onclick = async () => {
       try { if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') { const s = await DeviceOrientationEvent.requestPermission(); if (s !== 'granted') throw new Error('denied'); } } catch (e) { cb.insertAdjacentHTML('afterend', `<p class="note">${esc(t.qNoSensor)}</p>`); return; }
       const rose = body.querySelector('.qb-rose');
@@ -389,7 +449,8 @@ export function createPractical(ctx) {
       orient = (ev) => {
         let h = headingOf(ev); if (h == null || !rose.isConnected) return;
         const ang = (screen.orientation && typeof screen.orientation.angle === 'number') ? screen.orientation.angle : (typeof window.orientation === 'number' ? window.orientation : 0);
-        h = (h + ang + 360) % 360;
+        // magnetic heading of the phone → true heading (declination of the place, WMM2025)
+        h = (h + ang + decl + 720) % 360;
         const cx = Math.cos(h * R), cy = Math.sin(h * R);
         sx = sx == null ? cx : sx * 0.8 + cx * 0.2; sy = sy == null ? cy : sy * 0.8 + cy * 0.2;
         const hs = (Math.atan2(sy, sx) / R + 360) % 360;

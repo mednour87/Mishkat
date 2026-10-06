@@ -239,6 +239,9 @@ async function boot() {
   };
   await galaxyJob(0, 'mushaf');
   setTimeout(() => galaxyJob(1, 'nuzul').catch(() => {}), 1500);
+  // (6 Oct, author's choice) the site opens on «وردة السور» (rose of surahs); a shape the visitor picks later is
+  // remembered (key 'shapePick', written only by a choice of the visitor, never by the film or by the start)
+  { const v0 = startView(); if (v0.shape !== 'galaxy' || v0.order !== 'mushaf') await setView(v0.shape, v0.order, { quiet: true }).catch(() => {}); }
   state.wordsP = getJSON('data/words.json').then(w => { state.words = w; return w; });
   setTimeout(prepareLayouts, 8000);
   setupTools();
@@ -311,7 +314,6 @@ async function boot() {
   $('#lampSlot').onclick = () => openKhatmaMap();
   refreshHud();
   setupHeaderExtras();
-  { const sh = store.get('shape', 'galaxy'), od = store.get('order', 'mushaf'); if (sh !== 'galaxy' || od !== 'mushaf') setView(sh, od, { quiet: true }); }
   setNames(store.get('names', '1') === '1');
   const sp = new URL(location.href).searchParams;
   setMode('home');
@@ -2080,6 +2082,12 @@ function labelDock() {
 const layoutIdx = { 'galaxy|mushaf': 0, 'galaxy|nuzul': 1 };
 const layoutNote = {};
 const view = { shape: 'galaxy', order: 'mushaf' };
+const DEFAULT_SHAPE = 'rose';
+// the view at start: the visitor's own last choice, else the rose of surahs in the Mushaf order
+function startView() {
+  const [shape, order] = String(store.get('shapePick', '') || '').split('|');
+  return shape ? { shape, order: order || 'mushaf' } : { shape: DEFAULT_SHAPE, order: 'mushaf' };
+}
 function fillViewPickers() {
   const L = state.lang;
   $('#shapeSel').innerHTML = SHAPES.map(x => `<option value="${x.id}">${esc(x[L])}</option>`).join('');
@@ -2099,6 +2107,7 @@ async function setView(shape, order, { quiet = false } = {}) {
   // restoring the visitor's view at start must not pull the camera away from a verse or an answer
   state.galaxy.setLayout(layoutIdx[key], !(quiet && state.mode !== 'home'));
   store.set('shape', shape); store.set('order', order);
+  if (!quiet) store.set('shapePick', shape + '|' + order);
   const note = $('#viewNote');
   clearTimeout(setView.timer);
   if (!quiet) {
@@ -2363,7 +2372,7 @@ function placeStep() {
 }
 async function runIntro() {
   const { playIntro } = await import('./intro.js');
-  const before = { shape: store.get('shape', 'galaxy'), order: store.get('order', 'mushaf') };
+  const before = { ...view };
   return new Promise(resolve => playIntro({
     lang: () => state.lang, core: state.core, galaxy: state.galaxy, audioBase: AUDIO_BASE, timing: suraFile('timing', 24), timingBasmala: suraFile('timing', 1),
     placeName: () => (state.practical ? state.practical.placeName() : ''),

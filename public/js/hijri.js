@@ -7,10 +7,23 @@
 
 const FMT = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', { day: 'numeric', month: 'numeric', year: 'numeric', timeZone: 'UTC' });
 const DAY = 86400000;
+// (6 Oct) a browser without the Umm al-Qura calendar silently falls back to the Gregorian one (it would show «2026»
+// as a Hijri year): it then uses the tabular (arithmetical) Islamic calendar, civil epoch 16 July 622 — the
+// classical rule of 11 leap years in 30 (Calendrical Calculations, Reingold & Dershowitz) — which may differ by a day or two
+export const CALENDAR = (() => { try { return FMT.resolvedOptions().calendar === 'islamic-umalqura' ? 'umalqura' : 'tabular'; } catch (e) { return 'tabular'; } })();
+const EPOCH = 1948439.5;   // Julian day of 1 Muharram 1 AH (civil)
+const islamicToJd = (y, m, d) => d + Math.ceil(29.5 * (m - 1)) + (y - 1) * 354 + Math.floor((3 + 11 * y) / 30) + EPOCH - 1;
+export function tabularHijri(utcMs) {
+  const jd = Math.floor(utcMs / DAY + 2440587.5) + 0.5;
+  const y = Math.floor((30 * (jd - EPOCH) + 10646) / 10631);
+  const m = Math.min(12, Math.ceil((jd - (29 + islamicToJd(y, 1, 1))) / 29.5) + 1);
+  return { y, m, d: jd - islamicToJd(y, m, 1) + 1 };
+}
 
 // gregorian Date (local day) → { y, m, d } Hijri; adjust in days (+1 = the month started one day later here)
 export function toHijri(date = new Date(), adjust = 0) {
   const t = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - adjust * DAY;
+  if (CALENDAR !== 'umalqura') return tabularHijri(t);
   const p = Object.fromEntries(FMT.formatToParts(new Date(t)).map(x => [x.type, x.value]));
   return { y: parseInt(p.year, 10), m: parseInt(p.month, 10), d: parseInt(p.day, 10) };
 }
