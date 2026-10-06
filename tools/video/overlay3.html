@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>Mishkat video overlay v3</title>
+<link rel="stylesheet" href="/public/fonts/fonts.css">
+<style>
+  /* (6 Oct, author's review of the video) v3 — a «studio» layout: the site plays in a WINDOW (its hole is cut in this
+     layer), the motion graphics live in their own places around it — a column for the chapter and its points, a band
+     under the window for the narration, a thin rail at the bottom, the name at the top — so nothing is ever laid over
+     the site's own interface. The background is drawn on a canvas and moves at every frame (stars drifting, slow light,
+     golden dust): no frame of the film is ever still. Everything is a function of t (render(t)), frame by frame. */
+  :root { --gold: #ffd66b; --gold2: #e8a93c; --txt: #f3eedf; --mut: #b7bfd1; --green: #5ee6a0; }
+  html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: transparent; }
+  body { font-family: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif; color: var(--txt); }
+  #bg { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+  .L { position: absolute; will-change: opacity, transform; }
+  .en { font-family: 'Inter', sans-serif; direction: ltr; }
+  /* the name, top right */
+  #top { right: 48px; top: 22px; height: 64px; display: flex; align-items: center; gap: 14px; direction: rtl; }
+  #top b { font-family: 'Amiri', serif; font-size: 40px; color: var(--gold); line-height: 1; }
+  #top small { display: block; font-family: 'Inter'; font-size: 17px; color: #d9dfeb; margin-top: 4px; letter-spacing: .02em; }
+  #topL { left: 48px; top: 34px; font-family: 'Inter'; font-size: 17px; color: #aeb7c9; letter-spacing: .04em; }
+  #topL b { color: var(--gold); font-weight: 600; }
+  /* the column: the chapter and its points */
+  .col { left: 48px; top: 104px; width: 400px; direction: rtl; }
+  .col .no { font-family: 'Inter'; font-size: 74px; font-weight: 700; line-height: 1; color: transparent; -webkit-text-stroke: 1.5px rgba(255, 214, 107, .85); }
+  .col h2 { margin: 10px 0 0; font-size: 40px; line-height: 1.25; color: #fff3cf; }
+  .col h2 small { display: block; font-family: 'Inter'; font-size: 20px; font-weight: 500; color: var(--mut); margin-top: 6px; direction: ltr; text-align: right; }
+  .col .ln { height: 3px; margin: 18px 0 18px; border-radius: 2px; background: linear-gradient(270deg, var(--gold), rgba(255, 214, 107, 0)); transform-origin: right; }
+  .col ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .col li { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: start; padding: 12px 14px; border-radius: 16px; background: rgba(255, 255, 255, .045); border: 1px solid rgba(255, 255, 255, .09); font-size: 23px; line-height: 1.38; }
+  .col li > b { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-family: 'Inter'; font-size: 17px; font-weight: 700; background: rgba(255, 255, 255, .12); color: #fff; margin-top: 2px; }
+  .col li small { display: block; font-family: 'Inter'; font-size: 15px; color: var(--mut); direction: ltr; text-align: right; margin-top: 3px; }
+  .col li.on { border-color: rgba(255, 214, 107, .6); background: rgba(255, 214, 107, .09); } .col li.on > b { background: var(--gold); color: #1a1406; }
+  .col li.ok { border-color: rgba(94, 230, 160, .65); background: rgba(94, 230, 160, .08); } .col li.ok > b { background: var(--green); color: #062114; }
+  .col li.chk > b { background: var(--green); color: #062114; }
+  /* the narration: under the window (or at the bottom of a full-screen part) */
+  #cap { text-align: center; direction: rtl; }
+  #cap .ar { font-size: 31px; line-height: 1.5; font-weight: 600; color: #fff8e6; }
+  #cap .ar span { display: inline-block; white-space: pre; }
+  #cap .en { font-size: 21px; line-height: 1.35; color: #c9d1e2; margin-top: 2px; }
+  /* the rail */
+  #rail { left: 472px; width: 1400px; bottom: 14px; height: 30px; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 8px; direction: rtl; }
+  #rail .ch { position: relative; border-radius: 999px; background: rgba(255, 255, 255, .05); border: 1px solid rgba(255, 255, 255, .12); overflow: hidden; display: grid; place-items: center; font-size: 15px; color: #aeb7c9; white-space: nowrap; }
+  #rail .ch i { position: absolute; top: 0; bottom: 0; right: 0; width: 0; background: linear-gradient(270deg, rgba(255, 214, 107, .5), rgba(255, 214, 107, .15)); }
+  #rail .ch span { position: relative; } #rail .ch small { font-family: 'Inter'; font-size: 12px; color: #8f98ab; margin-inline-start: 6px; }
+  #rail .ch.now { border-color: rgba(255, 214, 107, .75); color: #fff8e6; }
+  #url { left: 48px; bottom: 12px; font-family: 'Inter'; font-size: 20px; font-weight: 600; color: #fff3cf; padding: 4px 16px; border-radius: 999px; border: 1px solid rgba(255, 214, 107, .5); background: rgba(5, 7, 13, .5); }
+  /* the opening: the name over the site's own film */
+  #brand { left: 0; right: 0; top: 660px; text-align: center; }
+  #brand h1 { margin: 0; font-family: 'Amiri', serif; font-size: 100px; color: var(--gold); text-shadow: 0 0 40px rgba(255, 196, 80, .45); line-height: 1.1; }
+  #brand p { margin: 6px 0 0; font-size: 30px; color: #e9e4d6; } #brand small { display: block; font-family: 'Inter'; font-size: 21px; color: var(--mut); margin-top: 6px; letter-spacing: .06em; }
+  /* the full-screen cards: their background is the moving canvas */
+  .card { left: 0; top: 0; width: 1920px; height: 900px; display: grid; place-items: center; }
+  #stats .in { width: 1640px; text-align: center; direction: rtl; }
+  #stats h2 { margin: 0; font-size: 54px; color: var(--gold); } #stats h2 small { display: block; font-family: 'Inter'; font-size: 25px; color: var(--mut); font-weight: 400; margin-top: 8px; }
+  #stats .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 40px; }
+  .kpi { padding: 22px 16px 20px; border-radius: 24px; border: 1px solid rgba(255, 214, 107, .3); background: rgba(10, 14, 26, .72); }
+  .kpi .ring { position: relative; width: 190px; height: 190px; margin: 0 auto 8px; }
+  .kpi .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .kpi .ring .r0 { fill: none; stroke: rgba(255, 255, 255, .09); stroke-width: 10; } .kpi .ring .r1 { fill: none; stroke: var(--gold); stroke-width: 10; stroke-linecap: round; stroke-dasharray: 100; }
+  .kpi.g .ring .r1 { stroke: var(--green); }
+  .kpi .ring b { position: absolute; inset: 0; display: grid; place-items: center; font-family: 'Inter'; font-size: 38px; color: #fff3cf; font-variant-numeric: tabular-nums; }
+  .kpi.g .ring b { color: var(--green); }
+  .kpi span { display: block; font-size: 23px; line-height: 1.4; } .kpi small { display: block; font-family: 'Inter'; font-size: 16px; color: var(--mut); margin-top: 6px; line-height: 1.35; }
+  #stats .foot { margin-top: 26px; font-size: 18px; color: var(--mut); font-family: 'Inter'; }
+  #bridge .in { position: relative; width: 900px; height: 760px; }
+  #bridge .lamp { z-index: 2; position: absolute; left: 50%; top: 250px; transform: translate(-50%, -50%); filter: drop-shadow(0 0 50px rgba(255, 210, 110, .75)); }
+  #bridge .ic { position: absolute; left: 50%; top: 250px; width: 96px; height: 96px; margin: -48px 0 0 -48px; border-radius: 26px; display: grid; place-items: center; font-size: 46px; background: rgba(12, 16, 30, .85); border: 1px solid rgba(255, 214, 107, .5); box-shadow: 0 0 30px rgba(255, 214, 107, .2); }
+  #bridge h2 { position: absolute; left: -200px; right: -200px; top: 590px; margin: 0; text-align: center; font-size: 66px; color: #fff3cf; } #bridge h2 small { display: block; font-family: 'Inter'; font-size: 28px; color: var(--mut); font-weight: 400; margin-top: 10px; }
+  #end .in { text-align: center; position: relative; }
+  #end .rays { position: absolute; left: 50%; top: 150px; width: 900px; height: 900px; margin: -450px 0 0 -450px; border-radius: 50%; background: repeating-conic-gradient(from 0deg, rgba(255, 214, 107, .10) 0deg 4deg, rgba(255, 214, 107, 0) 4deg 15deg); -webkit-mask: radial-gradient(circle, #000 0%, rgba(0, 0, 0, .7) 30%, transparent 68%); mask: radial-gradient(circle, #000 0%, rgba(0, 0, 0, .7) 30%, transparent 68%); }
+  #end .lamp { position: relative; display: inline-block; filter: drop-shadow(0 0 60px rgba(255, 210, 110, .75)); }
+  #end h1 { position: relative; margin: 6px 0 0; font-family: 'Amiri', serif; font-size: 104px; color: var(--gold); line-height: 1.1; } #end h1 small { display: block; font-family: 'Inter'; font-size: 30px; color: #e9e4d6; letter-spacing: .14em; font-weight: 500; margin-top: 12px; }
+  #end .url { position: relative; margin-top: 20px; font-family: 'Inter'; font-size: 32px; font-weight: 600; color: #fff; padding: 10px 30px; border-radius: 999px; border: 1px solid rgba(255, 214, 107, .55); display: inline-block; min-width: 330px; }
+  #end .tl { position: relative; margin-top: 22px; font-size: 30px; color: #f3eedf; direction: rtl; } #end .tl small { direction: ltr; display: block; font-family: 'Inter'; font-size: 20px; color: var(--mut); margin-top: 6px; }
+  #end .chal { position: relative; margin-top: 22px; display: flex; align-items: center; justify-content: center; gap: 20px; font-size: 24px; color: #e9e4d6; direction: rtl; }
+  #end .chal img { height: 92px; } #end .chal small { display: block; font-family: 'Inter'; font-size: 19px; color: var(--mut); }
+  #end .ch { position: relative; margin-top: 16px; font-family: 'Inter'; font-size: 17px; color: #8f98ab; }
+</style>
+</head>
+<body>
+<canvas id="bg" width="1920" height="1080"></canvas>
+<div id="root"></div>
+<script type="module">
+import { lampSVG } from '/public/js/lamp.js';
+const TL = window.TL || { events: [], segments: [], xf: .65, layouts: {} };
+const root = document.getElementById('root'), cv = document.getElementById('bg'), g = cv.getContext('2d');
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const ease = (x) => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const outBack = (x) => { x = clamp(x); const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const env = (t, at, dur, fi = .35, fo = .35) => t < at || t > at + dur ? 0 : Math.min(ease((t - at) / fi), ease((at + dur - t) / fo));
+const lerp = (a, b, f) => a + (b - a) * f;
+
+// ------------------------------------------------ where the site's window is at time t (same rule as build3.mjs)
+const RECT = TL.layouts;   // { win: {x,y,w,h}, full: {...}, card: {...} }
+function layoutAt(t) {
+  const S = TL.segments; let k = 0;
+  for (let j = 0; j < S.length; j++) if (S[j].at <= t) k = j;
+  const cur = RECT[S[k].layout], f = k > 0 ? ease((t - S[k].at) / TL.xf) : 1;
+  if (f >= 1 || k === 0) return { r: cur, lay: S[k].layout, w: { [S[k].layout]: 1 } };
+  const prev = RECT[S[k - 1].layout];
+  const r = { x: lerp(prev.x, cur.x, f), y: lerp(prev.y, cur.y, f), w: lerp(prev.w, cur.w, f), h: lerp(prev.h, cur.h, f), rad: lerp(prev.rad, cur.rad, f) };
+  const w = {}; w[S[k - 1].layout] = (w[S[k - 1].layout] || 0) + 1 - f; w[S[k].layout] = (w[S[k].layout] || 0) + f;
+  return { r, lay: f < .5 ? S[k - 1].layout : S[k].layout, w };
+}
+
+// ------------------------------------------------ the moving background (deterministic: the same frame for the same t)
+let seed = 11; const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+const STARS = Array.from({ length: 420 }, () => ({ x: rnd() * 1920, y: rnd() * 1080, z: .3 + rnd() * .9, p: rnd() * 6.28, s: .6 + rnd() * 1.6 }));
+const DUST = Array.from({ length: 70 }, () => ({ x: rnd() * 1920, y: rnd() * 1080, v: 8 + rnd() * 22, p: rnd() * 6.28, s: 1 + rnd() * 2.2 }));
+function background(t, L) {
+  const r = L.r;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.clearRect(0, 0, 1920, 1080);
+  // deep blue, with two slow lights wandering
+  const bgG = g.createLinearGradient(0, 0, 0, 1080); bgG.addColorStop(0, '#070b1a'); bgG.addColorStop(1, '#03050c');
+  g.fillStyle = bgG; g.fillRect(0, 0, 1920, 1080);
+  const lights = [[960 + 520 * Math.cos(t * .07), 430 + 160 * Math.sin(t * .09), 760, 'rgba(40, 70, 160, .30)'], [960 + 600 * Math.cos(t * .05 + 2.4), 620 + 180 * Math.sin(t * .06 + 1), 640, 'rgba(255, 190, 90, .10)']];
+  for (const [x, y, rr, c] of lights) { const rg = g.createRadialGradient(x, y, 0, x, y, rr); rg.addColorStop(0, c); rg.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = rg; g.fillRect(0, 0, 1920, 1080); }
+  // stars drifting slowly to the left (Arabic reading direction runs right to left), twinkling
+  g.globalCompositeOperation = 'lighter';
+  for (const s of STARS) {
+    const x = ((s.x - t * 9 * s.z) % 1920 + 1920) % 1920, y = s.y + Math.sin(t * .2 + s.p) * 3 * s.z;
+    const a = .25 + .55 * s.z * (.6 + .4 * Math.sin(t * 1.3 * s.s + s.p));
+    g.fillStyle = `rgba(200, 215, 255, ${a.toFixed(3)})`; g.fillRect(x, y, s.s * s.z + .4, s.s * s.z + .4);
+  }
+  // golden dust rising
+  for (const d of DUST) {
+    const y = ((d.y - t * d.v) % 1080 + 1080) % 1080, x = d.x + Math.sin(t * .5 + d.p) * 18;
+    const a = .18 + .22 * Math.sin(t * .9 + d.p * 3);
+    g.fillStyle = `rgba(255, 214, 107, ${Math.max(0, a).toFixed(3)})`; g.beginPath(); g.arc(x, y, d.s, 0, 6.283); g.fill();
+  }
+  g.globalCompositeOperation = 'source-over';
+  // the window: a soft glow around it, then its hole, then a thin golden frame that breathes
+  if (r.w > 4 && (L.w.win || 0) + (L.w.full || 0) > 0) {
+    const full = r.w >= 1919;
+    if (!full) {
+      g.save(); g.shadowColor = 'rgba(255, 200, 100, .28)'; g.shadowBlur = 60; g.fillStyle = '#05070d'; rrect(r.x, r.y, r.w, r.h, r.rad); g.fill(); g.restore();
+    }
+    g.globalCompositeOperation = 'destination-out'; g.fillStyle = '#000'; rrect(r.x, r.y, r.w, r.h, r.rad); g.fill();
+    g.globalCompositeOperation = 'source-over';
+    if (!full) {
+      const pulse = .45 + .2 * Math.sin(t * 1.4);
+      const lg = g.createLinearGradient(r.x, r.y, r.x + r.w, r.y + r.h);
+      lg.addColorStop(0, `rgba(255, 214, 107, ${pulse.toFixed(3)})`); lg.addColorStop(.5, 'rgba(255, 214, 107, .12)'); lg.addColorStop(1, `rgba(255, 214, 107, ${pulse.toFixed(3)})`);
+      g.strokeStyle = lg; g.lineWidth = 2; rrect(r.x - 1, r.y - 1, r.w + 2, r.h + 2, r.rad + 1); g.stroke();
+      // a spark running around the frame
+      const per = 2 * (r.w + r.h), d = (t * 260) % per;
+      let px, py; if (d < r.w) { px = r.x + d; py = r.y; } else if (d < r.w + r.h) { px = r.x + r.w; py = r.y + d - r.w; } else if (d < 2 * r.w + r.h) { px = r.x + r.w - (d - r.w - r.h); py = r.y + r.h; } else { px = r.x; py = r.y + r.h - (d - 2 * r.w - r.h); }
+      const sg = g.createRadialGradient(px, py, 0, px, py, 26); sg.addColorStop(0, 'rgba(255, 240, 200, .9)'); sg.addColorStop(1, 'rgba(255, 214, 107, 0)');
+      g.fillStyle = sg; g.fillRect(px - 26, py - 26, 52, 52);
+    } else {
+      // full-screen footage: a dark band at the bottom for the narration
+      const bg2 = g.createLinearGradient(0, 760, 0, 1080); bg2.addColorStop(0, 'rgba(3,5,12,0)'); bg2.addColorStop(1, 'rgba(3,5,12,.88)');
+      g.fillStyle = bg2; g.fillRect(0, 760, 1920, 320);
+    }
+  }
+}
+function rrect(x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+
+// ------------------------------------------------ the layers
+const els = [];
+const add = (e, html, id, cls = '') => { const d = document.createElement('div'); d.className = 'L ' + cls; if (id) d.id = id; d.innerHTML = html; d.style.opacity = 0; root.appendChild(d); els.push({ e, d }); return d; };
+for (const e of TL.events) {
+  if (e.kind === 'top') add(e, `${lampSVG({ size: 58, animated: false, title: '' })}<div><b>مِشكاة</b><small>mishkatquran.org</small></div>`, 'top');
+  else if (e.kind === 'topL') add(e, `ISLAMIC AI CHALLENGE 2026 · <b>TRACK 01</b>`, 'topL');
+  else if (e.kind === 'col') add(e, `${e.n ? `<div class="no">${esc(e.n)}</div>` : ''}<h2>${esc(e.ar)}<small>${esc(e.en)}</small></h2><div class="ln"></div><ul>${(e.points || []).map((p, k) => `<li data-k="${k}"><b>${e.steps ? k + 1 : '✓'}</b><div>${esc(p.ar)}<small>${esc(p.en)}</small></div></li>`).join('')}</ul>`, null, 'col');
+  else if (e.kind === 'cap') add(e, `<div class="ar">${e.ar.split(' ').map(w => `<span>${esc(w)} </span>`).join('')}</div><div class="en">${esc(e.en)}</div>`, 'cap');
+  else if (e.kind === 'rail') add(e, e.chapters.map(c => `<div class="ch"><i></i><span>${esc(c.ar)}<small>${esc(c.en)}</small></span></div>`).join(''), 'rail');
+  else if (e.kind === 'url') add(e, esc(e.url), 'url');
+  else if (e.kind === 'brand') add(e, `<h1>مشكاة</h1><p>دليل مجرّة القرآن الذكي</p><small>MISHKAT · THE SMART GUIDE TO THE QURAN GALAXY</small>`, 'brand');
+  else if (e.kind === 'stats') add(e, `<div class="in"><h2>${esc(e.title.ar)}<small>${esc(e.title.en)}</small></h2><div class="grid">${e.kpis.map((k, j) => `<div class="kpi${k.good ? ' g' : ''}"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" class="r0"/><circle cx="60" cy="60" r="52" class="r1" pathLength="100" style="stroke-dashoffset:100"/></svg><b data-v="${k.v}" data-d="${k.dec || 0}" data-suf="${esc(k.suf || '')}" data-f="${k.frac}">0</b></div><span>${esc(k.ar)}</span><small>${esc(k.en)}</small></div>`).join('')}</div><div class="foot">${esc(e.foot || '')}</div></div>`, 'stats', 'card');
+  else if (e.kind === 'bridge') add(e, `<div class="in"><div class="lamp">${lampSVG({ size: 210, animated: false, title: '' })}</div>${e.icons.map(x => `<div class="ic">${esc(x)}</div>`).join('')}<h2>${esc(e.ar)}<small>${esc(e.en)}</small></h2></div>`, 'bridge', 'card');
+  else if (e.kind === 'end') add(e, `<div class="in"><div class="rays"></div><div class="lamp">${lampSVG({ size: 220, animated: false, title: 'Mishkat' })}</div><h1>مشكاة<small>MISHKAT</small></h1><div class="url"></div><div class="tl">${esc(e.ar)}<small>${esc(e.en)}</small></div>${e.chal ? `<div class="chal"><img src="${esc(e.chal.logo)}" alt=""><div>${esc(e.chal.ar)}<small>${esc(e.chal.en)}</small></div></div>` : ''}<div class="ch">${esc(e.foot || '')}</div></div>`, 'end', 'card');
+}
+
+window.render = (t) => {
+  const L = layoutAt(t), r = L.r, win = L.w.win || 0, full = L.w.full || 0;
+  background(t, L);
+  for (const { e, d } of els) {
+    const fi = e.kind === 'stats' || e.kind === 'end' || e.kind === 'bridge' ? .5 : .35;
+    let a = env(t, e.at, e.dur, fi, e.kind === 'end' ? .01 : .4);
+    if (e.kind === 'top' || e.kind === 'topL' || e.kind === 'rail' || e.kind === 'url') a *= win;   // only around the window
+    d.style.opacity = a.toFixed(3); d.style.display = a > .001 ? '' : 'none';
+    if (a <= .001) continue;
+    const u = t - e.at;
+    if (e.kind === 'cap') {
+      // under the window; at the bottom of a full-screen part or of a card
+      const below = r.y + r.h + 14, bottomY = 1080 - 150;
+      const y = win >= .999 ? below : lerp(bottomY, below, win), x = win >= .999 ? r.x : lerp(0, r.x, win), w = win >= .999 ? r.w : lerp(1920, r.w, win);
+      d.style.left = x.toFixed(1) + 'px'; d.style.top = y.toFixed(1) + 'px'; d.style.width = w.toFixed(1) + 'px';
+      const ws = d.querySelectorAll('.ar span'), n = ws.length;
+      ws.forEach((s, k) => { const p = clamp((u - k * Math.min(.06, .9 / n)) / .3); s.style.opacity = ease(p).toFixed(3); s.style.transform = `translateY(${((1 - ease(p)) * 12).toFixed(1)}px)`; });
+      d.querySelector('.en').style.opacity = ease((u - .35) / .4).toFixed(3);
+    }
+    if (e.kind === 'col') {
+      d.style.transform = `translateX(${((1 - ease(u / .6)) * -40).toFixed(1)}px)`;
+      const no = d.querySelector('.no'); if (no) no.style.transform = `translateY(${((1 - ease(u / .7)) * 30).toFixed(1)}px)`;
+      d.querySelector('.ln').style.transform = `scaleX(${ease((u - .2) / .8).toFixed(3)})`;
+      d.querySelectorAll('li').forEach((li, k) => {
+        const p0 = e.points[k].at != null ? e.points[k].at : .7 + k * 1.1, p = clamp((u - p0) / .45);
+        li.style.opacity = ease(p).toFixed(3); li.style.transform = `translateX(${((1 - ease(p)) * -26).toFixed(1)}px)`;
+        if (e.steps) { const last = k === e.points.length - 1; li.className = u >= p0 ? (last ? 'ok' : 'on') : ''; }
+        else li.className = 'chk';
+        li.querySelector('b').style.transform = `scale(${(.6 + .4 * outBack(p)).toFixed(3)})`;
+      });
+    }
+    if (e.kind === 'rail') d.querySelectorAll('.ch').forEach((c, k) => {
+      const ch = e.chapters[k], next = e.chapters[k + 1], end = next ? next.at : e.at + e.dur, f = clamp((t - ch.at) / (end - ch.at));
+      c.querySelector('i').style.width = (100 * f).toFixed(1) + '%'; c.className = 'ch' + (t >= ch.at && t < end ? ' now' : '');
+    });
+    if (e.kind === 'top') d.querySelector('svg') && (d.querySelector('svg').style.filter = `drop-shadow(0 0 ${(10 + 8 * Math.sin(t * 1.6)).toFixed(1)}px rgba(255, 210, 110, .7))`);
+    if (e.kind === 'brand') { const h = d.querySelector('h1'); h.style.letterSpacing = `${((1 - ease(u / 1.2)) * 18).toFixed(1)}px`; d.style.transform = `translateY(${((1 - ease(u / .9)) * 26).toFixed(1)}px)`; }
+    if (e.kind === 'stats') {
+      d.querySelector('h2').style.transform = `translateY(${((1 - ease(u / .7)) * 24).toFixed(1)}px)`;
+      d.querySelectorAll('.kpi').forEach((k, j) => {
+        const p = clamp((u - .5 - j * .3) / .55); k.style.opacity = ease(p).toFixed(3); k.style.transform = `translateY(${((1 - ease(p)) * 34).toFixed(1)}px) scale(${(1 + .015 * Math.sin(t * 1.2 + j)).toFixed(4)})`;
+        const b = k.querySelector('b'), v = +b.dataset.v, dec = +b.dataset.d, c = ease(clamp((u - .6 - j * .3) / 1.6));
+        b.textContent = (v * c).toFixed(dec) + b.dataset.suf;
+        k.querySelector('.r1').style.strokeDashoffset = (100 - 100 * (+b.dataset.f) * c).toFixed(2);
+      });
+    }
+    if (e.kind === 'bridge') {
+      const l = d.querySelector('.lamp'); l.style.transform = `translate(-50%, -50%) scale(${(.8 + .2 * outBack(u / .9) + .02 * Math.sin(t * 2)).toFixed(3)})`;
+      const ics = d.querySelectorAll('.ic'), n = ics.length;
+      ics.forEach((x, k) => {
+        const p = clamp((u - .5 - k * .18) / .5), ang = t * .45 + k * 6.283 / n, R = 330 * outBack(p);
+        x.style.opacity = ease(p).toFixed(3); x.style.transform = `translate(${(Math.cos(ang) * R).toFixed(1)}px, ${(Math.sin(ang) * R * .62).toFixed(1)}px)`;
+        x.style.zIndex = Math.sin(ang) > 0 ? 3 : 1;
+      });
+      const h = d.querySelector('h2'); h.style.opacity = ease((u - .3) / .7).toFixed(3); h.style.transform = `translateY(${((1 - ease((u - .3) / .7)) * 30).toFixed(1)}px)`;
+    }
+    if (e.kind === 'end') {
+      d.querySelector('.rays').style.transform = `rotate(${(t * 6).toFixed(2)}deg)`; d.querySelector('.rays').style.opacity = ease(u / 1.2).toFixed(3);
+      const l = d.querySelector('.lamp'); l.style.transform = `scale(${(.85 + .15 * outBack(u / 1.0) + .015 * Math.sin(t * 1.8)).toFixed(3)})`; l.style.opacity = ease(u / .6).toFixed(3);
+      const url = e.url, k = Math.floor(clamp((u - .9) / 1.4) * url.length); d.querySelector('.url').textContent = url.slice(0, k) + (k < url.length && Math.floor(t * 3) % 2 ? '|' : '');
+      d.querySelector('.url').style.opacity = ease((u - .8) / .3).toFixed(3);
+      const tl = d.querySelector('.tl'); tl.style.opacity = ease((u - 1.6) / .6).toFixed(3); tl.style.transform = `translateY(${((1 - ease((u - 1.6) / .6)) * 18).toFixed(1)}px)`;
+      const c = d.querySelector('.chal'); if (c) { const p = clamp((u - (e.chalAt || 4)) / .6); c.style.opacity = ease(p).toFixed(3); c.style.transform = `translateY(${((1 - ease(p)) * 20).toFixed(1)}px)`; }
+      d.querySelector('h1').style.letterSpacing = `${((1 - ease((u - .3) / 1)) * 14).toFixed(1)}px`;
+    }
+  }
+  return true;
+};
+document.fonts.ready.then(() => { window.__ready = true; });
+</script>
+</body>
+</html>
