@@ -1,6 +1,9 @@
 import { createEngine, detectLang, guardCheck, SOURCES_NEEDED, TAFSIR_FOR, TRANSLATION_FOR, PARAGRAPH_FOR, normAr, tokens, isCrisis, isSensitiveText } from './engine.js';
 import { routeTool } from './tools.js';
 import { socialHTML } from './social.js';
+import { glowOf, glowLevel, addListen, addTasbih, addName, paintGlow, ray } from './glow.js';
+import { createAsma, AS as ASMA_S } from './asma.js';
+import { createPrayerBreak, resumesWithBasmala } from './prayerbreak.js';
 import { wordFacts } from './dwell.js';
 import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
 import { SHAPES, ORDERS, buildLayout } from './layouts.js';
@@ -126,8 +129,8 @@ function applyLang(lang) {
   { const l = $('#themeBtn .tl2'); if (l) l.textContent = t[document.documentElement.dataset.theme === 'light' ? 'themeLight' : 'themeDark']; }
   fillViewPickers();
   $('#legendBox').innerHTML = t.legendItems.map(([c, x]) => `<div><i style="background:${c};color:${c}"></i>${esc(x)}</div>`).join('');
-  $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice())) + socialHTML(lang, esc) + `<p class="rights">${esc(T().rights)} · <a href="https://mishkatquran.org">mishkatquran.org</a> · <a href="judges.html?lang=${lang}" target="_blank" rel="noopener">${esc(t.judgesLink)}</a></p>`;
-  { const r = $('#ndSocialRow'); if (r) r.innerHTML = socialHTML(lang, esc); const j = $('#btnJudges'); if (j) j.href = `judges.html?lang=${lang}`; }
+  $('#aboutBody').innerHTML = ABOUT[lang].replace(/\{\{V24_35\}\}/g, esc(heroSlice())) + socialHTML(lang, esc) + `<p class="rights">${esc(T().rights)} · <a href="https://mishkatquran.org">mishkatquran.org</a></p>`;
+  { const r = $('#ndSocialRow'); if (r) r.innerHTML = socialHTML(lang, esc); }
   $('#aiBadge').textContent = t.ai(state.llmModel);
   labelDock();
   if (state.core) refreshHud();
@@ -1703,14 +1706,34 @@ async function play(i, fromUser = false) {
   au.onended = () => {
     if (state.audio !== au) return;
     const S = state.core.suras[s - 1];
+    const heard = au.duration;
     stopAudio(true);
+    addListen(state.prefs, heard); savePrefs(state.prefs);
     markRecited(i);
+    ray(document.querySelector(`#mushaf .v[data-i="${i}"]`) || $('#rdBody'));
+    refreshGlow();
+    // the time of prayer came during this verse: pause now, the adhan, then the basmala and the next verse
+    if (state.prayerDue) {
+      const due = state.prayerDue, next = i + 1 < S.first + S.ayas ? i + 1 : (i + 1 < state.core.verses.length ? i + 1 : i);
+      state.prayerDue = null;
+      const nextSura = state.engine.suraOf[next], firstVerse = state.core.suras[nextSura - 1].first === next;
+      state.prayerBreak.open({ prayer: due.prayer, next, withAdhan: due.withAdhan,
+        basmala: !firstVerse && resumesWithBasmala(nextSura) });   // a verse 1 carries its own basmala
+      return;
+    }
     if (state.repeatLeft > 1) { state.repeatLeft--; play(i); return; }       // تكرار
     state.repeatLeft = state.repeat || 1;
     if (state.continuous && i + 1 < S.first + S.ayas) { selectVerse(i + 1, { scroll: true, fly: false, keepAudio: true }); play(i + 1); }
     else if (state.continuous && i + 1 === S.first + S.ayas) { const e = $('#rdEnd'); if (e) e.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
   };
   au.play().catch(() => { stopAudio(true); alertNote(T().audioError); });
+}
+// the basmala before the recitation resumes after the prayer break: verse 1:1, recited by the same reciter
+async function playBasmala() {
+  const tim = (await suraFile('timing', 1))[0];
+  const au = new Audio(AUDIO_BASE + tim.u);
+  au.playbackRate = state.speed;
+  await new Promise((resolve) => { au.onended = resolve; au.onerror = resolve; au.play().catch(resolve); });
 }
 function stopAudio(updateBtn) {
   cancelAnimationFrame(state.raf);
@@ -1800,22 +1823,24 @@ function setupLongPress() {
 // ------------------------------------------------------------- tools: dock + exclusive panels
 // A dock of icon buttons under the search bar opens the tool panels (js/panels.js): one panel at a time,
 // a second click or Escape closes it, the galaxy stays visible. Contents: js/toolpanels.js (ar + en).
-const DOCK = ['athkar', 'tasbih', 'prayer', 'qibla', 'mosques', 'khatma', 'tekrar', 'stats', 'hijri', 'links', 'settings'];
+const DOCK = ['athkar', 'tasbih', 'asma', 'prayer', 'qibla', 'mosques', 'khatma', 'tekrar', 'stats', 'hijri', 'links', 'settings'];
 const DOCK_ICON = {
   tekrar: 'M4 12a8 8 0 0 1 14-5.3M20 4v4h-4M20 12a8 8 0 0 1-14 5.3M4 20v-4h4M10 9.5l4 2.5-4 2.5z',
   stats: 'M4 20V11M10 20V5M16 20v-6M21 20H3',
-  tasbih: 'M12 4a1.6 1.6 0 1 0 0 .1M7.5 6a1.6 1.6 0 1 0 0 .1M16.5 6a1.6 1.6 0 1 0 0 .1M5 10.5a1.6 1.6 0 1 0 0 .1M19 10.5a1.6 1.6 0 1 0 0 .1M6.5 15a1.6 1.6 0 1 0 0 .1M17.5 15a1.6 1.6 0 1 0 0 .1M12 17v5M10 20h4',
+  // a string of prayer beads with its tassel (tasbih); a book of supplications (adhkar); an eight-pointed star (the Names)
+  tasbih: 'M12 3.5a5.5 5.5 0 1 1 0 11a5.5 5.5 0 1 1 0-11zM12 14.5v3.5M10.3 21l1.7-3 1.7 3M12 3.5v.01M6.5 9v.01M17.5 9v.01M8.1 5.1v.01M15.9 5.1v.01M8.1 12.9v.01M15.9 12.9v.01',
   khatma: 'M3 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3zM21 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z',
   hijri: 'M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z',
   prayer: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM12 7v5l3 2',
-  athkar: 'M12 3a2 2 0 1 0 0 .1M7 6a2 2 0 1 0 0 .1M17 6a2 2 0 1 0 0 .1M4.5 11a2 2 0 1 0 0 .1M19.5 11a2 2 0 1 0 0 .1M7 16a2 2 0 1 0 0 .1M17 16a2 2 0 1 0 0 .1M12 19v3',
+  athkar: 'M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3zM5 17a3 3 0 0 1 3-3h11M9 8h6M9 11h4',
+  asma: 'M7 7h10v10H7zM12 4.9l7.1 7.1-7.1 7.1L4.9 12zM12 10.2v.01',
   qibla: 'M12 2l3 7h-6zM12 2v20M5 12h14M8 18h8v4H8z',
   mosques: 'M4 21V11a8 8 0 0 1 16 0v10zM12 3v2M9 21v-5a3 3 0 0 1 6 0v5M2 21h20',
   links: 'M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1',
   settings: 'M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6zM12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1',
 };
 const TS = () => TOOL_S[state.lang] || TOOL_S.ar;
-const toolTitle = (id) => id === 'tekrar' ? (TK[state.lang] || TK.ar).title : id === 'tasbih' ? (TASBIH_S[state.lang] || TASBIH_S.ar).title : id === 'stats' ? (ST[state.lang] || ST.ar).title
+const toolTitle = (id) => id === 'asma' ? (ASMA_S[state.lang] || ASMA_S.ar).title : id === 'tekrar' ? (TK[state.lang] || TK.ar).title : id === 'tasbih' ? (TASBIH_S[state.lang] || TASBIH_S.ar).title : id === 'stats' ? (ST[state.lang] || ST.ar).title
   : TS()[id] || (PRACT_S[state.lang] || PRACT_S.ar)[id] || (id === 'athkar' ? (ATHKAR_S[state.lang] || ATHKAR_S.ar).title : id);
 const isPhone = () => matchMedia('(max-width: 860px)').matches;
 // the test of the repetition: a recitation turned into text (Whisper on the server, or the browser)
@@ -1868,24 +1893,46 @@ function setupTools() {
     // T095 repetition, T094 statistics
     tekrar: (body, args) => state.tekrar.render(body, args || {}),
     tasbih: (body, args) => state.tasbih.render(body, args || {}),
+    asma: (body) => state.asma.render(body),
     stats: (body, args) => state.stats.render(body, args || {}),
   };
   state.tekrar = createTekrar({ lang: () => state.lang, core: state.core, get prefs() { return state.prefs; }, save: () => savePrefs(state.prefs),
     timing: (s) => suraFile('timing', s), audioBase: AUDIO_BASE, digits: dig,
-    onProgress: () => { applyHighlight(); refreshHud(); refreshMiniLamp(); },
+    onProgress: () => { applyHighlight(); refreshHud(); refreshMiniLamp(); ray($('#p-tekrar .p-body') || $('#tray'), { strong: true }); },
     focus: (i) => { try { state.galaxy.setFocusVerse(i); } catch (e) { /* ignore */ } },
     // (6 Oct) the tajweed rules of the verses repeated, the test (simple spelling, voice), sharing and inviting
     tajweed: (s) => state.tajweedData.has(s) ? Promise.resolve(state.tajweedData.get(s)) : getJSON(`data/tajweed/${s}.json`).then(d => { state.tajweedData.set(s, d); return d; }),
     plain: () => (state.plainP = state.plainP || getJSON('data/search_ar.json')),
     get listen() { return voiceSupported(state.stt) ? listenRecite : null; },
     stopListen: () => stopListening(), note: alertNote, site: () => 'https://mishkatquran.org/' });
-  state.tasbih = createTasbih({ lang: () => state.lang, get prefs() { return state.prefs; }, save: () => savePrefs(state.prefs), digits: dig, ymd: () => ymd(new Date()) });
+  state.tasbih = createTasbih({ lang: () => state.lang, get prefs() { return state.prefs; }, save: () => savePrefs(state.prefs), digits: dig, ymd: () => ymd(new Date()),
+    onCount: (n) => { addTasbih(state.prefs, n); savePrefs(state.prefs); refreshGlow(); },
+    onGoal: (el) => ray(el, { strong: true }) });
+  state.asma = createAsma({ lang: () => state.lang, get prefs() { return state.prefs; }, save: () => savePrefs(state.prefs), digits: dig,
+    search: (q) => { if (isPhone()) state.panels.close(); $('#q').value = q; run(q); },
+    learntCount: () => glowOf(state.prefs).asma.length,
+    onName: (n, el) => { if (addName(state.prefs, n)) { savePrefs(state.prefs); refreshGlow(); } ray(el); } });
   state.stats = createStats({ lang: () => state.lang, core: state.core, digits: dig,
     plain: () => (state.plainP = state.plainP || getJSON('data/search_ar.json')), meta: () => (metaP = metaP || getJSON('data/mushaf_meta.json')),
     openVerse: (i) => { if (isPhone()) state.panels.close(); goVerse(i, { pane: 'r' }); }, search: (q) => { $('#q').value = q; run(q, 'topic'); },
     current: () => (state.mode === 'study' && state.reader.sura ? state.reader.cur : null) });
   state.athkar = createAthkar({ lang: () => state.lang });
-  state.practical = createPractical({ lang: () => state.lang, qrcode, scene: (k, o) => state.galaxy && state.galaxy.setScene && state.galaxy.setScene(k, o) });
+  state.practical = createPractical({ lang: () => state.lang, qrcode, scene: (k, o) => state.galaxy && state.galaxy.setScene && state.galaxy.setScene(k, o),
+    // the time of prayer during a recitation: the verse is finished first (play → onended → prayerBreak)
+    onPrayerTime: (prayer, mode) => {
+      if (!state.playing || !state.continuous) return false;
+      state.prayerDue = { prayer, withAdhan: mode === 'adhan' };
+      return true;
+    } });
+  state.prayerBreak = createPrayerBreak({
+    lang: () => state.lang,
+    verse: (sura, aya) => state.core.verses[state.core.suras[sura - 1].first + aya - 1],
+    refLabel: (sura, aya) => refLabel(state.core.suras[sura - 1].first + aya - 1),
+    playAdhan: (onEnd) => state.practical.adhan(onEnd),
+    playBasmala: () => playBasmala(),
+    resume: (next) => { state.playMode = 'all'; selectVerse(next, { scroll: true, fly: false, keepAudio: true }); play(next); },
+    stop: () => { stopAudio(true); },
+  });
   const ids = state.toolIds = DOCK.filter(id => renderers[id]);     // also what the search bar may open (T032)
   $('#dock').innerHTML = ids.map(id => `<button type="button" data-panel="${id}" aria-expanded="false"><svg viewBox="0 0 24 24" width="21" height="21" aria-hidden="true"><path d="${DOCK_ICON[id]}" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="dl"></span></button>`).join('');
   $('#dock').hidden = !ids.length;
@@ -1894,7 +1941,7 @@ function setupTools() {
     titles: Object.fromEntries(DOCK.map(id => [id, () => toolTitle(id)])), closeLabel: () => TS().close, maxLabel: (on) => on ? XS().pMin : XS().pMax,
     // (6 Oct, author's request) repetition opens full size (the ⤢ button of the panel makes it smaller)
     onOpen: (id) => { document.body.dataset.panel = id; state.panels.setMax(id === 'tekrar'); if (id === 'khatma' || id === 'tekrar') applyHighlight(); },
-    onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma' || id === 'tekrar') applyHighlight(); if (id === 'tekrar') state.tekrar.stop(); if (id === 'tasbih') state.tasbih.stop(); state.practical.stop(); },
+    onClose: (id) => { delete document.body.dataset.panel; if (id === 'khatma' || id === 'tekrar') applyHighlight(); if (id === 'tekrar') state.tekrar.stop(); if (id === 'tasbih') state.tasbih.stop(); if (id === 'asma') state.asma.stop(); state.practical.stop(); },
   });
   labelDock();
 }
@@ -2185,6 +2232,18 @@ $('#gOut').onclick = () => state.galaxy.zoom(1.6);
 $('#gRot').onclick = () => { const v = !state.galaxy.autoRotate; state.galaxy.setAutoRotate(v); $('#gRot').setAttribute('aria-pressed', v); };
 $('#gNames').onclick = () => setNames($('#gNames').getAttribute('aria-pressed') !== 'true');
 $('#gLegend').onclick = () => { const b = $('#legendBox'); b.hidden = !b.hidden; $('#gLegend').setAttribute('aria-expanded', !b.hidden); };
+function setPure(on) {
+  document.body.classList.toggle('gpure', on);
+  // centred on the whole screen (on a phone the home view is shifted up to leave room for the suggestions)
+  state.galaxy.setShift(on ? 0 : state.mode === 'home' && isPhone() ? 0.2 : 0);
+  $('#gPure').setAttribute('aria-pressed', on);
+  if (on) document.documentElement.requestFullscreen?.().catch(() => {});
+  else if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  if (state.galaxy && state.galaxy.resize) { requestAnimationFrame(() => state.galaxy.resize()); setTimeout(() => state.galaxy.resize(), 400); }
+}
+$('#gPure').onclick = () => setPure(!document.body.classList.contains('gpure'));
+$('#pureExit').onclick = () => setPure(false);
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && document.body.classList.contains('gpure')) setPure(false); });
 $('#gFull').onclick = () => { const on = !document.body.classList.contains('gfull'); document.body.classList.toggle('gfull', on); $('#gFull').setAttribute('aria-pressed', on); if (state.galaxy && state.galaxy.resize) { requestAnimationFrame(() => state.galaxy.resize()); setTimeout(() => state.galaxy.resize(), 400); } };
 
 // ------------------------------------------------------------- wiring
@@ -2392,7 +2451,17 @@ async function runIntro() {
 
 // ------------------------------------------------------------ T092 child mode, T095–T096 progress in the page
 function applyChild() { document.body.classList.toggle('child', state.prefs.age === 'child'); }
+// the logo gains light with this month's worship (js/glow.js); its tooltip says how much
+function refreshGlow() {
+  if (!state.core) return;
+  const g = glowLevel(state.prefs, monthPct);
+  paintGlow(g.total);
+  const pct = Math.round(100 * g.total), label = state.lang === 'en' ? `Light of the month: ${pct} %` : `نور الشهر: ${dig(pct)}٪`;
+  const brand = $('#top .brand'); if (brand) brand.title = label;
+  const slot = $('#lampSlot'); if (slot) slot.dataset.glow = label;
+}
 function refreshHud() {
+  refreshGlow();
   const box = $('#hud');
   if (!box || !state.core) return;
   const P = state.prefs, x = XS();

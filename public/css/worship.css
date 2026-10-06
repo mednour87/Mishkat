@@ -1,0 +1,84 @@
+/* Worship features of 6 October: the light of the month on the logo, its rays, the Most Beautiful Names, the
+   tasbih menu, the prayer break of the reader, the pure view of the 3D and the official pages. */
+
+/* ---------- the light of the month: the logo keeps its drawing and gains light and a golden halo (--glow 0…1) */
+:root { --glow: 0; }
+#lampSlot .lamp, #top .brand img {
+  filter: brightness(calc(1 + 0.55 * var(--glow))) drop-shadow(0 0 calc(2px + 16px * var(--glow)) rgba(255, 214, 122, calc(0.12 + 0.6 * var(--glow))));
+  transition: filter 0.8s ease;
+}
+.glow-hit { animation: glow-hit 0.9s ease-out; }
+@keyframes glow-hit { 0% { transform: scale(1); } 35% { transform: scale(1.12); filter: brightness(1.9) drop-shadow(0 0 22px #ffd27a); } 100% { transform: scale(1); } }
+#lampSlot[data-glow]:hover::after { content: attr(data-glow); position: absolute; inset-inline-start: 0; top: 100%; margin-top: 4px; white-space: nowrap;
+  font-size: 12px; padding: 3px 8px; border-radius: 8px; background: var(--panel); color: var(--gold); border: 1px solid var(--line); }
+#lampSlot { position: relative; }
+
+/* a ray: a curved trail and a bright head travelling to the logo */
+.glow-ray { position: fixed; inset: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 2147483000; overflow: visible; }
+.glow-ray .gr-head { fill: #fffbe8; filter: drop-shadow(0 0 6px #ffd27a) drop-shadow(0 0 14px rgba(255, 210, 122, 0.8)); }
+.glow-ray .gr-trail { filter: drop-shadow(0 0 4px rgba(255, 210, 122, 0.9)); }
+
+/* ---------- tasbih: the menu of formulas and the source of the hadith */
+.ts-pick select { flex: 1; min-width: 0; max-width: 100%; }
+.ts-hadith summary { cursor: pointer; color: var(--mut); font-size: 13px; }
+.ts-hadith p { font-family: var(--quran); font-size: 17px; line-height: 1.9; }
+
+/* ---------- the Most Beautiful Names: the list */
+.as-learn { border: 1px solid var(--line); border-radius: 12px; padding: 8px 12px; margin: 10px 0; display: grid; gap: 6px; }
+.as-learn legend { padding: 0 6px; color: var(--gold); font-weight: 600; }
+.as-grid { list-style: none; padding: 0; margin: 10px 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 6px; }
+.as-name { width: 100%; display: grid; gap: 1px; justify-items: center; padding: 8px 6px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--panel2); color: var(--txt); cursor: pointer; }
+.as-name small { color: var(--mut); font-size: 11px; }
+.as-name b { font-family: var(--quran); font-size: 21px; font-weight: 400; color: var(--gold); }
+.as-name i, .as-name em { font-size: 11.5px; color: var(--mut); font-style: normal; text-align: center; }
+.as-name.on { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold) inset; }
+.as-pop { grid-column: 1 / -1; display: flex; justify-content: center; padding: 2px 0 6px; }
+
+/* the full-screen stage: a sky, the name in the middle, a rail of 99 points */
+.as-stage { position: fixed; inset: 0; z-index: 2147482000; background: radial-gradient(ellipse at center, #0e1630 0%, #03050b 70%); color: #f6efd9;
+  display: grid; place-items: center; outline: none; }
+.as-sky { position: absolute; inset: 0; width: 100%; height: 100%; }
+.as-center { position: relative; text-align: center; display: grid; gap: 14px; padding: 0 16px; }
+.as-num { color: #c9b98a; font-size: 15px; letter-spacing: 0.1em; }
+.as-big { font-family: var(--quran); font-weight: 400; font-size: clamp(56px, 13vw, 150px); line-height: 1.6; padding-bottom: 0.1em; color: #ffe39a;
+  text-shadow: 0 0 18px rgba(255, 214, 122, 0.55), 0 0 60px rgba(255, 214, 122, 0.25); }
+.as-big.in { animation: as-in 0.7s ease-out; }
+@keyframes as-in { from { opacity: 0; transform: scale(0.86); filter: blur(6px); } to { opacity: 1; transform: none; filter: none; } }
+.as-tr { font-size: clamp(16px, 3vw, 22px); font-style: normal; color: #e8ddb8; }
+.as-en { font-size: clamp(14px, 2.4vw, 18px); font-style: normal; color: #b9c2d6; }
+.as-rail { position: absolute; bottom: calc(76px + env(safe-area-inset-bottom)); inset-inline: 16px; display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.as-rail span { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); transition: background 0.3s, transform 0.3s; }
+.as-rail span.on { background: #ffd66b; transform: scale(1.8); box-shadow: 0 0 8px #ffd66b; }
+.as-bar { position: absolute; bottom: calc(18px + env(safe-area-inset-bottom)); inset-inline: 0; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; padding: 0 16px; }
+.as-bar .mini { min-height: 40px; padding: 6px 14px; background: rgba(255, 255, 255, 0.06); color: #f6efd9; border: 1px solid rgba(255, 255, 255, 0.18); }
+@media (prefers-reduced-motion: reduce) { .as-big.in { animation: none; } }
+
+/* ---------- the prayer break of the reader */
+.prayer-break { position: fixed; z-index: 2147481000; inset-inline: 16px; bottom: calc(16px + env(safe-area-inset-bottom)); margin-inline: auto; max-width: 560px;
+  background: var(--panel); border: 1px solid var(--gold); border-radius: 16px; padding: 14px 16px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5); color: var(--txt); }
+.prayer-break h3 { margin: 0 0 4px; color: var(--gold); font-size: 18px; }
+.prayer-break .pb-ayah { font-family: var(--quran); font-size: 21px; line-height: 1.9; margin: 8px 0; }
+.prayer-break .pb-ayah small { font-family: var(--ui); font-size: 12px; color: var(--mut); }
+.prayer-break .pb-btns { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- the pure view of the 3D: the stars and the recited words only, full screen (body.gpure) */
+.pure-exit { display: none; }
+body.gpure #top, body.gpure .col-side, body.gpure #tray, body.gpure #navDrawer, body.gpure #mtabs, body.gpure #suggest { display: none !important; }
+body.gpure #gzone { position: fixed; inset: 0; z-index: 2147480000; border-radius: 0; margin: 0; background: #03050b; }
+body.gpure #gzone > *:not(#galaxy):not(.glabels):not(#pureExit) { display: none !important; }
+body.gpure .pure-exit { display: grid; place-items: center; position: absolute; top: calc(12px + env(safe-area-inset-top)); inset-inline-end: 12px; z-index: 5;
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.25); background: rgba(0, 0, 0, 0.35); color: #fff; font-size: 16px; cursor: pointer;
+  opacity: 0.35; transition: opacity 0.3s; }
+body.gpure .pure-exit:hover, body.gpure .pure-exit:focus-visible { opacity: 1; }
+body.gpure #galaxy { width: 100vw !important; height: 100vh !important; }
+
+/* ---------- the official pages: brand tints that read on both themes */
+.social .soc { color: var(--txt); }
+.social .soc svg { flex: none; }
+.social .soc-youtube svg { color: #ff4e45; }
+.social .soc-facebook svg { color: #5b9bff; }
+.social .soc-x svg, .social .soc-tiktok svg { color: var(--txt); }
+html[data-theme=light] .social .soc { border-color: rgba(20, 30, 50, 0.18); }
+html[data-theme=light] .social .soc-youtube svg { color: #d0021b; }
+html[data-theme=light] .social .soc-facebook svg { color: #1659c7; }

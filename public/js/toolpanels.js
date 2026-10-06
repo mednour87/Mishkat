@@ -100,7 +100,9 @@ export const S = {
 export const LINKS = [
   { cat: { ar: 'صفحات مشكاة الرسمية', en: 'Mishkat official pages' }, items: [
     ['https://www.youtube.com/@mishketquran', 'قناة مشكاة على يوتيوب', 'Mishkat on YouTube'],
-    ['https://www.facebook.com/profile.php?id=61594931830065', 'صفحة مشكاة على فيسبوك', 'Mishkat on Facebook'] ] },
+    ['https://www.facebook.com/profile.php?id=61594931830065', 'صفحة مشكاة على فيسبوك', 'Mishkat on Facebook'],
+    ['https://x.com/mishketquran', 'مشكاة على إكس', 'Mishkat on X'],
+    ['https://www.tiktok.com/@mishkatquran.org', 'مشكاة على تيك توك', 'Mishkat on TikTok'] ] },
   { cat: { ar: 'القرآن والتفسير', en: 'Quran and tafsir' }, items: [
     ['https://quranenc.com', 'موسوعة القرآن الكريم المترجمة', 'QuranEnc — translated Quran encyclopedia'],
     ['https://quranpedia.net', 'قرآنبيديا', 'Quranpedia'],

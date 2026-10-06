@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import * as K from '../public/js/khatma.js';
 import { compare, normWord, hint, verdict } from '../public/js/hifztest.js';
-import { PRESETS, partAt, partWordsOf, addCount } from '../public/js/tasbih.js';
+import { HISN as PRESETS, partAt, partWordsOf, addCount } from '../public/js/tasbih.js';
 
 const core = JSON.parse(fs.readFileSync('public/data/core.json', 'utf8'));
 const meta = JSON.parse(fs.readFileSync('public/data/mushaf_meta.json', 'utf8'));

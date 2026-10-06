@@ -1,7 +1,18 @@
+Adhan recordings (all from Wikimedia Commons, used for the prayer-time sound and the prayer break of the reader).
+Loudness evened out to -14 LUFS with ffmpeg (loudnorm), mono MP3; otherwise unchanged.
+
+adhan_madinah.mp3 — "33937 ejaz215 call-to-prayer-from-the-prophet-s-mo.ogg" (call to prayer at the Prophet's Mosque, Madinah)
+  https://commons.wikimedia.org/wiki/File:33937_ejaz215_call-to-prayer-from-the-prophet-s-mo.ogg
+  Author: ejaz215 (freesound.org/people/ejaz215/sounds/33937) · Licence: CC BY 3.0 https://creativecommons.org/licenses/by/3.0/
+
+adhan_clear.mp3 — "Beautiful adhan.ogg"
+  https://commons.wikimedia.org/wiki/File:Beautiful_adhan.ogg
+  Author: Adam-synagda (own work) · Licence: CC0 1.0 (public domain dedication)
+
 adhan.mp3 — "The Adhan - Muslim Call to Prayer - Aaqib Azeez.mp3"
-Source: Wikimedia Commons, https://commons.wikimedia.org/wiki/File:The_Adhan_-_Muslim_Call_to_Prayer_-_Aaqib_Azeez.mp3
-Author / uploader: Atcovi (own work), reciter named in the title: Aaqib Azeez
-Licence: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
-         https://creativecommons.org/licenses/by-sa/4.0/
-Used unchanged. Played in Mishkat only when the visitor turns on «الأذان عند دخول الوقت» (prayer panel), with the attribution shown there.
-No recording validated by a Saudi authority with an open licence was found (4 October 2026).
+  https://commons.wikimedia.org/wiki/File:The_Adhan_-_Muslim_Call_to_Prayer_-_Aaqib_Azeez.mp3
+  Author / uploader: Atcovi (own work), reciter named in the title: Aaqib Azeez
+  Licence: CC BY-SA 4.0 https://creativecommons.org/licenses/by-sa/4.0/ — used unchanged
+
+Each recording was checked by a speech-to-text pass (Whisper): «الله أكبر … أشهد أن لا إله إلا الله … أشهد أن محمدًا رسول الله».
+No recording validated by a Saudi authority with an open licence was found (4 and 6 October 2026).

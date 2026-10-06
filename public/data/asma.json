@@ -1,0 +1,806 @@
+{
+ "source": {
+  "list": "api.aladhan.com/v1/asmaAlHusna — the list narrated by at-Tirmidhi (3507)",
+  "audio": "Wikimedia Commons, «Asma Ul Husna.ogg», CC0 (https://commons.wikimedia.org/wiki/File:Asma_Ul_Husna.ogg); names only",
+  "timings": "Whisper large-v3 word timings, aligned to the list (data_build/build_asma.mjs)"
+ },
+ "audio": "audio/asma/asma_husna.mp3",
+ "intro": {
+  "start": 0,
+  "end": 7.13
+ },
+ "names": [
+  {
+   "n": 1,
+   "ar": "الرَّحْمَنُ",
+   "tr": "Ar Rahmaan",
+   "en": "The Beneficent",
+   "start": 7.13,
+   "end": 9.03
+  },
+  {
+   "n": 2,
+   "ar": "الرَّحِيمُ",
+   "tr": "Ar Raheem",
+   "en": "The Merciful",
+   "start": 9.03,
+   "end": 10.63
+  },
+  {
+   "n": 3,
+   "ar": "الْمَلِكُ",
+   "tr": "Al Malik",
+   "en": "The King / Eternal Lord",
+   "start": 10.63,
+   "end": 12.03
+  },
+  {
+   "n": 4,
+   "ar": "الْقُدُّوسُ",
+   "tr": "Al Quddus",
+   "en": "The Purest",
+   "start": 12.03,
+   "end": 13.67
+  },
+  {
+   "n": 5,
+   "ar": "السَّلاَمُ",
+   "tr": "As Salaam",
+   "en": "The Source of Peace",
+   "start": 13.67,
+   "end": 14.75
+  },
+  {
+   "n": 6,
+   "ar": "الْمُؤْمِنُ",
+   "tr": "Al Mu'min",
+   "en": "The inspirer of faith",
+   "start": 14.75,
+   "end": 16.63
+  },
+  {
+   "n": 7,
+   "ar": "الْمُهَيْمِنُ",
+   "tr": "Al Muhaymin",
+   "en": "The Guardian",
+   "start": 16.63,
+   "end": 18.35
+  },
+  {
+   "n": 8,
+   "ar": "الْعَزِيزُ",
+   "tr": "Al Azeez",
+   "en": "The Precious / The Most Mighty",
+   "start": 18.35,
+   "end": 19.99
+  },
+  {
+   "n": 9,
+   "ar": "الْجَبَّارُ",
+   "tr": "Al Jabbaar",
+   "en": "The Compeller",
+   "start": 19.99,
+   "end": 21.41
+  },
+  {
+   "n": 10,
+   "ar": "الْمُتَكَبِّرُ",
+   "tr": "Al Mutakabbir",
+   "en": "The Greatest",
+   "start": 21.41,
+   "end": 23.77
+  },
+  {
+   "n": 11,
+   "ar": "الْخَالِقُ",
+   "tr": "Al Khaaliq",
+   "en": "The Creator",
+   "start": 23.77,
+   "end": 25.41
+  },
+  {
+   "n": 12,
+   "ar": "الْبَارِئُ",
+   "tr": "Al Baari",
+   "en": "The Maker of Order",
+   "start": 25.41,
+   "end": 27.1
+  },
+  {
+   "n": 13,
+   "ar": "الْمُصَوِّرُ",
+   "tr": "Al Musawwir",
+   "en": "The Shaper of Beauty",
+   "start": 27.1,
+   "end": 28.79
+  },
+  {
+   "n": 14,
+   "ar": "الْغَفَّارُ",
+   "tr": "Al Ghaffaar",
+   "en": "The Forgiving",
+   "start": 28.79,
+   "end": 32.13
+  },
+  {
+   "n": 15,
+   "ar": "الْقَهَّارُ",
+   "tr": "Al Qahhaar",
+   "en": "The Subduer",
+   "start": 32.13,
+   "end": 32.94
+  },
+  {
+   "n": 16,
+   "ar": "الْوَهَّابُ",
+   "tr": "Al Wahhaab",
+   "en": "The Giver of All",
+   "start": 32.94,
+   "end": 33.75
+  },
+  {
+   "n": 17,
+   "ar": "الرَّزَّاقُ",
+   "tr": "Ar Razzaaq",
+   "en": "The Sustainer",
+   "start": 33.75,
+   "end": 35.29
+  },
+  {
+   "n": 18,
+   "ar": "الْفَتَّاحُ",
+   "tr": "Al Fattaah",
+   "en": "The Opener",
+   "start": 35.29,
+   "end": 36.99
+  },
+  {
+   "n": 19,
+   "ar": "اَلْعَلِيْمُ",
+   "tr": "Al 'Aleem",
+   "en": "The Knower of all",
+   "start": 36.99,
+   "end": 38.93
+  },
+  {
+   "n": 20,
+   "ar": "الْقَابِضُ",
+   "tr": "Al Qaabid",
+   "en": "The Constrictor",
+   "start": 38.93,
+   "end": 40.71
+  },
+  {
+   "n": 21,
+   "ar": "الْبَاسِطُ",
+   "tr": "Al Baasit",
+   "en": "The Reliever",
+   "start": 40.71,
+   "end": 42.35
+  },
+  {
+   "n": 22,
+   "ar": "الْخَافِضُ",
+   "tr": "Al Khaafid",
+   "en": "The Abaser",
+   "start": 42.35,
+   "end": 43.75
+  },
+  {
+   "n": 23,
+   "ar": "الرَّافِعُ",
+   "tr": "Ar Raafi'",
+   "en": "The Exalter",
+   "start": 43.75,
+   "end": 45.57
+  },
+  {
+   "n": 24,
+   "ar": "الْمُعِزُّ",
+   "tr": "Al Mu'iz",
+   "en": "The Bestower of Honour",
+   "start": 45.57,
+   "end": 46.79
+  },
+  {
+   "n": 25,
+   "ar": "المُذِلُّ",
+   "tr": "Al Mudhil",
+   "en": "The Humiliator",
+   "start": 46.79,
+   "end": 47.97
+  },
+  {
+   "n": 26,
+   "ar": "السَّمِيعُ",
+   "tr": "As Samee'",
+   "en": "The Hearer of all",
+   "start": 47.97,
+   "end": 48.85
+  },
+  {
+   "n": 27,
+   "ar": "الْبَصِيرُ",
+   "tr": "Al Baseer",
+   "en": "The Seer of all",
+   "start": 48.85,
+   "end": 51.19
+  },
+  {
+   "n": 28,
+   "ar": "الْحَكَمُ",
+   "tr": "Al Hakam",
+   "en": "The Judge",
+   "start": 51.19,
+   "end": 52.12
+  },
+  {
+   "n": 29,
+   "ar": "الْعَدْلُ",
+   "tr": "Al 'Adl",
+   "en": "The Just",
+   "start": 52.12,
+   "end": 53.05
+  },
+  {
+   "n": 30,
+   "ar": "اللَّطِيفُ",
+   "tr": "Al Lateef",
+   "en": "The Subtle One",
+   "start": 53.05,
+   "end": 54.43
+  },
+  {
+   "n": 31,
+   "ar": "الْخَبِيرُ",
+   "tr": "Al Khabeer",
+   "en": "The All Aware",
+   "start": 54.43,
+   "end": 55.93
+  },
+  {
+   "n": 32,
+   "ar": "الْحَلِيمُ",
+   "tr": "Al Haleem",
+   "en": "The Forebearing",
+   "start": 55.93,
+   "end": 57.33
+  },
+  {
+   "n": 33,
+   "ar": "الْعَظِيمُ",
+   "tr": "Al 'Azeem",
+   "en": "The Maginificent",
+   "start": 57.33,
+   "end": 58.71
+  },
+  {
+   "n": 34,
+   "ar": "الْغَفُورُ",
+   "tr": "Al Ghafoor",
+   "en": "The Great Forgiver",
+   "start": 58.71,
+   "end": 60.05
+  },
+  {
+   "n": 35,
+   "ar": "الشَّكُورُ",
+   "tr": "Ash Shakoor",
+   "en": "The Rewarder of Thankfulness",
+   "start": 60.05,
+   "end": 61.55
+  },
+  {
+   "n": 36,
+   "ar": "الْعَلِيُّ",
+   "tr": "Al 'Aliyy",
+   "en": "The Highest",
+   "start": 61.55,
+   "end": 62.73
+  },
+  {
+   "n": 37,
+   "ar": "الْكَبِيرُ",
+   "tr": "Al Kabeer",
+   "en": "The Greatest",
+   "start": 62.73,
+   "end": 63.73
+  },
+  {
+   "n": 38,
+   "ar": "الْحَفِيظُ",
+   "tr": "Al Hafeez",
+   "en": "The Preserver",
+   "start": 63.73,
+   "end": 65.21
+  },
+  {
+   "n": 39,
+   "ar": "المُقيِت",
+   "tr": "Al Muqeet",
+   "en": "The Nourisher",
+   "start": 65.21,
+   "end": 66.69
+  },
+  {
+   "n": 40,
+   "ar": "الْحسِيبُ",
+   "tr": "Al Haseeb",
+   "en": "The Reckoner",
+   "start": 66.69,
+   "end": 68.03
+  },
+  {
+   "n": 41,
+   "ar": "الْجَلِيلُ",
+   "tr": "Al Jaleel",
+   "en": "The Majestic",
+   "start": 68.03,
+   "end": 69.47
+  },
+  {
+   "n": 42,
+   "ar": "الْكَرِيمُ",
+   "tr": "Al Kareem",
+   "en": "The Generous",
+   "start": 69.47,
+   "end": 70.87
+  },
+  {
+   "n": 43,
+   "ar": "الرَّقِيبُ",
+   "tr": "Ar Raqeeb",
+   "en": "The Watchful One",
+   "start": 70.87,
+   "end": 71.95
+  },
+  {
+   "n": 44,
+   "ar": "الْمُجِيبُ",
+   "tr": "Al Mujeeb ",
+   "en": "The Responder to Prayer",
+   "start": 71.95,
+   "end": 74.05
+  },
+  {
+   "n": 45,
+   "ar": "الْوَاسِعُ",
+   "tr": "Al Waasi'",
+   "en": "The All Comprehending",
+   "start": 74.05,
+   "end": 75.57
+  },
+  {
+   "n": 46,
+   "ar": "الْحَكِيمُ",
+   "tr": "Al Hakeem",
+   "en": "The Perfectly Wise",
+   "start": 75.57,
+   "end": 76.75
+  },
+  {
+   "n": 47,
+   "ar": "الْوَدُودُ",
+   "tr": "Al Wudood",
+   "en": "The Loving One",
+   "start": 76.75,
+   "end": 77.95
+  },
+  {
+   "n": 48,
+   "ar": "الْمَجِيدُ",
+   "tr": "Al Majeed",
+   "en": "The Most Glorious One",
+   "start": 77.95,
+   "end": 79.35
+  },
+  {
+   "n": 49,
+   "ar": "الْبَاعِثُ",
+   "tr": "Al Baa'ith",
+   "en": "The Resurrector",
+   "start": 79.35,
+   "end": 81.55
+  },
+  {
+   "n": 50,
+   "ar": "الشَّهِيدُ",
+   "tr": "Ash Shaheed",
+   "en": "The Witness",
+   "start": 81.55,
+   "end": 83.03
+  },
+  {
+   "n": 51,
+   "ar": "الْحَقُّ",
+   "tr": "Al Haqq",
+   "en": "The Truth",
+   "start": 83.03,
+   "end": 83.99
+  },
+  {
+   "n": 52,
+   "ar": "الْوَكِيلُ",
+   "tr": "Al Wakeel",
+   "en": "The Trustee",
+   "start": 83.99,
+   "end": 85.41
+  },
+  {
+   "n": 53,
+   "ar": "الْقَوِيُّ",
+   "tr": "Al Qawiyy",
+   "en": "The Possessor of all strength",
+   "start": 85.41,
+   "end": 86.43
+  },
+  {
+   "n": 54,
+   "ar": "الْمَتِينُ",
+   "tr": "Al Mateen",
+   "en": "The Forceful",
+   "start": 86.43,
+   "end": 88.25
+  },
+  {
+   "n": 55,
+   "ar": "الْوَلِيُّ",
+   "tr": "Al Waliyy",
+   "en": "The Protector",
+   "start": 88.25,
+   "end": 89.63
+  },
+  {
+   "n": 56,
+   "ar": "الْحَمِيدُ",
+   "tr": "Al Hameed",
+   "en": "The Praised",
+   "start": 89.63,
+   "end": 91.09
+  },
+  {
+   "n": 57,
+   "ar": "الْمُحْصِي",
+   "tr": "Al Muhsi",
+   "en": "The Appraiser",
+   "start": 91.09,
+   "end": 92.31
+  },
+  {
+   "n": 58,
+   "ar": "الْمُبْدِئُ",
+   "tr": "Al Mubdi",
+   "en": "The Originator",
+   "start": 92.31,
+   "end": 93.21
+  },
+  {
+   "n": 59,
+   "ar": "الْمُعِيدُ",
+   "tr": "Al Mu'eed",
+   "en": "The Restorer",
+   "start": 93.21,
+   "end": 94.63
+  },
+  {
+   "n": 60,
+   "ar": "الْمُحْيِي",
+   "tr": "Al Muhiy",
+   "en": "The Giver of life",
+   "start": 94.63,
+   "end": 95.69
+  },
+  {
+   "n": 61,
+   "ar": "اَلْمُمِيتُ",
+   "tr": "Al Mumeet",
+   "en": "The Taker of life",
+   "start": 95.69,
+   "end": 96.77
+  },
+  {
+   "n": 62,
+   "ar": "الْحَيُّ",
+   "tr": "Al Haiyy",
+   "en": "The Ever Living",
+   "start": 96.77,
+   "end": 97.93
+  },
+  {
+   "n": 63,
+   "ar": "الْقَيُّومُ",
+   "tr": "Al Qayyoom",
+   "en": "The Self Existing",
+   "start": 97.93,
+   "end": 99.45
+  },
+  {
+   "n": 64,
+   "ar": "الْوَاجِدُ",
+   "tr": "Al Waajid",
+   "en": "The Finder",
+   "start": 99.45,
+   "end": 101.45
+  },
+  {
+   "n": 65,
+   "ar": "الْمَاجِدُ",
+   "tr": "Al Maajid",
+   "en": "The Glorious",
+   "start": 101.45,
+   "end": 103.09
+  },
+  {
+   "n": 66,
+   "ar": "الْواحِدُ",
+   "tr": "Al Waahid",
+   "en": "The Only One",
+   "start": 103.09,
+   "end": 103.88
+  },
+  {
+   "n": 67,
+   "ar": "اَلاَحَدُ",
+   "tr": "Al Ahad",
+   "en": "The One",
+   "start": 103.88,
+   "end": 104.67
+  },
+  {
+   "n": 68,
+   "ar": "الصَّمَدُ",
+   "tr": "As Samad",
+   "en": "The Supreme Provider",
+   "start": 104.67,
+   "end": 105.85
+  },
+  {
+   "n": 69,
+   "ar": "الْقَادِرُ",
+   "tr": "Al Qaadir",
+   "en": "The Powerful",
+   "start": 105.85,
+   "end": 107.43
+  },
+  {
+   "n": 70,
+   "ar": "الْمُقْتَدِرُ",
+   "tr": "Al Muqtadir",
+   "en": "The Creator of all power",
+   "start": 107.43,
+   "end": 108.99
+  },
+  {
+   "n": 71,
+   "ar": "الْمُقَدِّمُ",
+   "tr": "Al Muqaddim",
+   "en": "The Expediter",
+   "start": 108.99,
+   "end": 110.51
+  },
+  {
+   "n": 72,
+   "ar": "الْمُؤَخِّرُ",
+   "tr": "Al Mu’akhir",
+   "en": "The Delayer",
+   "start": 110.51,
+   "end": 111.81
+  },
+  {
+   "n": 73,
+   "ar": "الأوَّلُ",
+   "tr": "Al Awwal",
+   "en": "The First",
+   "start": 111.81,
+   "end": 113.19
+  },
+  {
+   "n": 74,
+   "ar": "الآخِرُ",
+   "tr": "Al Aakhir",
+   "en": "The Last",
+   "start": 113.19,
+   "end": 114.49
+  },
+  {
+   "n": 75,
+   "ar": "الظَّاهِرُ",
+   "tr": "Az Zaahir",
+   "en": "The Manifest",
+   "start": 114.49,
+   "end": 116.33
+  },
+  {
+   "n": 76,
+   "ar": "الْبَاطِنُ",
+   "tr": "Al Baatin",
+   "en": "The Hidden",
+   "start": 116.33,
+   "end": 117.89
+  },
+  {
+   "n": 77,
+   "ar": "الْوَالِي",
+   "tr": "Al Waali",
+   "en": "The Governor",
+   "start": 117.89,
+   "end": 119.25
+  },
+  {
+   "n": 78,
+   "ar": "الْمُتَعَالِي",
+   "tr": "Al Muta’ali",
+   "en": "The Supreme One",
+   "start": 119.25,
+   "end": 120.32
+  },
+  {
+   "n": 79,
+   "ar": "الْبَرُّ",
+   "tr": "Al Barr",
+   "en": "The Doer of Good",
+   "start": 120.32,
+   "end": 121.39
+  },
+  {
+   "n": 80,
+   "ar": "التَّوَابُ",
+   "tr": "At Tawwaab",
+   "en": "The Guide to Repentence",
+   "start": 121.39,
+   "end": 122.97
+  },
+  {
+   "n": 81,
+   "ar": "الْمُنْتَقِمُ",
+   "tr": "Al Muntaqim",
+   "en": "The Avenger",
+   "start": 122.97,
+   "end": 124.45
+  },
+  {
+   "n": 82,
+   "ar": "العَفُوُّ",
+   "tr": "Al Afuww",
+   "en": "The Forgiver",
+   "start": 124.45,
+   "end": 125.52
+  },
+  {
+   "n": 83,
+   "ar": "الرَّؤُوفُ",
+   "tr": "Ar Ra’oof",
+   "en": "The Clement",
+   "start": 125.52,
+   "end": 126.59
+  },
+  {
+   "n": 84,
+   "ar": "مَالِكُ الْمُلْكِ",
+   "tr": "Maalik Ul Mulk",
+   "en": "The Owner / Soverign of All",
+   "start": 126.59,
+   "end": 129.67
+  },
+  {
+   "n": 85,
+   "ar": "ذُوالْجَلاَلِ وَالإكْرَامِ",
+   "tr": "Dhu Al Jalaali Wa Al Ikraam",
+   "en": "Possessor of Majesty and Bounty",
+   "start": 129.67,
+   "end": 132.57
+  },
+  {
+   "n": 86,
+   "ar": "الْمُقْسِطُ",
+   "tr": "Al Muqsit",
+   "en": "The Equitable One",
+   "start": 132.57,
+   "end": 134.23
+  },
+  {
+   "n": 87,
+   "ar": "الْجَامِعُ",
+   "tr": "Al Jaami'",
+   "en": "The Gatherer",
+   "start": 134.23,
+   "end": 135.91
+  },
+  {
+   "n": 88,
+   "ar": "الْغَنِيُّ",
+   "tr": "Al Ghaniyy",
+   "en": "The Rich One",
+   "start": 135.91,
+   "end": 136.79
+  },
+  {
+   "n": 89,
+   "ar": "الْمُغْنِي",
+   "tr": "Al Mughi",
+   "en": "The Enricher",
+   "start": 136.79,
+   "end": 137.99
+  },
+  {
+   "n": 90,
+   "ar": "اَلْمَانِعُ",
+   "tr": "Al Maani'",
+   "en": "The Preventer of harm",
+   "start": 137.99,
+   "end": 140.33
+  },
+  {
+   "n": 91,
+   "ar": "الضَّارَّ",
+   "tr": "Ad Daaarr",
+   "en": "The Creator of the harmful",
+   "start": 140.33,
+   "end": 144.33
+  },
+  {
+   "n": 92,
+   "ar": "النَّافِعُ",
+   "tr": "An Naafi’",
+   "en": "The Bestower of Benefits",
+   "start": 144.33,
+   "end": 145.95
+  },
+  {
+   "n": 93,
+   "ar": "النُّورُ",
+   "tr": "An Noor",
+   "en": "The Light",
+   "start": 145.95,
+   "end": 147.01
+  },
+  {
+   "n": 94,
+   "ar": "الْهَادِي",
+   "tr": "Al Haadi",
+   "en": "The Guider",
+   "start": 147.01,
+   "end": 148.23
+  },
+  {
+   "n": 95,
+   "ar": "الْبَدِيعُ",
+   "tr": "Al Badi'",
+   "en": "The Originator",
+   "start": 148.23,
+   "end": 149.73
+  },
+  {
+   "n": 96,
+   "ar": "اَلْبَاقِي",
+   "tr": "Al Baaqi",
+   "en": "The Everlasting One",
+   "start": 149.73,
+   "end": 151.11
+  },
+  {
+   "n": 97,
+   "ar": "الْوَارِثُ",
+   "tr": "Al Waarith",
+   "en": "The Inhertior",
+   "start": 151.11,
+   "end": 153.11
+  },
+  {
+   "n": 98,
+   "ar": "الرَّشِيدُ",
+   "tr": "Ar Rasheed",
+   "en": "The Most Righteous Guide",
+   "start": 153.11,
+   "end": 154.61
+  },
+  {
+   "n": 99,
+   "ar": "الصَّبُورُ",
+   "tr": "As Saboor",
+   "en": "The Patient One",
+   "start": 154.61,
+   "end": 155.95
+  }
+ ]
+}

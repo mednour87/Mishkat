@@ -6,7 +6,7 @@ import { LINKS } from '../public/js/toolpanels.js';
 
 const REVIEWED = ['quranenc.com', 'quranpedia.net', 'dorar.net', 'tanzil.net', 'qurancomplex.gov.sa', 'hadeethenc.com', 'shamela.ws', 'alifta.gov.sa', 'bayenat.net', 'dawa.center', 'islamic-content.com'];
 // (6 Oct, T118) Mishkat's own official pages, not religious sources
-const OWN = ['www.youtube.com', 'www.facebook.com'];
+const OWN = ['www.youtube.com', 'www.facebook.com', 'x.com', 'www.tiktok.com'];
 
 test('links: reviewed sites only, https, Arabic and English names', () => {
   let n = 0;
@@ -26,7 +26,8 @@ test('links: reviewed sites only, https, Arabic and English names', () => {
 
 test('social: the official YouTube and Facebook pages of Mishkat', async () => {
   const { SOCIAL, socialHTML } = await import('../public/js/social.js');
-  assert.deepEqual(SOCIAL.map(s => s.url), ['https://www.youtube.com/@mishketquran', 'https://www.facebook.com/profile.php?id=61594931830065']);
+  assert.deepEqual(SOCIAL.map(s => s.url), ['https://www.youtube.com/@mishketquran', 'https://www.facebook.com/profile.php?id=61594931830065', 'https://x.com/mishketquran', 'https://www.tiktok.com/@mishkatquran.org']);
+  for (const s of SOCIAL) assert.doesNotMatch(s.icon, /#[0-9a-f]{3,6}|var\(--bg/i, 'icons drawn in the text colour (light and dark themes)');
   const h = socialHTML('ar');
   assert.match(h, /rel="noopener"/);
   assert.match(h, /يوتيوب/);

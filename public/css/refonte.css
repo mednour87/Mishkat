@@ -393,8 +393,7 @@ html[data-theme=light] .g-orn { color: #8a5a00; }
 .social .soc { display: inline-flex; align-items: center; gap: 7px; min-height: 40px; padding: 6px 14px; border-radius: 999px;
   border: 1px solid var(--line, rgba(255,255,255,.14)); color: var(--ink, #e8e2d0); text-decoration: none; font-size: 14px; }
 .social .soc:hover, .social .soc:focus-visible { border-color: var(--gold, #e9b949); }
-.social .soc-youtube svg { color: #ff3b30; }
-.social .soc-facebook svg { color: #1877f2; }
+
 #ndSocialRow .social { margin: 2px 0 0; }
 
 /* (6 Oct, T118) «هل أفادك هذا الجواب؟» */

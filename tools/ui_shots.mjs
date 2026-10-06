@@ -93,6 +93,29 @@ try {
     await sleep(9000); await shot('d_rose_clean.jpg');
     await evalJs(`(document.querySelector('#gHome')||{click(){}}).click(), 1`); await sleep(4000); await shot('d_rose_home.jpg');
   }
+  if (WANT.includes('worship')) {              // (6 Oct, T120) the light of the logo, tasbih, the Names, the pure view, the sweep, the pages
+    for (const dev of ['desk', 'phone']) {
+      await (dev === 'phone' ? phone() : desk());
+      await open('', { prefs: { glow: { month: new Date().toISOString().slice(0, 7), listenSec: 4000, tasbih: 1500, asma: [1, 2, 3] } } });
+      await sleep(4000); await shot(`w_${dev}_idle_sweep.jpg`);
+      console.log(dev, 'glow', await evalJs(`getComputedStyle(document.documentElement).getPropertyValue('--glow')`));
+      if (dev === 'phone') { await click('#navBtn'); await sleep(500); }
+      await click('[data-panel=tasbih]'); await sleep(2000); await shot(`w_${dev}_tasbih.jpg`);
+      await evalJs(`(document.querySelector('.panel:not([hidden]) .p-x')||{click(){}}).click(), 1`); await sleep(300);
+      if (dev === 'phone') { await click('#navBtn'); await sleep(500); }
+      await click('[data-panel=asma]'); await sleep(2500); await shot(`w_${dev}_asma.jpg`);
+      await click('#asListen'); await sleep(5000); await shot(`w_${dev}_asma_stage.jpg`);
+      console.log(dev, 'stage name', await evalJs(`(document.querySelector('.as-big')||{}).textContent`));
+      await click('.as-bar [data-act=close]'); await sleep(400);
+      await evalJs(`(document.querySelector('.panel:not([hidden]) .p-x')||{click(){}}).click(), 1`); await sleep(300);
+      await click('#gPure'); await sleep(2500); await shot(`w_${dev}_pure.jpg`);
+      await click('#pureExit'); await sleep(800);
+      await open('', { theme: 'light' }); await sleep(2000);
+      await click('#btnAbout'); await sleep(800);
+      await evalJs(`(document.querySelector('#about .social')||document.body).scrollIntoView(), 1`); await shot(`w_${dev}_about_light.jpg`, 500);
+      await evalJs(`document.querySelector('#about').close(), 1`);
+    }
+  }
   if (WANT.includes('oct6')) {                 // (6 Oct) the author's requests: khatma, reader end, tafsir full screen, tekrar, test, tasbih, light mode
     const today = new Date().toISOString().slice(0, 10);
     const KH = { khatma: { v: 2, active: true, start: today, mode: 'days', days: 30, unit: 'pages', scope: 'quran', order: 'mushaf', suras: [], moments: [{ id: 'fajr', time: '05:30' }] } };

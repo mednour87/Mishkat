@@ -15,7 +15,7 @@
 <meta property="og:type" content="website">
 <meta property="og:image" content="https://mishkatquran.org/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Mishkat · مِشكاة","url":"https://mishkatquran.org/","applicationCategory":"EducationalApplication","inLanguage":["ar","en"],"author":{"@type":"Person","name":"Mohamed Nour Bou Ali"},"sameAs":["https://www.youtube.com/@mishketquran","https://www.facebook.com/profile.php?id=61594931830065"]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Mishkat · مِشكاة","url":"https://mishkatquran.org/","applicationCategory":"EducationalApplication","inLanguage":["ar","en"],"author":{"@type":"Person","name":"Mohamed Nour Bou Ali"},"sameAs":["https://www.youtube.com/@mishketquran","https://www.facebook.com/profile.php?id=61594931830065","https://x.com/mishketquran","https://www.tiktok.com/@mishkatquran.org"]}</script>
 <link rel="icon" href="img/logo.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
@@ -27,6 +27,7 @@
 <link rel="stylesheet" href="css/app.css">
 <link rel="stylesheet" href="css/features.css">
 <link rel="stylesheet" href="css/refonte.css">
+<link rel="stylesheet" href="css/worship.css">
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 </head>
 <body>
@@ -70,7 +71,6 @@
       <button id="btnMenu" class="nd-item" data-i18n-title="menuTitle"><span class="ni" aria-hidden="true">✦</span> <span data-i18n="menu">اهتماماتي</span></button>
       <button type="button" id="btnInstall" class="nd-item" hidden><span class="ni" aria-hidden="true">⤓</span> <span data-i18n="installApp">ثبّت</span></button>
       <button id="btnAbout" class="nd-item" data-i18n-title="about"><span class="ni" aria-hidden="true">ⓘ</span> <span data-i18n="about">عن مشكاة</span></button>
-      <a id="btnJudges" class="nd-item" href="judges.html" target="_blank" rel="noopener"><span class="ni" aria-hidden="true">✓</span> <span data-i18n="judgesLink">دليل التحقّق للمحكّمين</span></a>
     </section>
     <section class="nd-sec" id="ndSocial"><h3 data-i18n="navFollow">تابِع مشكاة</h3><div id="ndSocialRow"></div></section>
   </div>
@@ -91,6 +91,7 @@
     <section id="gzone" class="zone" aria-labelledby="gTitle">
       <h2 id="gTitle" class="sr" data-i18n="zGalaxy">المجرّة</h2>
       <canvas id="galaxy" aria-label="Quran galaxy"></canvas>
+      <button type="button" id="pureExit" class="pure-exit" data-i18n-title="pureExit" data-i18n-aria="pureExit">✕</button>
       <div id="tooltip" role="tooltip"></div>
       <!-- camera: turn and tilt (click = one step, hold = continuous), in a corner far from the middle -->
       <div id="gcam" role="group" data-i18n-aria="camera">
@@ -116,6 +117,7 @@
         <label class="viewpick" data-i18n-title="orderKey"><span class="vk" aria-hidden="true">⇅</span><span class="sr" data-i18n="orderLabel">الترتيب</span><select id="orderSel"></select></label>
         <button id="gLegend" data-i18n-title="legend" data-i18n-aria="legend" aria-expanded="false">◐</button>
         <button id="gFull" data-i18n-title="expandG" data-i18n-aria="expandG" aria-pressed="false">⤢</button>
+        <button id="gPure" data-i18n-title="pureView" data-i18n-aria="pureView" aria-pressed="false">✧</button>
       </div>
       <div id="legendBox" hidden></div>
       <section id="suggest" aria-labelledby="sgTitle">

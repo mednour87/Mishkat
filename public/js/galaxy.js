@@ -25,7 +25,9 @@ const VERT = /* glsl */`
   attribute float hl;
   attribute float size;
   uniform float uMix, uPx, uTime;
+  uniform float uSweep, uSweepOn, uAspect;
   uniform vec3 uPal[8];
+  varying float vSweep;
   varying vec3 vColor;
   varying float vHl;
   varying float vNear;
@@ -43,7 +45,18 @@ const VERT = /* glsl */`
     float pulse = strong > 0.5 ? 1.0 + 0.18 * sin(uTime * 2.4 + p.x * 0.05) : 1.0;
     // stars never become large blurred discs in front of the camera (a size ceiling, and the stars that
     // almost touch the camera fade out), nor dissolve far away (a floor of 1.6 px, so the core stays sharp)
-    float px = size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (520.0 / -mv.z);
+    // the resting sweep: a bar turning around the centre of the shape, on the screen; the stars it crosses light up
+    // and fade behind it, like the trace of a lighthouse (only while nothing is read)
+    vSweep = 0.0;
+    if (uSweepOn > 0.001) {
+      vec4 c = projectionMatrix * modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+      vec4 q = projectionMatrix * mv;
+      vec2 d = q.xy / q.w - c.xy / c.w;
+      d.x *= uAspect;
+      float behind = mod(uSweep - atan(d.y, d.x), 6.2831853);
+      vSweep = uSweepOn * smoothstep(0.0, 0.03, behind) * exp(-behind * 1.7) * smoothstep(0.02, 0.08, length(d));
+    }
+    float px = size * uPx * pulse * (strong > 0.5 ? grow : 1.0) * (520.0 / -mv.z) * (1.0 + 0.9 * vSweep);
     gl_PointSize = clamp(px, 1.6 * uPx, (strong > 0.5 ? 15.0 : 10.0) * uPx);
     // only a star almost touching the lens fades (it faded below 40 units: zooming in on the recited word, at the
     // minimum distance of 12, made it vanish)
@@ -59,6 +72,7 @@ const VERT = /* glsl */`
   }`;
 const FRAG = /* glsl */`
   uniform float uDim;
+  varying float vSweep;
   varying vec3 vColor;
   varying float vHl;
   varying float vNear;
@@ -76,7 +90,9 @@ const FRAG = /* glsl */`
     vec3 col = vHl > 0.75 ? vColor * 1.9 : vHl > 0.25 ? vColor * 1.15 : vColor * mix(1.22, 0.6, uDim);
     col = mix(col, vec3(1.0), core * 0.28);                 // a whiter core, but the stars keep their colour
     col *= vTw;
-    gl_FragColor = vec4(col, a * vNear * vFar * vTw * (vHl > 0.75 ? 1.0 : vHl > 0.25 ? 0.9 : mix(0.9, 0.6, uDim)));
+    col = mix(col, vec3(1.0, 0.93, 0.75), 0.45 * vSweep) * (1.0 + 2.4 * vSweep);
+    float alpha = a * vNear * vFar * vTw * (vHl > 0.75 ? 1.0 : vHl > 0.25 ? 0.9 : mix(0.9, 0.6, uDim));
+    gl_FragColor = vec4(col, clamp(alpha + 0.35 * vSweep * a, 0.0, 1.0));
   }`;
 
 export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onLabelVerse, wordText = () => '', suraLabel = (n) => String(n) }) {
@@ -145,7 +161,7 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   const hlAttr = new THREE.BufferAttribute(hl, 1); hlAttr.setUsage(THREE.DynamicDrawUsage);
   geo.setAttribute('hl', hlAttr);
   geo.computeBoundingSphere();
-  const uniforms = { uMix: { value: 0 }, uPx: { value: px }, uDim: { value: 0 }, uTime: { value: 0 }, uPal: { value: PALETTE.map(c => new THREE.Color(c)) } };
+  const uniforms = { uMix: { value: 0 }, uPx: { value: px }, uDim: { value: 0 }, uTime: { value: 0 }, uSweep: { value: 0 }, uSweepOn: { value: 0 }, uAspect: { value: 1 }, uPal: { value: PALETTE.map(c => new THREE.Color(c)) } };
   const mat = new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, uniforms,
     transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
   const points = new THREE.Points(geo, mat);
@@ -597,14 +613,14 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
   let slow = 0;
   // (5 Oct) the loop draws only what can be seen: nothing while the galaxy is off screen (phone: the Mushaf or the
   // tafsir tab) or the page hidden; when nothing moves, a few frames a second are enough for the slow twinkle
-  let inView = true, lastChange = 0, lastFrame = 0;
+  let inView = true, lastChange = 0, lastFrame = 0, sweepWanted = true;
   new IntersectionObserver((es) => { inView = es[es.length - 1].isIntersecting; }).observe(canvas);
   controls.addEventListener('change', () => { lastChange = performance.now(); });
   function loop() {
     requestAnimationFrame(loop);
     const now = performance.now();
     if (document.hidden || !inView || !canvas.clientWidth) { last = now; return; }
-    const moving = anim || morph || follow || reciting || now - lastChange < 400 || now - userAt < 1500;
+    const moving = anim || morph || follow || reciting || now - lastChange < 400 || now - userAt < 1500 || uniforms.uSweepOn.value > 0.02;
     const gap = moving ? (lowPower && !reciting && !anim ? 1000 / 45 : 0) : controls.autoRotate ? (lowPower ? 1000 / 30 : 0) : (lowPower ? 1000 / 12 : 1000 / 24);
     if (gap && now - lastFrame < gap - 2) return;
     lastFrame = now;
@@ -617,6 +633,11 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     }
     uniforms.uTime.value = clock.getElapsedTime();
     const dimGoal = reciting ? Math.max(dimTarget, 0.7) : dimTarget;
+    // the resting sweep turns once every 9 s, and fades out as soon as a recitation starts
+    const sweepGoal = sweepWanted && !reciting && !follow && !morph ? 1 : 0;
+    uniforms.uSweepOn.value += (sweepGoal - uniforms.uSweepOn.value) * (1 - Math.exp(-dt * 2.5));
+    uniforms.uSweep.value = (uniforms.uSweep.value + dt * Math.PI * 2 / 9) % (Math.PI * 2);
+    uniforms.uAspect.value = camera.aspect;
     uniforms.uDim.value += (dimGoal - uniforms.uDim.value) * (1 - Math.exp(-dt * 4));
     if (anim) {
       const t = Math.min(1, (now - anim.t0) / anim.ms), e = ease(t);
@@ -720,6 +741,8 @@ export async function createGalaxy(canvas, { binUrl, suras, onHover, onPick, onL
     setGroupsVisible(v) { groupsOn = !!v; },
     get layout() { return layout; },
     get autoRotate() { return controls.autoRotate; },
+    // the resting sweep (on by default; the Settings can turn it off)
+    setSweep(on) { sweepWanted = !!on; },
     // (6 Oct) the film turns the shapes faster (at 0.35 a whole turn takes ≈ 3 min: the flower looked frozen)
     setAutoRotate(v, speed) { controls.autoRotate = v; if (speed) controls.autoRotateSpeed = speed; },
     wordsOfVerse: (v) => [vStart[v], vEnd[v]],
