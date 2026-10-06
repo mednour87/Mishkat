@@ -17,13 +17,14 @@ It is an **evidence-bound extractive RAG**. The "generation" part of a classic R
 
 | # | Stage | Where | AI? | Output |
 |---|---|---|---|---|
-| 1 | **Map of the question** (scope, crisis, child, tools) | `public/js/scope.js`, `tools.js`, `app.js › run()` | no | fixed answer, a tool opened, or stage 2 |
+| 0 | **Voice** (optional): speech to text, then the visitor corrects the text | `voice.js` → `POST /api/transcribe` (ElevenLabs Scribe v2 + vocabulary, then Whisper turbo / large v3) | speech model | the question as text |
+| 1 | **Map of the question** (verified answers, scope, crisis, child, tools) | `public/js/facts.js` (worker op `fact`), `scope.js`, `tools.js`, `app.js › run()` | no | a **verified answer** (counted from the Mushaf data or stated by an authentic hadith), a fixed answer, a tool opened, or stage 2 |
 | 2 | **Guard and routing** (verse/surah, exact Quran words, fatwa, personal case, injection) | `engine.js › guardCheck`, `injection.js`, `ask0()` | no | route: `verse`, `sura`, `verify`, `topic`, `abstain`… |
 | 3 | **Understanding**: intent + keywords + proposed verses | `functions/_lib/selector.js › expand` (`POST /api/expand`) | yes (checked output) | intent, ar/en keywords, «s:a» references to verify |
 | 4 | **Hybrid retrieval**: lexical BM25 + meaning (bge-m3) + subject index + proposed verses | `engine.js › topicSearch`, `dense-rank.js`, `search-worker.js` | embedding only | **closed list of 36 candidate verses** |
 | 5 | **Closed-list selection** (score 2 = answers, 1 = related) | `selector.js › select` (`POST /api/select`) + `engine.verifyLLM` | yes (identifiers only) | confirmed verses, in order |
 | 6 | **«الجواب باختصار»**: composer + judge over numbered sentences | `rag.js`, `functions/_lib/answer.js` (`POST /api/answer`) | yes (2 models, identifiers only) | 1 to 3 points, each 1–2 **verbatim** sentences |
-| 7 | **Further sources**: Sunnah (HadeethEnc), fiqh (Dorar), objections (Bayenat), quoted hadith (Dorar) | `app.js › loadSunnah / loadFiqh`, `fiqh.js`, `sources.js`, `/api/pick` | selection only | cards quoted word for word, with a link |
+| 7 | **Further sources**: Sunnah (HadeethEnc), fiqh, **creed and history** (Dorar encyclopedias), objections (Bayenat), quoted hadith (Dorar) | `app.js › loadSunnah / loadFiqh / loadEncyc`, `fiqh.js`, `history.js`, `encyc.js`, `sources.js`, `/api/pick` | selection only | cards quoted word for word, with a link |
 
 The whole engine runs **in the browser, in a Web Worker** (`search-worker.js`), so that the interface never freezes. The server (Cloudflare Pages Functions) does only three things: call the models, compute the embedding of the question, and relay the live sources. It enforces same-origin requests, a per-IP rate limit and a size limit (`_lib/guard.js`, `_lib/handler.js`).
 
@@ -34,6 +35,7 @@ When the selection keeps no candidate at all, a model of another family reads th
 ## 2. Stage 1 — the map of the question (before any search)
 
 `app.js › run()` looks at the question first, **without AI**.
+- **A factual question gets its exact answer** (T122, `public/js/facts.js`): «كم عدد آيات القرآن», «كم سورة», a surah's verses / words / letters / type / order / juz, juz, hizb, pages, sajdas, the surah without basmala, the longest and shortest surah and verse, occurrences of a word («كم مرة ذكر اسم موسى» → 136), the 25 prophets named (each with a verse that names him) — **computed** from the Tanzil data shipped with the site; the pillars of Islam and of faith, ihsan, the greatest surah and verse, the surah equal to a third of the Quran, the first revelation, the 99 Names, the five daily prayers — **stated by an authentic hadith** of HadeethEnc, shown in full with its grade and link. Dialect forms of «how many / what» are understood (كام، قداش، شحال، شكد، شنو، واش…). Before, these questions met «I found no sufficient source». `tests/facts.test.mjs`.
 - **A person in distress** (`isCrisis`): always goes to the engine, never to a refusal. The verses of tranquillity are always among the candidates (`COMFORT_REFS`).
 - **Child mode** (age under 18 chosen at the first visit): no fatwa, no sensitive subject. The child is gently led to memorisation (tekrar) and the khatma.
 - **Off topic** (recipe, prices, weather, code, homework…): a fixed answer written by hand, no AI. The API refuses the same texts. Measure: of the project's 1,498 questions, 13 are mapped off topic and all of them really are; no over-refusal on 50 cases (`eval/overrefusal.json`).
@@ -117,6 +119,7 @@ What is shown is **the browser's own copy** of each chosen sentence (never a tex
 ## 8. Stage 7 — further sources (quoted, never generated)
 - **Sunnah** (`loadSunnah`): BM25 over 3,572 Arabic and 2,328 English HadeethEnc hadiths, then a **closed-list choice by the AI** (`/api/pick`); text, grade and link given as they are.
 - **Ruling (حكم)** (`loadFiqh`, `functions/_lib/fiqh.js`): the **Fiqh Encyclopedia of Ad-Durar As-Saniyyah** (dorar.net/feqhia, in the challenge's reference pack). The section is chosen on the whole subject, preferring «حكم» leaf sections; going down into sub-sections is checked by the breadcrumb, then the closed list is checked strictly. The text of the encyclopedia is shown word for word, with the consensus or difference of opinion and the Saudi authorities it names, under the **red banner**. Mishkat never decides.
+- **Creed and history** (T122, `loadEncyc`, `POST /api/encyc`): a question of creed (tawhid, faith, the unseen, the Last Day, the Companions…) gets the **Creed Encyclopedia** of Ad-Durar As-Saniyyah (dorar.net/aqeeda), a question of Sira or history (a battle, a caliph, a birth, a death, an event) the **History Encyclopedia** (dorar.net/history) — both named by the challenge's reference pack; and **any Islamic question for which no verse answers** gets both, plus the Sunnah. Texts verbatim with their link; the AI only keeps numbers from the encyclopedia's own results (closed list, strict prompt); a definition is searched as «تعريف X»; history events are searched in their titles with all the words. When an approved source answers, the «abstained» badge becomes «من المصادر المعتمدة».
 - **A quoted hadith** («هل هذا حديث؟»): searched in the Dorar; the muhaddith's verdict is given as it is.
 - **Objections**: links to the reviewed answers of **Bayenat** (Markaz Osoul).
 

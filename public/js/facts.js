@@ -129,6 +129,16 @@ const HADITH_FACTS = {
   daily_prayers: { had: [3390], refs: [], ar: 'الصلوات المفروضة خمس صلوات في كل يوم وليلة.', en: 'The obligatory prayers are five prayers in every day and night.' },
 };
 
+// Arabic counted nouns (the figure may be written in Arabic-Indic digits): 1 → «آية واحدة», 2 → «آيتان / آيتين»,
+// 3–10 → plural «آيات», 11 and more → singular «آية» (by the last two digits: 103 آيات, 111 آية)
+const NOUN = { aya: ['آية واحدة', 'آيتان', 'آيتين', 'آيات', 'آية'], sura: ['سورة واحدة', 'سورتان', 'سورتين', 'سور', 'سورة'], marra: ['مرة واحدة', 'مرتان', 'مرتين', 'مرات', 'مرة'],
+  kalima: ['كلمة واحدة', 'كلمتان', 'كلمتين', 'كلمات', 'كلمة'], harf: ['حرف واحد', 'حرفان', 'حرفين', 'أحرف', 'حرفًا'] };
+export function counted(s, kind, kase = 'n') {
+  const n = +String(s).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)), w = NOUN[kind], k = n % 100;
+  if (n === 1) return w[0];
+  if (n === 2) return kase === 'n' ? w[1] : w[2];
+  return `${s} ${k >= 3 && k <= 10 ? w[3] : w[4]}`;
+}
 const T = {
   ar: {
     counted: 'محسوب في متصفحك من نص المصحف المعروض (Tanzil، رواية حفص عن عاصم) — رقم محسوب لا مكتوب باليد.',
@@ -146,25 +156,25 @@ const T = {
     hizb: (n, q) => `القرآن الكريم ${n} حزبًا (كل جزء حزبان)، وكل حزب أربعة أرباع: ${q} ربعًا.`,
     pages: (n) => `مصحف المدينة النبوية ${n} صفحة.`,
     sajdas: (n) => `مواضع سجود التلاوة المعلَّمة في المصحف ${n} موضعًا، وهذه هي:`,
-    muq: (n) => `${n} سورة تبدأ بالحروف المقطعة.`,
+    muq: (n) => `${counted(n, 'sura')} تبدأ بالحروف المقطعة.`,
     noBasmala: 'السورة التي لا تبدأ بالبسملة هي سورة التوبة (براءة)، وهي السورة التاسعة.',
     twice: 'سورة النمل فيها البسملة مرتين: في أولها، وفي الآية ٣٠ ﴿إنه من سليمان وإنه بسم الله الرحمن الرحيم﴾.',
     basmalaCount: (n) => `وردت ﴿بسم الله الرحمن الرحيم﴾ في المصحف ${n} مرة: في أول كل سورة إلا التوبة، ومرة في سورة النمل (الآية ٣٠).`,
-    longestSura: (name, a, w) => `أطول سورة في القرآن سورة ${name}: ${a} آية و${w} كلمة.`,
-    shortestSura: (name, a, w) => `أقصر سورة في القرآن سورة ${name}: ${a} آيات و${w} كلمات.`,
+    longestSura: (name, a, w) => `أطول سورة في القرآن سورة ${name}: ${counted(a, 'aya')} و${counted(w, 'kalima')}.`,
+    shortestSura: (name, a, w) => `أقصر سورة في القرآن سورة ${name}: ${counted(a, 'aya')} و${counted(w, 'kalima')}.`,
     longestVerse: (ref, w) => `أطول آية في القرآن ${ref} (آية الدَّين): ${w} كلمة.`,
-    shortestVerse: (n) => `${n} آية مكتوبة في المصحف بكلمة واحدة؛ منها الحروف المقطعة التي عُدّت آية (مثل ﴿طه﴾ و﴿يس﴾) وكلمات مثل ﴿مدهامتان﴾.`,
+    shortestVerse: (n) => `${counted(n, 'aya')} مكتوبة في المصحف بكلمة واحدة؛ منها الحروف المقطعة التي عُدّت آية (مثل ﴿طه﴾ و﴿يس﴾) وكلمات مثل ﴿مدهامتان﴾.`,
     firstSura: 'أول سورة في ترتيب المصحف سورة الفاتحة، وآخرها سورة الناس.',
     lastSura: 'آخر سورة في ترتيب المصحف سورة الناس (١١٤)، وأولها سورة الفاتحة.',
     prophets: (n) => `ذُكر في القرآن بأسمائهم ${n} نبيًّا ورسولًا، هذه أسماؤهم مع آية تذكر كل اسم:`,
-    suraVerses: (name, n) => `سورة ${name}: ${n} آية.`,
-    suraWords: (name, n) => `سورة ${name}: ${n} كلمة.`,
-    suraLetters: (name, n) => `سورة ${name}: ${n} حرفًا.`,
+    suraVerses: (name, n) => `سورة ${name}: ${counted(n, 'aya')}.`,
+    suraWords: (name, n) => `سورة ${name}: ${counted(n, 'kalima')}.`,
+    suraLetters: (name, n) => `سورة ${name}: ${counted(n, 'harf')}.`,
     suraType: (name, t, o) => `سورة ${name} ${t}، وترتيبها في النزول ${o} (Tanzil).`,
     suraOrder: (name, n, o) => `سورة ${name} رقمها ${n} في ترتيب المصحف، و${o} في ترتيب النزول (Tanzil).`,
-    suraNum: (n, name, a, t) => `السورة رقم ${n} هي سورة ${name}: ${a} آية، ${t}.`,
+    suraNum: (n, name, a, t) => `السورة رقم ${n} هي سورة ${name}: ${counted(a, 'aya')}، ${t}.`,
     suraJuz: (name, j1, j2, p1, p2) => j1 === j2 ? `سورة ${name} في الجزء ${j1}، من الصفحة ${p1} إلى ${p2}.` : `سورة ${name} من الجزء ${j1} إلى الجزء ${j2}، من الصفحة ${p1} إلى ${p2}.`,
-    word: (w, n, v, s) => `وردت «${w}» ${n} مرة في ${v} آية من ${s} سورة.`,
+    word: (w, n, v, s) => `وردت «${w}» ${counted(n, 'marra', 'a')} في ${counted(v, 'aya', 'g')} من ${counted(s, 'sura', 'g')}.`,
     wordNone: (w) => `لم أجد «${w}» بهذه الصيغة في نص المصحف؛ جرّب صيغة أخرى في خدمة الإحصاءات.`,
     meccanW: 'مكية', medinanW: 'مدنية',
   },
