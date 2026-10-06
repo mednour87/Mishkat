@@ -9,7 +9,7 @@ import { UI, ABOUT, WELCOME, INTEREST } from './i18n.js';
 import { SHAPES, ORDERS, buildLayout } from './layouts.js';
 import { isBasmala } from './basmala.js';
 import { lampSVG, setLampWord } from './lamp.js';
-import { listen, stopListening, cancelListening, voiceSupported } from './voice.js';
+import { listen, stopListening, cancelListening, voiceSupported } from './voice.js?v=t122';
 import { encycKinds, ENC_S } from './encyc.js';
 import { createSpeaker, browserVoice } from './speech.js';
 import { PALETTE } from './galaxy.js';
@@ -172,7 +172,8 @@ const pending = new Map();
 let wseq = 0;
 function startSearchWorker() {
   try {
-    const w = new Worker(new URL('./search-worker.js', import.meta.url), { type: 'module' });
+    // ?v= : a returning visitor's browser may keep a JS file a day (stale-while-revalidate); the version makes it fetch the new one
+    const w = new Worker(new URL('./search-worker.js?v=t122', import.meta.url), { type: 'module' });
     w.onmessage = async (ev) => {
       const m = ev.data || {};
       if (m.op === 'llm') {   // the worker asks the AI layer (cache, live API, circuit breaker)
