@@ -67,36 +67,36 @@ export function summarize(tag) {
 }
 
 function md(S, T) {
-  const L = [`# Test RAG sur 1 000 questions — ${S.tag}${T ? ' vs ' + T.tag : ''}`, '', `Généré le ${new Date().toISOString()} par \`eval/rag1000/report.mjs\`. Pipeline : \`eval/rag1000/pipeline.mjs\` (chemin complet de la page). Juge : modèle d'une autre famille (\`grade.mjs\`), sans les réponses attendues. IC 95 % bootstrap (2 000 tirages, graine 42).`, ''];
+  const L = [`# RAG test on 1,000 questions — ${S.tag}${T ? ' vs ' + T.tag : ''}`, '', `Generated on ${new Date().toISOString()} by \`eval/rag1000/report.mjs\`. Pipeline: \`eval/rag1000/pipeline.mjs\` (the whole path of the page). Judge: a model of another family (\`grade.mjs\`), without the expected answers. 95 % bootstrap CI (2,000 resamples, seed 42).`, ''];
   const col = (f) => T ? ` | ${f(T)}` : '';
-  L.push(`| Mesure | ${S.tag}${T ? ' | ' + T.tag : ''} |`, `|---|---|${T ? '---|' : ''}`);
+  L.push(`| Measure | ${S.tag}${T ? ' | ' + T.tag : ''} |`, `|---|---|${T ? '---|' : ''}`);
   const line = (name, f) => L.push(`| ${name} | ${f(S)}${col(f)} |`);
   line('Questions', s => s.questions);
-  line('Erreurs techniques', s => s.errors);
-  line('Passages cités / introuvables mot pour mot dans la source', s => `${s.verbatim.passages} / ${s.verbatim.notFound}`);
-  line('«الجواب باختصار» affiché / tenté', s => `${s.briefs.shown} / ${s.briefs.attempted}`);
-  line('Attentes connues tenues', s => `${s.expect.met}/${s.expect.checked} — ${fmt(s.expect.ci)}`);
-  line('Questions notées par le juge', s => s.graded);
-  line('1er verset répond directement (note 2)', s => fmt(s.relevance.top1Direct));
-  line('1er verset pertinent (note ≥ 1)', s => fmt(s.relevance.top1Relevant));
-  line('Précision@5 (note ≥ 1)', s => fmt(s.relevance.precision5));
-  line('nDCG@5 (notes du juge)', s => fmt(s.relevance.ndcg5));
-  line('Réponse courte qui répond (note 2)', s => `${fmt(s.relevance.briefAnswers)} (n=${s.relevance.briefGraded})`);
-  line('Réponse courte dans le sujet (note ≥ 1)', s => fmt(s.relevance.briefOnTopic));
-  line('Encyclopédie : bonne section (note 2)', s => `${fmt(s.relevance.fiqhRight)} (n=${s.relevance.fiqhGraded})`);
-  line('Bonne décision (répondre / renvoyer / refuser)', s => fmt(s.relevance.decisionOk));
-  line('Gravité major / critical', s => `${s.relevance.severity.major || 0} / ${s.relevance.severity.critical || 0}`);
-  line('IA : appels / erreurs / voisins sémantiques', s => `${s.ai.used} / ${s.ai.errors} / ${s.ai.dense}`);
-  L.push('', '## Par famille de questions', '', `| Famille | n | notées | «aucun verset» | refus | 1er verset direct | bonne décision | major+ | attentes${T ? ' | 1er direct ' + T.tag + ' | bonne décision ' + T.tag + ' | major+ ' + T.tag : ''} |`, `|---|---|---|---|---|---|---|---|---|${T ? '---|---|---|' : ''}`);
+  line('Technical errors', s => s.errors);
+  line('Quoted passages / not found word for word in their source', s => `${s.verbatim.passages} / ${s.verbatim.notFound}`);
+  line('«الجواب باختصار» shown / attempted', s => `${s.briefs.shown} / ${s.briefs.attempted}`);
+  line('Known expectations met', s => `${s.expect.met}/${s.expect.checked} — ${fmt(s.expect.ci)}`);
+  line('Questions graded by the judge', s => s.graded);
+  line('First verse answers directly (grade 2)', s => fmt(s.relevance.top1Direct));
+  line('First verse relevant (grade ≥ 1)', s => fmt(s.relevance.top1Relevant));
+  line('Precision@5 (grade ≥ 1)', s => fmt(s.relevance.precision5));
+  line('nDCG@5 (judge grades)', s => fmt(s.relevance.ndcg5));
+  line('Short answer that answers (grade 2)', s => `${fmt(s.relevance.briefAnswers)} (n=${s.relevance.briefGraded})`);
+  line('Short answer on topic (grade ≥ 1)', s => fmt(s.relevance.briefOnTopic));
+  line('Encyclopedia: right section (grade 2)', s => `${fmt(s.relevance.fiqhRight)} (n=${s.relevance.fiqhGraded})`);
+  line('Right decision (answer / refer / refuse)', s => fmt(s.relevance.decisionOk));
+  line('Severity major / critical', s => `${s.relevance.severity.major || 0} / ${s.relevance.severity.critical || 0}`);
+  line('AI: calls / errors / semantic neighbours', s => `${s.ai.used} / ${s.ai.errors} / ${s.ai.dense}`);
+  L.push('', '## By family of questions', '', `| Family | n | graded | «no verse» | refusals | first verse direct | right decision | major+ | expectations${T ? ' | first direct ' + T.tag + ' | right decision ' + T.tag + ' | major+ ' + T.tag : ''} |`, `|---|---|---|---|---|---|---|---|---|${T ? '---|---|---|' : ''}`);
   for (const [f, x] of Object.entries(S.byFamily).sort((a, b) => b[1].n - a[1].n)) {
     const y = T && T.byFamily[f];
     L.push(`| ${f} | ${x.n} | ${x.graded} | ${x.notfound} | ${x.abstain} | ${pct(x.top1Direct)} | ${pct(x.decisionOk)} | ${x.major} | ${x.expect}${T ? ` | ${y ? pct(y.top1Direct) : '—'} | ${y ? pct(y.decisionOk) : '—'} | ${y ? y.major : '—'}` : ''} |`);
   }
   L.push('', '## Routes', '', '```json', JSON.stringify(S.byType, null, 1), '```', '');
   const P = (T || S);
-  L.push(`## Cas signalés par le juge (${P.tag}) : ${P.problems.length}`, '');
-  for (const p of P.problems) L.push(`- **${p.id}** \`${p.fam}\` «${p.q}» → ${p.type} · ${p.by || '—'}${p.model ? ' · ' + p.model : ''} · ${p.verses.join(' ')} · notes ${JSON.stringify(p.grades)} · réponse ${p.answer ?? '—'} · fiqh ${p.fiqh ?? '—'} · ${p.severity}${p.decision ? '' : ' · **décision**'} — ${p.issue || ''}`);
-  L.push('', `## Attentes non tenues (${P.tag}) : ${P.expectFails.length}`, '');
+  L.push(`## Cases flagged by the judge (${P.tag}): ${P.problems.length}`, '');
+  for (const p of P.problems) L.push(`- **${p.id}** \`${p.fam}\` «${p.q}» → ${p.type} · ${p.by || '—'}${p.model ? ' · ' + p.model : ''} · ${p.verses.join(' ')} · grades ${JSON.stringify(p.grades)} · answer ${p.answer ?? '—'} · fiqh ${p.fiqh ?? '—'} · ${p.severity}${p.decision ? '' : ' · **decision**'} — ${p.issue || ''}`);
+  L.push('', `## Expectations not met (${P.tag}): ${P.expectFails.length}`, '');
   for (const p of P.expectFails) L.push(`- **${p.id}** \`${p.fam}\` «${p.q}» → ${p.type} · ${p.verses.join(' ')} — ${p.fails.join('; ')}`);
   return L.join('\n');
 }

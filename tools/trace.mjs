@@ -125,6 +125,8 @@ const HOSTS = {
   'github.com': { name: 'GitHub', ar: 'غيت هب', ref: '—', role: 'links to the public source code and to open data projects (no call at run time)', licence: '—' },
   'www.youtube.com': { name: 'YouTube — Mishkat official channel @mishketquran', ar: 'يوتيوب', ref: '—', role: 'link only (menu, About, useful links, JSON-LD sameAs); nothing loaded from it', licence: 'YouTube terms' },
   'www.facebook.com': { name: 'Facebook — Mishkat official page', ar: 'فيسبوك', ref: '—', role: 'link only (menu, About, useful links, JSON-LD sameAs); nothing loaded from it', licence: 'Meta terms' },
+  'x.com': { name: 'X — Mishkat official account @mishketquran', ar: 'إكس', ref: '—', role: 'link only (menu, About, useful links, JSON-LD sameAs); nothing loaded from it', licence: 'X terms' },
+  'www.tiktok.com': { name: 'TikTok — Mishkat official account @mishkatquran.org', ar: 'تيك توك', ref: '—', role: 'link only (menu, About, useful links, JSON-LD sameAs); nothing loaded from it', licence: 'TikTok terms' },
   'schema.org': { name: 'schema.org vocabulary', ar: '—', ref: '—', role: 'JSON-LD @context identifier in the page head; never fetched', licence: 'CC BY-SA 3.0' },
   'mishkatquran.org': { name: 'Mishkat (own domain, Cloudflare Pages)', ar: 'مشكاة', ref: '—', role: 'the site itself (canonical address, share card, www redirect)', licence: 'All Rights Reserved' },
   'mishkat-4m1.pages.dev': { name: 'Mishkat (Cloudflare Pages)', ar: 'مشكاة', ref: '—', role: 'the site itself (named in the User-Agent of server calls and in links)', licence: '—' },

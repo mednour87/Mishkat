@@ -6,7 +6,7 @@ The author's rights cover his own work only (code, design, logo, 3D shapes, film
 The material below belongs to its owners and is used under their own terms. It is **not** relicensed by Mishkat.
 
 ## Religious texts and data
-Every source, its licence and how Mishkat complies with it is listed in **[SOURCES.md](SOURCES.md)** (S1–S34).
+Every source, its licence and how Mishkat complies with it is listed in **[SOURCES.md](SOURCES.md)** (S1–S37).
 In short:
 - **Quran text:** Tanzil Project (Uthmani, Hafs). Its terms are followed: verbatim, never modified, source cited.
 - **Tafsir and translations:** QuranEnc.com (Al-Muyassar, Al-Mukhtasar, Noor International), Quran.com (As-Sa‘di, Ibn Kathir, Al-Baghawi, Al-Qurtubi), Quranpedia (At-Tabari). All shown verbatim, with source and link.

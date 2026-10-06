@@ -212,7 +212,7 @@ for k, (a, b) in enumerate(steps):
 # ---------------------------------------------------------------- 5b — the whole pipeline on one plate (tools/make_pipeline.mjs)
 s = slide('The pipeline at a glance — evidence-bound extractive RAG', 'خط المعالجة كاملًا')
 s.shapes.add_picture(os.path.join(HERE, 'pipeline_rag.png'), inch(0.5), inch(1.35), width=inch(12.3))
-text(s, 'Full description: docs/MOTEUR_RECHERCHE_RAG.md — every box names the file that does the work; every figure comes from a results file.',
+text(s, 'Full description: docs/RAG_ENGINE.md — every box names the file that does the work; every figure comes from a results file.',
      inch(0.6), inch(6.95), inch(12.1), inch(0.4), 12, MUT)
 
 # ---------------------------------------------------------------- 6 — reliability on screen

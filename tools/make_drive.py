@@ -58,7 +58,7 @@ io.open(os.path.join(d, 'npm_test_output.txt'), 'w', encoding='utf-8').write(t.s
 listing += ['04_…/git_log.txt', '04_…/git_tags.txt', '04_…/npm_test_output.txt']
 # 05 project file
 for f in ['Mishkat_Dossier_AR.pdf', 'Mishkat_Dossier_EN.pdf']: cp(L('dossier_complet', f), 'file')
-cp(R('docs', 'MOTEUR_RECHERCHE_RAG.md'), 'file'); cp(R('docs', 'pipeline_rag.png'), 'file')
+cp(R('docs', 'RAG_ENGINE.md'), 'file'); cp(R('docs', 'pipeline_rag.png'), 'file')
 # 06 sources and licences
 for f in ['SOURCES.md', 'TOOLS.md', 'LICENSE', 'NOTICE.md', 'README.md', 'DEPLOY.md']: cp(R(f), 'src')
 # 07 jury critique

@@ -115,7 +115,7 @@ slide('رحلة السؤال في سبع مراحل', 'آلية العمل',
 
 # 7 — the pipeline plate
 slide('خط المعالجة كاملًا: RAG استخراجي مقيَّد بالأدلة', 'آلية العمل: اللوحة',
-      f'<img class="plate" src="{img(os.path.join(ROOT, "docs", "pipeline_rag.png"), 2000, 82)}" alt=""><p class="note">الوصف الكامل: <span dir="ltr">docs/MOTEUR_RECHERCHE_RAG.md</span> — كل صندوق يسمّي الملف الذي يقوم بالعمل.</p>')
+      f'<img class="plate" src="{img(os.path.join(ROOT, "docs", "pipeline_rag.png"), 2000, 82)}" alt=""><p class="note">الوصف الكامل: <span dir="ltr">docs/RAG_ENGINE.md</span> — كل صندوق يسمّي الملف الذي يقوم بالعمل.</p>')
 
 # 8 — sensitive questions
 slide('الأسئلة الحساسة: مسارات ثابتة مراجَعة', 'آلية العمل: الموثوقية',
