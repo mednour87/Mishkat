@@ -1,6 +1,6 @@
 # Mishkat — Traceability · مِشكاة — سجلّ التتبّع
 
-> Generated **2026-10-06T13:37:08Z** by `node tools/trace.mjs` (Node v22.17.0) from git HEAD `e28951dec224d4fafcb0c919ab252ccfbb209706` (branch main, committed 2026-10-06T15:32:01+02:00) with **4 uncommitted change(s)** in the working tree.
+> Generated **2026-10-06T13:38:03Z** by `node tools/trace.mjs` (Node v22.17.0) from git HEAD `0295d7678609fda033f74bb67cb31534b86f0546` (branch main, committed 2026-10-06T15:37:30+02:00) with **1 uncommitted change(s)** in the working tree.
 > Do not edit by hand: every value below is derived from the repository files. Re-run the tool to refresh it.
 
 [Summary](#summary) · [External services & APIs](#external) · [Internal API endpoints](#api) · [AI models](#models) · [Data files](#data) · [Code inventory](#code) · [Tools & libraries](#tools) · [Tests & evaluation](#tests) · [Git history](#git)
@@ -12,18 +12,18 @@ Every number on this page is computed from the repository by `tools/trace.mjs`; 
 
 | Item | Count |
 |---|---|
-| External hosts referenced (classified) | 48 |
-| External hosts unclassified | 1 |
+| External hosts referenced (classified) | 49 |
+| External hosts unclassified | 0 |
 | External URL occurrences | 169 |
 | Internal API endpoints (functions/api) | 14 |
 | AI models wired in production code | 6 |
 | Data files in public/data (top level) | 20 |
 | Data sub-folders (files) | hadeeth/ 62 · saadi/ 114 · tajweed/ 115 · timing/ 114 · translit/ 114 · tts/ 342 · vec/ 5 |
 | Data total size | 60.66 MiB |
-| Source files (js/mjs/py/html/css) | 236 files · 40,331 non-blank lines |
+| Source files (js/mjs/py/html/css) | 236 files · 40,332 non-blank lines |
 | Tests (`test(` calls) | 283 in 49 files |
-| Commits | 137 — challenge window: 72 · baseline (declared): 65 |
-| Uncommitted changes in the working tree | 4 |
+| Commits | 138 — challenge window: 73 · baseline (declared): 65 |
+| Uncommitted changes in the working tree | 1 |
 
 <a id="external"></a>
 ## External services & APIs · الخدمات والواجهات الخارجية
@@ -68,6 +68,7 @@ The browser itself may contact only these external origins (CSP in functions/_li
 | `openrouter.ai` | OpenRouter (paid, pay per token) · مزوّد الذكاء الاصطناعي المدفوع | TOOLS | primary LLM provider for expansion, closed-list selection and relevance filters | OpenRouter terms; open-weight models | comment ×2 | eval/cost_per_question.mjs, functions/_lib/selector.js |
 | `quran.com` | Quran.com website · Quran.com | S6–S9 | outbound “verify on Quran.com” links and tafsir page links | link only | reference ×1, link ×1 | functions/_lib/sources.js, public/js/app.js |
 | `www.w3.org` | W3C SVG namespace · فضاء أسماء SVG | — | xmlns attribute of the Mishkat lamp SVG (public/js/lamp.js, img/logo.svg) — an identifier, never fetched | — | link ×2 | public/js/glow.js, public/js/lamp.js |
+| `api.elevenlabs.io` | ElevenLabs API · ElevenLabs (تحويل الكلام إلى نص والعكس) | TOOLS.md | Scribe v2 speech-to-text of the voice search (first engine since 6 Oct, T122, with Mishkat's vocabulary); narration voices generated once for the video and the film (tools only) — server side, key never sent to the browser | ElevenLabs terms (author's Creator plan); declared external tool | call ×1 | functions/_lib/selector.js |
 | `api.stackexchange.com` | Stack Exchange API (Islam Stack Exchange) · Islam Stack Exchange | eval | evaluation only: public question titles for eval/forum_questions.json (eval/collect_forum.py); never used by the app | CC BY-SA 4.0 — titles only, no user names or bodies | reference ×1 | eval/collect_forum.py |
 | `dawa.center` | Digital Da‘wah Repository · المستودع الدعوي الرقمي | reference pack | useful links panel | link only | link ×1 | public/js/toolpanels.js |
 | `findahelpline.com` | Find A Helpline | crisis route | link shown first to a visitor in crisis | link only | link ×1 | public/js/app.js |
@@ -84,7 +85,6 @@ The browser itself may contact only these external origins (CSP in functions/_li
 | `www.geonames.org` | GeoNames | S29 | build: cities15000 → public/data/places.json (country → city picker); attribution link | CC BY 4.0 | reference ×1 | data_build/build_places.py |
 | `www.ncei.noaa.gov` | NOAA NCEI — World Magnetic Model · النموذج المغناطيسي العالمي WMM2025 | S34 | source of the WMM2025 coefficients copied into public/js/geomag.js (cited in a comment, never called by the page) | U.S. Government work, public domain | comment ×1 | public/js/geomag.js |
 | `www.openstreetmap.org` | OpenStreetMap · خريطة الشارع المفتوحة | S28 | attribution link of the mosque map | ODbL | link ×1 | public/js/practical.js |
-| `api.elevenlabs.io` | unclassified | — | unclassified — add it to HOSTS in tools/trace.mjs | ? | call ×1 | functions/_lib/selector.js |
 
 **Every occurrence (file:line)** (169)
 
@@ -272,7 +272,7 @@ The browser itself may contact only these external origins (CSP in functions/_li
 
 *Local / placeholder URLs ignored (8): data_build/make_pc_bundle.py:41, data_build/make_pc_bundle.py:44, data_build/make_pc_bundle.py:60, eval/run_qqa23.mjs:23, functions/_lib/tts.js:28, server.mjs:44, server.mjs:57, server.mjs:98.*
 
-*Unclassified hosts: api.elevenlabs.io.*
+*Unclassified hosts: none — every host found is in the role table.*
 
 <a id="api"></a>
 ## Internal API endpoints · نقاط الواجهة الداخلية
@@ -437,7 +437,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | public/js | 48 | 12,300 |
 | (root) | 1 | 100 |
 | tests | 56 | 15,627 |
-| tools | 34 | 3,943 |
+| tools | 34 | 3,944 |
 
 **Files** (236)
 
@@ -546,7 +546,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `public/js/encyc.js` | JavaScript | 40 | 37 | 5818e71 · 2026-10-06 | committed | encycKinds, ENC_S |
 | `public/js/engage3d.js` | JavaScript | 156 | 151 | 40f259b · 2026-10-05 | committed | EG, drawMini, animateMini, openEngageMap |
 | `public/js/engine.js` | JavaScript | 2,002 | 1,931 | 7f0814e · 2026-10-06 | committed | AR_RANGE, toAsciiDigits, normAr, normLatin, stemAr, stemLatin, tokens, detectLang, cleanSpoken, sentences, stripTags, MSG, expandTokens, englishTopicOf, isCrisis, CRISIS_REFS, isComfortQ, COMFORT_REFS, isBloodRuling, BLOOD_REFS, guardCheck, isPolemic, packFor, isSensitiveText, isSensitive, fatwaLinks, PARAGRAPH_FOR, TAFSIR_FOR, TRANSLATION_FOR, SOURCES_NEEDED, verifyLLM, verifyExpansion, createEngine |
-| `public/js/facts.js` | JavaScript | 354 | 342 | 5818e71 · 2026-10-06 | modified | PROPHETS, counted, factAnswer, letterCount |
+| `public/js/facts.js` | JavaScript | 354 | 342 | 0295d76 · 2026-10-06 | committed | PROPHETS, counted, factAnswer, letterCount |
 | `public/js/galaxy.js` | JavaScript | 799 | 772 | 10686a6 · 2026-10-06 | committed | PALETTE, createGalaxy |
 | `public/js/geomag.js` | JavaScript | 172 | 167 | f5e9d23 · 2026-10-06 | committed | WMM_EPOCH, decimalYear, magField, compassZone |
 | `public/js/glossary.js` | JavaScript | 60 | 54 | cca405e · 2026-10-01 | committed | GLOSSARY, TERM_CUE, termFor, isBareTerm |
@@ -663,7 +663,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `tools/make_welcome_audio.py` | Python | 32 | 29 | 46df41c · 2026-10-04 | committed | — |
 | `tools/md_pdf.py` | Python | 11 | 10 | 928dcfc · 2026-10-06 | committed | — |
 | `tools/shots.mjs` | JavaScript (ESM) | 89 | 86 | 0089103 · 2026-10-04 | committed | — |
-| `tools/trace.mjs` | JavaScript (ESM) | 750 | 717 | 5687b04 · 2026-10-06 | committed | — |
+| `tools/trace.mjs` | JavaScript (ESM) | 751 | 718 | 5687b04 · 2026-10-06 | modified | — |
 | `tools/ui_shots.mjs` | JavaScript (ESM) | 398 | 396 | 10686a6 · 2026-10-06 | committed | evalJs |
 | `tools/video/build.mjs` | JavaScript (ESM) | 181 | 173 | 6030a6d · 2026-10-05 | committed | — |
 | `tools/video/build2.mjs` | JavaScript (ESM) | 206 | 197 | 4427293 · 2026-10-05 | committed | — |
@@ -869,10 +869,11 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 <a id="git"></a>
 ## Git history · سجل git
 
-The challenge evaluates only the work done in the build window (2026-10-04 → 2026-10-06). Commits dated before 2026-10-04 are the declared baseline (see BASELINE.md). Phase uses the commit date. Showing the last 30 of 137 commits.
+The challenge evaluates only the work done in the build window (2026-10-04 → 2026-10-06). Commits dated before 2026-10-04 are the declared baseline (see BASELINE.md). Phase uses the commit date. Showing the last 30 of 138 commits.
 
 | Hash | Date | Time | Phase | Subject |
 |---|---|---|---|---|
+| `0295d76` | 2026-10-06 | 15:37:30+02:00 | challenge window | T122: Arabic agreement of counted nouns in verified answers; documents (README ar/en, RAG engine, sources S38–S41, tools, changelog); traceability regenerated |
 | `e28951d` | 2026-10-06 | 15:32:01+02:00 | challenge window | T122: version query on the changed scripts (a returning visitor's browser kept yesterday's JS for a day) |
 | `5818e71` | 2026-10-06 | 15:29:22+02:00 | challenge window | T122: voice search that works (ElevenLabs Scribe v2 with Mishkat's vocabulary, then Whisper turbo and large v3; browser meter fixes; 20/30 → 30/30 on 30 spoken questions in 10 accents), verified answers counted from the Mushaf data or stated by authentic hadiths (verses, surahs, juz, pages, sajdas, word counts, pillars, first revelation…), the approved encyclopedias of creed and history of Ad-Durar As-Saniyyah for questions with no verse, Sunnah for them too; battery of 49 questions across the themes |
 | `a0d7397` | 2026-10-06 | 14:14:16+02:00 | challenge window | Archive v2026-10-06-t121: SHA-256 of every file (all rights reserved) |
@@ -902,13 +903,9 @@ The challenge evaluates only the work done in the build window (2026-10-04 → 2
 | `bced16d` | 2026-10-05 | 22:52:08+02:00 | challenge window | T106: khatma v2 (choose for me, any moments, pages/verses/surahs, whole Quran or chosen surahs, short first, by length or daily amount, plan revealed in the 3D lamp, then read with the reciter, reading only full screen or listening only), enlarge button on every panel, SVG play icons (no crossed boxes on phones), tajweed box close keeps colours, about-the-surah window, foldable reading bar, qibla compass hardened (screen angle, smoothing, no absolute heading -> dial not turned), Arabic first, readable drop-down lists, intro film: recited word over the galaxy without the white circle, narrated services after the verse in Modern Standard Arabic, greeting at the end; tests 245/245 |
 | `404b123` | 2026-10-05 | 21:22:39+02:00 | challenge window | T105: detailed document of the search engine and the evidence-bound RAG (docs/MOTEUR_RECHERCHE_RAG.md) and the plate of the whole pipeline (docs/pipeline_rag.png, tools/make_pipeline.mjs); social kit drawn with the site's own fonts |
 | `5549e35` | 2026-10-05 | 21:15:01+02:00 | challenge window | T104: domain mishkatquran.org (www redirect, canonical, share card), all rights reserved (challenge terms 13/7), logo checked against 24:35 and As-Sa'di (the glass itself shines like a star, a lit lamp inside it, no separate planet), paste-the-basmala button, no turning circle while loading, film words drawn one canvas each (no luminous edges, logo words all visible on phones), khatma map moves up and down once zoomed, enlarged 3D works with the tafsir open on phones, Challenge flower 3D shape (19 petals x 6 surahs), social media kit; tests 242/242 |
-| `6030a6d` | 2026-10-05 | 20:03:24+02:00 | challenge window | T103: RAG tested on 1,000 questions (eval/rag1000: page-faithful pipeline, verbatim check against the source files, independent judge of another model family, bootstrap CIs) and fixed — tafsir requests of a named surah/verse open it, a person in distress is never «off topic» and always has the verses of tranquillity as candidates, AI-proposed verses without a shared word reach the selection (kept only if direct), story episodes go to the selection and approved episodes open a story, penalties and marriage of minors named alone are rulings (homographs), Fiqh Encyclopedia: whole-question subject on light stems, leaf «حكم» sections first, sub-section descent checked by breadcrumb and subject, large model + strict closed-list check (no neighbouring case), adhkar search in English (all 342 were listed), no lone hadith list for violence polemics; v1 → v4: critical 15 → 2, first verse direct 81.1 → 84.5 %, encyclopedia right section 61 → 73 %, 0 passage not verbatim; tests 234/234 |
 
-**Uncommitted changes at generation time** (4)
+**Uncommitted changes at generation time** (1)
 
 | Path | git status |
 |---|---|
-| `CHANGELOG.md` | M |
-| `README.md` | M |
-| `docs/RAG_ENGINE.md` | M |
-| `public/js/facts.js` | M |
+| `tools/trace.mjs` | M |
