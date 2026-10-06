@@ -26,6 +26,12 @@ The AI never writes text shown to the visitor: it returns IDs (verses, sentences
 | Overpass API (z./lz4.overpass-api.de, overpass-api.de, kumi.systems, private.coffee — through `/api/mosques`) / Nominatim | nearby mosques, city search | ODbL data, OSM usage policies (identified User-Agent, cached answers) |
 | Google Maps embed (iframe, no key) | the map of the nearby mosques inside the panel, a mosque shown on it, «route» link | Google Maps terms; the chosen place is sent to Google to draw the map (stated) |
 | verses.quran.com | Alafasy recitation audio (streamed) | Quran.com |
+| Aladhan qibla API (`/v1/qibla`) | **evaluation only**: independent check of Mishkat's qibla bearing at 33 places (`tools/check_world.mjs`, 6 Oct 2026); never called by the page | free public API |
+
+## Models embedded in the page
+| Component | Version | Role | Licence |
+|---|---|---|---|
+| World Magnetic Model (NOAA NCEI / BGS) | WMM2025 (2025.0–2030.0) | magnetic declination for the qibla compass (`public/js/geomag.js`), checked on the 100 official test values | public domain |
 
 ## Software
 | Component | Version | Role | Licence |

@@ -1,6 +1,6 @@
 # Mishkat — Traceability · مِشكاة — سجلّ التتبّع
 
-> Generated **2026-10-05T23:41:04Z** by `node tools/trace.mjs` (Node v22.17.0) from git HEAD `8dff2e97daaa5c80cbdbd48ead376f98af8cad83` (branch main, committed 2026-10-06T00:40:50+02:00) with **32 uncommitted change(s)** in the working tree.
+> Generated **2026-10-06T08:20:55Z** by `node tools/trace.mjs` (Node v22.17.0) from git HEAD `f5e9d23a752474abf610a12598818e606cf860a6` (branch main, committed 2026-10-06T10:00:51+02:00) with **9 uncommitted change(s)** in the working tree.
 > Do not edit by hand: every value below is derived from the repository files. Re-run the tool to refresh it.
 
 [Summary](#summary) · [External services & APIs](#external) · [Internal API endpoints](#api) · [AI models](#models) · [Data files](#data) · [Code inventory](#code) · [Tools & libraries](#tools) · [Tests & evaluation](#tests) · [Git history](#git)
@@ -12,18 +12,18 @@ Every number on this page is computed from the repository by `tools/trace.mjs`; 
 
 | Item | Count |
 |---|---|
-| External hosts referenced (classified) | 42 |
+| External hosts referenced (classified) | 43 |
 | External hosts unclassified | 0 |
-| External URL occurrences | 147 |
+| External URL occurrences | 148 |
 | Internal API endpoints (functions/api) | 12 |
 | AI models wired in production code | 6 |
 | Data files in public/data (top level) | 18 |
 | Data sub-folders (files) | hadeeth/ 62 · saadi/ 114 · tajweed/ 115 · timing/ 114 · translit/ 114 · tts/ 342 · vec/ 5 |
 | Data total size | 60.64 MiB |
-| Source files (js/mjs/py/html/css) | 190 files · 36,309 non-blank lines |
-| Tests (`test(` calls) | 249 in 40 files |
-| Commits | 119 — challenge window: 54 · baseline (declared): 65 |
-| Uncommitted changes in the working tree | 32 |
+| Source files (js/mjs/py/html/css) | 204 files · 37,813 non-blank lines |
+| Tests (`test(` calls) | 260 in 43 files |
+| Commits | 125 — challenge window: 60 · baseline (declared): 65 |
+| Uncommitted changes in the working tree | 9 |
 
 <a id="external"></a>
 ## External services & APIs · الخدمات والواجهات الخارجية
@@ -32,7 +32,7 @@ Every `http(s)://` URL in `public/js`, `public/index.html`, `public/_headers`, `
 
 The browser itself may contact only these external origins (CSP in functions/_lib/csp.js): media-src → https://verses.quran.com https://www.hisnmuslim.com; connect-src → https://api.aladhan.com https://z.overpass-api.de https://overpass-api.de https://nominatim.openstreetmap.org; frame-src → https://www.google.com https://maps.google.com. Everything else goes through the same-origin /api.
 
-**Hosts** (42)
+**Hosts** (43)
 
 | Host | Service | Ref. | Role in Mishkat | Licence / conditions | Usage | Files |
 |---|---|---|---|---|---|---|
@@ -76,10 +76,11 @@ The browser itself may contact only these external origins (CSP in functions/_li
 | `quranpedia` | Quranpedia (short form in code comments) · قرآنبيديا | S11–S13 | same as quranpedia.net | see S11 | link ×1 | data_build/build_surah_sciences.py |
 | `shamela.ws` | Al-Maktaba Ash-Shamila · المكتبة الشاملة | reference pack | useful links panel (no public API, not ingested) | link only | link ×1 | public/js/toolpanels.js |
 | `www.geonames.org` | GeoNames | S29 | build: cities15000 → public/data/places.json (country → city picker); attribution link | CC BY 4.0 | reference ×1 | data_build/build_places.py |
+| `www.ncei.noaa.gov` | NOAA NCEI — World Magnetic Model · النموذج المغناطيسي العالمي WMM2025 | S34 | source of the WMM2025 coefficients copied into public/js/geomag.js (cited in a comment, never called by the page) | U.S. Government work, public domain | comment ×1 | public/js/geomag.js |
 | `www.openstreetmap.org` | OpenStreetMap · خريطة الشارع المفتوحة | S28 | attribution link of the mosque map | ODbL | link ×1 | public/js/practical.js |
 | `www.w3.org` | W3C SVG namespace · فضاء أسماء SVG | — | xmlns attribute of the Mishkat lamp SVG (public/js/lamp.js, img/logo.svg) — an identifier, never fetched | — | link ×1 | public/js/lamp.js |
 
-**Every occurrence (file:line)** (147)
+**Every occurrence (file:line)** (148)
 
 | Host | File:line | Scope | Usage | URL |
 |---|---|---|---|---|
@@ -171,22 +172,23 @@ The browser itself may contact only these external origins (CSP in functions/_li
 | `mishkatquran.org` | public/index.html:16 | app (browser) | link | `https://mishkatquran.org/img/og.png` |
 | `verses.quran.com` | public/js/app.js:70 | app (browser) | call | `https://verses.quran.com/` |
 | `mishkatquran.org` | public/js/app.js:128 | app (browser) | link | `https://mishkatquran.org` |
-| `findahelpline.com` | public/js/app.js:692 | app (browser) | link | `https://findahelpline.com` |
-| `quranenc.com` | public/js/app.js:742 | app (browser) | link | `https://quranenc.com` |
-| `quranpedia.net` | public/js/app.js:838 | app (browser) | link | `https://quranpedia.net` |
-| `dorar.net` | public/js/app.js:845 | app (browser) | link | `https://dorar.net/hadith` |
-| `dorar.net` | public/js/app.js:847 | app (browser) | link | `https://dorar.net/hadith/search?q=${encodeURIComponent(q)}` |
-| `hadeethenc.com` | public/js/app.js:886 | app (browser) | link | `https://hadeethenc.com/${s.lang}/browse/hadith/${id}` |
-| `hadeethenc.com` | public/js/app.js:892 | app (browser) | link | `https://hadeethenc.com` |
-| `hadeethenc.com` | public/js/app.js:911 | app (browser) | link | `https://hadeethenc.com/` |
-| `dorar.net` | public/js/app.js:969 | app (browser) | link | `https://dorar.net/feqhia/search?q=${encodeURIComponent(q)}` |
-| `alifta.gov.sa` | public/js/app.js:988 | app (browser) | link | `https://alifta.gov.sa/ar/home` |
-| `quranpedia.net` | public/js/app.js:1021 | app (browser) | link | `https://quranpedia.net` |
-| `quran.com` | public/js/app.js:1552 | app (browser) | link | `https://quran.com/${s}/${a}` |
-| `dorar.net` | public/js/app.js:1553 | app (browser) | link | `https://dorar.net/tafseer/${s}` |
-| `mishkatquran.org` | public/js/app.js:1876 | app (browser) | link | `https://mishkatquran.org/` |
+| `findahelpline.com` | public/js/app.js:694 | app (browser) | link | `https://findahelpline.com` |
+| `quranenc.com` | public/js/app.js:744 | app (browser) | link | `https://quranenc.com` |
+| `quranpedia.net` | public/js/app.js:840 | app (browser) | link | `https://quranpedia.net` |
+| `dorar.net` | public/js/app.js:847 | app (browser) | link | `https://dorar.net/hadith` |
+| `dorar.net` | public/js/app.js:849 | app (browser) | link | `https://dorar.net/hadith/search?q=${encodeURIComponent(q)}` |
+| `hadeethenc.com` | public/js/app.js:888 | app (browser) | link | `https://hadeethenc.com/${s.lang}/browse/hadith/${id}` |
+| `hadeethenc.com` | public/js/app.js:894 | app (browser) | link | `https://hadeethenc.com` |
+| `hadeethenc.com` | public/js/app.js:913 | app (browser) | link | `https://hadeethenc.com/` |
+| `dorar.net` | public/js/app.js:971 | app (browser) | link | `https://dorar.net/feqhia/search?q=${encodeURIComponent(q)}` |
+| `alifta.gov.sa` | public/js/app.js:990 | app (browser) | link | `https://alifta.gov.sa/ar/home` |
+| `quranpedia.net` | public/js/app.js:1023 | app (browser) | link | `https://quranpedia.net` |
+| `quran.com` | public/js/app.js:1554 | app (browser) | link | `https://quran.com/${s}/${a}` |
+| `dorar.net` | public/js/app.js:1555 | app (browser) | link | `https://dorar.net/tafseer/${s}` |
+| `mishkatquran.org` | public/js/app.js:1878 | app (browser) | link | `https://mishkatquran.org/` |
 | `dorar.net` | public/js/engine.js:606 | app (browser) | link | `https://dorar.net/feqhia/search?q=${enc}` |
 | `alifta.gov.sa` | public/js/engine.js:607 | app (browser) | link | `https://alifta.gov.sa/ar/home` |
+| `www.ncei.noaa.gov` | public/js/geomag.js:6 | app (browser) | comment | `https://www.ncei.noaa.gov/products/world-magnetic-model` |
 | `islamic-content.com` | public/js/glossary.js:10 | app (browser) | link | `https://islamic-content.com/search?query=${encodeURIComponent(q)}` |
 | `islamic-content.com` | public/js/glossary.js:16 | app (browser) | link | `https://islamic-content.com/t/1795` |
 | `islamic-content.com` | public/js/glossary.js:35 | app (browser) | link | `https://islamic-content.com/dictionary/word/196` |
@@ -205,17 +207,17 @@ The browser itself may contact only these external origins (CSP in functions/_li
 | `bayenat.net` | public/js/i18n.js:239 | app (browser) | link | `https://bayenat.net/ar` |
 | `islamic-content.com` | public/js/i18n.js:239 | app (browser) | link | `https://islamic-content.com/dictionary` |
 | `www.w3.org` | public/js/lamp.js:31 | app (browser) | link | `http://www.w3.org/2000/svg` |
-| `aladhan.com` | public/js/practical.js:11 | app (browser) | comment | `https://aladhan.com/calculation-methods` |
-| `www.google.com` | public/js/practical.js:104 | app (browser) | link | `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lon.toFixed(6)}` |
-| `www.openstreetmap.org` | public/js/practical.js:104 | app (browser) | link | `https://www.openstreetmap.org/${e.type}/${e.id}` |
-| `nominatim.openstreetmap.org` | public/js/practical.js:235 | app (browser) | link | `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&accept-language=` |
-| `api.aladhan.com` | public/js/practical.js:256 | app (browser) | link | `https://api.aladhan.com/v1/calendar/${y}/${m}?latitude=${p.lat}&longitude=${p.lon}&method=${method}&school=${school}&iso8601=true` |
-| `commons.wikimedia.org` | public/js/practical.js:328 | app (browser) | link | `https://commons.wikimedia.org/wiki/File:The_Adhan_-_Muslim_Call_to_Prayer_-_Aaqib_Azeez.mp3` |
-| `aladhan.com` | public/js/practical.js:330 | app (browser) | link | `https://aladhan.com/calculation-methods` |
-| `www.google.com` | public/js/practical.js:412 | app (browser) | link | `https://www.google.com/maps?q=${encodeURIComponent(q)}&ll=${lat.toFixed(5)},${lon.toFixed(5)}&z=${z}&output=embed&hl=` |
-| `z.overpass-api.de` | public/js/practical.js:420 | app (browser) | link | `https://z.overpass-api.de/api/interpreter?data=` |
-| `www.google.com` | public/js/practical.js:435 | app (browser) | link | `https://www.google.com/maps/search/${encodeURIComponent(allQ)}/@${p.lat},${p.lon},15z` |
-| `www.google.com` | public/js/practical.js:449 | app (browser) | link | `https://www.google.com/maps/dir/?api=1&destination=${m.lat.toFixed(6)},${m.lon.toFixed(6)}` |
+| `aladhan.com` | public/js/practical.js:13 | app (browser) | comment | `https://aladhan.com/calculation-methods` |
+| `www.google.com` | public/js/practical.js:142 | app (browser) | link | `https://www.google.com/maps/search/?api=1&query=${lat.toFixed(6)},${lon.toFixed(6)}` |
+| `www.openstreetmap.org` | public/js/practical.js:142 | app (browser) | link | `https://www.openstreetmap.org/${e.type}/${e.id}` |
+| `nominatim.openstreetmap.org` | public/js/practical.js:287 | app (browser) | link | `https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=6&accept-language=` |
+| `api.aladhan.com` | public/js/practical.js:308 | app (browser) | link | `https://api.aladhan.com/v1/calendar/${y}/${m}?latitude=${p.lat}&longitude=${p.lon}&method=${method}&school=${school}&latitudeAdjustmentMe…` |
+| `commons.wikimedia.org` | public/js/practical.js:385 | app (browser) | link | `https://commons.wikimedia.org/wiki/File:The_Adhan_-_Muslim_Call_to_Prayer_-_Aaqib_Azeez.mp3` |
+| `aladhan.com` | public/js/practical.js:387 | app (browser) | link | `https://aladhan.com/calculation-methods` |
+| `www.google.com` | public/js/practical.js:473 | app (browser) | link | `https://www.google.com/maps?q=${encodeURIComponent(q)}&ll=${lat.toFixed(5)},${lon.toFixed(5)}&z=${z}&output=embed&hl=` |
+| `z.overpass-api.de` | public/js/practical.js:481 | app (browser) | link | `https://z.overpass-api.de/api/interpreter?data=` |
+| `www.google.com` | public/js/practical.js:496 | app (browser) | link | `https://www.google.com/maps/search/${encodeURIComponent(allQ)}/@${p.lat},${p.lon},15z` |
+| `www.google.com` | public/js/practical.js:510 | app (browser) | link | `https://www.google.com/maps/dir/?api=1&destination=${m.lat.toFixed(6)},${m.lon.toFixed(6)}` |
 | `quranenc.com` | public/js/toolpanels.js:102 | app (browser) | link | `https://quranenc.com` |
 | `quranpedia.net` | public/js/toolpanels.js:103 | app (browser) | link | `https://quranpedia.net` |
 | `dorar.net` | public/js/toolpanels.js:104 | app (browser) | link | `https://dorar.net/tafseer` |
@@ -252,16 +254,16 @@ Routes are the files in functions/api/ (Cloudflare Pages Functions); the local s
 
 | Route | Method | Implementation | Rate limit | Max body | Same-origin only | Edge cache | External services called | Configurable endpoints (env) | In server.mjs | Called from |
 |---|---|---|---|---|---|---|---|---|---|---|
-| `/api/answer` | POST | answer (functions/_lib/answer.js) | 30 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:306 |
-| `/api/dense` | POST | embedQuery (functions/_lib/dense.js) | 40 / 60 s per IP | 64.0 KiB | yes | yes | api.cloudflare.com, assets.local | — | yes | public/js/app.js:306 |
-| `/api/expand` | POST | expand (functions/_lib/selector.js) | 40 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:306 |
-| `/api/fatwa` | POST | fiqhSearch (functions/_lib/fiqh.js) | 30 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com, dorar.net | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:967, public/js/app.js:975 |
-| `/api/hadith` | POST | hadithSearch (functions/_lib/sources.js) | 30 / 60 s per IP | 64.0 KiB | yes | yes | dorar.net | — | yes | public/js/app.js:850 |
-| `/api/health` | GET | health (functions/_lib/selector.js) | none | — | yes | no | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:266 |
-| `/api/mosques` | POST | mosquesNear (functions/_lib/mosques.js) | 20 / 60 s per IP | 64.0 KiB | yes | yes | none (no outbound request) | — | yes | public/js/practical.js:415 |
-| `/api/pick` | POST | pickRelevant (functions/_lib/selector.js) | 40 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:306 |
-| `/api/select` | POST | select (functions/_lib/selector.js) | 40 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:306 |
-| `/api/tafsir` | POST | tafsirPages (functions/_lib/sources.js) | 60 / 60 s per IP | 64.0 KiB | yes | yes | api.quran.com, api.quranpedia.net, quran.com, quranpedia.net | — | yes | public/js/app.js:1593 |
+| `/api/answer` | POST | answer (functions/_lib/answer.js) | 30 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:309 |
+| `/api/dense` | POST | embedQuery (functions/_lib/dense.js) | 40 / 60 s per IP | 64.0 KiB | yes | yes | api.cloudflare.com, assets.local | — | yes | public/js/app.js:309 |
+| `/api/expand` | POST | expand (functions/_lib/selector.js) | 40 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:309 |
+| `/api/fatwa` | POST | fiqhSearch (functions/_lib/fiqh.js) | 30 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com, dorar.net | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:969, public/js/app.js:977 |
+| `/api/hadith` | POST | hadithSearch (functions/_lib/sources.js) | 30 / 60 s per IP | 64.0 KiB | yes | yes | dorar.net | — | yes | public/js/app.js:852 |
+| `/api/health` | GET | health (functions/_lib/selector.js) | none | — | yes | no | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:269 |
+| `/api/mosques` | POST | mosquesNear (functions/_lib/mosques.js) | 20 / 60 s per IP | 64.0 KiB | yes | yes | none (no outbound request) | — | yes | public/js/practical.js:476 |
+| `/api/pick` | POST | pickRelevant (functions/_lib/selector.js) | 40 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:309 |
+| `/api/select` | POST | select (functions/_lib/selector.js) | 40 / 60 s per IP | 64.0 KiB | yes | yes | api.groq.com | FALLBACK_URL, PRIMARY_URL | yes | public/js/app.js:309 |
+| `/api/tafsir` | POST | tafsirPages (functions/_lib/sources.js) | 60 / 60 s per IP | 64.0 KiB | yes | yes | api.quran.com, api.quranpedia.net, quran.com, quranpedia.net | — | yes | public/js/app.js:1595 |
 | `/api/transcribe` | POST | transcribe (functions/_lib/selector.js) | 12 / 60 s per IP | 4.00 MiB | yes | no | api.groq.com | STT_URL | yes | public/js/voice.js:118 |
 | `/api/tts` | POST | speakPassage (functions/_lib/tts.js), passageRequest (functions/_lib/tts.js) | 40 / 60 s per IP | 4.0 KiB | yes | yes | api.groq.com | TTS_URL | yes | public/js/speech.js:66 |
 
@@ -302,7 +304,7 @@ Routes are the files in functions/api/ (Cloudflare Pages Functions); the local s
 | functions/_lib/selector.js:18 | const RULES = `You are a component of a Quran search engine. You NEVER write explanations, translations, rulings, tafsir or any religious content. You only output JSON. |
 | functions/_lib/selector.js:287 | { role: 'system', content: `You check relevance only. Given a user's question and numbered ${what} titles/summaries, return JSON {"keep":[numbers]} with the numbers (at most ${max}, best first) of the items whose MEANING |
 | functions/_lib/tts.js:5 | it writes nothing. Requests are limited to 200 characters by the provider, so |
-| public/js/app.js:950 | The AI may only filter the encyclopedia's own search results (closed list); it never writes the ruling. |
+| public/js/app.js:952 | The AI may only filter the encyclopedia's own search results (closed list); it never writes the ruling. |
 | public/js/engine.js:352 | fabricate: 'Mishkat never writes a verse, a hadith or a fatwa, and never attributes its own text to the religion; it shows texts from their sources as they are. Search your subject to find the established verses and hadi |
 | public/js/i18n.js:249 | <li>الذكاء الاصطناعي يفهم السؤال ويقترح كلمات بحث، ثم يختار الآيات من قائمة مغلقة مرقّمة ويقدّر صلة كلٍّ منها (تجيب مباشرة / ذات صلة)؛ ويرفض المدقق كل ما هو خارج القائمة. ولا يكتب النموذج حرفًا يُعرض عليك.</li> |
 | public/js/i18n.js:264 | <li>The AI understands the question and proposes search keywords, then picks verses from a closed numbered list and rates each one (answers directly / related); a verifier drops anything outside the list. The model never |
@@ -398,12 +400,12 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | public/fonts | 1 | 198 |
 | public/img | 1 | 1 |
 | public | 3 | 288 |
-| public/js | 40 | 10,892 |
+| public/js | 41 | 11,140 |
 | (root) | 1 | 94 |
-| tests | 47 | 15,234 |
-| tools | 21 | 2,609 |
+| tests | 50 | 15,348 |
+| tools | 31 | 3,751 |
 
-**Files** (190)
+**Files** (204)
 
 | File | Language | Lines | LOC | Last commit | State | Exports (JS) / functions (Python) |
 |---|---|---|---|---|---|---|
@@ -480,13 +482,13 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `functions/api/transcribe.js` | JavaScript | 22 | 21 | 9d0b43b · 2026-10-04 | committed | onRequestPost |
 | `functions/api/tts.js` | JavaScript | 28 | 27 | 64e955b · 2026-10-04 | committed | onRequestPost |
 | `public/css/app.css` | CSS | 1,013 | 974 | 5549e35 · 2026-10-05 | committed | — |
-| `public/css/features.css` | CSS | 366 | 356 | 417cb1a · 2026-10-06 | modified | — |
-| `public/css/refonte.css` | CSS | 389 | 369 | bced16d · 2026-10-05 | modified | — |
+| `public/css/features.css` | CSS | 366 | 356 | ae3cdf0 · 2026-10-06 | committed | — |
+| `public/css/refonte.css` | CSS | 389 | 369 | ae3cdf0 · 2026-10-06 | committed | — |
 | `public/css/tajweed-page.css` | CSS | 35 | 35 | 2fd2af9 · 2026-10-05 | committed | — |
 | `public/fonts/fonts.css` | CSS | 198 | 198 | 96e5311 · 2026-10-01 | committed | — |
 | `public/img/logo_render.html` | HTML | 1 | 1 | 8fd6701 · 2026-10-02 | committed | — |
 | `public/index.html` | HTML | 207 | 199 | 5549e35 · 2026-10-05 | committed | — |
-| `public/js/app.js` | JavaScript | 2,501 | 2,445 | 417cb1a · 2026-10-06 | modified | — |
+| `public/js/app.js` | JavaScript | 2,510 | 2,454 | f5e9d23 · 2026-10-06 | committed | — |
 | `public/js/athkar.js` | JavaScript | 109 | 106 | 6030a6d · 2026-10-05 | committed | AS, athkarQuery, filterAthkar, createAthkar |
 | `public/js/basmala.js` | JavaScript | 46 | 43 | d74d462 · 2026-10-01 | committed | isBasmala |
 | `public/js/dense-rank.js` | JavaScript | 40 | 38 | 173c651 · 2026-10-03 | committed | VEC_URL, VEC_DIM, loadVectors, topK |
@@ -494,20 +496,21 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `public/js/engage3d.js` | JavaScript | 156 | 151 | 40f259b · 2026-10-05 | committed | EG, drawMini, animateMini, openEngageMap |
 | `public/js/engine.js` | JavaScript | 1,996 | 1,925 | 6030a6d · 2026-10-05 | committed | AR_RANGE, toAsciiDigits, normAr, normLatin, stemAr, stemLatin, tokens, detectLang, cleanSpoken, sentences, stripTags, MSG, expandTokens, englishTopicOf, isCrisis, CRISIS_REFS, isComfortQ, COMFORT_REFS, isBloodRuling, BLOOD_REFS, guardCheck, isPolemic, packFor, isSensitiveText, isSensitive, fatwaLinks, PARAGRAPH_FOR, TAFSIR_FOR, TRANSLATION_FOR, SOURCES_NEEDED, verifyLLM, verifyExpansion, createEngine |
 | `public/js/galaxy.js` | JavaScript | 776 | 749 | 417cb1a · 2026-10-06 | committed | PALETTE, createGalaxy |
+| `public/js/geomag.js` | JavaScript | 172 | 167 | f5e9d23 · 2026-10-06 | committed | WMM_EPOCH, decimalYear, magField, compassZone |
 | `public/js/glossary.js` | JavaScript | 60 | 54 | cca405e · 2026-10-01 | committed | GLOSSARY, TERM_CUE, termFor, isBareTerm |
-| `public/js/hifztest.js` | JavaScript | 41 | 37 | — (never committed) | untracked | normWord, words, compare, hint, verdict |
-| `public/js/hijri.js` | JavaScript | 89 | 79 | 97be32e · 2026-10-03 | committed | toHijri, toGregorian, MONTHS, REMARKABLE, MONTHLY, WEEKLY, nextEvent, upcoming, nextWhiteDays, formatHijri |
+| `public/js/hifztest.js` | JavaScript | 41 | 37 | ae3cdf0 · 2026-10-06 | committed | normWord, words, compare, hint, verdict |
+| `public/js/hijri.js` | JavaScript | 102 | 92 | f5e9d23 · 2026-10-06 | committed | CALENDAR, tabularHijri, toHijri, toGregorian, MONTHS, REMARKABLE, MONTHLY, WEEKLY, nextEvent, upcoming, nextWhiteDays, formatHijri |
 | `public/js/i18n.js` | JavaScript | 327 | 318 | 5549e35 · 2026-10-05 | committed | UI, ABOUT, WELCOME, INTEREST |
 | `public/js/injection.js` | JavaScript | 53 | 49 | 69ccb86 · 2026-10-04 | committed | injectionKind |
 | `public/js/intro.js` | JavaScript | 539 | 528 | 417cb1a · 2026-10-06 | committed | plain, lines, IN, CH, CUES, DUR, playIntro |
-| `public/js/khatma.js` | JavaScript | 223 | 214 | bced16d · 2026-10-05 | modified | N_VERSES, dayIndex, newRead, isRead, markRead, unmarkRead, countRead, encodeRead, decodeRead, pageRange, pageOf, pagesRead, firstUnreadPage, todayPortion, surasRead, ymd, streak, planToIcs, planOf, planSuras, planUnits, planTotal, planDays, todayPortion2, addRecord, planToIcs2, PACE, suggestPlan |
+| `public/js/khatma.js` | JavaScript | 223 | 214 | ae3cdf0 · 2026-10-06 | committed | N_VERSES, dayIndex, newRead, isRead, markRead, unmarkRead, countRead, encodeRead, decodeRead, pageRange, pageOf, pagesRead, firstUnreadPage, todayPortion, surasRead, ymd, streak, planToIcs, planOf, planSuras, planUnits, planTotal, planDays, todayPortion2, addRecord, planToIcs2, PACE, suggestPlan |
 | `public/js/lamp.js` | JavaScript | 137 | 130 | 5549e35 · 2026-10-05 | committed | lampSVG, setLampWord |
 | `public/js/lampmap.js` | JavaScript | 296 | 289 | bced16d · 2026-10-05 | committed | radiusAt, ORDERS, orderSuras, layout, progressOf, miniLamp, openLampMap |
 | `public/js/layout-worker.js` | JavaScript | 20 | 19 | 40f259b · 2026-10-05 | committed | — |
 | `public/js/layouts.js` | JavaScript | 397 | 377 | 5549e35 · 2026-10-05 | committed | SHAPES, ORDERS, countLetters, suraSequence, buildLayout |
 | `public/js/letters3d.js` | JavaScript | 171 | 166 | 40f259b · 2026-10-05 | committed | ORDERS, isoLoops, glyphRaster, contourPath, quranWordLayout |
 | `public/js/panels.js` | JavaScript | 81 | 78 | bced16d · 2026-10-05 | committed | createPanels |
-| `public/js/practical.js` | JavaScript | 479 | 464 | bced16d · 2026-10-05 | committed | KAABA, METHOD_BY_COUNTRY, METHODS, HANAFI_DEFAULT, methodFor, PLACES, countryFromTz, qiblaBearing, distanceKm, headingOf, PRAYERS, parseCalendar, nextPrayer, hms, overpassQuery, parseMosques, PS, createPractical |
+| `public/js/practical.js` | JavaScript | 540 | 523 | f5e9d23 · 2026-10-06 | committed | KAABA, METHOD_BY_COUNTRY, METHODS, HANAFI_DEFAULT, methodFor, PLACES, countryFromTz, nearestCountry, countryOfTz, monthIn, qiblaMagnetic, qiblaBearing, distanceKm, headingOf, PRAYERS, parseCalendar, nextPrayer, hms, overpassQuery, parseMosques, PS, createPractical |
 | `public/js/prefs.js` | JavaScript | 48 | 44 | 996f12e · 2026-10-04 | committed | DEFAULTS, loadPrefs, savePrefs, exportPrefs, importPrefs, resetPrefs |
 | `public/js/progress.js` | JavaScript | 158 | 143 | 996f12e · 2026-10-04 | committed | monthKey, rollMonth, noteRead, checkKhatma, noteTekrar, noteSession, monthPct, weekly, activeStreak, rewardScore, LEVEL_POINTS, engagement, hifzProgress, minRepeatMs, LEVELS, CHEERS, scoreWords |
 | `public/js/pwa.js` | JavaScript | 60 | 57 | d6710f2 · 2026-10-04 | committed | PW, isStandalone, canPrompt, onInstallChange, setupPWA, openInstall |
@@ -520,13 +523,13 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `public/js/stories.js` | JavaScript | 141 | 133 | 6030a6d · 2026-10-05 | committed | PROPHETS, storyQuery, namedVerses, indexVerses, episodes, storyOf |
 | `public/js/tajweed-page.js` | JavaScript | 80 | 76 | 2fd2af9 · 2026-10-05 | committed | — |
 | `public/js/tajweed.js` | JavaScript | 97 | 94 | 2fd2af9 · 2026-10-05 | committed | RULES, GROUPS, colourToken, tokenOffsets, TJ_S, RULE_INFO, verseRules |
-| `public/js/tasbih.js` | JavaScript | 103 | 100 | — (never committed) | untracked | PRESETS, TS, partAt, partWordsOf, addCount, createTasbih |
-| `public/js/tekrar.js` | JavaScript | 372 | 361 | 996f12e · 2026-10-04 | modified | TK, units, verseMs, createTekrar |
-| `public/js/toolpanels.js` | JavaScript | 483 | 472 | bced16d · 2026-10-05 | modified | arCount, S, LINKS, K2, createToolPanels |
+| `public/js/tasbih.js` | JavaScript | 103 | 100 | ae3cdf0 · 2026-10-06 | committed | PRESETS, TS, partAt, partWordsOf, addCount, createTasbih |
+| `public/js/tekrar.js` | JavaScript | 372 | 361 | ae3cdf0 · 2026-10-06 | committed | TK, units, verseMs, createTekrar |
+| `public/js/toolpanels.js` | JavaScript | 483 | 472 | ae3cdf0 · 2026-10-06 | committed | arCount, S, LINKS, K2, createToolPanels |
 | `public/js/tools.js` | JavaScript | 74 | 68 | 73f93ae · 2026-10-04 | committed | TOOLS, routeTool, toolIntent |
 | `public/js/voice.js` | JavaScript | 124 | 116 | 9d0b43b · 2026-10-04 | committed | voiceSupported, listen, stopListening, cancelListening |
 | `public/js/wake.js` | JavaScript | 31 | 30 | 2fd2af9 · 2026-10-05 | committed | IDLE_MS, setupWake |
-| `public/sw.js` | JavaScript | 56 | 53 | 2fd2af9 · 2026-10-05 | committed | — |
+| `public/sw.js` | JavaScript | 56 | 53 | f5e9d23 · 2026-10-06 | committed | — |
 | `public/tajweed.html` | HTML | 36 | 36 | 2fd2af9 · 2026-10-05 | committed | — |
 | `server.mjs` | JavaScript (ESM) | 97 | 94 | 2fd2af9 · 2026-10-05 | committed | — |
 | `tests/answer.test.mjs` | JavaScript (ESM) | 87 | 80 | 8734d36 · 2026-10-03 | committed | — |
@@ -542,6 +545,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `tests/fixtures/dorar_feqhia_3403.html` | HTML | 3,432 | 3,031 | 7732b93 · 2026-10-04 | committed | — |
 | `tests/fixtures/dorar_feqhia_4437.html` | HTML | 4,335 | 3,868 | 7732b93 · 2026-10-04 | committed | — |
 | `tests/fixtures/dorar_feqhia_search.html` | HTML | 2,585 | 2,349 | 7732b93 · 2026-10-04 | committed | — |
+| `tests/geomag.test.mjs` | JavaScript (ESM) | 27 | 24 | f5e9d23 · 2026-10-06 | committed | — |
 | `tests/hijri.test.mjs` | JavaScript (ESM) | 64 | 59 | 6c586b1 · 2026-10-03 | committed | — |
 | `tests/injection.test.mjs` | JavaScript (ESM) | 83 | 77 | 8dc6f9d · 2026-10-04 | committed | — |
 | `tests/intro_oct6.test.mjs` | JavaScript (ESM) | 60 | 54 | 417cb1a · 2026-10-06 | committed | — |
@@ -555,7 +559,7 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `tests/mobile_layout.test.mjs` | JavaScript (ESM) | 24 | 21 | 78a2d2d · 2026-10-04 | committed | — |
 | `tests/oct5.test.mjs` | JavaScript (ESM) | 90 | 84 | 2fd2af9 · 2026-10-05 | committed | — |
 | `tests/oct5b.test.mjs` | JavaScript (ESM) | 85 | 75 | bced16d · 2026-10-05 | committed | — |
-| `tests/oct6b.test.mjs` | JavaScript (ESM) | 114 | 106 | — (never committed) | untracked | — |
+| `tests/oct6b.test.mjs` | JavaScript (ESM) | 114 | 106 | ae3cdf0 · 2026-10-06 | committed | — |
 | `tests/pack.test.mjs` | JavaScript (ESM) | 144 | 127 | cca405e · 2026-10-01 | committed | — |
 | `tests/practical.test.mjs` | JavaScript (ESM) | 81 | 75 | 4aa6152 · 2026-10-04 | committed | — |
 | `tests/prefs.test.mjs` | JavaScript (ESM) | 36 | 32 | 6bf9163 · 2026-10-03 | committed | — |
@@ -573,30 +577,42 @@ Every js/mjs/py/html/css file outside public/vendor and the data cache. LOC = no
 | `tests/thread.mjs` | JavaScript (ESM) | 25 | 25 | 40f259b · 2026-10-05 | committed | threadStats |
 | `tests/tools.test.mjs` | JavaScript (ESM) | 53 | 49 | 61d4734 · 2026-10-03 | committed | — |
 | `tests/tts_passage.test.mjs` | JavaScript (ESM) | 43 | 39 | 73f93ae · 2026-10-04 | committed | — |
+| `tests/video3.test.mjs` | JavaScript (ESM) | 36 | 32 | ad5a40d · 2026-10-06 | committed | — |
 | `tests/voice.test.mjs` | JavaScript (ESM) | 38 | 34 | a997890 · 2026-10-02 | committed | — |
 | `tests/voice_welcome.test.mjs` | JavaScript (ESM) | 43 | 37 | 69ccb86 · 2026-10-04 | committed | — |
 | `tests/words.test.mjs` | JavaScript (ESM) | 54 | 47 | ea77675 · 2026-10-02 | committed | — |
+| `tests/world_oct6.test.mjs` | JavaScript (ESM) | 65 | 58 | f5e9d23 · 2026-10-06 | committed | — |
 | `tools/archive.mjs` | JavaScript (ESM) | 47 | 41 | 665a79c · 2026-10-05 | committed | — |
 | `tools/build_tts_passages.mjs` | JavaScript (ESM) | 21 | 20 | 64e955b · 2026-10-04 | committed | TTS_BOOKS |
 | `tools/check_features.mjs` | JavaScript (ESM) | 142 | 140 | 56c8e66 · 2026-10-04 | committed | — |
+| `tools/check_social.py` | Python | 20 | 20 | — (never committed) | untracked | — |
+| `tools/check_world.mjs` | JavaScript (ESM) | 63 | 61 | f5e9d23 · 2026-10-06 | committed | — |
 | `tools/contrast_probe.js` | JavaScript | 40 | 40 | 40f259b · 2026-10-05 | committed | — |
+| `tools/make_deck_ar.py` | Python | 232 | 211 | — (never committed) | untracked | n(), pct(), img(), slide() |
+| `tools/make_dossier.py` | Python | 131 | 124 | — (never committed) | untracked | inline(), md2html(), check_verses(), build() |
 | `tools/make_icons.mjs` | JavaScript (ESM) | 26 | 25 | d6710f2 · 2026-10-04 | committed | — |
-| `tools/make_intro_voice.py` | Python | 40 | 36 | 417cb1a · 2026-10-06 | modified | spoken() |
+| `tools/make_intro_voice.py` | Python | 40 | 36 | ae3cdf0 · 2026-10-06 | committed | spoken() |
 | `tools/make_lamp.py` | Python | 62 | 60 | 5549e35 · 2026-10-05 | committed | — |
 | `tools/make_pipeline.mjs` | JavaScript (ESM) | 120 | 112 | 404b123 · 2026-10-05 | committed | — |
 | `tools/make_social.mjs` | JavaScript (ESM) | 95 | 91 | 404b123 · 2026-10-05 | committed | — |
 | `tools/make_welcome_audio.py` | Python | 32 | 29 | 46df41c · 2026-10-04 | committed | — |
 | `tools/shots.mjs` | JavaScript (ESM) | 89 | 86 | 0089103 · 2026-10-04 | committed | — |
-| `tools/trace.mjs` | JavaScript (ESM) | 744 | 711 | baa54c3 · 2026-10-06 | committed | — |
-| `tools/ui_shots.mjs` | JavaScript (ESM) | 344 | 342 | 417cb1a · 2026-10-06 | modified | evalJs |
+| `tools/trace.mjs` | JavaScript (ESM) | 745 | 712 | baa54c3 · 2026-10-06 | modified | — |
+| `tools/ui_shots.mjs` | JavaScript (ESM) | 375 | 373 | f5e9d23 · 2026-10-06 | modified | evalJs |
 | `tools/video/build.mjs` | JavaScript (ESM) | 181 | 173 | 6030a6d · 2026-10-05 | committed | — |
 | `tools/video/build2.mjs` | JavaScript (ESM) | 206 | 197 | 4427293 · 2026-10-05 | committed | — |
-| `tools/video/capture.mjs` | JavaScript (ESM) | 225 | 219 | bced16d · 2026-10-05 | committed | — |
+| `tools/video/build3.mjs` | JavaScript (ESM) | 236 | 229 | 869a507 · 2026-10-06 | committed | — |
+| `tools/video/capture.mjs` | JavaScript (ESM) | 261 | 255 | 869a507 · 2026-10-06 | committed | — |
 | `tools/video/cdp.mjs` | JavaScript (ESM) | 35 | 35 | 6030a6d · 2026-10-05 | committed | sleep, launch |
 | `tools/video/check_voice.mjs` | JavaScript (ESM) | 14 | 14 | 6030a6d · 2026-10-05 | committed | — |
+| `tools/video/mixdown.mjs` | JavaScript (ESM) | 41 | 40 | 869a507 · 2026-10-06 | committed | mixdown |
 | `tools/video/overlay.html` | HTML | 181 | 179 | 4427293 · 2026-10-05 | committed | — |
+| `tools/video/overlay3.html` | HTML | 250 | 246 | cb6116e · 2026-10-06 | committed | — |
 | `tools/video/voice.mjs` | JavaScript (ESM) | 30 | 29 | 6030a6d · 2026-10-05 | committed | — |
-| `tools/video/voice_fusha.py` | Python | 34 | 30 | 665a79c · 2026-10-05 | modified | spoken() |
+| `tools/video/voice_fusha.py` | Python | 34 | 30 | ae3cdf0 · 2026-10-06 | committed | spoken() |
+| `tools/voice_check.mjs` | JavaScript (ESM) | 24 | 23 | 869a507 · 2026-10-06 | committed | — |
+| `tools/voice_eleven.mjs` | JavaScript (ESM) | 78 | 75 | 869a507 · 2026-10-06 | committed | spokenName |
+| `tools/voice_pick.mjs` | JavaScript (ESM) | 46 | 45 | 869a507 · 2026-10-06 | committed | — |
 
 <a id="tools"></a>
 ## Tools & libraries · الأدوات والمكتبات
@@ -619,7 +635,7 @@ Vendored libraries are served from the site itself (no CDN). Versions are read f
 | npm run build:data | — | project script | — | `python data_build/build_data.py` |
 | Cloudflare Pages + Pages Functions | compatibility_date 2026-09-01 | hosting of public/ + serverless /api (project “mishkat”) | Cloudflare terms | `wrangler.toml` |
 
-**Python scripts** (29)
+**Python scripts** (32)
 
 | Script | Purpose (docstring) | Imports | Non-standard-library imports |
 |---|---|---|---|
@@ -648,6 +664,9 @@ Vendored libraries are served from the site itself (no CDN). Versions are read f
 | `eval/qqa23/bootstrap_ci.py` | 95 % confidence intervals of MAP@10 / MRR@10 for every run (audit V2, 2026-10-03). | json, numpy, pandas, pytrec_eval, QQA23_TaskA_eval | numpy, pandas, pytrec_eval, QQA23_TaskA_eval (local module) |
 | `eval/qqa23/score_all.py` | Score every run of runs/<split>/ with the official scorer and write scores_<split>.json (read by the deck). | json | — (standard library only) |
 | `eval/qqa23/score_free3.py` | T070 (4 Oct 2026): the deployed pipeline on Qur'an QA 2023 Task A (test), three runs on Groq's FREE tier only | json, numpy, pytrec_eval, QQA23_TaskA_eval | numpy, pytrec_eval, QQA23_TaskA_eval (local module) |
+| `tools/check_social.py` | Counts the characters of every text block of 04_LIVRABLES/reseaux_sociaux/NOM_ET_DESCRIPTION_MISHKAT.md against | io | — (standard library only) |
+| `tools/make_deck_ar.py` | Arabic presentation «المشكلة والحل وآلية العمل» (PDF, 16:9) for the challenge portal (PDF/PPT/PPTX ≤ 10 MB). | io, PIL | PIL |
+| `tools/make_dossier.py` | The project file (dossier) in Arabic, English and French: Markdown → HTML (fonts and logo of the site) → PDF | io | — (standard library only) |
 | `tools/make_intro_voice.py` | Narration of the presentation film (public/audio/intro/{ar,en}/*.mp3), hand-written, never a verse. | asyncio, edge_tts, re | asyncio, edge_tts |
 | `tools/make_lamp.py` | Regenerate public/js/lamp.js from public/img/logo.svg (one drawing, two uses). | re | — (standard library only) |
 | `tools/make_welcome_audio.py` | T042: the spoken welcome, generated ONCE with Groq Orpheus (canopylabs/orpheus-arabic-saudi) from the | json, lameenc | lameenc |
@@ -658,7 +677,7 @@ Vendored libraries are served from the site itself (no CDN). Versions are read f
 
 Run with `npm test` (node --test). Test count = number of `test(` calls per file.
 
-**Test files** (43)
+**Test files** (46)
 
 | File | Tests | LOC | Last commit | State | Test titles |
 |---|---|---|---|---|---|
@@ -671,6 +690,7 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 | `tests/engine.test.mjs` | 29 | 315 | 6030a6d · 2026-10-05 | committed | data: 114 suras, 6236 verses, contiguous indices ‖ data: verse texts are the Tanzil text recorded at build time ‖ data: every tafsir/translation covers all 6236 verses ‖ references: numeric, named, ranges, Arabic digits ‖ sura names (ar/en), with and without typos ‖ invalid references are reported, never invented ‖ well-known verse names ‖ exact quotes are located, including repeated verses ‖ every verse is found by its own text (all 6236, imla\'i form) ‖ misquotes: one word changed → near match with the correct verse ‖ merged similar verses are detected ‖ sayings that are not Quran are never attributed to the Quran ‖ rulings, personal cases and dreams → abstention (ar/en) ‖ topic search: expected key verses appear (ar/en) ‖ gibberish and unrelated queries abstain ‖ all answers are grounded (random battery) ‖ LLM verifier drops ids outside the candidate list ‖ a hostile LLM cannot inject a verse, a text, or a reference ‖ without AI confirmation there is no explanation, only a labelled keyword list ‖ trap questions get the verified context pack first, with full tafsir units ‖ takfir and violence requests are refused ‖ context() returns neighbouring verses of the same surah only ‖ verse references proposed by the LLM are kept only if real and on-topic ‖ LLM ruling intent only makes the engine safer (abstain) ‖ LLM failure or timeout falls back to deterministic ranking ‖ topic answers group verses by surah, ranked by relevance ‖ surah names that are ordinary words do not hijack topics ‖ selector: payload sanitising and output validation ‖ sentence splitter returns exact substrings |
 | `tests/features_oct4.test.mjs` | 16 | 179 | bf68c16 · 2026-10-05 | committed | T091 off-topic requests are mapped and refused without AI (page and API) ‖ T091 Islamic questions stay questions (no over-refusal) ‖ T091 today’s date and the time are answered, prayer stays with the prayer tool ‖ T093 requests answered by Mishkat services ‖ T092 what a child is never shown: rulings, takfir, penalties ‖ T095 the mark starts at 7, grows, never goes down below 7 ‖ T095 monthly percentages start again with the month; khatmas stay ‖ T095 the whole Quran read: one more khatma, the bits start again ‖ T095 weekly bars follow the khatma plan ‖ T096 three positive levels from engagement ‖ T095 repetition: units, reciter time, minimal time = 70 % ‖ T094 statistics from the Mishkat text (no jummal) ‖ T097 installable app: manifest, icons, service worker never caches the API ‖ T098 film strings exist in Arabic and English, and the place step comes before it ‖ T090 the tafsir zone has a close button and a reopen button ‖ T099 tajweed colours land only on letters of their rule (checked data), text unchanged |
 | `tests/fixes_v5.test.mjs` | 12 | 146 | 2815398 · 2026-10-03 | committed | E8: «X و Y» without AI finds verses (regex (?=\\S), not (?=S)) ‖ E2: a status word without «هل» is a fatwa request (level D); a bare topic stays a topic ‖ E3: no over-refusal — the 50 legitimate questions of eval/overrefusal.json are never refused ‖ E3: real personal cases are still referred (level D) ‖ E1: a subject-index topic reached through ONE AI keyword never short-circuits the AI selection ‖ E4: a subject-index topic is filtered by the AI; without AI it gives no short answer and no answer card ‖ E5: the short answer never contains a sentence without a word of the question ‖ E7: a 429 or 402 on the paid provider does not block the same model on the free backup ‖ E9/E11: penalties are sensitive (C) whatever the wording; a cut war quotation is flagged and gets context ‖ E12/E13: no absurd suggestion on valid words; a sure misspelling is corrected ‖ free first: Groq answers when it can; the paid provider only when Groq is cooling down; light tasks on another free model ‖ map 1000: no «did you mean» on valid words or answered questions; «حكم X» is a ruling; distress without AI gets the reviewed verses of tranquillity |
+| `tests/geomag.test.mjs` | 2 | 24 | f5e9d23 · 2026-10-06 | committed | WMM2025: 100 official test values (declination ±0.01°, H/X/Y/Z ±1 nT) ‖ WMM2025: validity window and blackout zone |
 | `tests/hijri.test.mjs` | 4 | 59 | 6c586b1 · 2026-10-03 | committed | hijri: conversion both ways is consistent over two years ‖ hijri: remarkable days come in order, the next one is found, white days exist ‖ hijri: every hadith shown exists locally with an authentic or good grade (Arabic); no disputed occasion ‖ hijri: no external calendar API, its «holidays» list is never used |
 | `tests/injection.test.mjs` | 5 | 77 | 8dc6f9d · 2026-10-04 | committed | injection: instruction-like texts and requests to write religious text are recognised, ordinary questions are not ‖ injection: the engine answers with a fixed text and never calls the AI ‖ injection: the API refuses the same texts sent directly by a script ‖ injection: every model prompt treats the visitor’s text as data ‖ injection (review): help first for a person in crisis; showing an existing verse is not composing one |
 | `tests/intro_oct6.test.mjs` | 5 | 54 | 417cb1a · 2026-10-06 | committed | the services card fills the screen in both directions (no inset-inline-start: auto after left: 50%) ‖ the shapes change on recited words of 24:35, and keep turning ‖ no white circle: the 2D points fade out and the verse thread is hidden during the film ‖ the narration: one source for the cards and the voice, a bridge line, Arabic fully vowelled ‖ the logo is placed between the verse and the measured translation, never under it |
@@ -684,7 +704,7 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 | `tests/mobile_layout.test.mjs` | 2 | 21 | 78a2d2d · 2026-10-04 | committed | phone header: the dock scrolls, the language/theme/about buttons keep their size ‖ galaxy labels keep out of the toolbar, the camera pad and the lamp |
 | `tests/oct5.test.mjs` | 6 | 84 | 2fd2af9 · 2026-10-05 | committed | wake lock: held while busy or recently touched, released when idle, asked again ‖ mosques: identified request, first good mirror wins, place rounded, answer reduced ‖ Google Maps inside the page: the CSP allows its frame (local server and Cloudflare headers alike) ‖ tajweed: brief box in the reader, every rule on its own page ‖ one statistics button (reading bar), no ring or turning rays on the recited word ‖ phone start: no tafsir parsed on the main thread at start; the Arabic Mushaf is not redrawn when they arrive |
 | `tests/oct5b.test.mjs` | 9 | 75 | bced16d · 2026-10-05 | committed | www.mishkatquran.org redirects to mishkatquran.org (path and query kept) ‖ licence: all rights reserved, no open licence (challenge terms 13/7), third-party terms kept ‖ logo after 24:35: the glass itself shines like a star, a lit lamp inside it, no separate planet ‖ entry gate: one tap pastes the basmala and enters; no turning circle while loading ‖ khatma map: once zoomed, a vertical drag moves along the glass within limits ‖ ⤢ on a phone works in every reading pane (the tafsir rule no longer wins) ‖ khatma v2: whole Quran by pages = 604, short surahs first starts at an-Nas, daily amount, choose-for-me ‖ qibla bearings match published values (great circle) ‖ phone review (5 Oct night): SVG play icons, tajweed close keeps colours, panel enlarge, readable lists, Arabic first |
-| `tests/oct6b.test.mjs` | 7 | 106 | — (never committed) | untracked | khatma: the day share is fixed in the morning; reading more is kept and lightens the coming days ‖ khatma: the reading record merges runs of verses by day ‖ reader: the end of a surah offers «I finished it» (recorded) and the next surah; the tafsir opens over the full-screen Mushaf ‖ memorisation test: forgiving on spelling, strict on words ‖ repetition: opens full size, next surah with the same settings, the next settings below, tajweed, test, share, invitation link ‖ tasbih: the formulas are verbatim adhkar of the site, with their source; parts cut from the text itself ‖ the voice says the name right: «مِشكاه» for the voice only, the text keeps «مشكاة» |
+| `tests/oct6b.test.mjs` | 7 | 106 | ae3cdf0 · 2026-10-06 | committed | khatma: the day share is fixed in the morning; reading more is kept and lightens the coming days ‖ khatma: the reading record merges runs of verses by day ‖ reader: the end of a surah offers «I finished it» (recorded) and the next surah; the tafsir opens over the full-screen Mushaf ‖ memorisation test: forgiving on spelling, strict on words ‖ repetition: opens full size, next surah with the same settings, the next settings below, tajweed, test, share, invitation link ‖ tasbih: the formulas are verbatim adhkar of the site, with their source; parts cut from the text itself ‖ the voice says the name right: «مِشكاه» for the voice only, the text keeps «مشكاة» |
 | `tests/pack.test.mjs` | 16 | 127 | cca405e · 2026-10-01 | committed | pack: «Why do Muslims worship the Kaaba?» — no invented answer; points to the reviewed answer ‖ pack: «Did Islam spread by the sword?» — level C, verified context verses + the objection answered in Bayyinat ‖ pack: «Why do scholars differ?» / «do all Muslims agree?» — level C, no claim of agreement, ijtihad defined from Al-Jamhara, referral ‖ pack: personal case («in my country, may I … in my marriage?») — level D, no ruling, referral ‖ pack: «give me a hadith proving this» — no hadith is produced by Mishkat; the lookup goes to Dorar ‖ pack: «what is tawhid?», «translate tawhid into English» — glossary of the pack, word for word ‖ pack: hostile phrasing («…your religion is backward») — not followed; level C; the reviewed answer is offered ‖ pack: misquoted verse — corrected gently with surah and verse, never built upon ‖ subject index: «الصبر» comes from the human-curated index, explained by complete tafsir units ‖ subject index: one-word topic names are never matched inside a question (ambiguous senses) ‖ Bayyinat: plain topics get no objection links; unrelated questions get none ‖ Dorar parser: text, narrator, muhaddith, source and verdict, no markup ‖ Tafsir pages: the verse heading starts the text, the next verse heading ends it ‖ Tafsir endpoint refuses books and verses it does not offer ‖ reference data: every subject-index reference exists in the Tanzil text ‖ subject index never overrides the AI selection for a real question (LLM keyword «الكعبة» → not topic 5:95) |
 | `tests/practical.test.mjs` | 6 | 75 | 4aa6152 · 2026-10-04 | committed | qibla: great-circle bearing and distance to the Kaaba ‖ prayer: method proposed from the country (Tunisia = 18), named, editable ‖ prayer: an Aladhan calendar (iso8601) gives the next prayer and the countdown ‖ mosques: Overpass query around the point, sorted by distance, duplicates removed, Google Maps link ‖ tools: «كم بقي على صلاة العصر», "next prayer", «اتجاه القبلة», "nearest mosque" open the right tool ‖ privacy: the position goes only to the public services the browser calls, never to our API |
 | `tests/prefs.test.mjs` | 3 | 32 | 6bf9163 · 2026-10-03 | committed | prefs: defaults, save and load in the same browser ‖ prefs: export then import gives the same data; a foreign file is refused ‖ prefs: erase removes everything; blocked storage never throws |
@@ -702,9 +722,11 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 | `tests/thread.mjs` | 0 | 25 | 40f259b · 2026-10-05 | committed | — (helper) |
 | `tests/tools.test.mjs` | 3 | 49 | 61d4734 · 2026-10-03 | committed | tools: practical requests open their panel (ar + en) ‖ tools: questions stay Quran searches (guard first, no tool by keyword alone) ‖ tools: a tool that is not wired is never opened |
 | `tests/tts_passage.test.mjs` | 3 | 39 | 73f93ae · 2026-10-04 | committed | tts: free text and unknown books are refused before any provider call ‖ tts: a passage is the tafsir unit shipped with Mishkat, read chunk by chunk ‖ tts: Azure Speech first when its key is set (neural ar-SA voice, SSML escaped), the passage rule unchanged |
+| `tests/video3.test.mjs` | 3 | 32 | ad5a40d · 2026-10-06 | committed | studio layout: the column, the caption band and the rail never cover the window ‖ never a still frame: the background moves with t, the cards keep moving to their last frame ‖ the film: under 2 minutes, the same narration and the same figures as v2 |
 | `tests/voice.test.mjs` | 4 | 34 | a997890 · 2026-10-02 | committed | stt: genuine questions are kept (Arabic letters are not "punctuation") ‖ stt: ghosts, silence and prompt echo are dropped ‖ stt: low-confidence / no-speech segments are removed ‖ stt: language hint, prompt, real file extension; auto-detect retry when the language did not fit |
 | `tests/voice_welcome.test.mjs` | 5 | 37 | 69ccb86 · 2026-10-04 | committed | welcome_ar.mp3 is a small MP3 file ‖ the welcome generator reads the hand-written sentence of i18n.js (no other text) ‖ the gate accepts the basmala only once ‖ answer read by the server voice: only tafsir books shipped in public/data/tts, never a verse text ‖ T061: first preferences at the first visit (theme, digits, spoken welcome) in ar and en |
 | `tests/words.test.mjs` | 6 | 47 | ea77675 · 2026-10-02 | committed | a rare word of the Quran brings its verse first, whatever its clitics or spelling ‖ the word is highlighted at its place in the Uthmani text ‖ a misspelt word: a sure correction is applied and announced; otherwise suggestions ‖ real words that are not in the Quran are not "corrected" ‖ ta marbuta / ta / ha as the last letter only (يتم is not يهم) ‖ several words of the Quran that never meet in one verse: no crash, no correction |
+| `tests/world_oct6.test.mjs` | 6 | 58 | f5e9d23 · 2026-10-06 | committed | qibla: same as Aladhan qibla API on every continent (checked live on 6 Oct, eval/world) ‖ qibla: the magnetic declination is applied (Auckland ≈ +20°, Iqaluit ≈ −24°); blackout near the magnetic pole ‖ country of any position or time zone of the world (method proposal) ‖ prayer month = the month of the PLACE (a city across the date line may be in another month) ‖ Hijri: Umm al-Qura in Node; tabular fallback within one day of it ‖ the site opens on the rose of surahs; a shape picked by the visitor is remembered |
 
 **Evaluation scripts** (15)
 
@@ -772,10 +794,16 @@ Run with `npm test` (node --test). Test count = number of `test(` calls per file
 <a id="git"></a>
 ## Git history · سجل git
 
-The challenge evaluates only the work done in the build window (2026-10-04 → 2026-10-06). Commits dated before 2026-10-04 are the declared baseline (see BASELINE.md). Phase uses the commit date. Showing the last 30 of 119 commits.
+The challenge evaluates only the work done in the build window (2026-10-04 → 2026-10-06). Commits dated before 2026-10-04 are the declared baseline (see BASELINE.md). Phase uses the commit date. Showing the last 30 of 125 commits.
 
 | Hash | Date | Time | Phase | Subject |
 |---|---|---|---|---|
+| `f5e9d23` | 2026-10-06 | 10:00:51+02:00 | challenge window | T116: the site opens on the rose of surahs (a visitor's own choice remembered); qibla corrected by the magnetic declination of the place (WMM2025, 100 official test values) with the polar blackout zone; prayer month of the place, high-latitude rule, country of any position; tabular Hijri fallback; worldwide check of 33 places |
+| `ad5a40d` | 2026-10-06 | 09:20:13+02:00 | challenge window | T115: video test reads the timeline of the chosen voice (it had read a timeline being rewritten by a running build) |
+| `869a507` | 2026-10-06 | 09:16:54+02:00 | challenge window | T115: video v4 — soundtrack mixed sample by sample and checked (amix had dropped every voice from 53.5 s to 106.8 s), new footage of today's services, lines rewritten to match the picture, parts timed from the real sentences; ElevenLabs narration (voice chosen by a speech-to-text check, the name said right) for the video, the presentation film and the spoken welcome |
+| `cb6116e` | 2026-10-06 | 02:50:29+02:00 | challenge window | T114: video v3 — studio layout (the site in a window, every graphic in its own place, no overlap), a background drawn at every frame (no still picture), parts re-timed so no narration overlaps another or a recitation, short clips padded; both videos rebuilt (119.9 s) |
+| `fb291b9` | 2026-10-06 | 01:42:49+02:00 | challenge window | Archive v2026-10-06-t113: SHA-256 of every file (all rights reserved) |
+| `ae3cdf0` | 2026-10-06 | 01:41:26+02:00 | challenge window | T113: khatma end-of-surah button and next surah, reading beyond the portion kept, reading record, tafsir beside the full-screen Mushaf; repetition full size with next surah, next settings, tajweed rules and an optional memorisation test (hints, word check, share, invite); tasbih; light-theme contrast; the name said right by the voice |
 | `8dff2e9` | 2026-10-06 | 00:40:50+02:00 | challenge window | Archive v2026-10-06-final: SHA-256 of every file (all rights reserved) |
 | `baa54c3` | 2026-10-06 | 00:39:12+02:00 | challenge window | T112: traceability regenerated (own domain classified), progress and journal for T104-T111 |
 | `417cb1a` | 2026-10-06 | 00:34:52+02:00 | challenge window | T111: intro film after the author's review — English services card full screen and on screen, no white circle (2D points fade out), shapes on the recited words and turning, human narration fully vowelled with a bridge line, logo never under the translation |
@@ -800,46 +828,17 @@ The challenge evaluates only the work done in the build window (2026-10-04 → 2
 | `2768473` | 2026-10-04 | 21:54:17+02:00 | challenge window | T094: statistics of the Quran, a surah and a word, counted in the browser from the Tanzil text (no jummal) |
 | `996f12e` | 2026-10-04 | 21:54:16+02:00 | challenge window | T095: repetition mode (counter, Enter/Space, minimal time 70 % of the reciter's time, encouragement only) and progress model (mark from 7 to 10, monthly reading/memorising percentages reset each month, weekly bars, khatma count kept) |
 | `f8a0590` | 2026-10-04 | 21:54:16+02:00 | challenge window | T091: map of the question before any search — off-topic requests get a fixed answer without AI (the API refuses the same texts), today's date and the time answered from the clock; 1,498 project questions: 13 off-topic, all genuine; over-refusal 50/50 |
-| `ffd08c2` | 2026-10-04 | 20:30:57+02:00 | challenge window | T071: traceability regenerated at the end of the day |
-| `e4e5405` | 2026-10-04 | 20:30:42+02:00 | challenge window | T071: presentation rebuilt from the final measures (Qur'an QA free tier 3 runs, cached repeats stated), new screenshots from the Cloudflare runtime |
-| `0498330` | 2026-10-04 | 14:34:13+02:00 | challenge window | T072: AI cache regenerated on Groq's free tier only (Arabic + English, 54 expand / 27 select entries — the free daily token quota of the large model was used by the benchmark runs; incremental completion documented); free-tier daily token limit stated in TOOLS and README |
-| `7575057` | 2026-10-04 | 14:19:54+02:00 | challenge window | T070: Qur'an QA 2023 on Groq's free tier, three runs: MRR@10 0.616 [0.490-0.742], MAP@10 0.300 [0.210-0.402] (51 scored questions), comparable to the published best, not better; cached repeats declared; 2 Oct run file restored |
-| `25db377` | 2026-10-04 | 14:02:03+02:00 | challenge window | Review fix (4 Oct): R13 — a tafsir unit shared by several verses gives each verse only the sentences that share a word with its own text (35:34 no longer shows the bracelets of 35:33 for «how to deal with sadness») |
-| `110a563` | 2026-10-04 | 13:56:11+02:00 | challenge window | Review fix (4 Oct, found testing the demo questions): a reference without letters («2:255») answers in the language of the interface (the Arabic page said «Verse 2:255») |
 
-**Uncommitted changes at generation time** (32)
+**Uncommitted changes at generation time** (9)
 
 | Path | git status |
 |---|---|
-| `CHANGELOG.md` | M |
-| `README.md` | M |
-| `public/audio/intro/ar/child.mp3` | M |
-| `public/audio/intro/ar/galaxy.mp3` | M |
-| `public/audio/intro/ar/greet.mp3` | M |
-| `public/audio/intro/ar/install.mp3` | M |
-| `public/audio/intro/ar/khatma.mp3` | M |
-| `public/audio/intro/ar/prayer.mp3` | M |
-| `public/audio/intro/ar/recite.mp3` | M |
-| `public/audio/intro/ar/search.mp3` | M |
-| `public/audio/intro/ar/tekrar.mp3` | M |
-| `public/audio/intro/en/child.mp3` | M |
-| `public/audio/intro/en/galaxy.mp3` | M |
-| `public/audio/intro/en/greet.mp3` | M |
-| `public/audio/intro/en/install.mp3` | M |
-| `public/audio/intro/en/khatma.mp3` | M |
-| `public/audio/intro/en/prayer.mp3` | M |
-| `public/audio/intro/en/recite.mp3` | M |
-| `public/audio/intro/en/search.mp3` | M |
-| `public/audio/intro/en/tekrar.mp3` | M |
-| `public/css/features.css` | M |
-| `public/css/refonte.css` | M |
-| `public/js/app.js` | M |
-| `public/js/khatma.js` | M |
-| `public/js/tekrar.js` | M |
-| `public/js/toolpanels.js` | M |
-| `tools/make_intro_voice.py` | M |
+| `SOURCES.md` | M |
+| `TOOLS.md` | M |
+| `docs/TRACEABILITY.md` | M |
+| `docs/traceability.html` | M |
+| `tools/trace.mjs` | M |
 | `tools/ui_shots.mjs` | M |
-| `tools/video/voice_fusha.py` | M |
-| `public/js/hifztest.js` | ?? |
-| `public/js/tasbih.js` | ?? |
-| `tests/oct6b.test.mjs` | ?? |
+| `tools/check_social.py` | ?? |
+| `tools/make_deck_ar.py` | ?? |
+| `tools/make_dossier.py` | ?? |

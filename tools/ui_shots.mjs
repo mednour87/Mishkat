@@ -87,6 +87,12 @@ try {
     await desk(); await open('', { lang: 'en', prefs: { intro: false } });
     let at = 0; for (const t of (process.env.INTRO_T ? process.env.INTRO_T.split(",").map(Number) : [4, 30, 75, 104])) { await shot(`en_intro_${t}s.jpg`, (t - at) * 1000); at = t; }
   }
+  if (WANT.includes('rose')) {                 // (6 Oct) a clean picture of the rose of surahs at start (deck)
+    await size(1600, 900); await open(''); await sleep(4000);
+    await evalJs(`(()=>{const b=[...document.querySelectorAll('button')].find(x=>x.offsetParent&&/✕|×/.test(x.textContent)&&x.closest('[class*=sugg],[id*=sugg],.ex,.examples,#examples')); if(b) b.click(); return !!b})()`);
+    await sleep(9000); await shot('d_rose_clean.jpg');
+    await evalJs(`(document.querySelector('#gHome')||{click(){}}).click(), 1`); await sleep(4000); await shot('d_rose_home.jpg');
+  }
   if (WANT.includes('oct6')) {                 // (6 Oct) the author's requests: khatma, reader end, tafsir full screen, tekrar, test, tasbih, light mode
     const today = new Date().toISOString().slice(0, 10);
     const KH = { khatma: { v: 2, active: true, start: today, mode: 'days', days: 30, unit: 'pages', scope: 'quran', order: 'mushaf', suras: [], moments: [{ id: 'fajr', time: '05:30' }] } };
