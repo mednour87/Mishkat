@@ -364,3 +364,18 @@ html[data-theme=light] .tt-final { background: #fff8e8; }
 .ts-btn b { font-size: 44px; color: #fff3cf; position: relative; } .ts-btn small { position: relative; color: #9aa3b5; }
 .ts-btn.done .tk-ring { stroke: #5EE6A0; } .ts-btn.pop { animation: tkpop .25s; }
 html[data-theme=light] .ts-btn b { color: #6b4500; } html[data-theme=light] .ts-btn .tk-ring0 { stroke: rgba(0, 0, 0, .12); } html[data-theme=light] .ts-btn .tk-ring { stroke: #b07a06; } html[data-theme=light] .ts-part { color: #8a5a00; }
+
+/* T122 — verified answers (js/facts.js): the figure first, then its evidence and how it was obtained */
+.factbox { margin: 10px 0; padding: 16px 18px; border-radius: 16px; border: 1px solid rgba(120, 220, 160, .38); background: rgba(120, 220, 160, .06); }
+.factbox h3 { margin: 0 0 8px; color: #8fe0b0; font-size: 16px; letter-spacing: .2px; }
+.factbox .fact-a { font-size: 20px; line-height: 1.9; margin: 4px 0 10px; font-weight: 600; }
+.factbox .fact-d { margin: 6px 0 10px; padding-inline-start: 20px; display: grid; gap: 3px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.factbox .fact-refs { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.factbox .hlist { padding-inline-start: 22px; margin: 6px 0; display: grid; gap: 8px; }
+.factbox .hlist li { border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; background: var(--panel2); }
+.factbox .vlist li { cursor: pointer; }
+.factbox .fact-how { margin-top: 10px; }
+.factbox .p-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+html[data-theme=light] .factbox { background: #f2fbf5; border-color: #9fd6b3; }
+html[data-theme=light] .factbox h3 { color: #1f7a45; }
+html[data-theme=light] .factbox .hlist li { background: #fffdf7; }

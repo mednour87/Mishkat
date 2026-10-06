@@ -10,6 +10,7 @@
 // Providers: Groq (OpenAI-compatible, free tier) with model fallback.
 
 import { ttsReady } from './tts.js';
+import { STT_TERMS } from './stt_terms.js';
 
 export const DEFAULT_MODELS = ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b'];
 
@@ -211,29 +212,83 @@ export function cleanTranscript(j, lang) {
   if (!text || echo || STT_GHOSTS.some(re => re.test(text))) return '';
   return text.slice(0, 500);
 }
+// (6 Oct 2026, T122) The author reported that voice search failed most of the time. Measured on eval/stt (30 spoken
+// questions, 12 accents, microphone-like audio): Groq Whisper turbo alone = 20/30 right — 7 answers lost to the
+// free tier's per-minute limit (HTTP 429, then the visitor saw «failed») and dialect errors («آيات الصبر» → «أجه،
+// سبري»). ElevenLabs Scribe v2 with Mishkat's vocabulary (keyterms: the 114 surah names + the words said most) = see
+// eval/stt/RESULTS.md. Order now: Scribe (when ELEVENLABS_API_KEY is set) → Whisper turbo → Whisper large v3
+// (each Groq model has its own quota), the next one tried on an error, a 429 or a time-out.
+const STT_TIMEOUT_MS = 9000;
+const withTimeout = (ms) => (typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(ms) : undefined);
 export async function transcribe(audioBlob, lang, env, fetchImpl = fetch, mode = 'search') {
-  const key = env.STT_KEY || env.GROQ_API_KEY;
-  if (!key) return { ok: false, error: 'no stt key' };
+  const groqKey = env.STT_KEY || env.GROQ_API_KEY, elevenKey = env.ELEVENLABS_API_KEY && env.STT_ELEVEN !== '0' ? env.ELEVENLABS_API_KEY : null;
+  if (!groqKey && !elevenKey) return { ok: false, error: 'no stt key' };
   if (!audioBlob || typeof audioBlob === 'string') return { ok: false, error: 'bad audio' };
   const type = String(audioBlob.type || 'audio/webm').split(';')[0];
-  const once = async (l) => {
+  const fname = `speech.${AUDIO_EXT[type] || 'webm'}`;
+  const l = mode === 'recite' ? 'ar' : ['ar', 'en'].includes(lang) ? lang : '';
+  const whisper = async (model, ll) => {
     const fd = new FormData();
-    fd.append('file', audioBlob, `speech.${AUDIO_EXT[type] || 'webm'}`);
-    fd.append('model', env.STT_MODEL || 'whisper-large-v3-turbo');
-    if (l) { fd.append('language', l); fd.append('prompt', mode === 'recite' ? STT_PROMPT.recite : STT_PROMPT[l]); }
+    fd.append('file', audioBlob, fname);
+    fd.append('model', model);
+    if (ll) { fd.append('language', ll); fd.append('prompt', mode === 'recite' ? STT_PROMPT.recite : STT_PROMPT[ll]); }
     fd.append('response_format', 'verbose_json');
     fd.append('temperature', '0');
     const r = await fetchImpl(env.STT_URL || 'https://api.groq.com/openai/v1/audio/transcriptions', {
-      method: 'POST', headers: { authorization: `Bearer ${key}` }, body: fd });
+      method: 'POST', headers: { authorization: `Bearer ${groqKey}` }, body: fd, signal: withTimeout(STT_TIMEOUT_MS) });
     if (!r.ok) return { ok: false, error: `stt HTTP ${r.status}` };
     const j = await r.json();
-    return { ok: true, text: cleanTranscript(j, mode === 'recite' ? 'recite' : l), raw: String(j.text || '').trim() };
+    return { ok: true, text: cleanTranscript(j, mode === 'recite' ? 'recite' : ll), raw: String(j.text || '').trim() };
   };
-  const l = mode === 'recite' ? 'ar' : ['ar', 'en'].includes(lang) ? lang : '';
-  let out = await once(l);
-  // speech was heard but did not fit the chosen language (e.g. English spoken, Arabic selected): auto-detect once
-  if (out.ok && !out.text && out.raw && l) out = await once('');
-  return out.ok ? { ok: true, text: out.text } : out;
+  const tries = [];
+  if (elevenKey) tries.push(['scribe', () => scribe(audioBlob, fname, l, mode, elevenKey, env, fetchImpl)]);
+  if (groqKey) {
+    const models = [...new Set([env.STT_MODEL || 'whisper-large-v3-turbo', 'whisper-large-v3'])];
+    for (const m of models) tries.push([m, async () => {
+      let out = await whisper(m, l);
+      // speech was heard but did not fit the chosen language (e.g. English spoken, Arabic selected): auto-detect once
+      if (out.ok && !out.text && out.raw && l) out = await whisper(m, '');
+      return out;
+    }]);
+  }
+  const errors = [];
+  for (const [via, go] of tries) {
+    let out;
+    try { out = await go(); } catch (e) { out = { ok: false, error: String(e && e.name === 'TimeoutError' ? 'stt timeout' : e && e.message || e) }; }
+    if (out.ok) return { ok: true, text: mode === 'recite' ? out.text : fixTranscript(out.text, l), via };
+    errors.push(`${via}: ${out.error}`);
+  }
+  return { ok: false, error: errors.join(' · ') || 'stt failed' };
+}
+
+// ElevenLabs Scribe (speech-to-text): language given, Mishkat's vocabulary as keyterms (search only — a recitation
+// is a quotation checked word by word against the Mushaf, it gets no hint), audio events not written.
+async function scribe(audioBlob, fname, l, mode, key, env, fetchImpl) {
+  const fd = new FormData();
+  fd.append('file', audioBlob, fname);
+  fd.append('model_id', env.STT_ELEVEN_MODEL || 'scribe_v2');
+  if (l) fd.append('language_code', l);
+  fd.append('tag_audio_events', 'false');
+  if (mode !== 'recite') for (const k of (l === 'en' ? STT_TERMS.en : l === 'ar' ? STT_TERMS.ar : [...STT_TERMS.ar, ...STT_TERMS.en])) fd.append('keyterms', k);
+  const r = await fetchImpl('https://api.elevenlabs.io/v1/speech-to-text', { method: 'POST', headers: { 'xi-api-key': key }, body: fd, signal: withTimeout(STT_TIMEOUT_MS) });
+  if (!r.ok) return { ok: false, error: `scribe HTTP ${r.status}` };
+  const j = await r.json();
+  return { ok: true, text: cleanTranscript({ text: String(j.text || '').replace(/[([][^)\]]{1,40}[)\]]/g, ' ') }, mode === 'recite' ? 'recite' : l) };
+}
+
+// Words a speech engine confuses that change the search (the visitor still sees and can edit the text): «صورة»
+// (picture) said for «سورة» (surah) in a question about a surah — Maghrebi, Egyptian and Levantine speakers say س as ص
+// in this word. Only when the context is a surah: a surah name follows, or the question is about revelation, order,
+// length or verses.
+const SURA_CTX = /(^|\s)(اول|أول|آخر|اخر|اطول|أطول|اقصر|أقصر|نزلت|نزل|رقم|عدد|كم|آيات|ايات|آية|اية|تفسير|اقرا|اقرأ|احفظ|أحفظ|سماع|استمع|مكية|مدنية)(\s|$)/;
+export function fixTranscript(text, lang) {
+  if (!text || lang === 'en') return text;
+  const names = new Set(STT_TERMS.ar.slice(0, 114).map(s => s.replace(/[أإآ]/g, 'ا')));
+  return text.replace(/(^|\s)(ال)?(صور[ةه])(?=\s|[؟?،.]|$)(\s+(\S+))?/g, (m, sp, al, w, rest, next) => {
+    const nx = String(next || '').replace(/[؟?،.]/g, '').replace(/[أإآ]/g, 'ا');
+    if (!(names.has(nx) || names.has('ال' + nx) || SURA_CTX.test(text))) return m;
+    return `${sp}${al || ''}سورة${rest || ''}`;
+  });
 }
 
 // circuit breaker per PROVIDER AND model (E7: a 429 from OpenRouter must not block the same model on
@@ -305,7 +360,7 @@ export const expand = (body, env, fetchImpl = fetch) => run('expand', body, env,
 
 export function health(env) {
   const p = providers(env);
-  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null, free: p.length ? p[0].name === 'groq' : null, stt: !!(env.STT_KEY || env.GROQ_API_KEY), tts: ttsReady(env),
+  return { ok: true, llm: p.length > 0, model: p.length ? p[0].model : null, free: p.length ? p[0].name === 'groq' : null, stt: !!(env.STT_KEY || env.GROQ_API_KEY || env.ELEVENLABS_API_KEY), tts: ttsReady(env),
     // semantic neighbours need an embedding model (Workers AI binding, or the REST API for local runs)
     dense: !!((env.AI && env.AI.run) || (env.CF_ACCOUNT && env.CF_AI_TOKEN)) };
 }

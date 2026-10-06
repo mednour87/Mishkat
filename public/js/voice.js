@@ -69,26 +69,40 @@ async function recordWhisper({ getLang, onState, onLevel, maxMs, silenceMs, wait
   const stopped = new Promise(res => { rec.onstop = res; });
 
   // level meter + end-of-speech detection
+  // (6 Oct 2026, T122) three causes of «nothing heard» while the visitor spoke, fixed:
+  //  - the AudioContext may start «suspended» (Safari, Opera, a page without a recent tap): the meter read zeros and
+  //    the recording was thrown away after waitMs → resumed, and a meter that stays at exactly zero is not trusted
+  //    (the recording then ends by the button or maxMs and is sent);
+  //  - the noise floor was the LOUDEST level of the first 350 ms: a visitor who spoke at once raised the threshold
+  //    above his own voice → floor = median of the first readings, capped;
+  //  - a quiet voice under the threshold was discarded → the audio is sent when a real sound was there (the server
+  //    drops the text a speech engine invents on silence).
   const AC = window.AudioContext || window.webkitAudioContext;
-  const ctx = AC ? new AC() : null;
-  let timer = 0, heard = false, cancelled = false;
+  let ctx = null;
+  try { ctx = AC ? new AC() : null; if (ctx && ctx.state === 'suspended') ctx.resume().catch(() => {}); } catch (e) { ctx = null; }
+  let timer = 0, heard = false, cancelled = false, peak = 0, deadMeter = false;
   const stop = () => { if (rec.state !== 'inactive') rec.stop(); };
   stopCurrent = stop;
   cancelCurrent = () => { cancelled = true; stop(); };
+  const t0 = performance.now();
   if (ctx) {
     const an = ctx.createAnalyser(); an.fftSize = 1024;
     ctx.createMediaStreamSource(stream).connect(an);
     const buf = new Float32Array(an.fftSize);
-    const t0 = performance.now();
-    let floor = 0.01, lastVoice = 0, voiced = 0;
+    let floor = 0.006, lastVoice = 0, voiced = 0, nonZero = false;
+    const early = [];
     const tick = () => {
       an.getFloatTimeDomainData(buf);
       let s = 0; for (const x of buf) s += x * x;
       const rms = Math.sqrt(s / buf.length), now = performance.now();
-      if (now - t0 < 350) floor = Math.max(floor, rms * 1.2);         // ambient noise
-      const thr = Math.max(0.02, floor * 2.2);
-      onLevel(Math.min(1, rms / 0.2));
-      if (rms > thr) { voiced += 1; lastVoice = now; if (voiced > 6) heard = true; }
+      if (rms > 0) nonZero = true;
+      if (!nonZero && now - t0 > 1200) deadMeter = true;               // the meter never moved: not trusted
+      if (deadMeter) { heard = true; if (now - t0 > Math.min(maxMs, 9000)) stop(); return; }
+      peak = Math.max(peak, rms);
+      if (now - t0 < 400) { early.push(rms); const m = [...early].sort((a, b) => a - b)[early.length >> 1]; floor = Math.min(0.03, Math.max(0.004, m * 1.3)); }
+      const thr = Math.min(0.05, Math.max(0.01, floor * 2.2));
+      onLevel(Math.min(1, rms / 0.15));
+      if (rms > thr) { voiced += 1; lastVoice = now; if (voiced > 4) heard = true; }
       if ((heard && now - lastVoice > silenceMs) || (!heard && now - t0 > waitMs) || now - t0 > maxMs) stop(); // pause after speaking / nobody spoke / too long
     };
     // a timer, not requestAnimationFrame: it keeps running when the tab is in the background
@@ -106,6 +120,8 @@ async function recordWhisper({ getLang, onState, onLevel, maxMs, silenceMs, wait
   if (ctx) ctx.close().catch(() => {});
   onLevel(0);
   if (cancelled) { onState('idle'); return ''; }
+  // a sound clearly above silence for more than 0.8 s is sent even if the end-of-speech meter did not call it speech
+  if (!heard && peak > 0.012 && performance.now() - t0 > 800) heard = true;
   if (!heard || !chunks.length) { onState('idle'); throw err('nospeech'); }
   onState('processing');
   try {

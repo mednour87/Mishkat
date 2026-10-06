@@ -32,7 +32,7 @@ test('stt: language hint, prompt, real file extension; auto-detect retry when th
   };
   const blob = new Blob([new Uint8Array(10)], { type: 'audio/mp4' });
   const out = await transcribe(blob, 'ar', { GROQ_API_KEY: 'k' }, fake);
-  assert.deepEqual(out, { ok: true, text: 'What does the Quran say about patience?' });
+  assert.deepEqual(out, { ok: true, text: 'What does the Quran say about patience?', via: 'whisper-large-v3-turbo' });
   assert.equal(calls[0].lang, 'ar'); assert.ok(calls[0].prompt.includes('القرآن')); assert.equal(calls[0].name, 'speech.m4a');
   assert.equal(calls[1].lang, null);
 });

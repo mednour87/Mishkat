@@ -28,7 +28,17 @@ export function fatwaQuery(q) {
   return s.slice(0, 80);
 }
 
-const linkOf = (id) => `${DORAR}/feqhia/${id}`;
+// T122 (6 Oct 2026): the same reader serves the Creed Encyclopedia of the same site (dorar.net/aqeeda, named by the
+// challenge pack for creed: «أو منصة dorar.net/aqeeda») — same page layout, same search, same closed-list AI filter
+export const AQEEDA_SOURCE = 'الموسوعة العقدية — الدرر السنية (dorar.net/aqeeda)، من المراجع المعتمدة في حزمة التحدي';
+export const AQEEDA_SOURCE_EN = 'The Creed Encyclopedia of Ad-Durar As-Saniyyah (dorar.net/aqeeda), an approved reference of the challenge pack';
+const AQEEDA_STRICT = 'Keep a section ONLY if its title is about exactly what is asked (the same article of faith, the same topic, its definition, its pillars or its kinds). A section that only mentions the word in passing, or treats a neighbouring topic, must be excluded. When no section matches, return {"keep":[]}.';
+const ENC = {
+  feqhia: () => ({ src: FIQH_SOURCE, srcEn: FIQH_SOURCE_EN, strict: FIQH_STRICT, what: 'fiqh encyclopedia section', prefer: /حكم/ }),
+  aqeeda: () => ({ src: AQEEDA_SOURCE, srcEn: AQEEDA_SOURCE_EN, strict: AQEEDA_STRICT, what: 'creed encyclopedia section', prefer: /تعريف|معني|اركان|اقسام|انواع|حكم|المراد/ }),
+};
+const encOf = (body) => (body && body.enc === 'aqeeda' ? 'aqeeda' : 'feqhia');
+const linkOf = (id, enc = 'feqhia') => `${DORAR}/${enc}/${id}`;
 
 // light stem for matching the words of a question with the titles of the encyclopedia: no «ال» and attached
 // particles, no final «ة/ه» or plural ending, no long vowels — «تارك» = «ترك», «الصيام» = «الصوم», «المريض» = «مرض»
@@ -58,21 +68,24 @@ function sectionWords(text) {
 }
 export const FIQH_TERMS = { 'الموسيقى': 'المعازف', 'موسيقى': 'المعازف', 'الأغاني': 'الغناء', 'الاغاني': 'الغناء', 'التدخين': 'التبغ', 'الدخان': 'التبغ',
   'السجائر': 'التبغ', 'الشيشة': 'التبغ', 'الزواج': 'النكاح', 'زواج': 'النكاح', 'فوائد البنوك': 'الربا', 'الفوائد البنكية': 'الربا', 'الفائدة البنكية': 'الربا', 'القروض': 'القرض',
-  'الكحول': 'الخمر', 'المخدرات': 'المخدرات', 'الحشيش': 'المخدرات', 'التأمين': 'التأمين', 'الوشم': 'الوشم', 'الحجاب': 'الحجاب' };
+  'الكحول': 'الخمر', 'المخدرات': 'المخدرات', 'الحشيش': 'المخدرات', 'التأمين': 'التأمين', 'الوشم': 'الوشم', 'الحجاب': 'الحجاب',
+  // (T122) the Creed Encyclopedia's own words
+  'علامات الساعة': 'أشراط الساعة', 'علامات القيامة': 'أشراط الساعة', 'علامات يوم القيامة': 'أشراط الساعة' };
 
 // search page → [{id, title, path, snippet}] (one per article)
-export function parseDorarSearch(html) {
+export function parseDorarSearch(html, enc = 'feqhia') {
   const out = [], seen = new Set();
+  const HREF = new RegExp(`href="/${enc}/(\\d+)"`);
   for (const m of String(html || '').matchAll(/<article class="border-bottom py-4">([\s\S]*?)<\/article>/g)) {
     const a = m[1];
-    const id = +((a.match(/href="\/feqhia\/(\d+)"/) || [])[1] || 0);
+    const id = +((a.match(HREF) || [])[1] || 0);
     if (!id || seen.has(id)) continue;
     seen.add(id);
     const snippet = plain((a.match(/<h5[^>]*>([\s\S]*?)<\/h5>/) || [])[1] || '').replace(/^\d+\s*-\s*/, '').slice(0, 260);
     // breadcrumb of the article: «كتاب الأشربة - المبحث الثاني: حكم تناول التبغ [202] footnote…»
     const path = plain((a.match(/<span class="text-muted"[^>]*>([\s\S]*?)<\/span>\s*<\/article>|<span class="text-muted"[^>]*>([\s\S]*)$/) || []).slice(1).find(Boolean) || '')
       .replace(/\s*\[\d+\][\s\S]*$/, '').slice(0, 200);
-    out.push({ id, snippet, path, url: linkOf(id) });
+    out.push({ id, snippet, path, url: linkOf(id, enc) });
   }
   return out;
 }
@@ -150,7 +163,8 @@ export async function fiqhSearch(body, env, fetchImpl = fetch) {
   if (body && body.id != null) {
     const id = +body.id;
     if (!Number.isInteger(id) || id < 1 || id > 1e7) return { ok: false, error: 'bad id' };
-    const { text, url } = await getText(linkOf(id), fetchImpl);
+    const enc = encOf(body), E = ENC[enc]();
+    const { text, url } = await getText(linkOf(id, enc), fetchImpl);
     const f = parseDorarFiqh(text);
     if (!f.ruling.length) {
       // (5 Oct, RAG test) a section that has sub-sections («المطلب الأول: حكم شرب الخمر», «الفصل الأول: المريض») shows only
@@ -164,26 +178,27 @@ export async function fiqhSearch(body, env, fetchImpl = fetch) {
       const subj = subjectsOf(body);
       const about = (g) => !subj.length || subj.some(s => s.some(w => sectionWords(g.title || '').has(w)));
       for (let k = 1; parent && k <= 2; k++) {
-        const c = await getText(linkOf(id + k), fetchImpl).catch(() => null);
+        const c = await getText(linkOf(id + k, enc), fetchImpl).catch(() => null);
         const g = c && parseDorarFiqh(c.text);
-        if (g && g.ruling.length && g.path.some(sameSection) && about(g)) return { ok: true, id: id + k, via: id, ...g, url: c.url || linkOf(id + k), source: FIQH_SOURCE, sourceEn: FIQH_SOURCE_EN };
+        if (g && g.ruling.length && g.path.some(sameSection) && about(g)) return { ok: true, enc, id: id + k, via: id, ...g, url: c.url || linkOf(id + k, enc), source: E.src, sourceEn: E.srcEn };
       }
       return { ok: false, error: 'no ruling statement on the page' };
     }
-    return { ok: true, id, ...f, url: url || linkOf(id), source: FIQH_SOURCE, sourceEn: FIQH_SOURCE_EN };
+    return { ok: true, enc, id, ...f, url: url || linkOf(id, enc), source: E.src, sourceEn: E.srcEn };
   }
   const q0 = String(body && body.q || '').slice(0, 300);
   const { kw, fq, base, extra } = termsOf(body);
+  const enc = encOf(body), E = ENC[enc]();
   const qs = [...new Set([...base, ...extra].filter(s => s.replace(/\s/g, '').length >= 3))].slice(0, 6);
   if (!qs.length) return { ok: false, error: 'query too short' };
   let items = [];
   const seen = new Set();
   // the searches run together; one that fails (HTTP error, challenge page) no longer discards the others
-  const pages = await Promise.allSettled(qs.map(q => getText(`${DORAR}/feqhia/search?q=${encodeURIComponent(q)}`, fetchImpl)));
+  const pages = await Promise.allSettled(qs.map(q => getText(`${DORAR}/${enc}/search?q=${encodeURIComponent(q)}`, fetchImpl)));
   if (pages.every(p => p.status === 'rejected')) throw pages[0].reason;
   for (const p of pages) {
     if (p.status !== 'fulfilled') continue;
-    for (const x of parseDorarSearch(p.value.text).slice(0, 10)) if (!seen.has(x.id)) { seen.add(x.id); items.push(x); }
+    for (const x of parseDorarSearch(p.value.text, enc).slice(0, 10)) if (!seen.has(x.id)) { seen.add(x.id); items.push(x); }
   }
   // a hit inside a footnote or an example is not the section's subject: the words of the question (or of one
   // search term) must be in the section's path, or in the heading the search returned — with or without AI
@@ -209,15 +224,15 @@ export async function fiqhSearch(body, env, fetchImpl = fetch) {
     const h = bare(heading(x) || x.snippet), leaf = /^(المطلب|المبحث|المساله|الفرع)/.test(h);
     // a chapter heading («الباب», «الفصل», «كتاب») has no statement of the ruling on its own page — it is in its
     // sub-sections («المبحث الأول: حكم الربا»): leaf sections first, those named «حكم…» before them all
-    return { x, k, hit, hitH, r: (leaf ? 0 : 2) + (/حكم/.test(h) ? 0 : 1) };
+    return { x, k, hit, hitH, r: (leaf ? 0 : 2) + (E.prefer.test(h) ? 0 : 1) };
   }).filter(o => o.hit > 0);
   items = scored.sort((a, b) => b.hitH - a.hitH || a.r - b.r || b.hit - a.hit || a.k - b.k).map(o => o.x).slice(0, 12);
   let by = 'search';
   // the large model checks even a single section (a ruling shown on the wrong subject is the worst error here)
   if (items.length >= 1 && body.ai !== false) {
-    const keep = await pickRelevant(q0, items.map(x => `${x.path} — ${x.snippet}`), env, { max: 3, what: 'fiqh encyclopedia section', fetchImpl, task: 'select', strict: FIQH_STRICT }).catch(() => null);
+    const keep = await pickRelevant(q0, items.map(x => `${x.path} — ${x.snippet}`), env, { max: 3, what: E.what, fetchImpl, task: 'select', strict: E.strict }).catch(() => null);
     if (keep) { items = keep.map(i => items[i]); by = 'ai'; }
   }
   if (by === 'search') items = items.slice(0, 3);
-  return { ok: true, q: qs[0], items, by, source: FIQH_SOURCE, sourceEn: FIQH_SOURCE_EN, url: `${DORAR}/feqhia/search?q=${encodeURIComponent(qs[0])}` };
+  return { ok: true, enc, q: qs[0], items, by, source: E.src, sourceEn: E.srcEn, url: `${DORAR}/${enc}/search?q=${encodeURIComponent(qs[0])}` };
 }

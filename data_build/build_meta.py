@@ -3,7 +3,9 @@
 (source S1, same project as the verse text): https://tanzil.net/res/text/metadata/quran-data.xml
 
 Output: public/data/mushaf_meta.json
-  { source, pages: [index of the first verse of page 1..604], juz: [index of the first verse of juz' 1..30] }
+  { source, pages: [index of the first verse of page 1..604], juz: [index of the first verse of juz' 1..30],
+    quarters: [first verse of each quarter of a hizb, 240], sajdas: [[verse index, 'recommended'|'obligatory'], 15] }
+  (quarters and sajdas added 6 Oct 2026, T122: the verified answers of public/js/facts.js)
 Verse index = position 0..6235 in core.json. Used by the khatma plan (public/js/khatma.js).
 """
 import json
@@ -25,8 +27,11 @@ idx = lambda e: first[int(e.get('sura'))] + int(e.get('aya')) - 1
 
 pages = [idx(e) for e in root.find('pages').findall('page')]
 juz = [idx(e) for e in root.find('juzs').findall('juz')]
+quarters = [idx(e) for e in root.find('hizbs').findall('quarter')]
+sajdas = [[idx(e), e.get('type')] for e in root.find('sajdas').findall('sajda')]
 assert len(pages) == 604 and len(juz) == 30, (len(pages), len(juz))
+assert len(quarters) == 240 and quarters == sorted(quarters) and len(sajdas) == 15, (len(quarters), len(sajdas))
 assert pages == sorted(pages) and juz == sorted(juz) and pages[0] == 0 and juz[0] == 0
-out = {'source': 'Tanzil quran-data.xml (' + URL + ')', 'pages': pages, 'juz': juz}
+out = {'source': 'Tanzil quran-data.xml (' + URL + ')', 'pages': pages, 'juz': juz, 'quarters': quarters, 'sajdas': sajdas}
 (ROOT / 'public' / 'data' / 'mushaf_meta.json').write_text(json.dumps(out, separators=(',', ':')), encoding='utf-8')
 print('pages', len(pages), 'juz', len(juz), 'juz 30 starts at verse index', juz[29])

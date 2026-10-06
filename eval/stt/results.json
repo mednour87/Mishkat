@@ -1,0 +1,1275 @@
+{
+ "current": {
+  "at": "2026-10-06T12:54:12.881Z",
+  "rows": [
+   {
+    "id": "sa01",
+    "text": "كم عدد آيات القرآن الكريم؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 737
+   },
+   {
+    "id": "sa02",
+    "text": "كم عدد سور القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 324
+   },
+   {
+    "id": "sa03",
+    "text": "ما هي أطول سورة في القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 313
+   },
+   {
+    "id": "sa04",
+    "text": "آية الكرسي",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 292
+   },
+   {
+    "id": "sa05",
+    "text": "سورة الكهف",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 221
+   },
+   {
+    "id": "sa06",
+    "text": "ما معنص الصمد في سورة الإخلاص؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 292
+   },
+   {
+    "id": "eg01",
+    "text": "عايز أعرف قصة سيدنا يوسف.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 312
+   },
+   {
+    "id": "eg02",
+    "text": "ايه هي أركان الإسلام؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 285
+   },
+   {
+    "id": "eg03",
+    "text": "كم مرة أتذكر اسم موسى في القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 296
+   },
+   {
+    "id": "tn01",
+    "text": "شنوة يقول القرآن على بر الوالدين.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 224
+   },
+   {
+    "id": "tn02",
+    "text": "أجه، سبري.",
+    "ok": false,
+    "miss": [
+     "ايات",
+     "الصبر"
+    ],
+    "error": null,
+    "ms": 293
+   },
+   {
+    "id": "ma01",
+    "text": "بغية نعرف شانو هي ليلة القدر.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 329
+   },
+   {
+    "id": "dz01",
+    "text": "واش هي أول سورة نزلت؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 235
+   },
+   {
+    "id": "sy01",
+    "text": "ماذا يقول القرآن عن التوبة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 299
+   },
+   {
+    "id": "iq01",
+    "text": "شكّد عدد الأنبياء المذكورين بالقرآن.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 303
+   },
+   {
+    "id": "kw01",
+    "text": "واش حكم صلاة الجماعة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 288
+   },
+   {
+    "id": "sa07",
+    "text": "كم عدد أجزاء القرآن وكم عدد الأحزاب؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 293
+   },
+   {
+    "id": "sa08",
+    "text": "ما هي السورة التي لا تبدأ بالبسملة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 310
+   },
+   {
+    "id": "sa09",
+    "text": "من هو النبي الذي ابتلعه الحوت؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 290
+   },
+   {
+    "id": "sa10",
+    "text": "أوقات الصلاة اليوم",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 286
+   },
+   {
+    "id": "sa11",
+    "text": "اتجاه القبلة.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 314
+   },
+   {
+    "id": "sa12",
+    "text": "سورة يس",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 220
+   },
+   {
+    "id": "sa13",
+    "text": "الزكاة",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 290
+   },
+   {
+    "id": "rc01",
+    "text": "قل هو الله أحد، الله الصمد، لم يلد ولم يولد.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 285
+   },
+   {
+    "id": "rc02",
+    "text": "إن مع العصر يسراً.",
+    "ok": false,
+    "miss": [
+     "العسر"
+    ],
+    "error": null,
+    "ms": 275
+   },
+   {
+    "id": "en01",
+    "text": "How many verses are in the Quran?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 288
+   },
+   {
+    "id": "en02",
+    "text": "What does the Quran say about patience?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 207
+   },
+   {
+    "id": "en03",
+    "text": "Surah Al-Kahf.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 277
+   },
+   {
+    "id": "en04",
+    "text": "Who was the prophet swallowed by the whale?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 281
+   },
+   {
+    "id": "en05",
+    "text": "What are the five pillars of Islam?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 214
+   }
+  ],
+  "right": 28,
+  "empty": 0,
+  "n": 30,
+  "meanMs": 296
+ },
+ "scribe1": {
+  "at": "2026-10-06T12:57:51.904Z",
+  "rows": [
+   {
+    "id": "sa01",
+    "text": "كم عدد آيات القرآن الكريم؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 957
+   },
+   {
+    "id": "sa02",
+    "text": "كم عدد سور القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 714
+   },
+   {
+    "id": "sa03",
+    "text": "ما هي أطول سورة في القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 680
+   },
+   {
+    "id": "sa04",
+    "text": "آية الكرسي",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 478
+   },
+   {
+    "id": "sa05",
+    "text": "سورة الكهف",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 510
+   },
+   {
+    "id": "sa06",
+    "text": "ما معنى الصمد في سورة الإخلاص؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 528
+   },
+   {
+    "id": "eg01",
+    "text": "عايز أعرف قصة سيدنا يوسف.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 726
+   },
+   {
+    "id": "eg02",
+    "text": "إيه هي أركان الإسلام؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 565
+   },
+   {
+    "id": "eg03",
+    "text": "كم مرة أتذكر اسم موسى في القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 472
+   },
+   {
+    "id": "tn01",
+    "text": "شنو يقول القرآن على بر الوالدين؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 769
+   },
+   {
+    "id": "tn02",
+    "text": "آيات الصبر.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 719
+   },
+   {
+    "id": "ma01",
+    "text": "باغية نعرف شانو هي ليلة القدر؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 618
+   },
+   {
+    "id": "dz01",
+    "text": "واش هي أول صورة نزلت؟",
+    "ok": false,
+    "miss": [
+     "سوره"
+    ],
+    "error": null,
+    "ms": 511
+   },
+   {
+    "id": "sy01",
+    "text": "شو بيقول القرآن عن التوبة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 520
+   },
+   {
+    "id": "iq01",
+    "text": "شكد عدد الأنبياء المذكورين بالقرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 502
+   },
+   {
+    "id": "kw01",
+    "text": "ما هو حكم صلاة الجماعة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 582
+   },
+   {
+    "id": "sa07",
+    "text": "كم عدد أجزاء القرآن؟ وكم عدد الأحزاب؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 610
+   },
+   {
+    "id": "sa08",
+    "text": "ما هي السورة التي لا تبدأ بالبسملة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 1006
+   },
+   {
+    "id": "sa09",
+    "text": "من هو النبي الذي ابتلعه الحوت؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 490
+   },
+   {
+    "id": "sa10",
+    "text": "أوقات الصلاة اليوم",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 620
+   },
+   {
+    "id": "sa11",
+    "text": "اتجاه القبلة",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 596
+   },
+   {
+    "id": "sa12",
+    "text": "صورة يس.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 678
+   },
+   {
+    "id": "sa13",
+    "text": "الذكاء",
+    "ok": false,
+    "miss": [
+     "الزكاه"
+    ],
+    "error": null,
+    "ms": 515
+   },
+   {
+    "id": "rc01",
+    "text": "قل هو الله أحد، الله الصمد، لم يلد ولم يولد",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 588
+   },
+   {
+    "id": "rc02",
+    "text": "إن مع العسر يسراً.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 853
+   },
+   {
+    "id": "en01",
+    "text": "How many verses are in the Quran?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 540
+   },
+   {
+    "id": "en02",
+    "text": "What does the Quran say about patience?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 730
+   },
+   {
+    "id": "en03",
+    "text": "Sarah Alcoff",
+    "ok": false,
+    "miss": [
+     "kahf"
+    ],
+    "error": null,
+    "ms": 678
+   },
+   {
+    "id": "en04",
+    "text": "Who was the prophet swallowed by the whale?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 528
+   },
+   {
+    "id": "en05",
+    "text": "What are the five pillars of Islam?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 871
+   }
+  ],
+  "right": 27,
+  "empty": 0,
+  "n": 30,
+  "meanMs": 638
+ },
+ "scribe2": {
+  "at": "2026-10-06T12:58:11.073Z",
+  "rows": [
+   {
+    "id": "sa01",
+    "text": "كم عدد آيات القرآن الكريم؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 709
+   },
+   {
+    "id": "sa02",
+    "text": "كم عدد سور القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 588
+   },
+   {
+    "id": "sa03",
+    "text": "ما هي أطول سورة في القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 638
+   },
+   {
+    "id": "sa04",
+    "text": "آية الكرسي",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 671
+   },
+   {
+    "id": "sa05",
+    "text": "سورة الكهف",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 566
+   },
+   {
+    "id": "sa06",
+    "text": "ما معنى الصمد في سورة الإخلاص؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 500
+   },
+   {
+    "id": "eg01",
+    "text": "عايز أعرف قصة سيدنا يوسف.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 745
+   },
+   {
+    "id": "eg02",
+    "text": "إيه هي أركان الإسلام؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 518
+   },
+   {
+    "id": "eg03",
+    "text": "كم مرة أتذكر اسم موسى في القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 851
+   },
+   {
+    "id": "tn01",
+    "text": "شنو يقول القرآن على بر الوالدين؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 665
+   },
+   {
+    "id": "tn02",
+    "text": "آيات الصبر.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 693
+   },
+   {
+    "id": "ma01",
+    "text": "باغية نعرف شانو هي ليلة القدر؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 900
+   },
+   {
+    "id": "dz01",
+    "text": "واش هي أول صورة نزلت؟",
+    "ok": false,
+    "miss": [
+     "سوره"
+    ],
+    "error": null,
+    "ms": 550
+   },
+   {
+    "id": "sy01",
+    "text": "شو بيقول القرآن عن التوبة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 723
+   },
+   {
+    "id": "iq01",
+    "text": "شكد عدد الأنبياء المذكورين بالقرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 661
+   },
+   {
+    "id": "kw01",
+    "text": "ما هو حكم صلاة الجماعة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 656
+   },
+   {
+    "id": "sa07",
+    "text": "كم عدد أجزاء القرآن؟ وكم عدد الأحزاب؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 510
+   },
+   {
+    "id": "sa08",
+    "text": "ما هي السورة التي لا تبدأ بالبسملة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 746
+   },
+   {
+    "id": "sa09",
+    "text": "من هو النبي الذي ابتلعه الحوت؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 698
+   },
+   {
+    "id": "sa10",
+    "text": "أوقات الصلاة اليوم",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 699
+   },
+   {
+    "id": "sa11",
+    "text": "اتجاه القبلة",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 691
+   },
+   {
+    "id": "sa12",
+    "text": "سورة يس",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 593
+   },
+   {
+    "id": "sa13",
+    "text": "الذكاء.",
+    "ok": false,
+    "miss": [
+     "الزكاه"
+    ],
+    "error": null,
+    "ms": 616
+   },
+   {
+    "id": "rc01",
+    "text": "قل هو الله أحد، الله الصمد، لم يلد ولم يولد",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 685
+   },
+   {
+    "id": "rc02",
+    "text": "إن مع العسر يسرا.",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 612
+   },
+   {
+    "id": "en01",
+    "text": "How many verses are in the Quran?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 750
+   },
+   {
+    "id": "en02",
+    "text": "What does the Quran say about patience?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 583
+   },
+   {
+    "id": "en03",
+    "text": "Sira Alcoff",
+    "ok": false,
+    "miss": [
+     "kahf"
+    ],
+    "error": null,
+    "ms": 550
+   },
+   {
+    "id": "en04",
+    "text": "Who was the prophet swallowed by the whale?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 506
+   },
+   {
+    "id": "en05",
+    "text": "What are the five pillars of Islam?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 477
+   }
+  ],
+  "right": 27,
+  "empty": 0,
+  "n": 30,
+  "meanMs": 645
+ },
+ "mishkat": {
+  "at": "2026-10-06T12:53:30.640Z",
+  "rows": [
+   {
+    "id": "sa01",
+    "text": "كم عدد آيات القرآن الكريم؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 942
+   },
+   {
+    "id": "sa02",
+    "text": "كم عدد سور القرآن؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 782
+   },
+   {
+    "id": "sa03",
+    "text": "ما هي أطول سورة في القرآن؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 665
+   },
+   {
+    "id": "sa04",
+    "text": "آية الكرسي.  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 533
+   },
+   {
+    "id": "sa05",
+    "text": "سورة الكهف.  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 665
+   },
+   {
+    "id": "sa06",
+    "text": "ما معنى الصمد في سورة الإخلاص؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 650
+   },
+   {
+    "id": "eg01",
+    "text": "عايز أعرف قصة سيدنا يوسف.  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 1079
+   },
+   {
+    "id": "eg02",
+    "text": "ما هي أركان الإسلام؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 903
+   },
+   {
+    "id": "eg03",
+    "text": "كم مرة أتذكر اسم موسى في القرآن؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 821
+   },
+   {
+    "id": "tn01",
+    "text": "شنو هوة يقول القرآن على بر الوالدين؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 1057
+   },
+   {
+    "id": "tn02",
+    "text": "آيات الصبر  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 801
+   },
+   {
+    "id": "ma01",
+    "text": "باغية نعرف شانو هي ليلة القدر.  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 665
+   },
+   {
+    "id": "dz01",
+    "text": "واش هي أول سورة نزلت؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 1621
+   },
+   {
+    "id": "sy01",
+    "text": "شو بيقول القرآن عن التوبة؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 572
+   },
+   {
+    "id": "iq01",
+    "text": "شكد عدد الأنبياء المذكورين بالقرآن؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 1308
+   },
+   {
+    "id": "kw01",
+    "text": "وش حكم صلاة الجماعة؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 529
+   },
+   {
+    "id": "sa07",
+    "text": "كم عدد أجزاء القرآن؟ وكم عدد الأحزاب؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 988
+   },
+   {
+    "id": "sa08",
+    "text": "ما هي السورة التي لا تبدأ بالبسملة؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 994
+   },
+   {
+    "id": "sa09",
+    "text": "من هو النبي الذي ابتلعه الحوت؟  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 912
+   },
+   {
+    "id": "sa10",
+    "text": "أوقات الصلاة اليوم  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 536
+   },
+   {
+    "id": "sa11",
+    "text": "اتجاه القبلة.  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 672
+   },
+   {
+    "id": "sa12",
+    "text": "سورة يس  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 604
+   },
+   {
+    "id": "sa13",
+    "text": "الزكاة  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 812
+   },
+   {
+    "id": "rc01",
+    "text": "قل هو الله أحد، الله الصمد، لم يلد ولم يولد.  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 743
+   },
+   {
+    "id": "rc02",
+    "text": "إن مع العسر يسرا.  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 666
+   },
+   {
+    "id": "en01",
+    "text": "How many verses are in the Quran?  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 513
+   },
+   {
+    "id": "en02",
+    "text": "What does the Quran say about patience?  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 574
+   },
+   {
+    "id": "en03",
+    "text": "Surah Al-Kahf  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 783
+   },
+   {
+    "id": "en04",
+    "text": "Who was the prophet swallowed by the whale?  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 869
+   },
+   {
+    "id": "en05",
+    "text": "What are the five pillars of Islam?  [scribe]",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 542
+   }
+  ],
+  "right": 30,
+  "empty": 0,
+  "n": 30,
+  "meanMs": 793
+ },
+ "groq-v3": {
+  "at": "2026-10-06T12:56:01.057Z",
+  "rows": [
+   {
+    "id": "sa01",
+    "text": " كم عدد آيات القرآن الكريم؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 300
+   },
+   {
+    "id": "sa02",
+    "text": " كم عدد سور القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 352
+   },
+   {
+    "id": "sa03",
+    "text": " ما هي أطول صورة في القرآن؟",
+    "ok": false,
+    "miss": [
+     "سوره"
+    ],
+    "error": null,
+    "ms": 291
+   },
+   {
+    "id": "sa04",
+    "text": " آية الكرسي",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 279
+   },
+   {
+    "id": "sa05",
+    "text": " سورة الكهف",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 508
+   },
+   {
+    "id": "sa06",
+    "text": " ما معنى الصمد في سورة الإخلاص؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 344
+   },
+   {
+    "id": "eg01",
+    "text": " عايز أعرف قصة سيدنا يوسف",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 322
+   },
+   {
+    "id": "eg02",
+    "text": " ايه هي اركان الاسلام؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 421
+   },
+   {
+    "id": "eg03",
+    "text": " كم مرة أتذكر اسم موسى في القرآن؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 302
+   },
+   {
+    "id": "tn01",
+    "text": " شنوة يقول القرآن على بر الوالدين",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 519
+   },
+   {
+    "id": "tn02",
+    "text": " أيها الصبري",
+    "ok": false,
+    "miss": [
+     "ايات",
+     "الصبر"
+    ],
+    "error": null,
+    "ms": 333
+   },
+   {
+    "id": "ma01",
+    "text": " بغية نعرف شانو هي ليلة القدر",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 391
+   },
+   {
+    "id": "dz01",
+    "text": " واش هي أول صورة نزلت؟",
+    "ok": false,
+    "miss": [
+     "سوره"
+    ],
+    "error": null,
+    "ms": 613
+   },
+   {
+    "id": "sy01",
+    "text": " شو بيقول القرآن عن التوبة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 296
+   },
+   {
+    "id": "iq01",
+    "text": " شكد عدد الأنبياء المذكورين بالقرآن",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 332
+   },
+   {
+    "id": "kw01",
+    "text": " واش حكم صلاة الجماعة",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 381
+   },
+   {
+    "id": "sa07",
+    "text": " كم عدد أجزاء القرآن وكم عدد الأحزاب",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 526
+   },
+   {
+    "id": "sa08",
+    "text": " ما هي السورة التي لا تبدأ بالبسملة؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 297
+   },
+   {
+    "id": "sa09",
+    "text": " من هو النبي الذي ابتلعه الحوت؟",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 352
+   },
+   {
+    "id": "sa10",
+    "text": " اوقات الصلاة اليوم",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 658
+   },
+   {
+    "id": "sa11",
+    "text": " اتجاه القبلة",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 941
+   },
+   {
+    "id": "sa12",
+    "text": " سورة يس",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 306
+   },
+   {
+    "id": "sa13",
+    "text": " الزكاة",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 275
+   },
+   {
+    "id": "rc01",
+    "text": " قل هو الله أحد الله الصمد لم يلد ولم يولد",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 518
+   },
+   {
+    "id": "rc02",
+    "text": " إن مع العصر يسرا",
+    "ok": false,
+    "miss": [
+     "العسر"
+    ],
+    "error": null,
+    "ms": 294
+   },
+   {
+    "id": "en01",
+    "text": " How many verses are in the Quran?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 288
+   },
+   {
+    "id": "en02",
+    "text": " What does the Quran say about patience?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 285
+   },
+   {
+    "id": "en03",
+    "text": " Sarah Alcoff",
+    "ok": false,
+    "miss": [
+     "kahf"
+    ],
+    "error": null,
+    "ms": 272
+   },
+   {
+    "id": "en04",
+    "text": " Who was the prophet swallowed by the whale?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 290
+   },
+   {
+    "id": "en05",
+    "text": " What are the five pillars of Islam?",
+    "ok": true,
+    "miss": [],
+    "error": null,
+    "ms": 275
+   }
+  ],
+  "right": 25,
+  "empty": 0,
+  "n": 30,
+  "meanMs": 385
+ }
+}

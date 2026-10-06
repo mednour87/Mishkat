@@ -7,15 +7,18 @@
 import { createEngine, detectLang, SOURCES_NEEDED, tokens, expandTokens } from './engine.js';
 import { loadVectors, topK, VEC_DIM } from './dense-rank.js';
 import { buildClosedList, applyAnswer, questionTypeOf, forModels } from './rag.js';
+import { factAnswer } from './facts.js';
+import { suraOfIndex } from './stats.js';
 
 const getJSON = async (u) => { const r = await fetch(u); if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); };
-let engineP = null, latinP = null;
+let engineP = null, latinP = null, DATA = null, metaP = null;
 const loading = new Map();
 
 function engine() {
   if (!engineP) engineP = (async () => {
     const [core, searchAr] = await Promise.all([getJSON('../data/core.json'), getJSON('../data/search_ar.json')]);
     const e = createEngine({ core, searchAr });
+    DATA = { core, plain: searchAr, suraOf: suraOfIndex(core) };
     await Promise.all([
       getJSON('../data/qp_topics.json').then(d => e.addTopicIndex(d)).catch(() => {}),
       getJSON('../data/bayenat_index.json').then(d => e.addBayenat(d)).catch(() => {}),
@@ -77,7 +80,7 @@ function hadIndex(lang) {
   return HAD[lang];
 }
 async function sunnahFor(res, opts) {
-  if (!res || !['topic', 'term'].includes(res.type)) return null;
+  if (!res || !['topic', 'term', 'notfound'].includes(res.type)) return null;   // T122: notfound too (an Islamic question with no verse)
   if (res.meta && res.meta.route === 'word') return null;
   const lang = res.lang === 'en' ? 'en' : 'ar';
   let H;
@@ -211,6 +214,22 @@ self.onmessage = async (ev) => {
       if (!k || !Array.isArray(k.fatwa) || !k.fatwa.length) { try { k = (await LLM.expand({ query: String(m.query), lang: m.lang === 'en' ? 'en' : 'ar' })).keywords; } catch (err) { k = null; } }
       const ar = (k && Array.isArray(k.fatwa) && k.fatwa.length ? k.fatwa : k && Array.isArray(k.ar) ? k.ar : []).map(String).filter(w => /^[؀-ۿ\s_]+$/.test(w)).map(w => w.replace(/_/g, ' ')).slice(0, 4);
       self.postMessage({ id: m.id, ok: true, value: ar });
+      return;
+    }
+    if (m.op === 'fact') {       // T122: verified answers (counted from the Mushaf data, or stated by an authentic hadith)
+      if (!metaP) metaP = getJSON('../data/mushaf_meta.json').catch(() => null);
+      const meta = await metaP;
+      const arab = m.digits === 'arab' && m.lang === 'ar';
+      const num = (n) => arab ? String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]) : String(n);
+      const f = factAnswer(String(m.query || ''), { ...DATA, meta, lang: m.lang === 'en' ? 'en' : 'ar', num });
+      if (f && f.hadiths.length) {
+        // the hadith in the language of the answer; the Arabic text when HadeethEnc has no translation of it
+        const got = await hadithsById(f.lang, f.hadiths);
+        const miss = f.hadiths.filter(id => !got.some(h => h.id === id));
+        f.hadithRecs = got.concat(miss.length && f.lang !== 'ar' ? await hadithsById('ar', miss) : []);
+        if (!f.hadithRecs.length) { self.postMessage({ id: m.id, ok: true, value: null }); return; }   // no evidence → no answer
+      }
+      self.postMessage({ id: m.id, ok: true, value: f });
       return;
     }
     if (m.op === 'hadiths') {    // hadiths by id (calendar panel)

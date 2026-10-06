@@ -10,6 +10,7 @@ import { SHAPES, ORDERS, buildLayout } from './layouts.js';
 import { isBasmala } from './basmala.js';
 import { lampSVG, setLampWord } from './lamp.js';
 import { listen, stopListening, cancelListening, voiceSupported } from './voice.js';
+import { encycKinds, ENC_S } from './encyc.js';
 import { createSpeaker, browserVoice } from './speech.js';
 import { PALETTE } from './galaxy.js';
 import { createPanels } from './panels.js';
@@ -470,6 +471,12 @@ async function run(query, mode = 'auto') {
   // T091–T093: the question is mapped before any search (js/scope.js) — a person in crisis always reaches the engine
   if (mode === 'auto' && !isCrisis(query)) {
     if (state.prefs.age === 'child' && childBlocked(query)) return showCard(query, childCard());
+    // T122: a factual question («كم عدد آيات القرآن», «أركان الإيمان», «كم مرة ذكر اسم موسى») gets its exact answer,
+    // counted from the Mushaf data or stated by an authentic hadith (js/facts.js) — before any search
+    if (state.worker) {
+      const f = await workerCall({ op: 'fact', query, lang: detectLang(query, state.lang) === 'ar' ? 'ar' : 'en', digits: digitsPref() }).catch(() => null);
+      if (f) return showFact(query, f);
+    }
     const m = mapQuestion(query);
     if (m && m.kind === 'now') return showCard(query, nowCard());
     if (m && m.kind === 'offtopic') return showCard(query, offCard(query, m.topic));
@@ -521,6 +528,50 @@ function showCard(query, card) {
   renderSide();
   applyHighlight();
   state.galaxy.setGroups([]); state.galaxy.setFocusVerse(null); markHits(); state.galaxy.home();
+}
+// ------------------------------------------------ T122: verified answers (js/facts.js)
+const FACT_S = {
+  ar: { title: 'جواب موثَّق', how: 'كيف عرفنا', verses: 'من المصحف', hadith: 'من السنة الصحيحة', grade: 'الدرجة', openH: 'افتح الحديث في موسوعة الأحاديث', stats: 'افتح الإحصاءات',
+    read: (n) => `اقرأ سورة ${n}`, tool: { asma: 'أسماء الله الحسنى', prayer: 'مواقيت الصلاة' }, search: 'ابحث في القرآن عن هذا السؤال', more: (n) => `و${n} آية أخرى تضيء على الخريطة` },
+  en: { title: 'Verified answer', how: 'How we know', verses: 'From the Mushaf', hadith: 'From the authentic Sunnah', grade: 'Grade', openH: 'Open the hadith in HadeethEnc', stats: 'Open the statistics',
+    read: (n) => `Read Surah ${n}`, tool: { asma: 'The Most Beautiful Names', prayer: 'Prayer times' }, search: 'Search the Quran for this question', more: (n) => `and ${n} more verses lit on the map` },
+};
+function digitsPref() { try { return JSON.parse(localStorage.getItem('mishkat.digits') || '"arab"'); } catch (e) { return 'arab'; } }
+function factCard(f) {
+  const S = FACT_S[f.lang] || FACT_S.ar, e = state.engine, dir = f.lang === 'ar' ? 'rtl' : 'ltr';
+  const many = f.verses.length > 8, shown = f.verses.slice(0, many ? 0 : 8);
+  const vli = (i) => { const tr = f.lang === 'en' ? e.translation('en', i).replace(/\[\d+\]/g, '') : '';
+    return `<li data-idx="${i}"><div class="li-head"><b>${esc(refLabel(i, f.lang))}</b><button class="mini" data-playv="${i}" aria-label="▶">▶</button></div><div class="ayah">${esc(e.verses[i])}</div>${tr ? `<div class="tr">${esc(tr)}</div>` : ''}</li>`; };
+  const hli = (x) => `<li dir="${x.lang === 'ar' ? 'rtl' : 'ltr'}"><div class="h-text">${esc(x.text)}</div><div class="h-meta">${x.by ? `<span>${esc(x.by)}</span>` : ''}${x.grade ? `<span class="h-grade"><small>${esc(S.grade)}:</small> <b>${esc(x.grade)}</b></span>` : ''}</div>
+    <a class="mini" href="https://hadeethenc.com/${esc(x.lang)}/browse/hadith/${esc(x.id)}" target="_blank" rel="noopener">${esc(S.openH)}</a></li>`;
+  const act = (a) => a.kind === 'stats' ? `<button type="button" class="mini gold" data-fstats="${a.sura || ''}" data-fword="${esc(a.word || '')}">📊 ${esc(S.stats)}</button>`
+    : a.kind === 'read' ? `<button type="button" class="mini gold" data-fread="${a.sura}">📖 ${esc(S.read(suraName(a.sura, f.lang)))}</button>`
+    : a.kind === 'tool' ? `<button type="button" class="mini gold" data-ftool="${a.tool}">${esc(S.tool[a.tool] || a.tool)}</button>` : '';
+  const html = `<section class="factbox" dir="${dir}"><h3>✓ ${esc(S.title)}</h3><p class="fact-a">${esc(f.answer)}</p>
+    ${f.details.length ? `<ul class="fact-d">${f.details.map(d => `<li>${esc(d)}</li>`).join('')}</ul>` : ''}
+    ${(f.hadithRecs || []).length ? `<h4 class="sec">${esc(S.hadith)}</h4><ol class="hlist">${f.hadithRecs.map(hli).join('')}</ol>` : ''}
+    ${shown.length ? `<h4 class="sec">${esc(S.verses)}</h4><ul class="vlist">${shown.map(vli).join('')}</ul>` : ''}
+    ${many ? `<div class="fact-refs">${f.verses.slice(0, 40).map(i => `<button type="button" class="mini" data-idx="${i}">${esc(refLabel(i, f.lang))}</button>`).join('')}</div>` : ''}
+    <p class="note fact-how"><b>${esc(S.how)}:</b> ${esc(f.method)}${f.note ? ' ' + esc(f.note) : ''}</p>
+    <div class="p-row">${f.actions.map(act).join('')}<button type="button" class="mini" id="factSearch">🔎 ${esc(S.search)}</button></div></section>` + feedbackBar();
+  return { kind: 'fact', html, wire: (v) => {
+    v.querySelectorAll('.vlist li').forEach(li => li.onclick = () => goVerse(+li.dataset.idx, { pane: 'r' }));
+    v.querySelectorAll('.fact-refs [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx, { pane: 'r' }));
+    v.querySelectorAll('[data-playv]').forEach(b => b.onclick = (ev) => { ev.stopPropagation(); goVerse(+b.dataset.playv, { play: 'one', pane: 'r' }); });
+    v.querySelectorAll('[data-fstats]').forEach(b => b.onclick = () => state.panels.open('stats', { sura: +b.dataset.fstats || null, word: b.dataset.fword || null }));
+    v.querySelectorAll('[data-fread]').forEach(b => b.onclick = () => openReader(+b.dataset.fread, null, { pane: 'r' }));
+    v.querySelectorAll('[data-ftool]').forEach(b => b.onclick = () => state.panels.open(b.dataset.ftool));
+    const fs = v.querySelector('#factSearch'); if (fs) fs.onclick = () => run(state.result.query, 'topic');
+    wireFeedback(v, state.result);
+  } };
+}
+function showFact(query, f) {
+  showCard(query, factCard(f));
+  state.result.fact = f.id;
+  state.result.verses = f.verses.map(idx => ({ idx, ref: `${state.engine.suraOf[idx]}:${state.engine.ayaOf[idx]}` }));
+  applyHighlight(); markHits();
+  const shown = answerVerses();
+  if (shown.length) state.galaxy.fitVerses(shown);
 }
 const SHORT_SURAS = [1, 112, 113, 114, 108, 103, 97, 67];
 function childCard() {
@@ -770,7 +821,9 @@ function renderResults() {
   }
   if (res.type === 'sura') h += `<p><button class="btn gold" id="openSura">${esc(t.readSura)}</button> <button class="btn play" id="playSura">${esc(t.listen)}</button></p>`;
   // 3 — after the Quran: the Sunnah, then (fatwa requests) the official references and published fatwas
-  if (res.type === 'topic' || res.type === 'term') h += `<section class="hbox sbox" id="sunnahBox" aria-live="polite" hidden></section>`;
+  // T122: the approved encyclopedias (creed, Sira and history) — also when no verse answers the question
+  if (encycKinds(res, res.query).length) h += `<section class="hbox encbox" id="encBox" aria-live="polite" hidden></section>`;
+  if (res.type === 'topic' || res.type === 'term' || res.type === 'notfound') h += `<section class="hbox sbox" id="sunnahBox" aria-live="polite" hidden></section>`;
   if (res.type === 'hadith' || res.hadithCheck) h += `<section class="hbox" id="hadithBox" aria-live="polite"></section>`;
   // fatwa requests: official sources
   if (res.links && res.links.length) {
@@ -810,7 +863,8 @@ function renderResults() {
   const ps = $('#playSura'); if (ps) ps.onclick = () => openReader(res.sura, res.focus, { autoplay: 'all', pane: 'r' });
   v.querySelectorAll('.tix [data-idx]').forEach(b => b.onclick = () => goVerse(+b.dataset.idx));
   v.querySelectorAll('details.sc-info').forEach(d => d.ontoggle = () => { if (d.open) fillSuraInfo(d.querySelector('.sc-info-b'), +d.dataset.info, true); });
-  if ((res.type === 'topic' || res.type === 'term') && state.worker) loadSunnah(res).finally(() => loadRag(res));
+  if ((res.type === 'topic' || res.type === 'term' || res.type === 'notfound') && state.worker) loadSunnah(res).finally(() => loadRag(res));
+  if (encycKinds(res, res.query).length) loadEncyc(res, encycKinds(res, res.query));
   // the AI's Arabic fiqh search terms (never shown) when available; else the words of an Arabic question
   if (isRulingRes(res) && res.reason === 'ruling') {
     if (state.llm && state.worker) workerCall({ op: 'kw', query: res.query, lang: res.lang }).catch(() => []).then(kw => {
@@ -899,6 +953,7 @@ async function loadSunnah(res) {
       <a class="mini" href="${esc(link(x.id))}" target="_blank" rel="noopener">${esc(t.sunnahOpen)}</a></li>`).join('')}</ol>
     <p><small><a href="https://hadeethenc.com" target="_blank" rel="noopener">HadeethEnc.com</a> — ${esc(t.sunnahSrc)}</small></p>`;
   box.hidden = false;
+  softenNotFound(res);
 }
 // «الجواب باختصار» v5 (extractive, evidence-bound, public/js/rag.js): the worker builds a closed list of
 // passages from the sources of truth — verse text (Tanzil), tafsir, authentic hadiths, and for a ruling
@@ -985,6 +1040,56 @@ async function loadFiqh(q, kw = []) {
   if (!docs.length) { box.innerHTML = `<p class="lead">${esc(t.fiqhFail)}</p><p><a class="mini" href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fiqhSearchSite)}</a></p>`; return; }
   box.innerHTML = (state.lang === 'en' ? `<p class="note">${esc(t.fiqhArabicOnly)}</p>` : '') + docs.map(f => fiqhCard(f, t)).join('')
     + `<p class="note">${j.by === 'ai' ? esc(t.fiqhByAi) + ' · ' : ''}<a href="${esc(j.url)}" target="_blank" rel="noopener">${esc(t.fiqhSearchSite)}</a></p>`;
+}
+// T122: creed (dorar.net/aqeeda) and Sira/history (dorar.net/history) — the encyclopedia's own text, verbatim, with
+// its link; the AI only chose among the encyclopedia's own search results. Shown only when something was found.
+async function loadEncyc(res, kinds) {
+  const box = $('#encBox'), S = ENC_S[state.lang] || ENC_S.ar;
+  if (!box) return;
+  const ar = /[؀-ۿ]/.test(res.query || '');
+  // the AI's Arabic search terms (never shown): needed for a question in English, useful for an Arabic one
+  let kw = [];
+  if (state.llm && state.worker) kw = await workerCall({ op: 'kw', query: res.query, lang: res.lang }).catch(() => []) || [];
+  if (box !== $('#encBox')) return;
+  if (!ar && !kw.length) return;
+  const body = (enc, extra = {}) => ({ enc, q: res.query, ...(kw.length ? { kw } : {}), ...extra });
+  const parts = await Promise.all(kinds.map(async (enc) => {
+    const j = await postJSON('api/encyc', body(enc));
+    if (!j || !j.ok || !j.items || !j.items.length) return null;
+    if (enc === 'history') return { enc, j, docs: j.items.slice(0, 2) };
+    const docs = (await Promise.all(j.items.slice(0, 4).map(x => postJSON('api/encyc', body(enc, { id: +x.id }))))).filter(f => f && f.ok && f.ruling && f.ruling.length)
+      .filter((f, k, a) => a.findIndex(g => g.id === f.id) === k).slice(0, 2);
+    return docs.length ? { enc, j, docs } : null;
+  }));
+  if (box !== $('#encBox')) return;
+  const found = parts.filter(Boolean);
+  if (!found.length) return;
+  const srcOf = (j) => state.lang === 'ar' ? j.source : j.sourceEn || j.source;
+  const aqCard = (f) => `<article class="fiqh enc" dir="rtl"><h4>${esc(f.title)}</h4>${f.path && f.path.length ? `<p class="fq-path">${esc(f.path.join(' › '))}</p>` : ''}
+    ${f.ruling.map(p => `<p class="fq-r">${esc(p)}</p>`).join('')}
+    <footer><small><a href="${esc(f.url)}" target="_blank" rel="noopener">${esc(S.read)}</a></small></footer></article>`;
+  const hiCard = (x) => `<article class="fiqh enc enc-h" dir="rtl"><h4>${esc(x.title)}</h4><p class="fq-path">${esc(S.date(x))}</p>
+    ${x.text.map(p => `<p class="fq-r">${esc(p)}</p>`).join('')}${x.cut ? `<p class="note">${esc(S.cut)}</p>` : ''}
+    <footer><small><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(S.readEvent)}</a></small></footer></article>`;
+  box.innerHTML = `<h3 class="sec">${esc(S.title)}</h3>${state.lang === 'en' && S.arabicOnly ? `<p class="note">${esc(S.arabicOnly)}</p>` : ''}` + found.map(p => `<h4 class="fq-h">${esc(S[p.enc])}</h4>`
+    + p.docs.map(d => p.enc === 'history' ? hiCard(d) : aqCard(d)).join('')
+    + `<p class="note">${esc(p.j.by === 'ai' ? S.byAi : S.bySearch)} · <a href="${esc(p.j.url)}" target="_blank" rel="noopener">${esc(S.searchSite)}</a> · <small>${esc(srcOf(p.j))}</small></p>`).join('');
+  box.hidden = false;
+  softenNotFound(res);
+}
+// a question with no verse that answers it, but an approved source that does (encyclopedia, authentic hadith): the
+// «abstained» badge and message would contradict what follows — they now say where the answer comes from
+const SOFT = {
+  ar: { badge: 'من المصادر المعتمدة', lead: 'لا آية في المصحف تجيب عن هذا السؤال مباشرة؛ وهذا ما في المصادر المعتمدة، منقولًا بنصه مع رابطه:' },
+  en: { badge: 'From the approved sources', lead: 'No verse of the Quran answers this question directly; here is what the approved sources say, quoted as written with their link:' },
+};
+function softenNotFound(res) {
+  if (!res || res.type !== 'notfound' || res.softened) return;
+  const v = $('#viewRes'), S = SOFT[state.lang] || SOFT.ar;
+  const b = v && v.querySelector('.badge.stop'), p = v && v.querySelector('p.lead');
+  if (b) { b.textContent = S.badge; b.className = 'badge ok'; }
+  if (p) p.textContent = S.lead;
+  res.softened = true;
 }
 // the red banner of sensitive questions: rulings, matters of life and blood, disputed or hostile subjects
 function sensitiveBanner(res) {

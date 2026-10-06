@@ -18,6 +18,10 @@ import { tokens, expandTokens, isCrisis, guardCheck } from '../../public/js/engi
 import { mapQuestion } from '../../public/js/scope.js';
 import { routeTool } from '../../public/js/tools.js';
 import { athkarQuery, filterAthkar } from '../../public/js/athkar.js';
+import { factAnswer } from '../../public/js/facts.js';
+import { encycKinds } from '../../public/js/encyc.js';
+import { encycSearch } from '../../functions/_lib/encyc.js';
+import { suraOfIndex } from '../../public/js/stats.js';
 
 export const env = {};
 for (const line of readFileSync(new URL('../../.dev.vars', import.meta.url), 'utf8').split(/\r?\n/)) { const m = line.match(/^\s*([A-Z_]+)\s*=\s*"?(.*?)"?\s*$/); if (m) env[m[1]] = m[2]; }
@@ -72,7 +76,7 @@ function hadIndex(lang) {
   return (HAD[lang] = { ...d, post, len, avg: total / d.doc.length || 1, N: d.doc.length });
 }
 async function sunnahFor(res, KW) {
-  if (!res || !['topic', 'term'].includes(res.type)) return null;
+  if (!res || !['topic', 'term', 'notfound'].includes(res.type)) return null;   // T122: notfound too
   if (res.meta && res.meta.route === 'word') return null;
   const lang = res.lang === 'en' ? 'en' : 'ar';
   const H = hadIndex(lang);
@@ -125,8 +129,16 @@ const isRulingRes = (res) => res.type === 'abstain' && res.reason === 'ruling';
 // app.js run(): the question is mapped before any search — the clock, an off-topic request, a feature of the site,
 // or a practical tool (adhkar, prayer, calendar, khatma…) — and only then sent to the engine
 let ATHKAR = null;
+// T122: verified answers (app.js run → worker op 'fact'), before the map of the question
+let FACT_CTX = null;
+export function factFor(q) {
+  FACT_CTX = FACT_CTX || { core, plain: readJson('search_ar.json'), meta: readJson('mushaf_meta.json'), suraOf: suraOfIndex(core) };
+  return factAnswer(q, { ...FACT_CTX, lang: /[؀-ۿ]/.test(q) ? 'ar' : 'en' });
+}
 export function preRoute(q) {
   if (isCrisis(q)) return null;
+  const f = factFor(q);
+  if (f) return { type: 'fact', fact: f.id, answer: f.answer, factVerses: f.verses.slice(0, 10), hadiths: f.hadiths };
   const m = mapQuestion(q);
   if (m && ['now', 'offtopic', 'feature'].includes(m.kind)) return { type: 'card', card: m.kind, topic: m.topic || m.feature || null };
   const tool = routeTool(q, { guard: guardCheck });
@@ -172,7 +184,24 @@ export async function runQuestion(q, { uiLang = 'ar' } = {}) {
     } else row.fiqh = null;      // English without AI keywords: the page says the AI is needed
   }
   // Sunnah + short answer (app.js render → loadSunnah → loadRag)
-  if (['topic', 'term'].includes(r.type)) {
+  // T122: the approved encyclopedias (app.js loadEncyc): creed and history, also when no verse answers
+  const kinds = encycKinds(r, q);
+  if (kinds.length) {
+    // the page asks the worker for the AI's Arabic terms (op 'kw' → expand when the search did not keep them)
+    let k = KW.get(q);
+    if (!k) { try { const j = await expand({ query: q, lang: r.lang === 'en' ? 'en' : 'ar' }, env); k = j && j.keywords; } catch (e) { k = null; } }
+    const kw = k ? (Array.isArray(k.fatwa) && k.fatwa.length ? k.fatwa : Array.isArray(k.ar) ? k.ar : []).map(String).filter(w => /^[؀-ۿ\s_]+$/.test(w)).map(w => w.replace(/_/g, ' ')).slice(0, 4) : [];
+    row.encyc = [];
+    for (const enc of kinds) {
+      const j = await encycSearch({ enc, q, ...(kw.length ? { kw } : {}) }, env).catch(e => ({ ok: false, error: String(e.message || e) }));
+      if (!j || !j.ok || !j.items || !j.items.length) { row.encyc.push({ enc, items: [], error: j && j.error || null }); continue; }
+      if (enc === 'history') { row.encyc.push({ enc, by: j.by, items: j.items.map(x => ({ id: x.id, title: x.title, hijri: x.hijri })) }); continue; }
+      const docs = [];
+      for (const x of j.items.slice(0, 4)) { const d = await encycSearch({ enc, q, id: +x.id, ...(kw.length ? { kw } : {}) }, env).catch(() => null); if (d && d.ok && d.ruling && d.ruling.length && !docs.some(o => o.id === d.id)) docs.push({ id: d.id, title: d.title, first: d.ruling[0].slice(0, 160) }); if (docs.length >= 2) break; }
+      row.encyc.push({ enc, by: j.by, items: docs });
+    }
+  }
+  if (['topic', 'term', 'notfound'].includes(r.type)) {
     const sun = r.polemic || r.pack === 'violence' ? null : await sunnahFor({ ...r, query: q }, KW).catch(() => null);   // app.js loadSunnah
     row.hadiths = sun ? sun.ids : [];
     row.hadithBy = sun ? sun.by : null;
