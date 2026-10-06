@@ -6,7 +6,11 @@
 > Mishkat gathers, around your question, the light of vetted sources — inside a 3D galaxy whose 77,433 stars are the words of the Quran.
 
 **Islamic AI Challenge 2026 · Track 1 — Knowledge dialogue & reliable answers** · Languages: العربية · English
-Live demo: https://mishkat-4m1.pages.dev · Pre-existing work disclosed in [BASELINE.md](BASELINE.md); work of the challenge window (4–6 Oct 2026) in [CHANGELOG.md](CHANGELOG.md).
+Live demo: https://mishkatquran.org (backup https://mishkat-4m1.pages.dev) · **Judges' verification guide / دليل التحقّق للمحكّمين: https://mishkatquran.org/judges.html** · Official pages: [YouTube @mishketquran](https://www.youtube.com/@mishketquran) · [Facebook](https://www.facebook.com/profile.php?id=61594931830065)
+
+> **Rights / الحقوق** — This repository is public **for viewing and judging only**. All rights reserved: no copying, reuse, redistribution or derivative work without the author's written permission ([LICENSE](LICENSE)). المستودع مفتوح للاطلاع والتحكيم فقط؛ جميع الحقوق محفوظة، ويُمنع النسخ أو إعادة الاستعمال أو النشر دون إذن كتابي من المؤلف.
+
+Pre-existing work disclosed in [BASELINE.md](BASELINE.md); work of the challenge window (4–6 Oct 2026) in [CHANGELOG.md](CHANGELOG.md).
 
 ---
 

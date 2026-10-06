@@ -112,20 +112,22 @@ a {{ color: #0b5cad; text-decoration: none; word-break: break-all; }}
 i {{ color: var(--mut); }}
 """
 
-def build(md_name, lang):
-    md = io.open(os.path.join(OUT, md_name), encoding='utf-8').read()
+def build(md_name, lang, out_dir=None):
+    out_dir = out_dir or OUT
+    md = io.open(os.path.join(out_dir, md_name), encoding='utf-8').read()
     check_verses(md, md_name)
     body = md2html(md)
     # the first h1 goes in the cover band with the logo
     body = re.sub(r'^<h1>(.*?)</h1>', lambda m: f'<div class="cover"><img src="data:image/png;base64,{logo}" alt=""><h1>{m.group(1)}</h1></div>', body, count=1)
     d = 'rtl' if lang == 'ar' else 'ltr'
     doc = f'<!doctype html><html lang="{lang}" dir="{d}"><head><meta charset="utf-8"><title>Mishkat</title><style>{CSS}</style></head><body class="{lang}">{body}</body></html>'
-    h = os.path.join(OUT, md_name.replace('.md', '.html'))
+    h = os.path.join(out_dir, md_name.replace('.md', '.html'))
     io.open(h, 'w', encoding='utf-8').write(doc)
     pdf = h.replace('.html', '.pdf')
     subprocess.run([CHROME, '--headless=new', '--disable-gpu', '--no-pdf-header-footer', '--allow-file-access-from-files',
                     f'--print-to-pdf={pdf}', 'file:///' + h.replace('\\', '/')], check=True, capture_output=True, timeout=180)
     print(md_name, '→', os.path.basename(pdf), os.path.getsize(pdf) // 1024, 'KB')
 
-for name, lang in [('Mishkat_Dossier_AR.md', 'ar'), ('Mishkat_Dossier_EN.md', 'en'), ('Mishkat_Dossier_FR.md', 'fr')]:
-    build(name, lang)
+if __name__ == '__main__':
+    for name, lang in [('Mishkat_Dossier_AR.md', 'ar'), ('Mishkat_Dossier_EN.md', 'en'), ('Mishkat_Dossier_FR.md', 'fr')]:
+        build(name, lang)

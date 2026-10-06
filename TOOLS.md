@@ -42,6 +42,7 @@ The AI never writes text shown to the visitor: it returns IDs (verses, sentences
 | Node.js | ≥ 18 | tests, evaluation, local server (no npm dependencies) | MIT |
 | Python 3 + `requests`, `numpy`, `lameenc` (MP3 of the welcome) ; `pandas`, `pytrec-eval-terrier` (official Qur'an QA scorer) | 3.13 | data build, evaluation | PSF / BSD / LGPL / MIT |
 | Cloudflare Pages + Pages Functions, Wrangler | free plan | hosting, serverless API (keys kept as secrets) | Cloudflare terms |
+| Cloudflare Workers KV (namespace `FEEDBACK`, T118) | free plan (1,000 writes/day) | visitors' «useful / not useful / report an error» on answers, no identifier, one-year expiry (`functions/_lib/feedback.js`, report `tools/feedback_report.mjs`) | Cloudflare terms |
 | python-pptx | — | presentation (`docs/make_deck.py`) | MIT |
 | Claude (Anthropic) — AI coding assistant | — | assisted the author with code, tests and documentation (disclosed per the challenge's transparency rules); not part of the product | — |
 
