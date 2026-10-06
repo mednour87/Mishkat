@@ -25,7 +25,7 @@ const ACTIVE = { log: Object.fromEntries([0, 1, 2, 3, 4, 5, 6, 8, 9, 11, 12, 13,
 
 async function open(path = '', { lang = 'ar', theme = 'dark', prefs = {}, intro = true } = {}) {
   await send('Page.navigate', { url: BASE + '/' });
-  await sleep(900);
+  for (let k = 0; k < 40; k++) { await sleep(250); if (await evalJs('location.origin !== "null" && document.readyState !== "loading"').catch(() => false)) break; }   // the page is really there
   const P = { intro, remindDay: day(0), ...ACTIVE, ...prefs };
   await evalJs(`localStorage.clear(); localStorage.setItem('mishkat.bismillah','1'); localStorage.setItem('mishkat.welcomed','1'); localStorage.setItem('mishkat.lang','${lang}'); localStorage.setItem('mishkat.theme','${theme}'); localStorage.setItem('mishkat.place', ${JSON.stringify(JSON.stringify(PLACE))}); localStorage.setItem('mishkat.prefs.v1', ${JSON.stringify(JSON.stringify(P))}); 1`);
   await send('Page.navigate', { url: BASE + '/' + path });
@@ -210,6 +210,42 @@ try {
     await sleep(400); mark('type');
     await type('كيف أثبت التطبيق على هاتفي', { cps: 16 });
     await sleep(4200); mark('shown'); await sleep(1500);
+  });
+  // (6 Oct, v3 of the video) the services of 6 October, filmed as they are now: a repetition session then the
+  // memorisation test, the khatma «choose for me» with its lamp, and the install window
+  await open('', { prefs: { tk: { log: ACTIVE.tk.log, last: { sura: 112, from: 1, count: 2, whole: false, reps: 3, together: false, listen: 'none' } } } });
+  await record('tekrar3', async (mark) => {
+    await sleep(400); mark('panel');
+    await click('#dock [data-panel=tekrar]'); await sleep(1500);
+    mark('start'); await click('#tkGo'); await waitFor(`!!document.querySelector('#tkPress')`, 8000); await sleep(800);
+    for (let k = 0; k < 4; k++) { await waitFor(`!!document.querySelector('#tkPress.ready')`, 6000); await click('#tkPress'); await sleep(700); }
+    mark('tj'); await click('#tkTj'); await sleep(2600);
+    for (let k = 0; k < 3; k++) { await waitFor(`!!document.querySelector('#tkPress.ready')`, 6000); await click('#tkPress'); await sleep(700); }
+    await waitFor(`!!document.querySelector('#tkTest')`, 8000); mark('end'); await sleep(1500);
+  });
+  await record('test3', async (mark) => {
+    mark('test'); await click('#tkTest'); await sleep(1200);
+    await type('قل هو الله احد', { sel: '.tt-v:nth-of-type(1) textarea', cps: 9, submit: false }); await sleep(300);
+    await click('.tt-v:nth-of-type(1) .tt-ck'); await sleep(1300);
+    mark('hint'); await click('.tt-v:nth-of-type(2) .tt-hb'); await sleep(900);
+    await type('الله الصمد', { sel: '.tt-v:nth-of-type(2) textarea', cps: 9, submit: false }); await sleep(300);
+    await click('.tt-v:nth-of-type(2) .tt-ck'); await sleep(900);
+    mark('result'); await scrollBy('#p-tekrar .p-body', 700, 1400); await sleep(2600);
+  });
+  await open('', { prefs: { khatma: { active: false } } });
+  await record('khatma3', async (mark) => {
+    await sleep(400); mark('panel');
+    await click('#dock [data-panel=khatma]'); await sleep(1600);
+    mark('wizard'); await click('#kWiz'); await sleep(1300);
+    await click('input[name=wMin][value="20"]'); await sleep(500); await click('input[name=wWhen][value="night"]'); await sleep(500);
+    await click('#wGo'); await sleep(1800); mark('plan');
+    await click('#wOk'); await sleep(600); mark('reveal'); await sleep(5200);
+  });
+  await open('');
+  await record('install3', async (mark) => {
+    await sleep(400); mark('settings');
+    await click('#dock [data-panel=settings]'); await sleep(1200);
+    await click('#sInst'); await sleep(600); mark('dialog'); await sleep(4800);
   });
   await open('?s=24&a=35');
   await record('shapes', async (mark) => {

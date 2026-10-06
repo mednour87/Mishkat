@@ -1,7 +1,8 @@
 {
  "voices": {
-  "ar": "ar-SA-HamedNeural",
-  "en": "en-US-GuyNeural"
+  "ar": "ElevenLabs DPd861uv5p6zeVV94qOT",
+  "en": "ElevenLabs JBFqnCBsd6RMkjVDRZzb",
+  "model": "eleven_multilingual_v2"
  },
  "lines": {
   "ar": {
